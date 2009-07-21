@@ -466,15 +466,15 @@ if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) &
 	//development time and testing time is greatly shortened
 	if(!empty($_POST['customfieldssubmit']))
 	{		
-		if(isset($_POST['customfield1a']) && !isset($_POST['customfield1b']))
+		if(!empty($_POST['customfield1a']) && empty($_POST['customfield1b']))
 		{
 			echo '<h3>Sorry you did not enter an Assigned Value for the first row!</h3>';
 		}
-		elseif(!isset($_POST['customfield1a']) && isset($_POST['customfield1b']))
+		elseif(empty($_POST['customfield1a']) && !empty($_POST['customfield1b']))
 		{
 			echo '<h3>Sorry you did not enter an Identified for the first row!</h3>';
 		}
-		elseif(isset($_POST['customfield1a']) && isset($_POST['customfield1b']))
+		elseif(!empty($_POST['customfield1a']) && !empty($_POST['customfield1b']))
 		{
 			$ident = $_POST['customfield1a'];
 			$value = $_POST['customfield1b'];
@@ -485,15 +485,15 @@ if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) &
 			$wpdb->query($sqlQuery);
 		}
 
-		if(isset($_POST['customfield2a']) && !isset($_POST['customfield2b']))
+		if(!empty($_POST['customfield2a']) && empty($_POST['customfield2b']))
 		{
 			echo '<h3>Sorry you did not enter an Assigned Value for the second row!</h3>';
 		}
-		elseif(!isset($_POST['customfield2a']) && isset($_POST['customfield2b']))
+		elseif(empty($_POST['customfield2a']) && !empty($_POST['customfield2b']))
 		{
 			echo '<h3>Sorry you did not enter an Identified for the second row!</h3>';
 		}
-		elseif(isset($_POST['customfield2a']) && isset($_POST['customfield2b']))
+		elseif(!empty($_POST['customfield2a']) && !empty($_POST['customfield2b']))
 		{
 			$ident = $_POST['customfield2a'];
 			$value = $_POST['customfield2b'];
@@ -504,15 +504,15 @@ if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) &
 			$wpdb->query($sqlQuery);
 		}
 
-		if(isset($_POST['customfield3a']) && !isset($_POST['customfield3b']))
+		if(!empty($_POST['customfield3a']) && empty($_POST['customfield3b']))
 		{
 			echo '<h3>Sorry you did not enter an Assigned Value for the third row!</h3>';
 		}
-		elseif(!isset($_POST['customfield3a']) && isset($_POST['customfield3b']))
+		elseif(empty($_POST['customfield3a']) && !empty($_POST['customfield3b']))
 		{
 			echo '<h3>Sorry you did not enter an Identified for the third row!</h3>';
 		}
-		elseif(isset($_POST['customfield3a']) && isset($_POST['customfield3b']))
+		elseif(!empty($_POST['customfield3a']) && !empty($_POST['customfield3b']))
 		{
 			$ident = $_POST['customfield3a'];
 			$value = $_POST['customfield3b'];
@@ -524,7 +524,18 @@ if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) &
 		}		
 		
 		# COLUMN PAIRED CUSTOM FIELDS BEGIN HERE
-		if(isset($_POST['customfield7a']) && isset($_POST['customfield7b']))
+		if(!empty($_POST['customfield6a']) && !empty($_POST['customfield6b']))
+		{
+			$ident = $_POST['customfield6a'];
+			$value = $_POST['customfield6b'];
+			global $wpdb;
+			$sqlQuery = "INSERT INTO " .
+			$wpdb->prefix . "csvtopost_customfields(camid,identifier,value,type)
+			VALUES('$camid','$ident','$value','1')";
+			$wpdb->query($sqlQuery);
+		}
+		
+		if(!empty($_POST['customfield7a']) && !empty($_POST['customfield7b']))
 		{
 			$ident = $_POST['customfield7a'];
 			$value = $_POST['customfield7b'];
@@ -535,7 +546,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) &
 			$wpdb->query($sqlQuery);
 		}
 
-		if(isset($_POST['customfield8a']) && isset($_POST['customfield8b']))
+		if(!empty($_POST['customfield8a']) && !empty($_POST['customfield8b']))
 		{
 			$ident = $_POST['customfield8a'];
 			$value = $_POST['customfield8b'];
@@ -546,7 +557,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) &
 			$wpdb->query($sqlQuery);
 		}
 
-		if(isset($_POST['customfield9a']) && isset($_POST['customfield9b']))
+		if(!empty($_POST['customfield9a']) && !empty($_POST['customfield9b']))
 		{
 			$ident = $_POST['customfield9a'];
 			$value = $_POST['customfield9b'];
@@ -604,9 +615,40 @@ if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) &
                 </tr>
                 
                 <!-- CUSTOM FIELDS MARRIED TO COLUMNS FOR UNIQUE VALUE ENTRY PER POST AFTER HERE -->
-                
+
                 <tr>
                     <td>4</td>
+                    <td><input name="customfield6a" type="text" value="" maxlength="30" /></td>
+                    <td></td>
+                    <td><select name="customfield6b" size="1">      
+					<?php
+                    # CREATE MENU OF CSV FILE COLUMNS FOR MARRYING TO CUSTOM FIELD KEY
+                    $handle6 = fopen("$csvdirectory", "r");
+					$stop = 0;
+					$i = 0;
+					while (($data = fgetcsv($handle6, 999999, ",")) !== FALSE && $stop != 1)// Gets CSV rows
+                    {	 
+                        $stop++;// used to limit row parsing to just 1
+                    
+                        $i = 0; 
+                    
+                        while(isset($data[$i]))
+                        {
+                            $data[$i] = rtrim($data[$i]);
+                            
+                            ?><option value="<?php echo $i; ?>"><?php echo $i . ' - ' . $data[$i]; ?></option><?php
+                        
+                            $i++; // $i will equal number of columns - use to process submission
+                        }
+                    }
+                    
+                    fclose($handle6);
+                    ?>
+                    </select></td>
+                </tr>
+                               
+                <tr>
+                    <td>5</td>
                     <td><input name="customfield7a" type="text" value="" maxlength="30" /></td>
                     <td></td>
                     <td><select name="customfield7b" size="1">      
@@ -637,7 +679,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) &
                 </tr>
 
                 <tr>
-                    <td>5</td>
+                    <td>6</td>
                     <td><input name="customfield8a" type="text" value="" maxlength="30" /></td>
                     <td></td>
                     <td><select name="customfield8b" size="1">     
@@ -668,7 +710,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) &
                 </tr>
                 
                 <tr>
-                    <td>6</td>
+                    <td>7</td>
                     <td><input name="customfield9a" type="text" value="" maxlength="30" /></td>
                     <td></td>
                     <td><select name="customfield9b" size="1">      
@@ -745,7 +787,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) &
 		
 		if($filtercolumn != 'NA')
 		{
-			if(isset($_POST['cat1a']))
+			if(!empty($_POST['cat1a']))
 			{
 				# SAVE TO CUSTOM FIELD TABLE
 				$value = $_POST['cat1a'];
@@ -758,7 +800,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) &
 				$wpdb->query($sqlQuery);
 			}
 			
-			if(isset($_POST['cat2a']))
+			if(!empty($_POST['cat2a']))
 			{
 				# SAVE TO CUSTOM FIELD TABLE
 				$value = $_POST['cat2a'];
@@ -771,7 +813,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) &
 				$wpdb->query($sqlQuery);
 			}
 	
-			if(isset($_POST['cat3a']))
+			if(!empty($_POST['cat3a']))
 			{
 				# SAVE TO CUSTOM FIELD TABLE
 				$value = $_POST['cat3a'];
@@ -783,6 +825,395 @@ if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) &
 				VALUES('$camid','$cat','$value')";
 				$wpdb->query($sqlQuery);
 			}
+
+			if(!empty($_POST['cat4a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat4a'];
+				$cat = $_POST['cat4b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat5a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat5a'];
+				$cat = $_POST['cat5b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat6a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat6a'];
+				$cat = $_POST['cat6b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat7a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat7a'];
+				$cat = $_POST['cat7b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat7a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat7a'];
+				$cat = $_POST['cat3b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat8a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat8a'];
+				$cat = $_POST['cat8b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat9a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat9a'];
+				$cat = $_POST['cat9b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat10a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat11a'];
+				$cat = $_POST['cat11b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat12a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat12a'];
+				$cat = $_POST['cat12b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat13a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat13a'];
+				$cat = $_POST['cat13b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat14a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat14a'];
+				$cat = $_POST['cat14b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat15a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat15a'];
+				$cat = $_POST['cat15b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat16a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat16a'];
+				$cat = $_POST['cat16b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat17a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat17a'];
+				$cat = $_POST['cat17b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat18a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat18a'];
+				$cat = $_POST['cat18b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat19a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat19a'];
+				$cat = $_POST['cat19b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat20a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat20a'];
+				$cat = $_POST['cat20b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat21a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat21a'];
+				$cat = $_POST['cat21b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat22a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat22a'];
+				$cat = $_POST['cat22b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat23a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat23a'];
+				$cat = $_POST['cat23b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat24a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat24a'];
+				$cat = $_POST['cat24b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat25a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat25a'];
+				$cat = $_POST['cat25b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat26a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat26a'];
+				$cat = $_POST['cat26b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat27a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat27a'];
+				$cat = $_POST['cat27b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat28a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat28a'];
+				$cat = $_POST['cat28b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+ 			if(!empty($_POST['cat29a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat29a'];
+				$cat = $_POST['cat29b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+  			if(!empty($_POST['cat30a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat30a'];
+				$cat = $_POST['cat30b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+  			if(!empty($_POST['cat31a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat31a'];
+				$cat = $_POST['cat31b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+			
+  			if(!empty($_POST['cat32a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat32a'];
+				$cat = $_POST['cat32b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+			
+  			if(!empty($_POST['cat33a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat33a'];
+				$cat = $_POST['cat33b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+			
+  			if(!empty($_POST['cat34a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat34a'];
+				$cat = $_POST['cat34b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			}
+			
+  			if(!empty($_POST['cat35a']))
+			{
+				# SAVE TO CUSTOM FIELD TABLE
+				$value = $_POST['cat35a'];
+				$cat = $_POST['cat35b'];
+				
+				global $wpdb;
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
+				VALUES('$camid','$cat','$value')";
+				$wpdb->query($sqlQuery);
+			} 		
 		}
 		
 		# UPDATE CAMPAIGN STAGE COUNTER
@@ -850,7 +1281,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) &
 					# ECHO A SET OF FILTER FIELDS ?>
                     <tr>
                     	<td><?php echo $count; ?>: </td>
-                        <td><input name="cat<?php echo $count; ?>" type="text" value="" maxlength="30" /></td>
+                        <td><input name="cat<?php echo $count; ?>a" type="text" value="" maxlength="30" /></td>
                         <td></td>
                         <td><select name="cat<?php echo $count; ?>b" size="1"><?php get_categories_fordropdownmenu();?></select></td>
                     </tr><?php 

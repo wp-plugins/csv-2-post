@@ -43,6 +43,10 @@ You have the option of doing it all at once or staggering it so that a few rows 
 * Fixed bug with custom fields not actually being created.
 * Addded new custom field for ALL posts for campaign id, will be used for UNDO and UPDATE in campaign management.
 
+= 0.3 =
+* Stage 4 Improvement - Another row added for pairing column to custom field key and no null values entered to database now
+* Version 0.2 updates caused filtering to stop working so that has been fixed
+
 == Arbitrary section ==
 
 Please email wordpress@webtechglobal.co.uk with any questions regarding this plugin.

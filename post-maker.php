@@ -73,8 +73,8 @@ else
 				# IF THIS COLUMN IS FILTER COLUMN THEN CHECK ITS VALUE IN THIS ROW AND GET CATEGORY
 				if($filterid != 999 && $c == $filterid)
 				{ 
-					$val = $data;
-					
+					$val = $data;// unique value from csv column
+				
 					$catid = $wpdb->get_var("SELECT catid FROM " .$wpdb->prefix . "csvtopost_categories WHERE camid = '$camid' AND uniquevalue = '$val'");
 				}
 				
@@ -141,14 +141,14 @@ else
 				# MAKE CUSTOM META DATA
 				$metadescription = create_meta_description($content, 150);
 				$metakeywords = create_meta_keywords($content, 150);
-				
+								
 				# CREATE POST OBJECT AND INSERT TO DATABASE
 				$my_post = array();
 				$my_post['post_title'] = $title;
 				$my_post['post_content'] = $post;
 				$my_post['post_status'] = $campaignresult->poststatus;
 				$my_post['post_author'] = 1;
-				$my_post['post_category'] = $catid;
+				$my_post['post_category'] = array($catid);
 				$my_post['comment_status'] = 'open';
 				$my_post['post_excerpt'] = $metadescription;
 		
