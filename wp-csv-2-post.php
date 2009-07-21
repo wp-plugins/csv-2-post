@@ -2,7 +2,7 @@
 /*
 
 Plugin Name: CSV 2 POST
-Version: 0.2
+Version: 0.3
 Plugin URI: http://www,webtechglobal.co.uk
 Description: Turns CSV data rows into posts with high seo per post
 Author: Ryan Bayne
