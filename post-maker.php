@@ -154,6 +154,12 @@ else
 		
 				$post_id = wp_insert_post( $my_post );
 				
+				# RECORD NEW POST IN csv2post_posthistory TABLE
+				$sqlQuery = "INSERT INTO " .
+				$wpdb->prefix . "csvtopost_posthistory(camid, postid)
+				VALUES('$camid', '$post_id')";
+				$wpdb->query($sqlQuery);
+								
 				# INSERT SCRIPTS DEFAULT CUSTOM FIELDS AND VALUES
 				add_post_meta($post_id, '_headspace_description', $metadescription, true);
 				add_post_meta($post_id, 'head_keywords', $metakeywords, true);
@@ -198,13 +204,18 @@ else
 		
 		# COUNT ROWS PROCESSED - NOT ENTERED JUST ALL THAT IS PROCESSED IN TOTAL
 		$row_counter++;
-	}
+	}// end of entire processing event
 	
 	# IF CAMPAIGN IS FULL PROCESSING THEN CHANGE STAGE TO 300 TO INDICATE COMPLETE
 	if($campaignresult->process == 1)
 	{
+		# GET CURRENT NUMBER OF POSTS ALREADY CREATED FOR THIS CAMPAIGN
+		$currentposts = $wpdb->get_var("SELECT posts FROM " .$wpdb->prefix . "csvtopost_campaigns WHERE id = '$camid'");
+		
+		$posts_made = $currentposts + $posts_made;
+		
 		$sqlQuery = "UPDATE " .
-		$wpdb->prefix . "csvtopost_campaigns SET stage = '300' WHERE id = '$camid'";
+		$wpdb->prefix . "csvtopost_campaigns SET stage = '300', posts = '$posts_made' WHERE id = '$camid'";
 		$wpdb->query($sqlQuery);
 	}
 	

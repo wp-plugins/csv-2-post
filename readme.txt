@@ -1,7 +1,7 @@
 === Plugin Name ===
 Contributors: Ryan Bayne
 Donate link: http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-post-plugin
-Tags: csv,file,post,2,to,data,affiliate
+Tags: csv,file,post,2,to,data,affiliate,webtechglobal
 Requires at least: 2.8.0
 Tested up to: 2.8
 Stable tag: trunk
@@ -46,6 +46,12 @@ You have the option of doing it all at once or staggering it so that a few rows 
 = 0.3 =
 * Stage 4 Improvement - Another row added for pairing column to custom field key and no null values entered to database now
 * Version 0.2 updates caused filtering to stop working so that has been fixed
+
+= 0.4 =
+* Undo function added to campaign management
+* New database table added for tracking posts created per campaign
+* Database updating improved using wordpress functions now
+* More affiliate links added to Main Page
 
 == Arbitrary section ==
 

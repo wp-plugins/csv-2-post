@@ -1,23 +1,69 @@
 <?php
+
 # CREATING PLUGINS DATABASE TABLES ON INSTALLATION
-function init_csvtopost_campaigndata_tabele_wtg()
-{	
+function init_csvtopost_campaigndata_tabele_wtg () 
+{
+	$csvtopost_tables_version = "0.2";// different from plugin version
+	
 	global $wpdb;
+	global $csvtopost_tables_version;
 	
-	$result = mysql_list_tables(DB_NAME);
+	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 	
-	$current_table = array();
-	
-	while($row = mysql_fetch_row($result))
+	# ADD OR UPDATE csvtopost_relationships TABLE
+	$table_name = $wpdb->prefix . "csvtopost_relationships";
+	if($wpdb->get_var("show tables like '$table_name'") != $table_name) 
 	{
-		$current_tables[] = $row[0];
+		$sql = "CREATE TABLE `" . $table_name . "` (
+			`id` int(10) unsigned NOT NULL auto_increment,
+			`camid` int(10) unsigned NOT NULL COMMENT 'Campaign ID',
+			`csvcolumnid` int(10) unsigned NOT NULL COMMENT 'Incremented number assigned to columns of CSV file in order they are in the file',
+			`postpart` varchar(50) NOT NULL COMMENT 'Part CSV column assigned to in order to fulfill post data requirements',
+			PRIMARY KEY  (`id`)
+			) ENGINE=MyISAM AUTO_INCREMENT=380 DEFAULT CHARSET=utf8 COMMENT='Links between CSV file columns and post parts';";
+		
+		dbDelta($sql);// executes sql object query
+	}
+
+	# ADD OR UPDATE csvtopost_customfields TABLE
+	$table_name = $wpdb->prefix . "csvtopost_customfields";
+	if($wpdb->get_var("show tables like '$table_name'") != $table_name) 
+	{
+		$sql = "
+			CREATE TABLE `" . $table_name . "` (
+			`id` int(10) unsigned NOT NULL auto_increment,
+			`camid` int(10) unsigned NOT NULL,
+			`identifier` varchar(30) NOT NULL,
+			`value` varchar(500) NOT NULL,
+			`type` int(10) unsigned NOT NULL COMMENT '0 = custom global value 1 = column marriage and possible unique value per post',
+			PRIMARY KEY  (`id`)
+			) ENGINE=MyISAM AUTO_INCREMENT=169 DEFAULT CHARSET=utf8 COMMENT='custom field data for campaigns';";
+		
+		dbDelta($sql);// executes sql object query
 	}
 	
-	$myNewDatabaseTable = $wpdb->prefix . 'csvtopost_campaigns';
-	if(!in_array($myNewDatabaseTable, $current_tables))
+	# ADD OR UPDATE csvtopost_categories TABLE
+	$table_name = $wpdb->prefix . "csvtopost_categories";
+	if($wpdb->get_var("show tables like '$table_name'") != $table_name) 
 	{
-		mysql_query("
-			CREATE TABLE IF NOT EXISTS  `" . $myNewDatabaseTable . "` (
+		$sql = "
+			CREATE TABLE `" . $table_name . "` (
+			`id` int(10) unsigned NOT NULL auto_increment,
+			`camid` int(10) unsigned NOT NULL,
+			`catcolumn` int(10) unsigned NOT NULL COMMENT 'csv column id for the column used to decide categorie sorting',
+			`catid` int(10) unsigned NOT NULL COMMENT 'id of wp category',
+			`uniquevalue` varchar(50) NOT NULL COMMENT 'unique value from the choosing column that determines this post goes in this category',
+			PRIMARY KEY  (`id`)
+			) ENGINE=MyISAM AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 COMMENT='Data used to sort new posts into correct category';";
+		
+		dbDelta($sql);// executes sql object query
+	}	
+	
+	# ADD OR UPDATE csvtopost_campaigns TABLE
+	$table_name = $wpdb->prefix . "csvtopost_campaigns";
+	if($wpdb->get_var("show tables like '$table_name'") != $table_name) 
+	{
+		$sql = "CREATE TABLE `" . $table_name . "` (
 			`id` int(10) unsigned NOT NULL auto_increment,
 			`camname` varchar(50) NOT NULL,
 			`camfile` varchar(500) NOT NULL COMMENT 'Filename without extension (directory is scripted)',
@@ -30,54 +76,27 @@ function init_csvtopost_campaigndata_tabele_wtg()
 			`filtercolumn` int(10) unsigned default NULL COMMENT 'CSV file column ID for the choosen categories filter',
 			`location` varchar(500) default NULL COMMENT 'CSV file location for FULL processing selection',
 			`locationtype` int(10) unsigned default NULL COMMENT '1 = link and 2 = upload',
+			`posts` int(10) unsigned default NULL COMMENT 'Total number of posts created',
 			PRIMARY KEY  (`id`)
-			) ENGINE=MyISAM AUTO_INCREMENT=195 DEFAULT CHARSET=utf8;
-		");
-	}
-	
-	$myNewDatabaseTable = $wpdb->prefix . 'csvtopost_categories';
-	if(!in_array($myNewDatabaseTable, $current_tables))
+			) ENGINE=MyISAM AUTO_INCREMENT=195 DEFAULT CHARSET=utf8;";
+		dbDelta($sql);// executes sql object query
+	}	
+
+	# ADD OR UPDATE hhhhhhhhhhhhhhhhhhhhhhh TABLE
+	$table_name = $wpdb->prefix . "csvtopost_posthistory";
+	if($wpdb->get_var("show tables like '$table_name'") != $table_name) 
 	{
-		mysql_query("
-			CREATE TABLE IF NOT EXISTS  `" . $myNewDatabaseTable . "` (
+		$sql = "CREATE TABLE  `" . $table_name . "` (
 			`id` int(10) unsigned NOT NULL auto_increment,
 			`camid` int(10) unsigned NOT NULL,
-			`catcolumn` int(10) unsigned NOT NULL COMMENT 'csv column id for the column used to decide categorie sorting',
-			`catid` int(10) unsigned NOT NULL COMMENT 'id of wp category',
-			`uniquevalue` varchar(50) NOT NULL COMMENT 'unique value from the choosing column that determines this post goes in this category',
+			`postid` int(10) unsigned NOT NULL,
 			PRIMARY KEY  (`id`)
-			) ENGINE=MyISAM AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 COMMENT='Data used to sort new posts into correct category';
-		");
-	}
+			) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='List of post ID''s created under each campaign';";
+		dbDelta($sql);// executes sql object query
+	}		
 	
-	$myNewDatabaseTable = $wpdb->prefix . 'csvtopost_customfields';
-	if(!in_array($myNewDatabaseTable, $current_tables))
-	{
-		mysql_query("
-			CREATE TABLE IF NOT EXISTS  `" . $myNewDatabaseTable . "` (
-			`id` int(10) unsigned NOT NULL auto_increment,
-			`camid` int(10) unsigned NOT NULL,
-			`identifier` varchar(30) NOT NULL,
-			`value` varchar(500) NOT NULL,
-			`type` int(10) unsigned NOT NULL COMMENT '0 = custom global value 1 = column marriage and possible unique value per post',
-			PRIMARY KEY  (`id`)
-			) ENGINE=MyISAM AUTO_INCREMENT=169 DEFAULT CHARSET=utf8 COMMENT='custom field data for campaigns';					
-		");
-	}
-	
-	$myNewDatabaseTable = $wpdb->prefix . 'csvtopost_relationships';
-	if(!in_array($myNewDatabaseTable, $current_tables))
-	{
-		mysql_query("
-			CREATE TABLE IF NOT EXISTS  `" . $myNewDatabaseTable . "` (
-			`id` int(10) unsigned NOT NULL auto_increment,
-			`camid` int(10) unsigned NOT NULL COMMENT 'Campaign ID',
-			`csvcolumnid` int(10) unsigned NOT NULL COMMENT 'Incremented number assigned to columns of CSV file in order they are in the file',
-			`postpart` varchar(50) NOT NULL COMMENT 'Part CSV column assigned to in order to fulfill post data requirements',
-			PRIMARY KEY  (`id`)
-			) ENGINE=MyISAM AUTO_INCREMENT=380 DEFAULT CHARSET=utf8 COMMENT='Links between CSV file columns and post parts';
-		");
-	}
+	# EXECUTE ADD OPTION TO RECORD NEW DATABASE VERSION
+	add_option("csvtopost_tables_version", $csvtopost_tables_version);
 }
 
 # USED TO CHECK ALLOWED FILE EXTENSIONS
