@@ -159,6 +159,13 @@ else
 				# COUNT ROWS ACTUALLY USED TO CREATE POSTS
 				$posts_made++;
 
+				# UNSET ALL LOCAL VARIABLES THAT ARE UNIQUE PER POST
+				unset($post); unset($link); unset($img); unset($text);
+				unset($title); unset($buyurl); unset($publisher);
+				unset($contact); unset($currency); unset($price);
+				unset($advertiser); unset($imageurl);
+				unset($category); unset($author);
+				
 			}// end if title already exists
 		}// end if 1st row check
 		
