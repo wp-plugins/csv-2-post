@@ -62,13 +62,16 @@ else
 				$postpart = $wpdb->get_var("SELECT postpart FROM " .$wpdb->prefix . "csvtopost_relationships WHERE csvcolumnid = $c AND camid = '$camid'");
 	
 				# CHECK WHAT POST PART COLUMN IS ASSIGNED TO AND TAG DATA TO IT IN ITS OWN VARIABLE
-				if($postpart == 'title'){$title = $data;}
-				elseif($postpart == 'content'){$content = $data;}
-				elseif($postpart == 'currency'){$currency = $data;}
-				elseif($postpart == 'price'){$price = $data;}
-				elseif($postpart == 'advertiser'){$advertiser = $data;}
-				elseif($postpart == 'imageurl'){$imageurl = $data;}
-				elseif($postpart == 'buyurl'){$buyurl = $data;}
+				if($postpart == 'title'){$title = $data;}// used in POST title, usually product name
+				elseif($postpart == 'content'){$content = $data;}// main text bulk and description
+				elseif($postpart == 'currency'){$currency = $data;}// if curreny symbol required
+				elseif($postpart == 'price'){$price = $data;}// if product style display
+				elseif($postpart == 'advertiser'){$advertiser = $data;}// optional display of advertiser name
+				elseif($postpart == 'imageurl'){$imageurl = $data;}// main image usually at top of post
+				elseif($postpart == 'buyurl'){$buyurl = $data;}// url to page for buying item
+				elseif($postpart == 'category'){$category = $data;}// any special category product fits in
+				elseif($postpart == 'author'){$author = $data;}// usually for books and articles
+				elseif($postpart == 'publisher'){$publisher = $data;}// usually for books
 	
 				# IF THIS COLUMN IS FILTER COLUMN THEN CHECK ITS VALUE IN THIS ROW AND GET CATEGORY
 				if($filterid != 999 && $c == $filterid)
@@ -91,53 +94,10 @@ else
 			}
 			else
 			{ 
-				# CREATE MAIN TEXT CONTENT
-				$text = '<p>'; $text .= $content; $text .= '</p>';
-					
-				# IF IMAGE DATA PROVIDED CREATE IMAGE CODE FOR CONTENT
-				if(isset($imageurl))
-				{ 	
-					$imgurl = $imageurl;
-					
-					$img = '<p style="text-align: center;">';
-					
-					if(isset($buyurl))
-					{	
-						// with link
-						$imgurl = $imageurl;
-						$buyurl = $buyurl;
-						$img .= '<a href="'; $img .= $buyurl; $img .= '"><img src="'; $img .= $imgurl; $img .= '" alt="'; $img .= $title; $img .= '"></a>';
-					}
-					else
-					{ 
-						// without link
-						$img .= '<img src="'; $img .= $imgurl; $img .= '" alt="'; $img .= $title; $img .= '">';
-					}
-					
-					$img .= '</p>';
-				}
+				# GET REQUIRED POST CONTENT LAYOUT AND STYLING
+				// currently not dynamic and default
+				require('post_layouts/default.php');
 				
-				# CREATE TEXT LINK IF BUY URL PROVIDED
-				if(isset($buyurl))
-				{
-					$link = '</br><a href="'; $link .= $buyurl; $link .= '" title="'; $link .= $title; $link .= '">'; $link .= 'Read more about '; $link .= $title; $link .= '</a>';
-				}
-				
-				# BUILD A POST CONTENT USING AVAILABLE DATA
-				if(isset($img))
-				{
-					$post = $img; $post .= $text; // img then text
-				}
-				else
-				{
-					$post .= $text; // text only
-				}
-				
-				if(isset($link))
-				{
-					$post .= $link; // link added
-				}
-											
 				# MAKE CUSTOM META DATA
 				$metadescription = create_meta_description($content, 150);
 				$metakeywords = create_meta_keywords($content, 150);

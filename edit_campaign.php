@@ -1,6 +1,5 @@
 <h2>CSV 2 POST Campaign Management</h2>
-<p>Here you can edit, pause, delete or even restart campaigns and update previously made posts with new campaign settings!</p>
-<h3>Some of these abilities have been suspended while further updates are made, thank you for your patience</h3>
+<p>Here you can manage your campaigns including pause, start or undo them.</p>
 
 <?php
 /*
@@ -160,4 +159,18 @@ foreach ($c as $v)
         </tr>
     </table>
 </form>
+
 <?php }?>
+
+<h3>Sponsors and Recommended Services</h3>
+<script type="text/javascript"><!--
+google_ad_client = "pub-4923567693678329";
+/* 728x90, created 7/18/09 */
+google_ad_slot = "1325545528";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>

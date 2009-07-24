@@ -53,6 +53,11 @@ You have the option of doing it all at once or staggering it so that a few rows 
 * Database updating improved using wordpress functions now
 * More affiliate links added to Main Page
 
+= 0.5 =
+* Ratio/Visitor field replaced with drop down menu and limit of 3
+* More "post parts" added aimed at accomodating book data i.e. Author and publisher added
+* Database upate script changed again, version 0.4. does not do database update however it is not crucial at this time
+
 == Arbitrary section ==
 
 Please email wordpress@webtechglobal.co.uk with any questions regarding this plugin.

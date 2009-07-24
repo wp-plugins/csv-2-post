@@ -3,16 +3,24 @@
 # CREATING PLUGINS DATABASE TABLES ON INSTALLATION
 function init_csvtopost_campaigndata_tabele_wtg () 
 {
+	# INSERT INITIAL VERSION OPTION
 	$csvtopost_tables_version = "0.2";// different from plugin version
+ 	$installed_ver = get_option( "csvtopost_tables_version" );
+	
+	if(empty($installed_ver))
+	{
+    	add_option( "csvtopost_tables_version", '0.2' );
+	}
 	
 	global $wpdb;
 	global $csvtopost_tables_version;
 	
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-	
+
+
 	# ADD OR UPDATE csvtopost_relationships TABLE
 	$table_name = $wpdb->prefix . "csvtopost_relationships";
-	if($wpdb->get_var("show tables like '$table_name'") != $table_name) 
+	if($installed_ver != $table_name) 
 	{
 		$sql = "CREATE TABLE `" . $table_name . "` (
 			`id` int(10) unsigned NOT NULL auto_increment,
@@ -27,7 +35,7 @@ function init_csvtopost_campaigndata_tabele_wtg ()
 
 	# ADD OR UPDATE csvtopost_customfields TABLE
 	$table_name = $wpdb->prefix . "csvtopost_customfields";
-	if($wpdb->get_var("show tables like '$table_name'") != $table_name) 
+	if($installed_ver != $table_name) 
 	{
 		$sql = "
 			CREATE TABLE `" . $table_name . "` (
@@ -44,7 +52,7 @@ function init_csvtopost_campaigndata_tabele_wtg ()
 	
 	# ADD OR UPDATE csvtopost_categories TABLE
 	$table_name = $wpdb->prefix . "csvtopost_categories";
-	if($wpdb->get_var("show tables like '$table_name'") != $table_name) 
+	if($installed_ver != $table_name) 
 	{
 		$sql = "
 			CREATE TABLE `" . $table_name . "` (
@@ -61,7 +69,7 @@ function init_csvtopost_campaigndata_tabele_wtg ()
 	
 	# ADD OR UPDATE csvtopost_campaigns TABLE
 	$table_name = $wpdb->prefix . "csvtopost_campaigns";
-	if($wpdb->get_var("show tables like '$table_name'") != $table_name) 
+	if($installed_ver != $table_name) 
 	{
 		$sql = "CREATE TABLE `" . $table_name . "` (
 			`id` int(10) unsigned NOT NULL auto_increment,
@@ -84,7 +92,7 @@ function init_csvtopost_campaigndata_tabele_wtg ()
 
 	# ADD OR UPDATE hhhhhhhhhhhhhhhhhhhhhhh TABLE
 	$table_name = $wpdb->prefix . "csvtopost_posthistory";
-	if($wpdb->get_var("show tables like '$table_name'") != $table_name) 
+	if($installed_ver != $table_name) 
 	{
 		$sql = "CREATE TABLE  `" . $table_name . "` (
 			`id` int(10) unsigned NOT NULL auto_increment,
@@ -96,7 +104,7 @@ function init_csvtopost_campaigndata_tabele_wtg ()
 	}		
 	
 	# EXECUTE ADD OPTION TO RECORD NEW DATABASE VERSION
-	add_option("csvtopost_tables_version", $csvtopost_tables_version);
+    update_option( "csvtopost_tables_version", $csvtopost_tables_version );
 }
 
 # USED TO CHECK ALLOWED FILE EXTENSIONS

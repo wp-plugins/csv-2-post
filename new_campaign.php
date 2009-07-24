@@ -180,9 +180,14 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
             <input type="radio" name="processrate" value="2" id="ProcessRate_1" />
             Staggered - </label>
             
-            <label>Rows/Visitor Ratio:
-            <input type="text" name="rowratio" id="rowratio" size="5" />
+            <label>Rows/Visit Ratio:
+            <select name="rowratio" size="1">
+                <option value="1">Create 1 Post</option>
+                <option value="2">Create 2 Posts</option>
+                <option value="3">Create 3 Posts</option>
+            </select> for every page visit!
             </label>
+     
             <br />
     
 			<h3>(b) Upload or Link</h3>
@@ -316,6 +321,9 @@ if((isset($_POST['stage']) && $_POST['stage'] == 2) || (isset($stage1complete) &
                                         <option value="advertiser">Advertiser</option>
                                         <option value="imageurl">Image URL</option>
                                         <option value="buyurl">Buy URL</option>
+                                        <option value="category">Category</option>
+                                        <option value="author">Author</option>
+                                        <option value="publisher">Publisher</option>
                                     </select>
                                 </td>
                             </tr><?php
