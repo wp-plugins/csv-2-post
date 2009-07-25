@@ -2,11 +2,11 @@
 /*
 
 Plugin Name: CSV 2 POST
-Version: 0.5
-Plugin URI: http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-post-plugin
+Version: 0.6
+Plugin URI: http://www.webtechglobal.co.uk
 Description: Turns CSV data rows into posts with high seo per post
 Author: Ryan Bayne
-Author URI: http://www.webtechglobal.co.uk
+Author URI: http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-post-plugin
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
