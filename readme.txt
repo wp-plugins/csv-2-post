@@ -67,6 +67,10 @@ You have the option of doing it all at once or staggering it so that a few rows 
 * Stage 1 instructions amended to suit the new changes.
 * Add file size limit indicator on stage 1 for file upload option. It is done dynamically using this: <?php $filelimit = ini_get( "upload_max_filesize"); echo $filelimit.' file size limit.'; ?>
 
+= 0.8 =
+* Duplicate posts problem fixed - may be occasional issue with special characters so please report this however that may be fixed also.
+* Plugin is being provided from TAG 0.8 folder now, tried this before and it only caused problems.
+* Folder csv_file and its user content (your csv files) get deleted on upgrading the plugin. It's not meant to happen but hopefully this is fixed now.
 
 == Arbitrary section ==
 
