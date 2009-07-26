@@ -86,8 +86,8 @@ else
 			
 			# IF TITLE MATCHES AN EXISTING TITLE THEN DO NOT CONTINUE
 			global $wpdb;
+			$count = 0;
 			$count = $wpdb->get_var("SELECT COUNT(*) FROM " .$wpdb->prefix . "posts WHERE post_title = '$title'");
-		
 			if( $count > 0 )
 			{
 				# DO NOTHING

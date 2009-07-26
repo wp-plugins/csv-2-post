@@ -62,6 +62,12 @@ You have the option of doing it all at once or staggering it so that a few rows 
 = 0.6 =
 * version 0.5 failing to be offered as an update in plugins administration page, version 0.6 is to allow upgrade
 
+= 0.7 =
+* Only the csv file name is required to be entered in Stage 1 when linking to a local file however you must upload your csv file to the CSV 2 POST plugin directory and put it in the "csv_files" folder.
+* Stage 1 instructions amended to suit the new changes.
+* Add file size limit indicator on stage 1 for file upload option. It is done dynamically using this: <?php $filelimit = ini_get( "upload_max_filesize"); echo $filelimit.' file size limit.'; ?>
+
+
 == Arbitrary section ==
 
 Please email wordpress@webtechglobal.co.uk with any questions regarding this plugin.
