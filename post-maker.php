@@ -84,7 +84,6 @@ else
 			if( $count > 0 )
 			{
 				# DO NOTHING 
-				echo " C ";
 			}
 			else
 			{ 
