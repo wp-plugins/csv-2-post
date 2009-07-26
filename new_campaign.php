@@ -27,23 +27,23 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 				# ENSURE ALL REQUIRED OPTIONS SELECTED AND COMPLETE
 				if(empty($_POST['processrate']))
 				{
-					echo 'Sorry no process rate selected';
+					echo '<h2>Sorry no process rate selected</h2>';
 				}
 				elseif(!empty($_POST['processrate']) && $_POST['processrate'] == 2 && empty($_POST['rowratio']))
 				{
-					echo 'Sorry you did not enter Row/Visitor ratio number';
+					echo '<h2>Sorry you did not enter Row/Visitor ratio number</h2>';
 				}
 				elseif(!empty($_POST['processrate']) && empty($_POST['filelocationtype']))
 				{
-					echo 'Please select a file location type';	
+					echo '<h2>Please select a file location type</h2>';	
 				}
 				elseif(!empty($_POST['processrate']) && !empty($_POST['filelocationtype']) && $_POST['filelocationtype'] == 1 && empty($_POST['filelocationlocal']))
 				{
-					echo 'You selected Link for your CSV file location type but did not provide the URL to your file';
+					echo '<h2>You selected Link for your CSV file location type but did not provide the URL to your file</h2>';
 				}	
 				elseif(!empty($_POST['processrate']) && !empty($_POST['filelocationtype']) && $_POST['filelocationtype'] == 2 && empty($_FILES['csvupload']))
 				{
-					echo 'You selected Upload for your CSV file location type but did not browse and select your CSV file!';
+					echo '<h2>You selected Upload for your CSV file location type but did not browse and select your CSV file!</h2>';
 				}
 				else
 				{
@@ -59,8 +59,8 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 					# CALL UPLOAD PROCESS FUNCTION PASSING REQUIRED VALUES ONLY
 					if($filelocationtype == 1)// LOCAL LINKED CSV FILES ONLY
 					{	
-						$csvdirectory = $filelocationlocal;
-
+						$csvdirectory = $target_path.$filelocationlocal;
+						
 						# LINK LOCATION - FULL PROCESSING 						
 						$fileexists = file_exists($csvdirectory);
 						
@@ -194,15 +194,17 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
             
              <label>
             <input type="radio" name="filelocationtype" value="1" id="filelocationtype_0" />
-            Link:</label>
-            <input type="text" name="filelocationlocal" id="filelocationlocal" size="50" />
+            Local File Name:</label>
+            <input type="text" name="filelocationlocal" id="filelocationlocal" size="15" />
+            Example: books.csv
 			<br />
             
             <label>
             <input type="radio" name="filelocationtype" value="2" id="filelocationtype_1" />
             Upload: </label>
             
-            <input type="file" name="csvupload" id="csvupload" size="40" />*
+            <input type="file" name="csvupload" id="csvupload" size="40" />
+            <?php $filelimit = ini_get( "upload_max_filesize"); echo $filelimit.' file size limit.'; ?>
             <br />
             
             <input name="stage" type="hidden" value="1" />
@@ -441,16 +443,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 3) || (isset($stage2complete) &
 # STAGE 4 - DISPLAY IF STAGE 3 IS COMPLETE OR STAGE 4 FORM ALREADY SUBMITTED
 if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) && $stage3complete == true))
 {
-	# GET POSTED DATA THAT IS STILL NEEDED THROUGHOUT SCRIPT
-	if(isset($_POST['filename']))// file name only not directory
-	{
-		$filename = $_POST['filename'];
-	}
-	elseif(isset($_SESSION['wtg_csvtopost_filename']))
-	{
-		$filename = $_SESSION['wtg_csvtopost_filename']; 
-	}
-	
+	# GET POSTED DATA THAT IS STILL NEEDED THROUGHOUT SCRIPT	
 	if(isset($_POST['csvdirectory']))// real file path
 	{
 		$csvdirectory = $_POST['csvdirectory'];
