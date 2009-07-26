@@ -51,7 +51,7 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 					$camname = $_POST['campaignname'];
 					$process = $_POST['processrate'];
 					$rowratio = $_POST['rowratio'];
-					$filelocationlocal = $_POST['filelocationlocal'];
+					$basename = $_POST['filelocationlocal'];
 					$filelocationtype = $_POST['filelocationtype'];
 
 					$target_path = dirname(__FILE__).'/csv_files/'; // Upload store directory (chmod 777)
@@ -59,7 +59,7 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 					# CALL UPLOAD PROCESS FUNCTION PASSING REQUIRED VALUES ONLY
 					if($filelocationtype == 1)// LOCAL LINKED CSV FILES ONLY
 					{	
-						$csvdirectory = $target_path.$filelocationlocal;
+						$csvdirectory = $target_path.$basename;
 						
 						# LINK LOCATION - FULL PROCESSING 						
 						$fileexists = file_exists($csvdirectory);
@@ -79,8 +79,8 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 							{
 								# FULL PROCESSING - $criteria1 IS FULL LOCATION
 								$sqlQuery = "INSERT INTO " .
-								$wpdb->prefix . "csvtopost_campaigns(camname, process, stage, csvrows, locationtype, location)
-								VALUES('$camname', '$process','2','$rowtotal','$filelocationtype','$csvdirectory')";
+								$wpdb->prefix . "csvtopost_campaigns(camname, camfile, process, stage, csvrows, locationtype)
+								VALUES('$camname', '$basename','$process','2','$rowtotal','$filelocationtype')";
 								$wpdb->query($sqlQuery);
 								$_SESSION['wtg_csv2post_camid'] = mysql_insert_id();//get new post id just created
 								$stage1complete = true;
@@ -89,8 +89,8 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 							{
 								# FULL PROCESSING - $criteria1 IS FULL LOCATION
 								$sqlQuery = "INSERT INTO " .
-								$wpdb->prefix . "csvtopost_campaigns(camname, process, ratio, stage, csvrows, locationtype, location)
-								VALUES('$camname', '$process','$rowratio','2','$rowtotal','$filelocationtype','$csvdirectory')";
+								$wpdb->prefix . "csvtopost_campaigns(camname, camfile, process, ratio, stage, csvrows, locationtype)
+								VALUES('$camname', '$basename','$process','$rowratio','2','$rowtotal','$filelocationtype')";
 								$wpdb->query($sqlQuery);
 								$_SESSION['wtg_csv2post_camid'] = mysql_insert_id();//get new post id just created
 								$stage1complete = true;
@@ -115,7 +115,7 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 						}
 						else
 						{		
-							# DO MAIN PROCESS OF FILE AND DATA
+							# PROCESS UPLOADED FILE AND STORE FILE NAME
 							$basename = basename( $_FILES['csvupload']['name'] );
 							$basename = str_replace(' ', '_', $basename);
 							$basename = str_replace('-', '_', $basename);
@@ -125,8 +125,6 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 							
 							move_uploaded_file($_FILES['csvupload']['tmp_name'], $target_path);
 				
-							$csvdirectory = $target_path;
-
 							if($process == 1)
 							{
 								# FULL PROCESSING - $criteria1 IS FULL LOCATION
