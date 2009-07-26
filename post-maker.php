@@ -5,62 +5,49 @@ set_time_limit(900000);
 $campaignresult = $wpdb->get_row("SELECT * FROM " .$wpdb->prefix . "csvtopost_campaigns WHERE stage = 100");
 
 # GET FILE LOCATION DEPENDING ON PROCESSING TYPE
-if($campaignresult->locationtype == 1)
-{
-	# FULL PROCESSING
-	$filelocation = $campaignresult->location;
-}
-elseif($campaignresult->locationtype == 2)
-{
-	# STAGGERED PROCESSING
-	$target_path = dirname(__FILE__).'/csv_files/'; // Upload store directory (chmod 777)
-	$filelocation = $target_path.$campaignresult->camfile;
-}
+$target_path = dirname(__FILE__).'/csv_files/'; // Upload store directory
+$filelocation = $target_path.$campaignresult->camfile;
 
 # OPEN FILE
 $handle = fopen("$filelocation", "r");
 		
 if($handle == false)
 {
-	# FILE FAILED TO OPEN - LOG AN ERROR REPORT
+	# FILE FAILED TO BE FOUND OR OPEN
+	
 }
 else
 {
-	# GET THE ROW LIMIT
+	# GET THE POST INJECTION LIMIT
 	if($campaignresult->process == 1)
-	{
-		# FULL PROCESSING
-		$post_limit = 9999999;
-	}
+	{$post_limit = 9999999;}// full file processing
 	elseif($campaignresult->process == 2)
-	{
-		# STAGGERED RATIO
-		$post_limit = $campaignresult->ratio;
-	}
+	{$post_limit = $campaignresult->ratio;}// staggered processing
 	
+	# GET REQUIRE VARIABLES FOR ENTIRE CAMPAIGN PROCESSING
 	$row_counter = 0;
-	$posts_made = 0;
-	
+	$posts_injected = 0;
+	$filterid = $campaignresult->filtercolumn;
 	$camid = $campaignresult->id;
+	$rows_processed = 0;// resets per row
+	$posts_injected = 0;
 	
 	# START PROCESSING EACH ROW
-	while (($csvrow = fgetcsv($handle, 9999999, ",")) !== FALSE && $posts_made != $post_limit)
+	while (($csvrow = fgetcsv($handle, 9999999, ",")) !== FALSE && $posts_injected <= $post_limit)
 	{ 
 		# AVOID PROCESSING THE TOP ROW
-		if($row_counter != 0)
-		{ 
-			$filterid = $campaignresult->filtercolumn;// csv column id of filter column
-			
-			$c = 0;
-			
+		if($rows_processed != 0)
+		{
 			# PROCESS EACH COLUMN INDIVIDUALLY TO ESTABLISH ITS EXACT USE
+			$column_counter_getdata = 0;
 			foreach($csvrow as $data)
 			{  
-				$data = rtrim($data);
-	
+				$data = rtrim($data);	
+
 				# GET MATCHING ROW FROM RELATIONSHIPS TABLE AND ESTABLISH WHAT POST PART COLUMN MATCHES
-				$postpart = $wpdb->get_var("SELECT postpart FROM " .$wpdb->prefix . "csvtopost_relationships WHERE csvcolumnid = $c AND camid = '$camid'");
-	
+				$postpart = $wpdb->get_var("SELECT postpart FROM " .$wpdb->prefix . "csvtopost_relationships WHERE csvcolumnid = '$column_counter_getdata' AND camid = '$camid'");
+
+
 				# CHECK WHAT POST PART COLUMN IS ASSIGNED TO AND TAG DATA TO IT IN ITS OWN VARIABLE
 				if($postpart == 'title'){$title = $data;}// used in POST title, usually product name
 				elseif($postpart == 'content'){$content = $data;}// main text bulk and description
@@ -72,7 +59,7 @@ else
 				elseif($postpart == 'category'){$category = $data;}// any special category product fits in
 				elseif($postpart == 'author'){$author = $data;}// usually for books and articles
 				elseif($postpart == 'publisher'){$publisher = $data;}// usually for books
-	
+
 				# IF THIS COLUMN IS FILTER COLUMN THEN CHECK ITS VALUE IN THIS ROW AND GET CATEGORY
 				if($filterid != 999 && $c == $filterid)
 				{ 
@@ -81,16 +68,23 @@ else
 					$catid = $wpdb->get_var("SELECT catid FROM " .$wpdb->prefix . "csvtopost_categories WHERE camid = '$camid' AND uniquevalue = '$val'");
 				}
 				
-				$c++;
-			}
+				$column_counter_getdata++;
+			}// end of foreach
+		
+			# WE HAVE A SINGLE POSTS DATA NOW - MOVE ONTO PROCESSING IT
 			
 			# IF TITLE MATCHES AN EXISTING TITLE THEN DO NOT CONTINUE
-			global $wpdb;
+			global $wpdb;	
 			$count = 0;
-			$count = $wpdb->get_var("SELECT COUNT(*) FROM " .$wpdb->prefix . "posts WHERE post_title = '$title'");
+		
+			$wpdb->query("SELECT * FROM " .$wpdb->prefix . "posts WHERE post_title = '$title'");
+		
+		 	$count = $wpdb->num_rows;
+					
 			if( $count > 0 )
 			{
-				# DO NOTHING
+				# DO NOTHING 
+				echo " C ";
 			}
 			else
 			{ 
@@ -114,6 +108,9 @@ else
 		
 				$post_id = wp_insert_post( $my_post );
 				
+				# COUNT ROWS ACTUALLY USED TO CREATE POSTS
+				$posts_injected = $posts_injected + 1;
+								
 				# RECORD NEW POST IN csv2post_posthistory TABLE
 				$sqlQuery = "INSERT INTO " .
 				$wpdb->prefix . "csvtopost_posthistory(camid, postid)
@@ -142,7 +139,7 @@ else
 				{
 					$v = $y->value;
 					$k = $y->identifier;
-
+	
 					$column_counter = 0;
 					
 					foreach($csvrow as $data)
@@ -155,10 +152,8 @@ else
 						$column_counter++;
 					}
 				}
-
-				# COUNT ROWS ACTUALLY USED TO CREATE POSTS
-				$posts_made++;
-
+	
+	
 				# UNSET ALL LOCAL VARIABLES THAT ARE UNIQUE PER POST
 				unset($post); unset($link); unset($img); unset($text);
 				unset($title); unset($buyurl); unset($publisher);
@@ -167,26 +162,14 @@ else
 				unset($category); unset($author);
 				
 			}// end if title already exists
-		}// end if 1st row check
+
+			$column_counter = $column_counter + 1;
+		}// end if first row or not
 		
-		# COUNT ROWS PROCESSED - NOT ENTERED JUST ALL THAT IS PROCESSED IN TOTAL
-		$row_counter++;
-	}// end of entire processing event
-	
-	# IF CAMPAIGN IS FULL PROCESSING THEN CHANGE STAGE TO 300 TO INDICATE COMPLETE
-	if($campaignresult->process == 1)
-	{
-		# GET CURRENT NUMBER OF POSTS ALREADY CREATED FOR THIS CAMPAIGN
-		$currentposts = $wpdb->get_var("SELECT posts FROM " .$wpdb->prefix . "csvtopost_campaigns WHERE id = '$camid'");
+		# ROWS PROCESSED + 1
+		$rows_processed++;
 		
-		$posts_made = $currentposts + $posts_made;
-		
-		$sqlQuery = "UPDATE " .
-		$wpdb->prefix . "csvtopost_campaigns SET stage = '300', posts = '$posts_made' WHERE id = '$camid'";
-		$wpdb->query($sqlQuery);
-	}
+	}// end fgetcsv while loop
+}// end of if file found or not
 	
-	fclose($handle);
-	
-}// end of if handle = false
 ?>
