@@ -4,7 +4,7 @@ Donate link: http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-p
 Tags: csv,file,post,2,to,data,affiliate,webtechglobal
 Requires at least: 2.8.0
 Tested up to: 2.8
-Stable tag: 0.8
+Stable tag: 0.9
 
 Inject any CSV file data into the WordPress database as new Posts!
 
@@ -60,7 +60,7 @@ You have the option of doing it all at once or staggering it so that a few rows 
 * Database upate script changed again, version 0.4. does not do database update however it is not crucial at this time
 
 = 0.6 =
-* version 0.5 failing to be offered as an update in plugins administration page, version 0.6 is to allow upgrade
+* This version was to correct an issue in repository only.
 
 = 0.7 =
 * Only the csv file name is required to be entered in Stage 1 when linking to a local file however you must upload your csv file to the CSV 2 POST plugin directory and put it in the "csv_files" folder.
@@ -68,9 +68,13 @@ You have the option of doing it all at once or staggering it so that a few rows 
 * Add file size limit indicator on stage 1 for file upload option. It is done dynamically using this: <?php $filelimit = ini_get( "upload_max_filesize"); echo $filelimit.' file size limit.'; ?>
 
 = 0.8 =
-* Duplicate posts problem fixed - may be occasional issue with special characters so please report this however that may be fixed also.
-* Plugin is being provided from TAG 0.8 folder now, tried this before and it only caused problems.
-* Folder csv_file and its user content (your csv files) get deleted on upgrading the plugin. It's not meant to happen but hopefully this is fixed now.
+* Fixed problem with duplicated posts.
+* Recoded some of the create new campaign script.
+* All csv files must be in the 'csv_files' folder now
+
+= 0.9 =
+* Recoding for version 0.8 caused a lot of issues and they have been resolve. Testing shows the plugin to be working well.
+* Issue with "Written By" and "Published By" text showing up even when they are not required has been fixed.
 
 == Arbitrary section ==
 
@@ -78,4 +82,4 @@ Please email wordpress@webtechglobal.co.uk with any questions regarding this plu
 
 == A brief Markdown Example ==
 
-TBC
+What to put here I wonder? Anyone interested in knowing anything specific about the plugin?

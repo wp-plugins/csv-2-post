@@ -29,9 +29,9 @@ if(isset($imageurl))
 # CREATE MAIN TEXT CONTENT
 $text = '<p>'.$content.'</p>';
 // if author is set display this below main text
-if(!isset($author)){$text .= '<p>Written by '.$author.'</p>';}
+if(!empty($author)){$text .= '<p>Written by '.$author.'</p>';}
 // if publisher is set display this below main text and after author
-if(!isset($publisher)){$text .= '<p>Published by '.$publisher.'</p>';}
+if(!empty($publisher)){$text .= '<p>Published by '.$publisher.'</p>';}
 
 # CREATE TEXT LINK IF BUY URL PROVIDED
 if(isset($buyurl))

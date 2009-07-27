@@ -51,7 +51,7 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 					$camname = $_POST['campaignname'];
 					$process = $_POST['processrate'];
 					$rowratio = $_POST['rowratio'];
-					$basename = $_POST['filelocationlocal'];
+					$csvfilename = $_POST['filelocationlocal'];
 					$filelocationtype = $_POST['filelocationtype'];
 
 					$target_path = dirname(__FILE__).'/csv_files/'; // Upload store directory (chmod 777)
@@ -59,16 +59,16 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 					# CALL UPLOAD PROCESS FUNCTION PASSING REQUIRED VALUES ONLY
 					if($filelocationtype == 1)// LOCAL LINKED CSV FILES ONLY
 					{	
-						$csvdirectory = $target_path.$basename;
+						$csvfiledirectory = $target_path.$csvfilename;
 						
 						# LINK LOCATION - FULL PROCESSING 						
-						$fileexists = file_exists($csvdirectory);
+						$fileexists = file_exists($csvfiledirectory);
 						
 						if($fileexists == false)
 						{
 							echo 'CSV file not found';
 						}
-						elseif(!isAllowedExtension($csvdirectory))
+						elseif(!isAllowedExtension($csvfiledirectory))
 						{
 							echo '<h2>Sorry a slight problem! Only CSV files are allowed please try again</h2>';
 						}
@@ -80,9 +80,9 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 								# FULL PROCESSING - $criteria1 IS FULL LOCATION
 								$sqlQuery = "INSERT INTO " .
 								$wpdb->prefix . "csvtopost_campaigns(camname, camfile, process, stage, csvrows, locationtype)
-								VALUES('$camname', '$basename','$process','2','$rowtotal','$filelocationtype')";
+								VALUES('$camname', '$csvfilename','$process','2','$rowtotal','$filelocationtype')";
 								$wpdb->query($sqlQuery);
-								$_SESSION['wtg_csv2post_camid'] = mysql_insert_id();//get new post id just created
+								$camid = mysql_insert_id();
 								$stage1complete = true;
 							}
 							elseif($process == 2)
@@ -90,9 +90,9 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 								# FULL PROCESSING - $criteria1 IS FULL LOCATION
 								$sqlQuery = "INSERT INTO " .
 								$wpdb->prefix . "csvtopost_campaigns(camname, camfile, process, ratio, stage, csvrows, locationtype)
-								VALUES('$camname', '$basename','$process','$rowratio','2','$rowtotal','$filelocationtype')";
+								VALUES('$camname', '$csvfilename','$process','$rowratio','2','$rowtotal','$filelocationtype')";
 								$wpdb->query($sqlQuery);
-								$_SESSION['wtg_csv2post_camid'] = mysql_insert_id();//get new post id just created
+								$camid = mysql_insert_id();
 								$stage1complete = true;
 							}
 						}
@@ -102,12 +102,10 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 						# UPLOAD LOCATION - FULL PROCESSING
 						$fileArray = array();
 						$file = $_FILES['csvupload'];
-						$fileName = $_FILES['csvupload']['name'];
-						$basename = '';
 						
-						if(empty($fileName))
+						if(empty($file))
 						{ 
-							echo '<h2>Sorry a slight problem!  CSV file not found!</h2>';
+							echo '<h2>Sorry a slight problem! CSV file not found!</h2>';
 						}
 						elseif(!isAllowedExtension($_FILES['csvupload']['name']))
 						{
@@ -116,13 +114,13 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 						else
 						{		
 							# PROCESS UPLOADED FILE AND STORE FILE NAME
-							$basename = basename( $_FILES['csvupload']['name'] );
-							$basename = str_replace(' ', '_', $basename);
-							$basename = str_replace('-', '_', $basename);
-							$basename = strtolower($basename);
-							$basename = $camname . '_' . $basename;// make new filename
-							$target_path .= $basename;
-							
+							$csvfilename = basename( $_FILES['csvupload']['name'] );
+							$csvfilename = str_replace(' ', '_', $csvfilename);
+							$csvfilename = str_replace('-', '_', $csvfilename);
+							$csvfilename = strtolower($csvfilename);
+							$csvfilename = $camname . '_' . $csvfilename;// make new filename
+							$target_path .= $csvfilename;
+							$csvfiledirectory = $target_path;				
 							move_uploaded_file($_FILES['csvupload']['tmp_name'], $target_path);
 				
 							if($process == 1)
@@ -130,9 +128,9 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 								# FULL PROCESSING - $criteria1 IS FULL LOCATION
 								$sqlQuery = "INSERT INTO " .
 								$wpdb->prefix . "csvtopost_campaigns(camname, camfile, process, stage, csvrows, locationtype)
-								VALUES('$camname', '$basename','$process','2','$rowtotal','$filelocationtype')";
+								VALUES('$camname', '$csvfilename','$process','2','$rowtotal','$filelocationtype')";
 								$wpdb->query($sqlQuery);
-								$_SESSION['wtg_csv2post_camid'] = mysql_insert_id();//get new post id just created
+								$camid = mysql_insert_id();
 								$stage1complete = true;
 							}
 							elseif($process == 2)
@@ -142,13 +140,13 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 								$wpdb->prefix . "csvtopost_campaigns(camname, camfile, process, ratio, stage, csvrows, locationtype)
 								VALUES('$camname', '$basename','$process','$rowratio','2','$rowtotal','$filelocationtype')";
 								$wpdb->query($sqlQuery);
-								$_SESSION['wtg_csv2post_camid'] = mysql_insert_id();//get new post id just created
+								$camid = mysql_insert_id();
 								$stage1complete = true;
 							}
 						}
 
 						# GET ID OF LAST ENTRY  - ACTS AS CAMPAIGN ID
-						$_SESSION['wtg_csv2post_camid'] = mysql_insert_id();
+						$camid = mysql_insert_id();
 					}
 				}// check all required posts populated
 			}// if campaign name exists or not
@@ -217,53 +215,33 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 
 # STAGE 2 - DISPLAY IF STAGE 1 IS COMPLETE OR STAGE 2 FORM ALREADY SUBMITTED
 if((isset($_POST['stage']) && $_POST['stage'] == 2) || (isset($stage1complete) && $stage1complete == true))
-{ 
-	# GET POSTED DATA THAT IS STILL NEEDED THROUGHOUT SCRIPT	
-	if(isset($_POST['csvdirectory']))// real file path
-	{
-		$csvdirectory = $_POST['csvdirectory'];
-	}
-	elseif(isset($_SESSION['wtg_csvtopost_csvdirectory']))
-	{
-		$csvdirectory = $_SESSION['wtg_csvtopost_csvdirectory']; 
-	}
-	
-	if(isset($_POST['camid']))
-	{
-		$camid = $_POST['camid'];
-	}
-	elseif(isset($_SESSION['wtg_csv2post_camid']))
-	{
-		$camid = $_SESSION['wtg_csv2post_camid']; 
-	}
-		
+{ 	
 	# PROCESS STAGE 2 SUBMISSION THEN EITHER DISPLAY ERRORS OR GO TO STAGE 3
 	if(!empty($_POST['matchsubmit']))
 	{
-		# STAGE 2 SUBMISSION MADE - PROCESS ASSUMES THE VISIBLE FORM DROP DOWNS ARE FIRST
-		$csvcolumns = $_POST['csvfilecolumntotal']; // total number of columns in csv file
-		$camid = $_POST['camid']; // campaign id
+		# STAGE 2 SUBMISSION MADE - PROCESS POST VARIABLES, THEY SHOULD BE POPULATED AND VALIDATED BEFORE THIS SUBMISSION
 		$poststatus = $_POST['poststatus']; //publish,draft,pending
-		
+		$camid = $_POST['camid'];
+		$csvfiledirectory = $_POST['csvfiledirectory'];
+		$csvfile_columntotal = $_POST['csvfile_columntotal'];
+
 		# ENTER CSV FILE COLUMN TOTAL TO MAIN CAMPAIGN TABLE FOR VALIDATION LATER
 		global $wpdb;
 		$sqlQuery = "UPDATE " .
-		$wpdb->prefix . "csvtopost_campaigns SET csvcolumns = '$csvcolumns' WHERE id = '$camid'";
+		$wpdb->prefix . "csvtopost_campaigns SET csvcolumns = '$csvfile_columntotal' WHERE id = '$camid'";
 		$wpdb->query($sqlQuery);
 				
 		$i = 0;
 			
 		foreach ( $_POST as $key => $postpart) 
 		{
-			$csvcolumn_id = $i; // enter this into database row
-						
 			# ENTER csv column TO post data MATCHES
-			if($i < $csvcolumns)
+			if($i < $csvfile_columntotal)
 			{
 				# THIS POST IS A COLUMN TO POST RELATIONSHIP
 				$sqlQuery = "INSERT INTO " .
 				$wpdb->prefix . "csvtopost_relationships(camid, csvcolumnid, postpart)
-				VALUES('$camid', '$csvcolumn_id','$postpart')";
+				VALUES('$camid', '$i','$postpart')";
 				$wpdb->query($sqlQuery);
 				
 				# IF IS COLUMN FILTER ENTER TO wp_csvtopost_categories
@@ -271,7 +249,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 2) || (isset($stage1complete) &
 				{
 					$sqlQuery = "INSERT INTO " .
 					$wpdb->prefix . "csvtopost_relationships(camid, catcolumn)
-					VALUES('$camid', '$csvcolumn_id')";
+					VALUES('$camid', '$i')";
 					$wpdb->query($sqlQuery);				
 				}
 			}
@@ -287,14 +265,26 @@ if((isset($_POST['stage']) && $_POST['stage'] == 2) || (isset($stage1complete) &
 
 	# ONLY DISPLAY STAGE 2 FORM IF NOT COMPLETE
 	if(!isset($stage2complete) || $stage2complete != true)
-	{?>
+	{
+		# GET NEW STAGE TO STAGE VARIABLES		
+		if(!isset($camid))
+		{
+			echo 'Your campaigns ID is missing and it is required to continue in stage 2!';
+		}
+		
+		if(!isset($csvfiledirectory))
+		{
+			echo 'Your csv file directory is missing and it is required to continue in stage 2!';
+		}
+		?>
+        
         <h2> New Campaign  Stage 2 - Relationships</h2>
         </p>
         <p>Here you input settings that will configure your posts including matching your CSV file columns with parts of WordPress posts. I recommend you go to the bottom of this page and read further instructions&nbsp;on how best to do this.</p>
 
-        <?php
-        //open csv file associated with campaign being created
-        $handle = fopen("$csvdirectory", "r");
+        <?php	
+        # OPEN CSV FILE AGAIN
+        $handle = fopen("$csvfiledirectory", "r");
 						
         while (($data = fgetcsv($handle, 999999, ",")) !== FALSE && $stop != 1)// Gets CSV rows
         {	 
@@ -303,8 +293,9 @@ if((isset($_POST['stage']) && $_POST['stage'] == 2) || (isset($stage1complete) &
             <form method="post" action="<?php $_SERVER['PHP_SELF']; ?>" name="new_campaign2">
                 <table width="562">
                     <tr><td width="132"><h4>(ID)CSV Column Titles</h4></td><td width="46"></td><td width="258"><h4>Select WordPress Post Parts</h4></td></tr><?php
-                    $i = 0;
                    
+				   $i = 0;
+             
                     while(isset($data[$i]))
                     {
                         $data[$i] = rtrim($data[$i]);?>
@@ -328,10 +319,17 @@ if((isset($_POST['stage']) && $_POST['stage'] == 2) || (isset($stage1complete) &
                                 </td>
                             </tr><?php
                         $i++; // $i will equal number of columns - use to process submission
-                    }?>
+                    }
+					
+					$csvfile_columntotal = $i;
+					?>
  
-                    <?php wtg_csvtopost_constantvalues($i,2,$filename,$csvdirectory,$camid);?>
-
+                    <input name="csvfile_columntotal" type="hidden" value="<?php echo $csvfile_columntotal; ?>" />
+                    <input name="stage" type="hidden" value="2" />
+                    <input name="page" type="hidden" value="new_campaign" />
+                    <input name="csvfiledirectory" type="hidden" value="<?php echo $csvfiledirectory; ?>" />
+                    <input name="camid" type="hidden" value="<?php echo $camid; ?>" />
+    
                     <tr>
                         <td></td>
                         <td><input name="matchsubmit" type="submit" value="Submit" /></td>
@@ -353,25 +351,35 @@ if((isset($_POST['stage']) && $_POST['stage'] == 2) || (isset($stage1complete) &
 # STAGE 3 - DISPLAY IF STAGE 2 IS COMPLETE OR STAGE 3 FORM ALREADY SUBMITTED
 if((isset($_POST['stage']) && $_POST['stage'] == 3) || (isset($stage2complete) && $stage2complete == true))
 {
-	# GET POSTED DATA THAT IS STILL NEEDED THROUGHOUT SCRIPT	
-	if(isset($_POST['csvdirectory']))// real file path
-	{
-		$csvdirectory = $_POST['csvdirectory'];
-	}
-	elseif(isset($_SESSION['wtg_csvtopost_csvdirectory']))
-	{
-		$csvdirectory = $_SESSION['wtg_csvtopost_csvdirectory']; 
-	}
-	
+	# ALL REQUIRED VARIABLES SHOULD BE IN POST ELSE DISPLAY ERROR - 
+	# FROM HERE ON THEY SHOULD CONSTANTLY BE IN POST STARTED FROM STAGE 2 SUBMISSION
 	if(isset($_POST['camid']))
 	{
 		$camid = $_POST['camid'];
 	}
-	elseif(isset($_SESSION['wtg_csv2post_camid']))
+	else
 	{
-		$camid = $_SESSION['wtg_csv2post_camid']; 
+		echo 'Your campaign id is missing and is required to continue on stage 3!';
 	}
-		
+
+	if(isset($_POST['csvfiledirectory']))
+	{
+		$csvfiledirectory = $_POST['csvfiledirectory'];
+	}
+	else
+	{
+		echo 'Your csv file directory is missing and is required to continue on stage 3!';
+	}
+	
+	if(isset($_POST['csvfile_columntotal']))
+	{
+		$csvfile_columntotal = $_POST['csvfile_columntotal'];
+	}
+	else
+	{
+		echo 'Your csv file column total is missing and is required to continue on stage 3!';
+	}
+	
 	# PROCESS STAGE 3 SUBMISSION THEN EITHER DISPLAY ERRORS OR GO TO STAGE 4
 	if(!empty($_POST['statussubmit']))
 	{	
@@ -428,8 +436,11 @@ if((isset($_POST['stage']) && $_POST['stage'] == 3) || (isset($stage2complete) &
                 </tr>
             </table>
 
-            <?php wtg_csvtopost_constantvalues($i,3,$filename,$csvdirectory,$camid);?>
-
+                    <input name="csvfile_columntotal" type="hidden" value="<?php echo $csvfile_columntotal; ?>" />
+                    <input name="stage" type="hidden" value="3" />
+                    <input name="page" type="hidden" value="new_campaign" />
+                    <input name="csvfiledirectory" type="hidden" value="<?php echo $csvfiledirectory; ?>" />
+                    <input name="camid" type="hidden" value="<?php echo $camid; ?>" />
         </form><?php
 
 		include('instructions/stage3.php');
@@ -441,23 +452,32 @@ if((isset($_POST['stage']) && $_POST['stage'] == 3) || (isset($stage2complete) &
 # STAGE 4 - DISPLAY IF STAGE 3 IS COMPLETE OR STAGE 4 FORM ALREADY SUBMITTED
 if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) && $stage3complete == true))
 {
-	# GET POSTED DATA THAT IS STILL NEEDED THROUGHOUT SCRIPT	
-	if(isset($_POST['csvdirectory']))// real file path
-	{
-		$csvdirectory = $_POST['csvdirectory'];
-	}
-	elseif(isset($_SESSION['wtg_csvtopost_csvdirectory']))
-	{
-		$csvdirectory = $_SESSION['wtg_csvtopost_csvdirectory']; 
-	}
-	
+	# ALL REQUIRED VARIABLES SHOULD BE IN POST ELSE DISPLAY ERROR	
 	if(isset($_POST['camid']))
 	{
 		$camid = $_POST['camid'];
 	}
-	elseif(isset($_SESSION['wtg_csv2post_camid']))
+	else
 	{
-		$camid = $_SESSION['wtg_csv2post_camid']; 
+		echo 'Your campaign id is missing and is required to continue on stage 4!';
+	}
+
+	if(isset($_POST['csvfiledirectory']))
+	{
+		$csvfiledirectory = $_POST['csvfiledirectory'];
+	}
+	else
+	{
+		echo 'Your csv file directory is missing and is required to continue on stage 4!';
+	}
+	
+	if(isset($_POST['csvfile_columntotal']))
+	{
+		$csvfile_columntotal = $_POST['csvfile_columntotal'];
+	}
+	else
+	{
+		echo 'Your csv file column total is missing and is required to continue on stage 4!';
 	}
 		
 	# PROCESS STAGE 4 SUBMISSION THEN EITHER DISPLAY ERRORS OR GO TO STAGE 4
@@ -622,7 +642,8 @@ if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) &
                     <td><select name="customfield6b" size="1">      
 					<?php
                     # CREATE MENU OF CSV FILE COLUMNS FOR MARRYING TO CUSTOM FIELD KEY
-                    $handle6 = fopen("$csvdirectory", "r");
+        			# OPEN CSV FILE AGAIN
+                    $handle6 = fopen("$csvfiledirectory", "r");
 					$stop = 0;
 					$i = 0;
 					while (($data = fgetcsv($handle6, 999999, ",")) !== FALSE && $stop != 1)// Gets CSV rows
@@ -653,7 +674,8 @@ if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) &
                     <td><select name="customfield7b" size="1">      
 					<?php
                     # CREATE MENU OF CSV FILE COLUMNS FOR MARRYING TO CUSTOM FIELD KEY
-                    $handle7 = fopen("$csvdirectory", "r");
+        			# OPEN CSV FILE AGAIN
+                    $handle7 = fopen("$csvfiledirectory", "r");
 					$stop = 0;
 					$i = 0;
 					while (($data = fgetcsv($handle7, 999999, ",")) !== FALSE && $stop != 1)// Gets CSV rows
@@ -684,7 +706,8 @@ if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) &
                     <td><select name="customfield8b" size="1">     
 					<?php 
                     # CREATE MENU OF CSV FILE COLUMNS FOR MARRYING TO CUSTOM FIELD KEY 
-                    $handle8 = fopen("$csvdirectory", "r");
+        			# OPEN CSV FILE AGAIN
+                    $handle8 = fopen("$csvfiledirectory", "r");
 					$stop = 0;
 					$i = 0;
                     while (($data = fgetcsv($handle8, 999999, ",")) !== FALSE && $stop != 1)// Gets CSV rows
@@ -714,8 +737,9 @@ if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) &
                     <td></td>
                     <td><select name="customfield9b" size="1">      
 					<?php
-                    # CREATE MENU OF CSV FILE COLUMNS FOR MARRYING TO CUSTOM FIELD KEY   
-                    $handle9 = fopen("$csvdirectory", "r");
+                    # CREATE MENU OF CSV FILE COLUMNS FOR MARRYING TO CUSTOM FIELD KEY  
+        			# OPEN CSV FILE AGAIN
+                    $handle9 = fopen("$csvfiledirectory", "r");
 					$stop = 0;
 					$i = 0;
 					while (($data = fgetcsv($handle9, 999999, ",")) !== FALSE && $stop != 1)// Gets CSV rows
@@ -748,8 +772,11 @@ if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) &
                 
     		</table>
             
-			<?php wtg_csvtopost_constantvalues($i,4,$filename,$csvdirectory,$camid);?>
-
+                    <input name="csvfile_columntotal" type="hidden" value="<?php echo $csvfile_columntotal; ?>" />
+                    <input name="stage" type="hidden" value="4" />
+                    <input name="page" type="hidden" value="new_campaign" />
+                    <input name="csvfiledirectory" type="hidden" value="<?php echo $csvfiledirectory; ?>" />
+                    <input name="camid" type="hidden" value="<?php echo $camid; ?>" />
         </form><?php
 		
 		include('instructions/stage4.php');
@@ -760,23 +787,32 @@ if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) &
 # STAGE 5 - DISPLAY IF STAGE 4 IS COMPLETE OR STAGE 5 FORM ALREADY SUBMITTED - STAGE 5 IS CATEGORY COLUMN SELECTION
 if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) && $stage4complete == true))
 {
-	# GET POSTED DATA THAT IS STILL NEEDED THROUGHOUT SCRIPT
-	if(isset($_POST['csvdirectory']))// real file path
-	{
-		$csvdirectory = $_POST['csvdirectory'];
-	}
-	elseif(isset($_SESSION['wtg_csvtopost_csvdirectory']))
-	{
-		$csvdirectory = $_SESSION['wtg_csvtopost_csvdirectory']; 
-	}
-	
+	# ALL REQUIRED VARIABLES SHOULD BE IN POST ELSE DISPLAY ERROR	
 	if(isset($_POST['camid']))
 	{
 		$camid = $_POST['camid'];
 	}
-	elseif(isset($_SESSION['wtg_csv2post_camid']))
+	else
 	{
-		$camid = $_SESSION['wtg_csv2post_camid']; 
+		echo 'Your campaign id is missing and is required to continue on stage 2!';
+	}
+
+	if(isset($_POST['csvfiledirectory']))
+	{
+		$csvfiledirectory = $_POST['csvfiledirectory'];
+	}
+	else
+	{
+		echo 'Your csv file directory is missing and is required to continue on stage 2!';
+	}
+	
+	if(isset($_POST['csvfile_columntotal']))
+	{
+		$csvfile_columntotal = $_POST['csvfile_columntotal'];
+	}
+	else
+	{
+		echo 'Your csv file column total is missing and is required to continue on stage 2!';
 	}
 
 	# PROCESS STAGE 5 FIRST SUBMISSION FOR CATEGORY COLUMN SELECTION
@@ -1240,7 +1276,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) &
                     <td></td>
                     <td>
                     <?php
-					   $handle = fopen("$csvdirectory", "r");
+					   $handle = fopen("$csvfiledirectory", "r");
 
 					   while (($data = fgetcsv($handle, 999999, ",")) !== FALSE && $stop != 1)// Gets CSV rows
 						{	 
@@ -1297,8 +1333,11 @@ if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) &
                 
    		  </table>
           
-          <?php wtg_csvtopost_constantvalues($i,5,$filename,$csvdirectory,$camid);?>
-
+                    <input name="csvfile_columntotal" type="hidden" value="<?php echo $csvfile_columntotal; ?>" />
+                    <input name="stage" type="hidden" value="5" />
+                    <input name="page" type="hidden" value="new_campaign" />
+                    <input name="csvfiledirectory" type="hidden" value="<?php echo $csvfiledirectory; ?>" />
+                    <input name="camid" type="hidden" value="<?php echo $camid; ?>" />
         </form><?php
 		
 		include('instructions/stage5.php');
@@ -1308,23 +1347,32 @@ if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) &
 # STAGE 6 - DISPLAY IF STAGE 5 IS COMPLETE OR STAGE 5 FORM ALREADY SUBMITTED
 if((isset($_POST['stage']) && $_POST['stage'] == 100) || (isset($stage5complete) && $stage5complete == true))
 {
-	# GET POSTED DATA THAT IS STILL NEEDED THROUGHOUT SCRIPT
-	if(isset($_POST['csvdirectory']))// real file path
-	{
-		$csvdirectory = $_POST['csvdirectory'];
-	}
-	elseif(isset($_SESSION['wtg_csvtopost_csvdirectory']))
-	{
-		$csvdirectory = $_SESSION['wtg_csvtopost_csvdirectory']; 
-	}
-	
+	# ALL REQUIRED VARIABLES SHOULD BE IN POST ELSE DISPLAY ERROR	
 	if(isset($_POST['camid']))
 	{
 		$camid = $_POST['camid'];
 	}
-	elseif(isset($_SESSION['wtg_csv2post_camid']))
+	else
 	{
-		$camid = $_SESSION['wtg_csv2post_camid']; 
+		echo 'Your campaign id is missing and is required to continue on stage 2!';
+	}
+
+	if(isset($_POST['csvfiledirectory']))
+	{
+		$csvfiledirectory = $_POST['csvfiledirectory'];
+	}
+	else
+	{
+		echo 'Your csv file directory is missing and is required to continue on stage 2!';
+	}
+	
+	if(isset($_POST['csvfile_columntotal']))
+	{
+		$csvfile_columntotal = $_POST['csvfile_columntotal'];
+	}
+	else
+	{
+		echo 'Your csv file column total is missing and is required to continue on stage 2!';
 	}
 		
 	# PROCESS STAGE 3 SUBMISSION THEN EITHER DISPLAY ERRORS OR GO TO STAGE 4

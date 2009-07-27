@@ -366,16 +366,6 @@ function get_categories_fordropdownmenu()
 	}      
 } 
 
-function wtg_csvtopost_constantvalues($i,$stage,$filename,$csvdirectory,$camid)
-{?>
-    <input name="csvfilecolumntotal" type="hidden" value="<?php echo $i; ?>" />
-    <input name="stage" type="hidden" value="<?php echo $stage; ?>" />
-    <input name="page" type="hidden" value="new_campaign" />
-    <input name="filename" type="hidden" value="<?php echo $filename; ?>" />
-    <input name="csvdirectory" type="hidden" value="<?php echo $csvdirectory; ?>" />
-    <input name="camid" type="hidden" value="<?php echo $camid; ?>" /><?php
-}
-
 # CHECKS IF CAMPAIGNS ARE RUNNING - IF SO INCLUDES post-maker.php FOR FULL PROCESSING
 function wtg_csvtopost_processcheck()
 { 

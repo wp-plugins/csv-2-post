@@ -2,7 +2,7 @@
 set_time_limit(900000);
 
 # SELECT A CAMPAIGN AND PROCESS IT
-$campaignresult = $wpdb->get_row("SELECT * FROM " .$wpdb->prefix . "csvtopost_campaigns WHERE stage = 100");
+$campaignresult = $wpdb->get_row("SELECT * FROM " .$wpdb->prefix . "csvtopost_campaigns WHERE stage = '100'");
 
 # GET FILE LOCATION DEPENDING ON PROCESSING TYPE
 $target_path = dirname(__FILE__).'/csv_files/'; // Upload store directory
@@ -46,8 +46,6 @@ else
 
 				# GET MATCHING ROW FROM RELATIONSHIPS TABLE AND ESTABLISH WHAT POST PART COLUMN MATCHES
 				$postpart = $wpdb->get_var("SELECT postpart FROM " .$wpdb->prefix . "csvtopost_relationships WHERE csvcolumnid = '$column_counter_getdata' AND camid = '$camid'");
-
-
 				# CHECK WHAT POST PART COLUMN IS ASSIGNED TO AND TAG DATA TO IT IN ITS OWN VARIABLE
 				if($postpart == 'title'){$title = $data;}// used in POST title, usually product name
 				elseif($postpart == 'content'){$content = $data;}// main text bulk and description
@@ -59,7 +57,6 @@ else
 				elseif($postpart == 'category'){$category = $data;}// any special category product fits in
 				elseif($postpart == 'author'){$author = $data;}// usually for books and articles
 				elseif($postpart == 'publisher'){$publisher = $data;}// usually for books
-
 				# IF THIS COLUMN IS FILTER COLUMN THEN CHECK ITS VALUE IN THIS ROW AND GET CATEGORY
 				if($filterid != 999 && $c == $filterid)
 				{ 
