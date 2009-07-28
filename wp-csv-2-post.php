@@ -2,7 +2,7 @@
 /*
 
 Plugin Name: CSV 2 POST
-Version: 0.9
+Version: 1.0
 Plugin URI: http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-post-plugin
 Description: Turns CSV data rows into posts with high seo per post
 Author: Ryan Bayne
@@ -23,10 +23,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 */
-
-@ini_set( 'upload_max_size' , '1000M' );
-@ini_set( 'post_max_size', '105M');
-@ini_set( 'max_execution_time', '300' );
 	
 # GET GLOBAL FUNCTIONS
 require('functions.php');

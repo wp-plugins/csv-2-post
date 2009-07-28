@@ -1,6 +1,6 @@
 <h2>CSV 2 POST  </h2>
 <p>Thank you for installing CSV 2 POST, developed and released July 2009 by <a href="http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-post-plugin" title="Visit WebTechGlobal's Plugin Page" target="_blank">WebTechGlobal</a>.</p>
-<p>Please consider making donations to help future development of this plugin and let me know what changes you would like done.</p>
+<p>For every donation I received I will increase the limitation of the free version of my plugin and make improvements.</p>
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 <input type="hidden" name="cmd" value="_s-xclick">
 <input type="hidden" name="hosted_button_id" value="7044335">
@@ -8,9 +8,12 @@
 <img alt="" border="0" src="https://www.paypal.com/en_GB/i/scr/pixel.gif" width="1" height="1">
 </form>
 
+<h2>&nbsp;</h2>
+<h2>DISCLAIMER</h2>
 <p><strong>Please read and fully understand all instructions before using this plugin for the first time</strong>. The plugin has a lot of power and will have a mass effect on your blog in a very short time. Taking that into consideration you use this plugin at your own risk.</p>
 <p>If there is anything your not 100% sure about  please email  <a href="mailto:wordpress@webtechglobal.co.uk">wordpress@webtechglobal.co.uk</a> or <a href="http://www.webtechglobal.co.uk/category/wordpress-articles/csv-2-post-instructions" title="View CSV 2 POST Instructions" target="_parent">view full plugin instructions</a> on my website.</p>
 
+<h2>&nbsp;</h2>
 <h2>CSV File Search</h2>
 <p>There are hundreds of sources to get good CSV file data and I've configured this search to help you locate them better using 
 specific keywords that match your website. Example Search: "CSV book, article, ebook data".</p>
@@ -25,6 +28,7 @@ specific keywords that match your website. Example Search: "CSV book, article, e
 <script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=cse-search-box&amp;lang=en"></script>
 
 
+<h2>&nbsp;</h2>
 <h2>Affiliate Services</h2>
 <p>Affiliate services provide advertising data in CSV file format...</p>
 <p><a href="http://www.awin1.com/cread.php?s=39137&amp;v=3&amp;q=11&amp;r=86425" title="Visit Affiliate Window affiliate network" target="_blank">Affiliate Window</a></p>
@@ -33,6 +37,7 @@ specific keywords that match your website. Example Search: "CSV book, article, e
 <p><a href="http://www.connectcommerce.com/global/login.html" title="Visit Google affiliate network" target="_blank">Google Affiliate Network</a></p>
 
 
+<h2>&nbsp;</h2>
 <h2>Interest in these ads support  further development of this plugin...</h2>
 
 <a href="http://www.seobook.com/5561-16-1-39.html" target="_blank"><img border="0" src="http://www.seobook.com/rf/banners/seobook-728x90-free.gif" width="728" height="90"></a>

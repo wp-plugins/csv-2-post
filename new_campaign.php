@@ -122,7 +122,7 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 							$target_path .= $csvfilename;
 							$csvfiledirectory = $target_path;				
 							move_uploaded_file($_FILES['csvupload']['tmp_name'], $target_path);
-				
+							
 							if($process == 1)
 							{
 								# FULL PROCESSING - $criteria1 IS FULL LOCATION
@@ -138,7 +138,7 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 								# FULL PROCESSING - $criteria1 IS FULL LOCATION
 								$sqlQuery = "INSERT INTO " .
 								$wpdb->prefix . "csvtopost_campaigns(camname, camfile, process, ratio, stage, csvrows, locationtype)
-								VALUES('$camname', '$basename','$process','$rowratio','2','$rowtotal','$filelocationtype')";
+								VALUES('$camname', '$csvfilename','$process','$rowratio','2','$rowtotal','$filelocationtype')";
 								$wpdb->query($sqlQuery);
 								$camid = mysql_insert_id();
 								$stage1complete = true;
@@ -169,7 +169,7 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
             
             <label>
             <input type="radio" name="processrate" value="1" id="ProcessRate_0" />
-            Full - 100% of the file will be processed all at once</label>
+            Full - attempt to process entire file, may cause memory errors and is recommend for localhost use only.</label>
 			<br />
             
             <label>
@@ -178,13 +178,10 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
             
             <label>Rows/Visit Ratio:
             <select name="rowratio" size="1">
-                <option value="1">Create 1 Post</option>
-                <option value="2">Create 2 Posts</option>
-                <option value="3">Create 3 Posts</option>
+                <option value="1">Create 1 Posts</option>
             </select> for every page visit!
             </label>
-     
-            <br />
+      Need a higher limit? <a href="http://www.webtechglobal.co.uk/csv-2-post-premium-edition" title="Buy CSV 2 POST Plus" target="_blank">Buy CSV 2 POST Plus</a><br />
     
 			<h3>(b) Upload or Link</h3>
             
@@ -213,7 +210,7 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 	}
 }
 
-# STAGE 2 - DISPLAY IF STAGE 1 IS COMPLETE OR STAGE 2 FORM ALREADY SUBMITTED
+# STAGE 2 RELATIONSHIPS - DISPLAY IF STAGE 1 IS COMPLETE OR STAGE 2 FORM ALREADY SUBMITTED
 if((isset($_POST['stage']) && $_POST['stage'] == 2) || (isset($stage1complete) && $stage1complete == true))
 { 	
 	# PROCESS STAGE 2 SUBMISSION THEN EITHER DISPLAY ERRORS OR GO TO STAGE 3
@@ -348,7 +345,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 2) || (isset($stage1complete) &
 	}//end if stage 2 submitted
 }//end if stage 1 finished do stage 2
 
-# STAGE 3 - DISPLAY IF STAGE 2 IS COMPLETE OR STAGE 3 FORM ALREADY SUBMITTED
+# STAGE 3 POST STATUS - DISPLAY IF STAGE 2 IS COMPLETE OR STAGE 3 FORM ALREADY SUBMITTED
 if((isset($_POST['stage']) && $_POST['stage'] == 3) || (isset($stage2complete) && $stage2complete == true))
 {
 	# ALL REQUIRED VARIABLES SHOULD BE IN POST ELSE DISPLAY ERROR - 
@@ -449,7 +446,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 3) || (isset($stage2complete) &
 }
 
 
-# STAGE 4 - DISPLAY IF STAGE 3 IS COMPLETE OR STAGE 4 FORM ALREADY SUBMITTED
+# STAGE 4 CUSTOM FIELDS - DISPLAY IF STAGE 3 IS COMPLETE OR STAGE 4 FORM ALREADY SUBMITTED
 if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) && $stage3complete == true))
 {
 	# ALL REQUIRED VARIABLES SHOULD BE IN POST ELSE DISPLAY ERROR	
@@ -784,7 +781,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) &
 }
 
 
-# STAGE 5 - DISPLAY IF STAGE 4 IS COMPLETE OR STAGE 5 FORM ALREADY SUBMITTED - STAGE 5 IS CATEGORY COLUMN SELECTION
+# STAGE 5 CATEGORY FILTERING - DISPLAY IF STAGE 4 IS COMPLETE OR STAGE 5 FORM ALREADY SUBMITTED - STAGE 5 IS CATEGORY COLUMN SELECTION
 if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) && $stage4complete == true))
 {
 	# ALL REQUIRED VARIABLES SHOULD BE IN POST ELSE DISPLAY ERROR	
@@ -794,7 +791,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) &
 	}
 	else
 	{
-		echo 'Your campaign id is missing and is required to continue on stage 2!';
+		echo 'Your campaign id is missing and is required to continue on stage 5!';
 	}
 
 	if(isset($_POST['csvfiledirectory']))
@@ -803,7 +800,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) &
 	}
 	else
 	{
-		echo 'Your csv file directory is missing and is required to continue on stage 2!';
+		echo 'Your csv file directory is missing and is required to continue on stage 5!';
 	}
 	
 	if(isset($_POST['csvfile_columntotal']))
@@ -812,7 +809,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) &
 	}
 	else
 	{
-		echo 'Your csv file column total is missing and is required to continue on stage 2!';
+		echo 'Your csv file column total is missing and is required to continue on stage 5!';
 	}
 
 	# PROCESS STAGE 5 FIRST SUBMISSION FOR CATEGORY COLUMN SELECTION
@@ -1254,7 +1251,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) &
 		# UPDATE CAMPAIGN STAGE COUNTER
 		global $wpdb;
 		$sqlQuery = "UPDATE " .
-		$wpdb->prefix . "csvtopost_campaigns SET filtercolumn = '$filtercolumn', stage = '100' WHERE id = '$camid'";
+		$wpdb->prefix . "csvtopost_campaigns SET filtercolumn = '$filtercolumn', stage = '5' WHERE id = '$camid'";
 		$wpdb->query($sqlQuery);
 		
 		$stage5complete = true;
@@ -1345,7 +1342,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) &
 }
 
 # STAGE 6 - DISPLAY IF STAGE 5 IS COMPLETE OR STAGE 5 FORM ALREADY SUBMITTED
-if((isset($_POST['stage']) && $_POST['stage'] == 100) || (isset($stage5complete) && $stage5complete == true))
+if((isset($_POST['stage']) && $_POST['stage'] == 6) || (isset($stage5complete) && $stage5complete == true))
 {
 	# ALL REQUIRED VARIABLES SHOULD BE IN POST ELSE DISPLAY ERROR	
 	if(isset($_POST['camid']))
@@ -1354,7 +1351,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 100) || (isset($stage5complete)
 	}
 	else
 	{
-		echo 'Your campaign id is missing and is required to continue on stage 2!';
+		echo 'Your campaign id is missing and is required to continue on stage 6!';
 	}
 
 	if(isset($_POST['csvfiledirectory']))
@@ -1363,7 +1360,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 100) || (isset($stage5complete)
 	}
 	else
 	{
-		echo 'Your csv file directory is missing and is required to continue on stage 2!';
+		echo 'Your csv file directory is missing and is required to continue on stage 6!';
 	}
 	
 	if(isset($_POST['csvfile_columntotal']))
@@ -1372,23 +1369,37 @@ if((isset($_POST['stage']) && $_POST['stage'] == 100) || (isset($stage5complete)
 	}
 	else
 	{
-		echo 'Your csv file column total is missing and is required to continue on stage 2!';
+		echo 'Your csv file column total is missing and is required to continue on stage 6!';
 	}
 		
-	# PROCESS STAGE 3 SUBMISSION THEN EITHER DISPLAY ERRORS OR GO TO STAGE 4
-	if(!empty($_POST['statussubmit']))
-	{		
-		$stage6complete = true;
-	}
+	# CAMPAIGN IS CREATED BUT DECIDE IF THIS CAMPAIGN CAN BE STARTED OR SET TO PAUSE AT THIS TIME
+	global $wpdb;
+	$count = $wpdb->get_var("SELECT COUNT(*) FROM " .$wpdb->prefix . "csvtopost_campaigns WHERE stage = '100'");
 
-	# ONLY DISPLAY STAGE 1 FORM IF NOT COMPLETE
-	if(!isset($stage6complete) || $stage6complete != true)
-	{	?>
+	if( $count > 0 )
+	{
+		# DO NOT SET THIS NEW CAMPAIGN TO 100, SET IT TOO 200 FOR PAUSED
+		global $wpdb;
+		$sqlQuery = "UPDATE " .
+		$wpdb->prefix . "csvtopost_campaigns SET filtercolumn = '$filtercolumn', stage = '200' WHERE id = '$camid'";
+		$wpdb->query($sqlQuery);
+		?>
 		<h2>New Campaign Stage 6 - Campaign Complete!</h2>
-        <p>Your campaign has started! If you selected FULL processing your entire CSV file will be injected into your blog right now.</p>
-		<?php
-		include('instructions/stage6.php');
+        <p>Your campaign has been saved but you currently have an active campaign. Only one campaign can run at a time. Please pause the other campaign on the Campaign Management screen or wait until it is finished.</p>
+        <?php
 	}
+	else
+	{
+		# SET CAMPAIGN TO 100 AND MAKE ACTIVE AS THERE ARE NO OTHER CAMPAIGNS RUNNING AT THIS TIME
+		global $wpdb;
+		$sqlQuery = "UPDATE " .
+		$wpdb->prefix . "csvtopost_campaigns SET filtercolumn = '$filtercolumn', stage = '100' WHERE id = '$camid'";
+		$wpdb->query($sqlQuery);
+		?>
+		<h2>New Campaign Stage 6 - Campaign Complete!</h2>
+        <p>Your campaign has been created and is already running. To pause it please go to the Campaign Management screen.</p>
+        <?php
+	}		
 }
 ?>
   </p>
