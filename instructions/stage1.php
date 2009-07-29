@@ -1,9 +1,10 @@
         <h2>Stage 1 Instructions</h2>
 		<h3>Campaign Name</h3>
-		<p>Enter a single word that will help you to identify the campaign later.</p>
-		<h3>Full Processing</h3>
-<p>Full processing will inject all data all at once&nbsp;and is the best option however many servers will reacte badly to this. To process the entire file requires a &quot;Permanent Process&quot; which some hosting or servers are configured to block. This could mean that your website goes down for a period of time. If you are on free or reseller/shared server hosting then there is a high risk of&nbsp;this.<h3>Staggered Processing</h3>
-		<p>Staggered involves processing rows of data in your CSV files every time someone visits a page on your blog. For example if I visit your blog, 5 rows may be processed and so 5 new posts ware instantly created. If I then go to another page, another 5 rows will be processed. This may take a while but should not cause issues with your server if you are on reseller or free hosting.</p>
+		<p>Enter a single word that will help you to identify the campaign later. You will need to remember it&nbsp;using the campaign management page.</p>
+		<h3>Full Processing - WARNING! </h3>
+<p>Full processing will inject all data all at once and many servers will react badly to this. Also in most cases you will receive a memory limit error which stops the full processing and will not actually work. I recommend setting up WordPress on your computer (localhost) and running the plugin from there. 
+<h3>Staggered Processing</h3>
+		<p>Staggered involves processing rows of data in your CSV files every time someone visits a page on your blog. For example if I visit your blog, 20 rows may be processed and so 20 new posts are instantly created. If I then go to another page, another 20 rows will be processed. This may take a while but should not cause issues with your server&nbsp;but it is still a possibility.</p>
 		<h3>Local&nbsp;(FTP Uploaded)</h3>
 		<p>Local  is the preferred method if your CSV files are above 2MB but it will require you to place your CSV file in the CSV 2 POST plung directory, specifically the &quot;csv_files&quot; folder. You then enter the full name including file extension (.csv) into the box provided above. </p>
 		<h3>Upload</h3>
