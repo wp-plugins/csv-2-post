@@ -4,7 +4,7 @@ Donate link: http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-p
 Tags: csv,file,post,2,to,data,affiliate,webtechglobal,import,page
 Requires at least: 2.8.0
 Tested up to: 2.8
-Stable tag: 1.1
+Stable tag: trunk
 
 Inject any CSV file data into the WordPress database as new Posts!
 
@@ -90,6 +90,9 @@ You have the option of doing it all at once or staggering it so that a few rows 
 * Fixed issue with some posts being created as Uncategorised!
 * Finally I realised that my repository software will not prevent the csv_files folder being deleted on upgrade so instead the folder is not provided with the plugin. The plugin will now make the csv_files folder when it does not exist.
 
+= 1.2 =
+* Error as script attempted to creating "csv_files" folder even if it existed already.
+* Repository or script changes to prevent "csv_files" folder being deleted does not work. If the folder does not exist in the plugin repository the upgrade deletes it to match. I still cannot find or get help for a solution and officially frustrated now after two weeks of trying lol
 == Arbitrary section ==
 
 Please email wordpress@webtechglobal.co.uk with any questions regarding this plugin.
