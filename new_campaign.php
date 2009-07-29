@@ -2,14 +2,6 @@
 # DEBUG DURING DEVELOPMENT
 define('WP_DEBUG',true);
 
-# CREATE OR ENSURE csv_files FOLDER EXISTS
-$csv_files_folder_directory = '/csv_files';
-if (!file_exists($csv_files_folder_directory)) 
-{
-	mkdir("/csv_files",0777,true);
-	echo "The directory $dirname was successfully created.";  
-}  
-
 global $wpdb;
 
 # STAGE 1: SUBMISSION OR FIRST TIME VISIT FOR CAPTURING INITIAL CAMPAIGN SETTINGS

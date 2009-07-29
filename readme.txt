@@ -12,7 +12,7 @@ Inject any CSV file data into the WordPress database as new Posts!
 
 Use CSV 2 POST to import a csv data file and inject up to 1 million posts in WordPress! It is free to use and has some cool features that other
 similiar plugins don't with many more cool new ideas coming soon. Developed by Ryan Bayne from WebTechGlobal, a University graduate
-in 2009, a father to be and a case for donations...please! It will help improvement to this plugin and more good plugins. 
+in 2009.     === Please back up your CSV files on your server before making any upgrades or they will be overwritten === 
 
 == Installation ==
 
@@ -99,6 +99,10 @@ You have the option of doing it all at once or staggering it so that a few rows 
 
 = 1.4 =
 * Minor change to trigger repository update. Updates are providing old and new files!
+
+= 1.5 =
+* The so called fix for overwriting existing csv files when updating was pretty much a joke so I've went back to the old way and will spend more time considering a solution.
+* Hoping what is a final fix to category issues. They can still be uncategoried depending on certain settings but I fixed that too.
 
 == Arbitrary section ==
 

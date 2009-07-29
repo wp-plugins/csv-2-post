@@ -96,7 +96,7 @@ else
 				$my_post['post_content'] = $post;
 				$my_post['post_status'] = $campaignresult->poststatus;
 				$my_post['post_author'] = 1;
-				$my_post['post_category'] = array(1,$catid);
+				if(!empty($catid)){$my_post['post_category'] = array($catid)}elseif(empty($catid)){$my_post['post_category'] = array(1)};
 				$my_post['comment_status'] = 'open';
 				$my_post['post_excerpt'] = $metadescription;
 				$my_post['tags_input'] = $metakeywords;
