@@ -88,6 +88,12 @@ function wtg_csv2post_campaignundo($s,$c,$id)
 	echo $UNDOlink;
 }
 
+# FUNCTION DELETES CAMPAIGN INSTANCE FROM CSV 2 POST DATABASE
+function wtg_csv2post_campaigndelete($id)
+{
+	echo '<td><a href="' . $_SERVER['PHP_SELF'] . '?page=manage_campaigns&id=' . $id . '&action=delete" title="Delete campaign '. $id .'">Delete</a></td>';
+}
+
 # PROCESS GET ACTIONS AND DISPLAY CORRECT DATA OR MAKE UPDATES
 if(isset($_GET['action']) && isset($_GET['id']))
 {
@@ -104,11 +110,23 @@ if(isset($_GET['action']) && isset($_GET['id']))
 	}
 	elseif($_GET['action'] == 'start')
 	{
-		# PAUSE CAMPAIGN
+		# ONLY START CAMPAIGN IF NONE ALREADY RUNNING
 		global $wpdb;
-		$sqlQuery = "UPDATE " .
-		$wpdb->prefix . "csvtopost_campaigns SET stage = '100' WHERE id = '$camid'";
-		$wpdb->query($sqlQuery);
+		$count = $wpdb->get_var("SELECT COUNT(*) FROM " .$wpdb->prefix . "csvtopost_campaigns WHERE stage = '100'");
+	
+		if( $count > 0 )
+		{
+			echo '<h3>Campaign could not be started, there is already one running</h3>';
+		}
+		else
+		{
+			global $wpdb;
+			$sqlQuery = "UPDATE " .
+			$wpdb->prefix . "csvtopost_campaigns SET stage = '100' WHERE id = '$camid'";
+			$wpdb->query($sqlQuery);
+			
+			echo '<h3>Campaign '.$camid.' Started!</h3>';
+		}
 	}
 	elseif($_GET['action'] == 'complete')
 	{
@@ -116,7 +134,6 @@ if(isset($_GET['action']) && isset($_GET['id']))
 	}
 	elseif($_GET['action'] == 'undo')
 	{
-		# SELECT ALL POSTS WITH CUSTOM FIELD = csv2post_campaignid and campaign ID
 		global $wpdb;
 		$row = $wpdb->get_results("SELECT postid FROM " .$wpdb->prefix . "csvtopost_posthistory WHERE camid = '$camid'");
 		$counter = 0;
@@ -136,7 +153,12 @@ if(isset($_GET['action']) && isset($_GET['id']))
 		$wpdb->prefix . "csvtopost_campaigns SET posts = '$posts_count' WHERE id = '$camid'";
 		$wpdb->query($sqlQuery);
 		
-		echo $deleted_count.' posts have been deleted!';
+		echo '<h3>'.$deleted_count.' posts have been deleted from campaign '.$camid.'!</h3>';
+	}
+	elseif($_GET['action'] == 'delete')
+	{
+		global $wpdb;
+		$wpdb->query(" DELETE FROM " . $wpdb->prefix . "csvtopost_campaigns WHERE id = '$camid'");
 	}
 }
 
@@ -148,14 +170,20 @@ $c = $wpdb->get_results("SELECT id,camname,stage FROM " .$wpdb->prefix . "csvtop
 foreach ($c as $v)
 {?>
 <form>
-	<table width="301">
-    	<tr><td width="35" height="23"><strong>ID</strong></td>
-    	<td width="161"><strong>Campaign Name</strong></td><td width="89"></td></tr>
+	<table width="623">
+    	<tr>
+        <td width="58" height="23"><strong>ID</strong></td>
+    	<td width="196"><strong>Campaign Name</strong></td>
+        <td width="107"></td>
+        <td width="101"></td>
+        <td width="137"></td>
+        </tr>
     	<tr>
         	<td><?php echo $v->id; ?></td>
             <td><?php echo $v->camname; ?></td>
             <?php wtg_csv2post_startpausecancelled($v->stage,$v->camname,$v->id); ?>
             <?php wtg_csv2post_campaignundo($v->stage,$v->camname,$v->id); ?>
+            <?php wtg_csv2post_campaigndelete($v->id); ?>
         </tr>
     </table>
 </form>

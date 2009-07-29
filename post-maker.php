@@ -26,11 +26,10 @@ else
 	
 	# GET REQUIRE VARIABLES FOR ENTIRE CAMPAIGN PROCESSING
 	$row_counter = 0;
-	$posts_injected = 0;
+	$posts_injected = 1;
 	$filterid = $campaignresult->filtercolumn;
 	$camid = $campaignresult->id;
 	$rows_processed = 0;// resets per row
-	$posts_injected = 0;
 	
 	# START PROCESSING EACH ROW
 	while (($csvrow = fgetcsv($handle, 9999999, ",")) !== FALSE && $posts_injected <= $post_limit)
@@ -58,7 +57,7 @@ else
 				elseif($postpart == 'author'){$author = $data;}// usually for books and articles
 				elseif($postpart == 'publisher'){$publisher = $data;}// usually for books
 				# IF THIS COLUMN IS FILTER COLUMN THEN CHECK ITS VALUE IN THIS ROW AND GET CATEGORY
-				if($filterid != 999 && $c == $filterid)
+				if($filterid != 999 && $column_counter_getdata == $filterid)
 				{ 
 					$val = $data;// unique value from csv column
 				
@@ -70,7 +69,7 @@ else
 		
 			# WE HAVE A SINGLE POSTS DATA NOW - MOVE ONTO PROCESSING IT
 			
-			# IF TITLE MATCHES AN EXISTING TITLE THEN DO NOT CONTINUE
+			# IF TITLE MATCHES AN EXISTING TITLE THEN DO NOT CONTINUE - THIS IS THE FIRST DUPLICATION CHECK
 			global $wpdb;	
 			$count = 0;
 		
@@ -91,7 +90,7 @@ else
 				# MAKE CUSTOM META DATA
 				$metadescription = create_meta_description($content, 150);
 				$metakeywords = create_meta_keywords($content, 150);
-								
+																
 				# CREATE POST OBJECT AND INSERT TO DATABASE
 				$my_post = array();
 				$my_post['post_title'] = $title;
@@ -101,63 +100,79 @@ else
 				$my_post['post_category'] = array($catid);
 				$my_post['comment_status'] = 'open';
 				$my_post['post_excerpt'] = $metadescription;
-		
-				$post_id = wp_insert_post( $my_post );
-				
-				# COUNT ROWS ACTUALLY USED TO CREATE POSTS
-				$posts_injected = $posts_injected + 1;
-								
-				# RECORD NEW POST IN csv2post_posthistory TABLE
-				$sqlQuery = "INSERT INTO " .
-				$wpdb->prefix . "csvtopost_posthistory(camid, postid)
-				VALUES('$camid', '$post_id')";
-				$wpdb->query($sqlQuery);
-								
-				# INSERT SCRIPTS DEFAULT CUSTOM FIELDS AND VALUES
-				add_post_meta($post_id, '_headspace_description', $metadescription, true);
-				add_post_meta($post_id, 'head_keywords', $metakeywords, true);
-				add_post_meta($post_id, 'csv2post_campaignid', $camid, true);
-				
-				# INSERT CAMPAIGNS CUSTOM FIELDS AND VALUES THAT ARE NOT UNIQUE PER POST
-				$res1 = $wpdb->get_results("SELECT * FROM " .$wpdb->prefix . "csvtopost_customfields WHERE camid = '$camid' AND type = '0'");
-				
-				foreach($res1 as $x)
-				{   
-					$key = $x->identifier;
-					$value = $x->value;
-					add_post_meta($post_id, $key, $value, true);
-				}
-								
-				# INSERT CAMPAIGN CUSTOM FIELDS AND VALUES THAT MAY BE UNIQUE VALUES ARE FROM CSV COLUMN DATA
-				$res2 = $wpdb->get_results("SELECT * FROM " .$wpdb->prefix . "csvtopost_customfields WHERE camid = '$camid' AND type = '1'");
-				
-				foreach($res2 as $y)
-				{
-					$v = $y->value;
-					$k = $y->identifier;
-	
-					$column_counter = 0;
-					
-					foreach($csvrow as $data)
-					{
-						if($column_counter == $v)
-						{ 
-							add_post_meta($post_id, $k, $data, true);
-						}
+
+				# IF TITLE MATCHES AN EXISTING TITLE THEN DO NOT CONTINUE - THIS IS THE SECOND DUPLICATION CHECK
+				global $wpdb;	
+				$count = 0;
+			
+				$wpdb->query("SELECT * FROM " .$wpdb->prefix . "posts WHERE post_title = '$title'");
+			
+				$count = $wpdb->num_rows;
 						
-						$column_counter++;
-					}
+				if( $count > 0 )
+				{
+					# DO NOTHING 
 				}
-	
-	
-				# UNSET ALL LOCAL VARIABLES THAT ARE UNIQUE PER POST
-				unset($post); unset($link); unset($img); unset($text);
-				unset($title); unset($buyurl); unset($publisher);
-				unset($contact); unset($currency); unset($price);
-				unset($advertiser); unset($imageurl);
-				unset($category); unset($author);
+				else
+				{
+					# NO DUPLICATES FOUND SO INJECT POST
+					$post_id = wp_insert_post( $my_post );
+					
+					# COUNT ROWS ACTUALLY USED TO CREATE POSTS
+					$posts_injected = $posts_injected + 1;
+									
+					# RECORD NEW POST IN csv2post_posthistory TABLE
+					$sqlQuery = "INSERT INTO " .
+					$wpdb->prefix . "csvtopost_posthistory(camid, postid)
+					VALUES('$camid', '$post_id')";
+					$wpdb->query($sqlQuery);
+									
+					# INSERT SCRIPTS DEFAULT CUSTOM FIELDS AND VALUES
+					add_post_meta($post_id, '_headspace_description', $metadescription, true);
+					add_post_meta($post_id, 'head_keywords', $metakeywords, true);
+					add_post_meta($post_id, 'csv2post_campaignid', $camid, true);
+					
+					# INSERT CAMPAIGNS CUSTOM FIELDS AND VALUES THAT ARE NOT UNIQUE PER POST
+					$res1 = $wpdb->get_results("SELECT * FROM " .$wpdb->prefix . "csvtopost_customfields WHERE camid = '$camid' AND type = '0'");
+					
+					foreach($res1 as $x)
+					{   
+						$key = $x->identifier;
+						$value = $x->value;
+						add_post_meta($post_id, $key, $value, true);
+					}
+									
+					# INSERT CAMPAIGN CUSTOM FIELDS AND VALUES THAT MAY BE UNIQUE VALUES ARE FROM CSV COLUMN DATA
+					$res2 = $wpdb->get_results("SELECT * FROM " .$wpdb->prefix . "csvtopost_customfields WHERE camid = '$camid' AND type = '1'");
+					
+					foreach($res2 as $y)
+					{
+						$v = $y->value;
+						$k = $y->identifier;
+		
+						$column_counter = 0;
+						
+						foreach($csvrow as $data)
+						{
+							if($column_counter == $v)
+							{ 
+								add_post_meta($post_id, $k, $data, true);
+							}
+							
+							$column_counter++;
+						}
+					}
+		
+					# UNSET ALL LOCAL VARIABLES THAT ARE UNIQUE PER POST
+					unset($post); unset($link); unset($img); unset($text);
+					unset($title); unset($buyurl); unset($publisher);
+					unset($contact); unset($currency); unset($price);
+					unset($advertiser); unset($imageurl);
+					unset($category); unset($author);
+					
+				}// end of second duplication check
 				
-			}// end if title already exists
+			}// end of first duplication check
 
 			$column_counter = $column_counter + 1;
 		}// end if first row or not
