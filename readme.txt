@@ -4,7 +4,7 @@ Donate link: http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-p
 Tags: csv,file,post,2,to,data,affiliate,webtechglobal,import,page
 Requires at least: 2.8.0
 Tested up to: 2.8
-Stable tag: 1.0
+Stable tag: 1.1
 
 Inject any CSV file data into the WordPress database as new Posts!
 
@@ -83,6 +83,12 @@ You have the option of doing it all at once or staggering it so that a few rows 
 * Fixed problem when you select staggered and upload together, another variable change from version 0.9 and missed by me.
 * You can now totally delete campaigns in campaign management. Multiple users asked for this.
 * Set Post/Visit ratio to 1! A premium version will be available that will continue to be developed, donations will add to the free edition so please buy or donate.
+
+= 1.1 =
+* Moved processing trigger from footer based to header (wp instead of shutdown for developers). This helps to prevent loops and conflicts with other plugins.
+* Added tags so SEO is not 100% covered.
+* Fixed issue with some posts being created as Uncategorised!
+* Finally I realised that my repository software will not prevent the csv_files folder being deleted on upgrade so instead the folder is not provided with the plugin. The plugin will now make the csv_files folder when it does not exist.
 
 == Arbitrary section ==
 
