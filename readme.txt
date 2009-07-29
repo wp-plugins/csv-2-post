@@ -1,18 +1,19 @@
 === Plugin Name ===
 Contributors: Ryan Bayne
 Donate link: http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-post-plugin
-Tags: csv,file,post,2,to,data,affiliate,webtechglobal,import,page
+Tags: csv,file,post,2,to,data,affiliate,webtechglobal
 Requires at least: 2.8.0
 Tested up to: 2.8
-Stable tag: 1.0
+Stable tag: trunk
 
 Inject any CSV file data into the WordPress database as new Posts!
 
 == Description ==
 
-Use CSV 2 POST to import a csv data file and inject up to 1 million posts in WordPress! It is free to use and has some cool features that other
-similiar plugins don't with many more cool new ideas coming soon. Developed by Ryan Bayne from WebTechGlobal, a University graduate
-in 2009, a father to be and a case for donations...please! It will help improvement to this plugin and more good plugins. 
+Use CSV 2 POST to inject 1 million rows of csv file data in WordPress! It is free to use and has some cool features that other
+similiar plugins don't. Users have commented that this can be a powerful plugin however it was originally developed when I finished
+University in 2009 and for personal use only so there are bugs. It's popularity however requires many upgrades to bring it inline
+with other plugins and WebTechGlobal will be working on these on a weekly basis during the rest of 2009. 
 
 == Installation ==
 
@@ -75,19 +76,10 @@ You have the option of doing it all at once or staggering it so that a few rows 
 * Recoding for version 0.8 caused a lot of issues and they have been resolve. Testing shows the plugin to be working well.
 * Issue with "Written By" and "Published By" text showing up even when they are not required has been fixed.
 
-= 1.0 =
-* Full processing is limited by server memory, clear warnings now displayed regarding this and recommendation for localhost use only.
-* Limited running campaigns to one at a time as two or more was causing conflicts. Later scheduling will be in place to automatically start paused campaigns.
-* Extra duplication check to prevent duplicate posts when multiple hits are experianced. Quality, not quantity!
-* Category filtering fixed, small variable change during version 0.9 work that caused this.
-* Fixed problem when you select staggered and upload together, another variable change from version 0.9 and missed by me.
-* You can now totally delete campaigns in campaign management. Multiple users asked for this.
-* Set Post/Visit ratio to 1! A premium version will be available that will continue to be developed, donations will add to the free edition so please buy or donate.
-
 == Arbitrary section ==
 
 Please email wordpress@webtechglobal.co.uk with any questions regarding this plugin.
 
 == A brief Markdown Example ==
 
-What to put here I wonder?
+What to put here I wonder? Anyone interested in knowing anything specific about the plugin?
