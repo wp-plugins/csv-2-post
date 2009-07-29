@@ -1,9 +1,14 @@
 <?php
 # DEBUG DURING DEVELOPMENT
-//define('WP_DEBUG',true);
+define('WP_DEBUG',true);
 
 # CREATE OR ENSURE csv_files FOLDER EXISTS
-mkdir(dirname(__FILE__)."/csv_files",0777,true);
+$csv_files_folder_directory = dirname(__FILE__).'/csv_files';
+if (!file_exists($csv_files_folder_directory)) 
+{
+	mkdir(dirname(__FILE__)."/csv_files",0777,true);
+	echo "The directory $dirname was successfully created.";  
+}  
 
 global $wpdb;// used for first query
 
