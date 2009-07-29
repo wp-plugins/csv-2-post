@@ -93,6 +93,13 @@ You have the option of doing it all at once or staggering it so that a few rows 
 = 1.2 =
 * Error as script attempted to creating "csv_files" folder even if it existed already.
 * Repository or script changes to prevent "csv_files" folder being deleted does not work. If the folder does not exist in the plugin repository the upgrade deletes it to match. I still cannot find or get help for a solution and officially frustrated now after two weeks of trying lol
+
+= 1.3 =
+* Minor change to trigger repository update. Updates are providing old and new files!
+
+= 1.4 =
+* Minor change to trigger repository update. Updates are providing old and new files!
+
 == Arbitrary section ==
 
 Please email wordpress@webtechglobal.co.uk with any questions regarding this plugin.
