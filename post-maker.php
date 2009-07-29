@@ -97,9 +97,10 @@ else
 				$my_post['post_content'] = $post;
 				$my_post['post_status'] = $campaignresult->poststatus;
 				$my_post['post_author'] = 1;
-				$my_post['post_category'] = array($catid);
+				$my_post['post_category'] = array(1,$catid);
 				$my_post['comment_status'] = 'open';
 				$my_post['post_excerpt'] = $metadescription;
+				$my_post['tags_input'] = $metakeywords;
 
 				# IF TITLE MATCHES AN EXISTING TITLE THEN DO NOT CONTINUE - THIS IS THE SECOND DUPLICATION CHECK
 				global $wpdb;	
@@ -162,6 +163,9 @@ else
 							$column_counter++;
 						}
 					}
+					
+					# INJECT TAGS FOR THIS POST
+					
 		
 					# UNSET ALL LOCAL VARIABLES THAT ARE UNIQUE PER POST
 					unset($post); unset($link); unset($img); unset($text);

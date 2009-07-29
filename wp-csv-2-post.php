@@ -2,7 +2,7 @@
 /*
 
 Plugin Name: CSV 2 POST
-Version: 1.0
+Version: 1.2
 Plugin URI: http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-post-plugin
 Description: Turns CSV data rows into posts with high seo per post
 Author: Ryan Bayne
@@ -38,7 +38,7 @@ add_action("plugins_loaded", "init_csvtopost_campaigndata_tabele_wtg");
 add_action('admin_menu', 'mt_add_pages');
 
 // hook for checking processing requirements during page load
-add_action('shutdown', 'wtg_csvtopost_processcheck');
+add_action('wp', 'wtg_csvtopost_processcheck');// trigger processing - in the footer causes looping problems
 
 // action function for above hook
 function mt_add_pages() 
