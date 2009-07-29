@@ -5,7 +5,7 @@
 # CREATE OR ENSURE csv_files FOLDER EXISTS
 mkdir(dirname(__FILE__)."/csv_files",0777,true);
 
-global $wpdb;// used for first query
+global $wpdb;
 
 # STAGE 1: SUBMISSION OR FIRST TIME VISIT FOR CAPTURING INITIAL CAMPAIGN SETTINGS
 if(!isset($_POST['stage']) || $_POST['stage'] == 1)

@@ -3,7 +3,7 @@ Contributors: Ryan Bayne
 Donate link: http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-post-plugin
 Tags: csv,file,post,2,to,data,affiliate,webtechglobal,import,page
 Requires at least: 2.8.0
-Tested up to: 2.8
+Tested up to: 2.8.2
 Stable tag: 1.1
 
 Inject any CSV file data into the WordPress database as new Posts!

@@ -14,7 +14,6 @@ $handle = fopen("$filelocation", "r");
 if($handle == false)
 {
 	# FILE FAILED TO BE FOUND OR OPEN
-	
 }
 else
 {

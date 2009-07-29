@@ -1,8 +1,6 @@
-<h3>GNU GENERAL PUBLIC LICENSE
-                       </h3>
-<h3>Version 3, 29 June 2007
-  
-  Copyright (C) 2007 Free Software Foundation, Inc. </h3>
+<h2>GNU GENERAL PUBLIC LICENSE</h2>
+
+<h3>Version 3, 29 June 2007  Copyright (C) 2007 Free Software Foundation, Inc. </h3>
 <http://fsf.org/>
  Everyone is permitted to copy and distribute verbatim copies
  of this license document, but changing it is not allowed.

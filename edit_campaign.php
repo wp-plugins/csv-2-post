@@ -5,7 +5,6 @@
 /*
 	CAMPAIGN STATE - Database values for wp_csv2post_campaigns (stage) 
 	everything before 100 are numbers related to campaigns still being created.
-	
 	100 = Ongoing, processing, started
 	200 = Stopped, paused, waiting
 	300 = Complete, finished, ended

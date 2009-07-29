@@ -1,5 +1,4 @@
 <?php
-
 # CREATING PLUGINS DATABASE TABLES ON INSTALLATION
 function init_csvtopost_campaigndata_tabele_wtg () 
 {
