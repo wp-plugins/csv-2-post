@@ -141,7 +141,7 @@ function create_meta_keywords($str, $length)
 	'&','every','this','has','been','with','selecting','set','other','thingy','maybe','shit','fuck','piss','cunt','bastard',
 	'thats','not','too','them','must-have','youre','can','these','where','will','our','end','all','using','use','your','get',
 	'getting','away','you','who','help','helps','any','plus','new','offer','fees','thinking','consider','going','into','where',
-	'interested',"you'll","that's","fee's","year's");
+	'interested',"you'll","that's","fee's","year's",'were','had','through','have','made','that','how','his','her','its');
 	$splitstr = @explode(" ", truncate_string(seo_simple_strip_tags(str_replace(array(",",".")," ", $str)), $length));
 	$new_splitstr = array();
 	foreach ($splitstr as $spstr) 
@@ -368,16 +368,26 @@ function get_categories_fordropdownmenu()
 # CHECKS IF CAMPAIGNS ARE RUNNING - IF SO INCLUDES post-maker.php FOR FULL PROCESSING
 function wtg_csvtopost_processcheck()
 { 
-	global $wpdb;
-	$count = $wpdb->get_var("SELECT COUNT(*) FROM " .$wpdb->prefix . "csvtopost_campaigns WHERE stage = '100'");
+    if(isset($_SESSION['page']) && $_SESSION['page'] == $_SERVER['PHP_SELF'])
+    {
+    	# DO NOTHING – the current page has not change from the last page load so do not begin process and this approach will hopefully allow plugins like XML-Sitemap and WP-to-Twitter to do their job, trigger page loads but not trigger further processing in CSV 2 POST.
+    }
+    else
+    {
+		# TRIGGER CSV 2 POST PROCESSING
+		$_SESSION['page'] = $_SERVER['PHP_SELF']; // set current page into session and use on next page load to prevent processing if page not differrent
 
-	if( $count > 0 )
-	{
-		include('post-maker.php');
-	}
-	else
-	{			
-		# DO NOTHING AS THERE ARE NO CAMPAIGNS TO RUN
+		global $wpdb;
+		$count = $wpdb->get_var("SELECT COUNT(*) FROM " .$wpdb->prefix . "csvtopost_campaigns WHERE stage = '100'");
+	
+		if( $count > 0 )
+		{
+			include('post-maker.php');
+		}
+		else
+		{			
+			# DO NOTHING AS THERE ARE NO CAMPAIGNS TO RUN
+		}
 	}
 }
 ?>

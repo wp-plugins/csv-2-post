@@ -104,6 +104,11 @@ You have the option of doing it all at once or staggering it so that a few rows 
 * The so called fix for overwriting existing csv files when updating was pretty much a joke so I've went back to the old way and will spend more time considering a solution.
 * Hoping what is a final fix to category issues. They can still be uncategoried depending on certain settings but I fixed that too.
 
+= 1.6 =
+* Change duplication check from checking "post_title" to checking "post_name" in the wp_posts table, this is 100% accurate now.
+* Change SQL queries to not use "*" which should help speed the plugin up a little.
+* Extend list of keyword exclusion, please see my new blog post for Version 1.6 release for a full list of excluded keywords.
+
 == Arbitrary section ==
 
 Please email wordpress@webtechglobal.co.uk with any questions regarding this plugin.
