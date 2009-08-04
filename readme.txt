@@ -30,9 +30,9 @@ The options available are to either locate and edit every post that has the WebT
 
 == Screenshots ==
 
-1.Image 1 /images/csv2post_wordpressplugin_stage1.(png|jpg|jpeg|gif). 
-2.Image 2 /images/csv2post_wordpressplugin_stage2.(png|jpg|jpeg|gif). 
-3.Image 3 /images/csv2post_wordpressplugin_stage4.(png|jpg|jpeg|gif). 
+1.Image 1 /images/csv2post_wordpressplugin_stage1.jpg 
+2.Image 2 /images/csv2post_wordpressplugin_stage2.jpg 
+3.Image 3 /images/csv2post_wordpressplugin_stage4.jpg 
 
 
 == Changelog ==
