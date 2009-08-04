@@ -1,122 +1,15 @@
 <?php
-# CREATING PLUGINS DATABASE TABLES ON INSTALLATION
-function init_csvtopost_campaigndata_tabele_wtg () 
-{
-	# INSERT INITIAL VERSION OPTION
-	$csvtopost_tables_version = "0.2";// different from plugin version
- 	$installed_ver = get_option( "csvtopost_tables_version" );
-	
-	if(empty($installed_ver))
-	{
-    	add_option( "csvtopost_tables_version", '0.2' );
-	}
-	
-	global $wpdb;
-	global $csvtopost_tables_version;
-	
-	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-
-
-	# ADD OR UPDATE csvtopost_relationships TABLE
-	$table_name = $wpdb->prefix . "csvtopost_relationships";
-	if($installed_ver != $table_name) 
-	{
-		$sql = "CREATE TABLE `" . $table_name . "` (
-			`id` int(10) unsigned NOT NULL auto_increment,
-			`camid` int(10) unsigned NOT NULL COMMENT 'Campaign ID',
-			`csvcolumnid` int(10) unsigned NOT NULL COMMENT 'Incremented number assigned to columns of CSV file in order they are in the file',
-			`postpart` varchar(50) NOT NULL COMMENT 'Part CSV column assigned to in order to fulfill post data requirements',
-			PRIMARY KEY  (`id`)
-			) ENGINE=MyISAM AUTO_INCREMENT=380 DEFAULT CHARSET=utf8 COMMENT='Links between CSV file columns and post parts';";
-		
-		dbDelta($sql);// executes sql object query
-	}
-
-	# ADD OR UPDATE csvtopost_customfields TABLE
-	$table_name = $wpdb->prefix . "csvtopost_customfields";
-	if($installed_ver != $table_name) 
-	{
-		$sql = "
-			CREATE TABLE `" . $table_name . "` (
-			`id` int(10) unsigned NOT NULL auto_increment,
-			`camid` int(10) unsigned NOT NULL,
-			`identifier` varchar(30) NOT NULL,
-			`value` varchar(500) NOT NULL,
-			`type` int(10) unsigned NOT NULL COMMENT '0 = custom global value 1 = column marriage and possible unique value per post',
-			PRIMARY KEY  (`id`)
-			) ENGINE=MyISAM AUTO_INCREMENT=169 DEFAULT CHARSET=utf8 COMMENT='custom field data for campaigns';";
-		
-		dbDelta($sql);// executes sql object query
-	}
-	
-	# ADD OR UPDATE csvtopost_categories TABLE
-	$table_name = $wpdb->prefix . "csvtopost_categories";
-	if($installed_ver != $table_name) 
-	{
-		$sql = "
-			CREATE TABLE `" . $table_name . "` (
-			`id` int(10) unsigned NOT NULL auto_increment,
-			`camid` int(10) unsigned NOT NULL,
-			`catcolumn` int(10) unsigned NOT NULL COMMENT 'csv column id for the column used to decide categorie sorting',
-			`catid` int(10) unsigned NOT NULL COMMENT 'id of wp category',
-			`uniquevalue` varchar(50) NOT NULL COMMENT 'unique value from the choosing column that determines this post goes in this category',
-			PRIMARY KEY  (`id`)
-			) ENGINE=MyISAM AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 COMMENT='Data used to sort new posts into correct category';";
-		
-		dbDelta($sql);// executes sql object query
-	}	
-	
-	# ADD OR UPDATE csvtopost_campaigns TABLE
-	$table_name = $wpdb->prefix . "csvtopost_campaigns";
-	if($installed_ver != $table_name) 
-	{
-		$sql = "CREATE TABLE `" . $table_name . "` (
-			`id` int(10) unsigned NOT NULL auto_increment,
-			`camname` varchar(50) NOT NULL,
-			`camfile` varchar(500) NOT NULL COMMENT 'Filename without extension (directory is scripted)',
-			`process` int(10) unsigned NOT NULL COMMENT '1 = Full and 2 = Staggered',
-			`ratio` int(10) unsigned NOT NULL COMMENT 'If Staggered processing selected this is the per visitor row to process',
-			`stage` int(10) unsigned NOT NULL COMMENT '100 = Ready, 200 = Paused, 300 = FINISHED',
-			`csvcolumns` int(10) unsigned default NULL COMMENT 'Number of columns in CSV file',
-			`poststatus` varchar(45) default NULL COMMENT 'published,pending,draft',
-			`csvrows` int(10) unsigned default NULL COMMENT 'Total number of rows in CSV file',
-			`filtercolumn` int(10) unsigned default NULL COMMENT 'CSV file column ID for the choosen categories filter',
-			`location` varchar(500) default NULL COMMENT 'CSV file location for FULL processing selection',
-			`locationtype` int(10) unsigned default NULL COMMENT '1 = link and 2 = upload',
-			`posts` int(10) unsigned default NULL COMMENT 'Total number of posts created',
-			PRIMARY KEY  (`id`)
-			) ENGINE=MyISAM AUTO_INCREMENT=195 DEFAULT CHARSET=utf8;";
-		dbDelta($sql);// executes sql object query
-	}	
-
-	# ADD OR UPDATE hhhhhhhhhhhhhhhhhhhhhhh TABLE
-	$table_name = $wpdb->prefix . "csvtopost_posthistory";
-	if($installed_ver != $table_name) 
-	{
-		$sql = "CREATE TABLE  `" . $table_name . "` (
-			`id` int(10) unsigned NOT NULL auto_increment,
-			`camid` int(10) unsigned NOT NULL,
-			`postid` int(10) unsigned NOT NULL,
-			PRIMARY KEY  (`id`)
-			) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='List of post ID''s created under each campaign';";
-		dbDelta($sql);// executes sql object query
-	}		
-	
-	# EXECUTE ADD OPTION TO RECORD NEW DATABASE VERSION
-    update_option( "csvtopost_tables_version", $csvtopost_tables_version );
-}
-
 # USED TO CHECK ALLOWED FILE EXTENSIONS
-function isAllowedExtension($fileName)
+function isAllowedExtension_wtg_csv2post($fileName)
 {
 	$allowedExtensions = array("csv", "CSV");
 	return in_array(end(explode(".", $fileName)), $allowedExtensions);
 }
 	
 //STRIP HTML, TRUNCATE, CREATE TITLE
-function create_meta_title($str, $length) 
+function create_meta_title_wtg_csv2post($str, $length) 
 {
-	$title = truncate_string(seo_simple_strip_tags($str), $length);
+	$title = truncate_string_wtg_csv2post(seo_simple_strip_tags_wtg_csv2post($str), $length);
 	if (strlen($str) > strlen($title)) 
 	{$title .= "...";}
 	return $title;
@@ -124,9 +17,9 @@ function create_meta_title($str, $length)
 /* Example:	<title>WebTechGlobal: <?php echo create_meta_title($pagedesc, $met_tit_len);?></title> */
 
 //STRIP HTML, TRUNCATE, CREATE DESCRIPTION
-function create_meta_description($str, $length)
+function create_meta_description_wtg_csv2post($str, $length)
 {
-	$meta_description = truncate_string(seo_simple_strip_tags($str), $length);
+	$meta_description = truncate_string_wtg_csv2post(seo_simple_strip_tags_wtg_csv2post($str), $length);
 	if (strlen($str) > strlen($meta_description)) {$meta_description .= "...";}
 	return $meta_description;
 }
@@ -134,7 +27,7 @@ function create_meta_description($str, $length)
 
 
 //STRIP HTML,TRUNCATE,CREATE KEYWORDS
-function create_meta_keywords($str, $length) 
+function create_meta_keywords_wtg_csv2post($str, $length) 
 {
 	$exclude = array('description','save','$ave','month!','year!','hundreds','dollars','per','month','year',
 	'and','or','but','at','in','on','to','from','is','a','an','am','for','of','the','are','home','much','more',
@@ -142,7 +35,7 @@ function create_meta_keywords($str, $length)
 	'thats','not','too','them','must-have','youre','can','these','where','will','our','end','all','using','use','your','get',
 	'getting','away','you','who','help','helps','any','plus','new','offer','fees','thinking','consider','going','into','where',
 	'interested',"you'll","that's","fee's","year's",'were','had','through','have','made','that','how','his','her','its');
-	$splitstr = @explode(" ", truncate_string(seo_simple_strip_tags(str_replace(array(",",".")," ", $str)), $length));
+	$splitstr = @explode(" ", truncate_string_wtg_csv2post(seo_simple_strip_tags_wtg_csv2post(str_replace(array(",",".")," ", $str)), $length));
 	$new_splitstr = array();
 	foreach ($splitstr as $spstr) 
 	{
@@ -154,7 +47,7 @@ function create_meta_keywords($str, $length)
 /* Example:	<meta name="keywords" content="<?php echo create_meta_keywords($pagedesc, $met_key_len);?>" /> */
 
 //STRIP HTML TAGS - CALLED WITHIN THE OTHER FUNCTIONS
-function seo_simple_strip_tags($str)
+function seo_simple_strip_tags_wtg_csv2post($str)
 {
 	$untagged = "";
 	$skippingtag = false;
@@ -196,7 +89,7 @@ function seo_simple_strip_tags($str)
 
 
 //SPLIT WORDS (\W) BY DELIMITERS, ucfirst THEN RECOMBINE WITH DELIMITERS
-function ucfirst_title($string) 
+function ucfirst_title_wtg_csv2post($string) 
 {
 	$temp = preg_split('/(\W)/', $string, -1, PREG_SPLIT_DELIM_CAPTURE );
 	foreach ($temp as $key=>$word) 
@@ -226,7 +119,7 @@ function ucfirst_title($string)
 // splitS word, that is longer than $cols and is outside
 // HTML tags, by the string $cut. Lines with whitespace in them are ok, only
 // single words over $cols length are split. (&shy; = safe-hyphen)
-function wordwrap_excluding_html($str, $cols = 30, $cut = "&shy;")
+function wordwrap_excluding_html_wtg_csv2post($str, $cols = 30, $cut = "&shy;")
 {
 	$len = strlen($str);
 	$tag = 0;
@@ -249,7 +142,7 @@ function wordwrap_excluding_html($str, $cols = 30, $cut = "&shy;")
 }
 
 //TRUNCATE STRING TO LENGTH, EXCLUDING HTML IN LENGTH COUNT BUT KEEPS THE HTML
-function truncate_string_excluding_html($str, $len = 150)
+function truncate_string_excluding_html_wtg_csv2post($str, $len = 150)
 {
 	$wordlen = 0; // Total text length.
 	$resultlen = 0; // Total length of HTML and text.
@@ -297,7 +190,7 @@ function truncate_string_excluding_html($str, $len = 150)
 }
 
 //TRUNCATE STRING TO SPECIFIED LENGTH - USED IN OTHER FUNCTIONS
-function truncate_string($string, $length = 70)
+function truncate_string_wtg_csv2post($string, $length = 70)
 {
 	if (strlen($string) > $length) 
 	{
@@ -307,19 +200,19 @@ function truncate_string($string, $length = 70)
 	return ($string);
 }
 
-function webtechglobal_replacespaces($v)
+function webtechglobal_replacespaces_wtg_csv2post($v)
 {
 	return(str_replace(array(' ','  ','   ','     ','      ','       ','        ','         ',), '-', $v));
 	return $v;
 }
 
-function webtechglobal_replacespecial($v)
+function webtechglobal_replacespecial_wtg_csv2post($v)
 {
 	return(str_replace(array('&reg;','and'), '', $v));
 	return $v;
 }
 
-function webtechglobal_clean_desc($text)
+function webtechglobal_clean_desc_wtg_csv2post($text)
 {
 	$code_entities_match = array('  ','--','&quot;',"'",'"');
 	$code_entities_replace = array(' ','-','','','');
@@ -327,7 +220,7 @@ function webtechglobal_clean_desc($text)
 	return $text;
 }
 
-function webtechglobal_clean_title($text)
+function webtechglobal_clean_title_wtg_csv2post($text)
 {
 	$code_entities_match = array('  ','--','&quot;',"'");
 	$code_entities_replace = array(' ','-','','');
@@ -335,7 +228,7 @@ function webtechglobal_clean_title($text)
 	return $text;
 }
 
-function webtechglobal_clean_url($text)
+function webtechglobal_clean_url_wtg_csv2post($text)
 {
 	$text=strtolower($text);
 	$code_entities_match = array(' ','  ','--','&quot;','!','@','#','$','%','^','&','*','(',')','_','+','{','}','|',':','"','<','>','?','[',']','\\',';',"'",',','.','/','*','+','~','`','=');
@@ -344,7 +237,7 @@ function webtechglobal_clean_url($text)
 	return $url;
 }
 
-function webtechglobal_clean_keywords($text)
+function webtechglobal_clean_keywords_wtg_csv2post($text)
 {
 	$text=strtolower($text);
 	$code_entities_match = array('--','&quot;','!','@','#','$','%','^','&','*','(',')','_','+','{','}','|',':','"','<','>','?','[',']','\\',';',"'",'.','/','*','+','~','`','=');
@@ -353,7 +246,7 @@ function webtechglobal_clean_keywords($text)
 	return $text;
 }
 
-function get_categories_fordropdownmenu()
+function get_categories_fordropdownmenu_wtg_csv2post()
 {		
 	get_categories('hide_empty=0show_option_all=&title_li=');
 	$test = get_categories('hide_empty=0&echo=0&show_option_none=&style=none&title_li=');
@@ -364,30 +257,4 @@ function get_categories_fordropdownmenu()
 		</option><?php
 	}      
 } 
-
-# CHECKS IF CAMPAIGNS ARE RUNNING - IF SO INCLUDES post-maker.php FOR FULL PROCESSING
-function wtg_csvtopost_processcheck()
-{ 
-    if(isset($_SESSION['page']) && $_SESSION['page'] == $_SERVER['PHP_SELF'])
-    {
-    	# DO NOTHING – the current page has not change from the last page load so do not begin process and this approach will hopefully allow plugins like XML-Sitemap and WP-to-Twitter to do their job, trigger page loads but not trigger further processing in CSV 2 POST.
-    }
-    else
-    {
-		# TRIGGER CSV 2 POST PROCESSING
-		$_SESSION['page'] = $_SERVER['PHP_SELF']; // set current page into session and use on next page load to prevent processing if page not differrent
-
-		global $wpdb;
-		$count = $wpdb->get_var("SELECT COUNT(*) FROM " .$wpdb->prefix . "csvtopost_campaigns WHERE stage = '100'");
-	
-		if( $count > 0 )
-		{
-			include('post-maker.php');
-		}
-		else
-		{			
-			# DO NOTHING AS THERE ARE NO CAMPAIGNS TO RUN
-		}
-	}
-}
 ?>

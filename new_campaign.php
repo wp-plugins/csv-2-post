@@ -68,7 +68,7 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 						{
 							echo 'CSV file not found';
 						}
-						elseif(!isAllowedExtension($csvfiledirectory))
+						elseif(!isAllowedExtension_wtg_csv2post($csvfiledirectory))
 						{
 							echo '<h2>Sorry a slight problem! Only CSV files are allowed please try again</h2>';
 						}
@@ -107,7 +107,7 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 						{ 
 							echo '<h2>Sorry a slight problem! CSV file not found!</h2>';
 						}
-						elseif(!isAllowedExtension($_FILES['csvupload']['name']))
+						elseif(!isAllowedExtension_wtg_csv2post($_FILES['csvupload']['name']))
 						{
 							echo '<h2>Sorry a slight problem! Only CSV files are allowed please try again</h2>';
 						}
@@ -168,7 +168,7 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
             <p>Select full will process the file all at once, not recommended unless you know your server/hosting will be ok with this!</p>
             
             <label>
-            <input type="radio" name="processrate" value="1" id="ProcessRate_0" />
+            <input type="radio" name="processrate" value="1" id="ProcessRate_0" <?php if(get_option('full_trial_used_csv2post') == true){?>disabled="disabled"<?php }?> />
             Full - attempt to process entire file, may cause memory errors and is recommend for localhost use only.</label>
 			<br />
             
@@ -181,7 +181,7 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
                 <option value="1">Create 1 Posts</option>
             </select> for every page visit!
             </label>
-      Need a higher limit? <a href="http://www.webtechglobal.co.uk/csv-2-post-premium-edition" title="Buy CSV 2 POST Plus" target="_blank">Buy CSV 2 POST Plus</a><br />
+      Need a higher limit? <a href="http://www.webtechglobal.co.uk/wordpress-csv-2-post-plugin" title="Buy CSV 2 POST Plus" target="_blank">Buy CSV 2 POST Plus</a><br />
     
 			<h3>(b) Upload or Link</h3>
             
@@ -1272,11 +1272,11 @@ if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) &
                     <td><b>Selected Filter Column</b></td>
                     <td></td>
                     <td>
-                    <?php
+                    <?php					
 					   $handle = fopen("$csvfiledirectory", "r");
 
 					   while (($data = fgetcsv($handle, 999999, ",")) !== FALSE && $stop != 1)// Gets CSV rows
-						{	 
+						{	
 							$stop++;// used to limit row parsing to just 1
 				
 							$i = 0; ?>
@@ -1315,7 +1315,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) &
                     	<td><?php echo $count; ?>: </td>
                         <td><input name="cat<?php echo $count; ?>a" type="text" value="" maxlength="30" /></td>
                         <td></td>
-                        <td><select name="cat<?php echo $count; ?>b" size="1"><?php get_categories_fordropdownmenu();?></select></td>
+                        <td><select name="cat<?php echo $count; ?>b" size="1"><?php get_categories_fordropdownmenu_wtg_csv2post();?></select></td>
                     </tr><?php 
 					$count++;
 				}

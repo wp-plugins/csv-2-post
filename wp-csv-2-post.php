@@ -21,61 +21,114 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-	
-# GET GLOBAL FUNCTIONS
+
 require('functions.php');
 
-# INSTANTIATE DATABASE CONNECTION
-global $wpdb;
+function wtg_csvtopost_processcheck()
+{ 
+    if(isset($_SESSION['page']) && $_SESSION['page'] == $_SERVER['PHP_SELF'])
+    {
+    	# DO NOTHING – the current page has not change from the last page load so do not begin process and this approach will hopefully allow plugins like XML-Sitemap and WP-to-Twitter to do their job, trigger page loads but not trigger further processing in CSV 2 POST.
+    }
+    else
+    {
+		# TRIGGER CSV 2 POST PROCESSING
+		$_SESSION['page'] = $_SERVER['PHP_SELF']; // set current page into session and use on next page load to prevent processing if page not differrent
 
-# INITIALISE HOOKS
-// ensure database has been installed for main table
-add_action("plugins_loaded", "init_csvtopost_campaigndata_tabele_wtg");
+		# CHECK FULL PROCESSING TRIAL STATUS
+		global $wpdb;
+		$full_trial_used_csv2post = get_option( "full_trial_used_csv2post" );
+		if($full_trial_used_csv2post != true)
+		{	
+			# ANY PROCESS CAN BE USED
+			$count = $wpdb->get_var("SELECT COUNT(*) FROM " .$wpdb->prefix . "csvtopost_campaigns WHERE stage = '100'");
+		}
+		else
+		{
+			# ONLY STAGGERED PROCESSING CAN BE USED
+			$count = $wpdb->get_var("SELECT COUNT(*) FROM " .$wpdb->prefix . "csvtopost_campaigns WHERE stage = '100' AND process = '2'");
+		}
+		
+		if( $count > 0 )
+		{
+			include('post-maker.php');
+		}
+		else
+		{			
+			# DO NOTHING AS THERE ARE NO CAMPAIGNS TO RUN
+		}
+	}
+}
 
-// Hook for adding admin menus
-add_action('admin_menu', 'mt_add_pages');
-
-// hook for checking processing requirements during page load
-//add_action('wp', 'wtg_csvtopost_processcheck');// trigger processing
 add_action('shutdown', 'wtg_csvtopost_processcheck');// trigger processing
 
+include('db_tables.php');
+
+register_activation_hook(__FILE__,'init_campaigndata_tables_wtg_csv2post');
+
+// Hook for adding admin menus
+add_action('admin_menu', 'wtg_csv2post_add_pages');
+
 // action function for above hook
-function mt_add_pages() 
+function wtg_csv2post_add_pages() 
 {
     // Add a new top-level menu (ill-advised):
-    add_menu_page('CSV 2 POST', 'CSV 2 POST', 8, __FILE__, 'wtg_toplevel_page');
+    add_menu_page('CSV 2 POST', 'CSV 2 POST', 8, __FILE__, 'wtg_csv2post_toplevel_page');
     // Add a submenu to the custom top-level menu:
-    add_submenu_page(__FILE__, 'New Campaign', 'New Campaign', 8, 'new_campaign', 'wtg_sublevel_page1');
+    add_submenu_page(__FILE__, 'New Campaign', 'New Campaign', 8, 'new_campaign', 'wtg_csv2post_sublevel_page1');
     // Add a second submenu to the custom top-level menu:
-    add_submenu_page(__FILE__, 'Manage Campaigns', 'Manage Campaigns', 8, 'manage_campaigns', 'wtg_sublevel_page2');
+    add_submenu_page(__FILE__, 'Manage Campaigns', 'Manage Campaigns', 8, 'manage_campaigns', 'wtg_csv2post_sublevel_page2');
     // Add a third submenu to the custom top-level menu:
-    add_submenu_page(__FILE__, 'Disclaimer', 'Disclaimer', 8, 'disclaimer', 'wtg_sublevel_page3');
+    add_submenu_page(__FILE__, 'Disclaimer', 'Disclaimer', 8, 'disclaimer', 'wtg_csv2post_sublevel_page3');
 }
 
 // mt_toplevel_page() displays the page content for the custom Test Toplevel menu
-function wtg_toplevel_page() 
+function wtg_csv2post_toplevel_page() 
 {
     require('main_page.php');
 }
 
 // mt_sublevel_page() displays the page content for the first submenu
 // of the custom Test Toplevel menu
-function wtg_sublevel_page1() 
+function wtg_csv2post_sublevel_page1() 
 {
 	require('new_campaign.php');
 }
 
 // mt_sublevel_page2() displays the page content for the second submenu
 // of the custom Test Toplevel menu
-function wtg_sublevel_page2() 
+function wtg_csv2post_sublevel_page2() 
 {
 	require('edit_campaign.php');
 }
 
 // sub menu for disclaimer, terms and conditions
-function wtg_sublevel_page3() 
+function wtg_csv2post_sublevel_page3() 
 {
-	require('disclaimer.php');
-	require('gnu-gpl.php');
+	require('disclaimer.php');?>
+
+	<script type="text/javascript"><!--
+	google_ad_client = "pub-4923567693678329";
+	/* 728x90, created 7/18/09 */
+	google_ad_slot = "1325545528";
+	google_ad_width = 728;
+	google_ad_height = 90;
+	//-->
+	</script>
+	<script type="text/javascript"
+	src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+	</script><?php
+	require('gnu-gpl.php');?>
+    <script type="text/javascript"><!--
+google_ad_client = "pub-4923567693678329";
+/* 728x90, created 7/18/09 */
+google_ad_slot = "1325545528";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script><?php
 }
 ?>

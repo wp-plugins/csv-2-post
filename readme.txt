@@ -6,13 +6,13 @@ Requires at least: 2.8.0
 Tested up to: 2.8.2
 Stable tag: trunk
 
-Inject any CSV file data into the WordPress database as new Posts!
+Import any CSV file data and inject it into the WordPress database to make thousands of new Posts!
 
 == Description ==
 
 Use CSV 2 POST to import a csv data file and inject up to 1 million posts in WordPress! It is free to use and has some cool features that other
 similiar plugins don't with many more cool new ideas coming soon. Developed by Ryan Bayne from WebTechGlobal, a University graduate
-in 2009.     === Please back up your CSV files on your server before making any upgrades or they will be overwritten === 
+in 2009.    === Please back up your CSV files on your server before making any upgrades or they will be overwritten === 
 
 == Installation ==
 
@@ -24,13 +24,16 @@ No coding skills required to use this plugin and you can install as you would mo
 
 == Frequently Asked Questions ==
 
-= Is the CSV file processed all at once? =
+= Can I get the AdSense and links removed from my post made by CSV 2 POST? =
 
-You have the option of doing it all at once or staggering it so that a few rows are processed for each page load on your blog!
+The options available are to either locate and edit every post that has the WebTechGlobal links in them or purchase CSV 2 POST Plus.
 
 == Screenshots ==
 
-1. TBC
+1.Image 1 /images/csv2post_wordpressplugin_stage1.(png|jpg|jpeg|gif). 
+2.Image 2 /images/csv2post_wordpressplugin_stage2.(png|jpg|jpeg|gif). 
+3.Image 3 /images/csv2post_wordpressplugin_stage4.(png|jpg|jpeg|gif). 
+
 
 == Changelog ==
 
@@ -108,6 +111,15 @@ You have the option of doing it all at once or staggering it so that a few rows 
 * Change duplication check from checking "post_title" to checking "post_name" in the wp_posts table, this is 100% accurate now.
 * Change SQL queries to not use "*" which should help speed the plugin up a little.
 * Extend list of keyword exclusion, please see my new blog post for Version 1.6 release for a full list of excluded keywords.
+
+= 1.7 =
+* Seperated database create queries and put them in db_tables.php, also greatly improved the create database queries and updates.
+* Database create queries are also only initiated if the database version numbers do not match making it quicker.
+* Free edition now has trial like restrictions including my links in some posts, my adsense in some posts and full processing disabled.
+* Functions.php file is only included when needed instead of all the time, same with db_tables.php.
+* Most function names change to prevent conflicts with other plugins but mainly to prevent conflict with CSV 2 POST Plus, the paid edition of this plugin.
+* The link on Stage 1 of New Campaign process updated to point to the main CSV 2 POST page.
+
 
 == Arbitrary section ==
 
