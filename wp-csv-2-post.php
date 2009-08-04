@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: CSV 2 POST
-Version: 1.6
+Version: 1.7
 Plugin URI: http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-post-plugin
 Description: Turns CSV data rows into posts with high seo per post
 Author: Ryan Bayne
