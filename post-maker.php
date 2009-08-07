@@ -168,6 +168,12 @@ else
 					unset($advertiser); unset($imageurl);
 					unset($category); unset($author);
 					
+					# TRIAL COUNTER FOR FULL PROCESSING TRIAL
+					if($campaignresult->process == 1 && $posts_injected >= 1000)
+					{
+						update_option('full_trial_used_csv2post',true);
+					}
+					
 				}// end of second duplication check
 				
 			}// end of first duplication check

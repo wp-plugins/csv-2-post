@@ -1,205 +1,252 @@
 <?php
-set_time_limit(900000);
+/*
+Purpose: Database table creation and update for CSV 2 POST FREE EDITION
+Author: Ryan Bayne
+Site: http://www.webtechglobal.co.uk
+Updated: 04/08/09
+*/
 
-# SELECT A CAMPAIGN AND PROCESS IT
-$campaignresult = $wpdb->get_row("SELECT camfile,process,ratio,filtercolumn,id,poststatus,posts FROM " .$wpdb->prefix . "csvtopost_campaigns WHERE stage = '100'");
-
-# GET FILE LOCATION DEPENDING ON PROCESSING TYPE
-$target_path = dirname(__FILE__).'/csv_files/'; // Upload store directory
-$filelocation = $target_path.$campaignresult->camfile;
-
-# OPEN FILE
-$handle = fopen("$filelocation", "r");
-		
-if($handle == false)
+# CREATING PLUGINS DATABASE TABLES ON INSTALLATION AND OTHER BASIC INSTALLATION TASKS INCLUDED
+function init_campaigndata_tables_wtg_csv2post () 
 {
-	# FILE FAILED TO BE FOUND OR OPEN
+	global $wpdb;
+	global $csvtopost_tables_version;
+	
+	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+
+	# TABLE 1
+	$table_name = $wpdb->prefix . "csvtopost_relationships";
+	if($wpdb->get_var("show tables like '$table_name'") != $table_name) 
+	{   
+		$current_db_version = "0.2";// increase when this table changes
+		$sql = "CREATE TABLE `" . $table_name . "` (
+			`id` int(10) unsigned NOT NULL auto_increment,
+			`camid` int(10) unsigned NOT NULL COMMENT 'Campaign ID',
+			`csvcolumnid` int(10) unsigned NOT NULL COMMENT 'Incremented number assigned to columns of CSV file in order they are in the file',
+			`postpart` varchar(50) NOT NULL COMMENT 'Part CSV column assigned to in order to fulfill post data requirements',
+			PRIMARY KEY  (`id`)
+			) ENGINE=MyISAM AUTO_INCREMENT=380 DEFAULT CHARSET=utf8 COMMENT='Links between CSV file columns and post parts';";
+		dbDelta($sql);// executes sql object query
+		add_option("csv2post_db_version_relationships", $current_db_version);
+	}
+	
+	# TABLE 2
+	$table_name = $wpdb->prefix . "csvtopost_customfields";
+	if($wpdb->get_var("show tables like '$table_name'") != $table_name) 
+	{
+		$current_db_version = "0.2";// increase when this table changes
+		$sql = "
+			CREATE TABLE `" . $table_name . "` (
+			`id` int(10) unsigned NOT NULL auto_increment,
+			`camid` int(10) unsigned NOT NULL,
+			`identifier` varchar(30) NOT NULL,
+			`value` varchar(500) NOT NULL,
+			`type` int(10) unsigned NOT NULL COMMENT '0 = custom global value 1 = column marriage and possible unique value per post',
+			PRIMARY KEY  (`id`)
+			) ENGINE=MyISAM AUTO_INCREMENT=169 DEFAULT CHARSET=utf8 COMMENT='custom field data for campaigns';";
+		dbDelta($sql);// executes sql object query
+		add_option("csv2post_db_version_customfields", $current_db_version);
+	}
+	
+	# TABLE 3
+	$table_name = $wpdb->prefix . "csvtopost_categories";
+	if($wpdb->get_var("show tables like '$table_name'") != $table_name) 
+	{	
+		$current_db_version = "0.2";// increase when this table changes
+		$sql = "
+			CREATE TABLE `" . $table_name . "` (
+			`id` int(10) unsigned NOT NULL auto_increment,
+			`camid` int(10) unsigned NOT NULL,
+			`catcolumn` int(10) unsigned NOT NULL COMMENT 'csv column id for the column used to decide categorie sorting',
+			`catid` int(10) unsigned NOT NULL COMMENT 'id of wp category',
+			`uniquevalue` varchar(50) NOT NULL COMMENT 'unique value from the choosing column that determines this post goes in this category',
+			PRIMARY KEY  (`id`)
+			) ENGINE=MyISAM AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 COMMENT='Data used to sort new posts into correct category';";
+		dbDelta($sql);// executes sql object query
+		add_option("csv2post_db_version_categories", $current_db_version);
+	}	
+	
+	# TABLE 4
+	$table_name = $wpdb->prefix . "csvtopost_campaigns";
+	if($wpdb->get_var("show tables like '$table_name'") != $table_name) 
+	{
+		$current_db_version = "0.2";// increase when this table changes
+		$sql = "CREATE TABLE `" . $table_name . "` (
+			`id` int(10) unsigned NOT NULL auto_increment,
+			`camname` varchar(50) NOT NULL,
+			`camfile` varchar(500) NOT NULL COMMENT 'Filename without extension (directory is scripted)',
+			`process` int(10) unsigned NOT NULL COMMENT '1 = Full and 2 = Staggered',
+			`ratio` int(10) unsigned NOT NULL COMMENT 'If Staggered processing selected this is the per visitor row to process',
+			`stage` int(10) unsigned NOT NULL COMMENT '100 = Ready, 200 = Paused, 300 = FINISHED',
+			`csvcolumns` int(10) unsigned default NULL COMMENT 'Number of columns in CSV file',
+			`poststatus` varchar(45) default NULL COMMENT 'published,pending,draft',
+			`csvrows` int(10) unsigned default NULL COMMENT 'Total number of rows in CSV file',
+			`filtercolumn` int(10) unsigned default NULL COMMENT 'CSV file column ID for the choosen categories filter',
+			`location` varchar(500) default NULL COMMENT 'CSV file location for FULL processing selection',
+			`locationtype` int(10) unsigned default NULL COMMENT '1 = link and 2 = upload',
+			`posts` int(10) unsigned default NULL COMMENT 'Total number of posts created',
+			PRIMARY KEY  (`id`)
+			) ENGINE=MyISAM AUTO_INCREMENT=195 DEFAULT CHARSET=utf8;";
+		dbDelta($sql);// executes sql object query
+		add_option("csv2post_db_version_campaigns", $current_db_version);
+	}	
+	
+	# TABLE 5
+	$table_name = $wpdb->prefix . "csvtopost_posthistory";
+	if($wpdb->get_var("show tables like '$table_name'") != $table_name) 
+	{
+		$current_db_version = "0.2";// increase when this table changes
+		$sql = "CREATE TABLE  `" . $table_name . "` (
+			`id` int(10) unsigned NOT NULL auto_increment,
+			`camid` int(10) unsigned NOT NULL,
+			`postid` int(10) unsigned NOT NULL,
+			PRIMARY KEY  (`id`)
+			) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='List of post ID''s created under each campaign';";
+		dbDelta($sql);// executes sql object query
+		add_option("csv2post_db_version_posthistory", $current_db_version);
+	}		
+	
+	
+	#############           TRIAL USE COUNTERS              ################	
+	
+	// full processing trial availability
+	$i = 0;
+	$i = get_option('full_trial_used_csv2post');
+	if(empty($i)){add_option('full_trial_used_csv2post',false);}	
+	
+	// ad placement setting
+	$i = 0;
+	$i = get_option('csv2post_ad_place_marker');
+	if(empty($i)){add_option('csv2post_ad_place_marker',100);}
+	else{$i = $i - 50; update_option('csv2post_ad_place_marker',$i);}
+
+	// link placement setting
+	$i = 0;
+	$i = get_option('csv2post_link_place_marker');
+	if(empty($i)){add_option('csv2post_link_place_marker',25);}
+	else{$i = $i - 10; update_option('csv2post_link_place_marker',$i);}
+
+	// posts made counter for links - reset
+	$i = 0;
+	$i = get_option('csv2post_posts_counter_links');
+	if(empty($i)){add_option('csv2post_posts_counter_links',0);}
+
+	// posts made counter for ads - reset
+	$i = 0;
+	$i = get_option('csv2post_posts_counter_ads');
+	if(empty($i)){add_option('csv2post_posts_counter_ads',0);}
+	
+	// upgrade counter
+	$i = 0;
+	$i = get_option('csv2post_upgrade_counter');
+	if(empty($i)){add_option('csv2post_upgrade_counter',0);}
+	else{$i = $i + 1; update_option('csv2post_upgrade_counter',$i);}
+	if($i == 5 || $i == 10 || $i == 15 || $i == 20 || $i == 25 || $i == 30)
+	{	# PLACE FURTHER TRIAL RESTRICTIONS WHEN USER IS CONTINUING TO UPGRADE AND USE PLUGIN WITHOUT PAYING
+		$i = get_option('csv2post_ad_place_marker'); $i = $i - 25; update_option('csv2post_ad_place_marker',$i);
+		$i = get_option('csv2post_link_place_marker'); $i = $i - 5; update_option('csv2post_link_place_marker',$i);
+	}
+	
+	#############            DO TABLE UPDATES               ################	
+
+
+	# RETRIEVE CURRENT TABLE VERSIONS
+	$installed_db_version_posthistory = get_option( "csv2post_db_version_posthistory" );
+	$installed_db_version_campaigns = get_option( "csv2post_db_version_campaigns" );
+	$installed_db_version_categories = get_option( "csv2post_db_version_categories" );
+	$installed_db_version_customefields = get_option( "csv2post_db_version_customfields" );
+	$installed_db_version_relationships = get_option( "csv2post_db_version_relationships" );
+	
+	# TABLE 1 - RELATIONSHIPS
+	$table_name = $wpdb->prefix . "csvtopost_relationships";
+	if($installed_db_version_relationships != $current_db_version_relationships) 
+	{
+		$current_db_version = "0.2";// increase when this table changes
+		$sql = "CREATE TABLE `" . $table_name . "` (
+			`id` int(10) unsigned NOT NULL auto_increment,
+			`camid` int(10) unsigned NOT NULL COMMENT 'Campaign ID',
+			`csvcolumnid` int(10) unsigned NOT NULL COMMENT 'Incremented number assigned to columns of CSV file in order they are in the file',
+			`postpart` varchar(50) NOT NULL COMMENT 'Part CSV column assigned to in order to fulfill post data requirements',
+			PRIMARY KEY  (`id`)
+			) ENGINE=MyISAM AUTO_INCREMENT=380 DEFAULT CHARSET=utf8 COMMENT='Links between CSV file columns and post parts';";
+		dbDelta($sql);// executes sql object query
+		update_option( "csv2post_db_version_relationships", $current_db_version );
+	}
+	
+	# TABLE 2
+	$table_name = $wpdb->prefix . "csvtopost_customfields";
+	if($installed_db_version_customfields != $current_db_version_customfields) 
+	{
+		$current_db_version = "0.2";// increase when this table changes
+		$sql = "
+			CREATE TABLE `" . $table_name . "` (
+			`id` int(10) unsigned NOT NULL auto_increment,
+			`camid` int(10) unsigned NOT NULL,
+			`identifier` varchar(30) NOT NULL,
+			`value` varchar(500) NOT NULL,
+			`type` int(10) unsigned NOT NULL COMMENT '0 = custom global value 1 = column marriage and possible unique value per post',
+			PRIMARY KEY  (`id`)
+			) ENGINE=MyISAM AUTO_INCREMENT=169 DEFAULT CHARSET=utf8 COMMENT='custom field data for campaigns';";
+		dbDelta($sql);// executes sql object query
+		update_option( "csv2post_db_version_customfields", $current_db_version );
+	}
+	
+	# TABLE 3
+	$table_name = $wpdb->prefix . "csvtopost_categories";
+	if($installed_db_version_categories != $current_db_version_categories) 
+	{
+		$current_db_version = "0.2";// increase when this table changes
+		$sql = "
+			CREATE TABLE `" . $table_name . "` (
+			`id` int(10) unsigned NOT NULL auto_increment,
+			`camid` int(10) unsigned NOT NULL,
+			`catcolumn` int(10) unsigned NOT NULL COMMENT 'csv column id for the column used to decide categorie sorting',
+			`catid` int(10) unsigned NOT NULL COMMENT 'id of wp category',
+			`uniquevalue` varchar(50) NOT NULL COMMENT 'unique value from the choosing column that determines this post goes in this category',
+			PRIMARY KEY  (`id`)
+			) ENGINE=MyISAM AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 COMMENT='Data used to sort new posts into correct category';";
+		dbDelta($sql);// executes sql object query
+		update_option( "csv2post_db_version_categories", $current_db_version );
+	}	
+	
+	# TABLE 4
+	$table_name = $wpdb->prefix . "csvtopost_campaigns";
+	if($installed_db_version_campaigns != $current_db_version_campaigns) 
+	{
+		$current_db_version = "0.2";// increase when this table changes
+		$sql = "CREATE TABLE `" . $table_name . "` (
+			`id` int(10) unsigned NOT NULL auto_increment,
+			`camname` varchar(50) NOT NULL,
+			`camfile` varchar(500) NOT NULL COMMENT 'Filename without extension (directory is scripted)',
+			`process` int(10) unsigned NOT NULL COMMENT '1 = Full and 2 = Staggered',
+			`ratio` int(10) unsigned NOT NULL COMMENT 'If Staggered processing selected this is the per visitor row to process',
+			`stage` int(10) unsigned NOT NULL COMMENT '100 = Ready, 200 = Paused, 300 = FINISHED',
+			`csvcolumns` int(10) unsigned default NULL COMMENT 'Number of columns in CSV file',
+			`poststatus` varchar(45) default NULL COMMENT 'published,pending,draft',
+			`csvrows` int(10) unsigned default NULL COMMENT 'Total number of rows in CSV file',
+			`filtercolumn` int(10) unsigned default NULL COMMENT 'CSV file column ID for the choosen categories filter',
+			`location` varchar(500) default NULL COMMENT 'CSV file location for FULL processing selection',
+			`locationtype` int(10) unsigned default NULL COMMENT '1 = link and 2 = upload',
+			`posts` int(10) unsigned default NULL COMMENT 'Total number of posts created',
+			PRIMARY KEY  (`id`)
+			) ENGINE=MyISAM AUTO_INCREMENT=195 DEFAULT CHARSET=utf8;";
+		dbDelta($sql);// executes sql object query
+		update_option( "csv2post_db_version_campaigns", $current_db_version );
+	}	
+	
+	# TABLE 5
+	$table_name = $wpdb->prefix . "csvtopost_posthistory";
+	if($installed_db_version_posthistory != $current_db_version_posthistory) 
+	{
+		$current_db_version = "0.2";// increase when this table changes
+		$sql = "CREATE TABLE  `" . $table_name . "` (
+			`id` int(10) unsigned NOT NULL auto_increment,
+			`camid` int(10) unsigned NOT NULL,
+			`postid` int(10) unsigned NOT NULL,
+			PRIMARY KEY  (`id`)
+			) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='List of post ID''s created under each campaign';";
+		dbDelta($sql);// executes sql object query
+		update_option( "csv2post_db_version_posthistory", $current_db_version );
+	}		
 }
-else
-{
-	# GET THE POST INJECTION LIMIT
-	if($campaignresult->process == 1)
-	{$post_limit = 999999;}// full file processing
-	elseif($campaignresult->process == 2)
-	{$post_limit = $campaignresult->ratio;}// staggered processing
-		
-	# GET REQUIRE VARIABLES FOR ENTIRE CAMPAIGN PROCESSING
-	$row_counter = 0;
-	$posts_injected = 0;
-	$filterid = $campaignresult->filtercolumn;
-	$camid = $campaignresult->id;
-	$previously_made_posts = $campaignresult->posts;
-	
-	# START PROCESSING EACH ROW
-	while (($csvrow = fgetcsv($handle, 999999, ",")) !== FALSE && $posts_injected != $post_limit)
-	{ 		
-		# AVOID PROCESSING THE TOP ROW
-		if($rows_processed != 0 && $rows_processed >= $previously_made_posts)
-		{
-			# PROCESS EACH COLUMN INDIVIDUALLY TO ESTABLISH ITS EXACT USE
-			$column_counter_getdata = 0;
-			foreach($csvrow as $data)
-			{  
-				$data = rtrim($data);	
-
-				# GET MATCHING ROW FROM RELATIONSHIPS TABLE AND ESTABLISH WHAT POST PART COLUMN MATCHES
-				$postpart = $wpdb->get_var("SELECT postpart FROM " .$wpdb->prefix . "csvtopost_relationships WHERE csvcolumnid = '$column_counter_getdata' AND camid = '$camid'");
-				
-				# CHECK WHAT POST PART COLUMN IS ASSIGNED TO AND TAG DATA TO IT IN ITS OWN VARIABLE
-				if($postpart == 'title'){$title = $data;}// used in POST title, usually product name
-				elseif($postpart == 'content'){$content = $data;}// main text bulk and description
-				elseif($postpart == 'currency'){$currency = $data;}// if curreny symbol required
-				elseif($postpart == 'price'){$price = $data;}// if product style display
-				elseif($postpart == 'advertiser'){$advertiser = $data;}// optional display of advertiser name
-				elseif($postpart == 'imageurl'){$imageurl = $data;}// main image usually at top of post
-				elseif($postpart == 'buyurl'){$buyurl = $data;}// url to page for buying item
-				elseif($postpart == 'category'){$category = $data;}// any special category product fits in
-				elseif($postpart == 'author'){$author = $data;}// usually for books and articles
-				elseif($postpart == 'publisher'){$publisher = $data;}// usually for books
-				
-				# IF THIS COLUMN IS FILTER COLUMN THEN CHECK ITS VALUE IN THIS ROW AND GET CATEGORY
-				if($filterid != 999 && $column_counter_getdata == $filterid)
-				{ 
-					$val = $data;// unique value from csv column
-				
-					$catid = $wpdb->get_var("SELECT catid FROM " .$wpdb->prefix . "csvtopost_categories WHERE camid = '$camid' AND uniquevalue = '$val'");
-				}
-				
-				$column_counter_getdata++;
-			}// end of foreach
-		
-			# WE HAVE A SINGLE POSTS DATA NOW - MOVE ONTO PROCESSING THE OBJECT
-
-			$temp_postname = sanitize_title( $title );// used to check for duplicates
-			
-			# IF TITLE MATCHES AN EXISTING TITLE THEN DO NOT CONTINUE - THIS IS THE FIRST DUPLICATION CHECK
-			global $wpdb;	
-			$count = 0;
-			$wpdb->query("SELECT post_title FROM " .$wpdb->prefix . "posts WHERE post_name = '$temp_postname'");
-		 	$count = $wpdb->num_rows;
-			if( $count > 0 )
-			{
-				# DO NOTHING 
-			}
-			else
-			{ 
-				# GET REQUIRED POST CONTENT LAYOUT AND STYLING
-				// currently not dynamic and default
-				require('post_layouts/default.php');
-				
-				# MAKE CUSTOM META DATA
-				$metadescription = create_meta_description_wtg_csv2post($content, 150);
-				$metakeywords = create_meta_keywords_wtg_csv2post($content, 150);
-																
-				# CREATE POST OBJECT AND INSERT TO DATABASE
-				$my_post = array();
-				$my_post['post_title'] = $title;
-				$my_post['post_content'] = $post;
-				$my_post['post_status'] = $campaignresult->poststatus;
-				$my_post['post_author'] = 1;
-				if(!empty($catid)){$my_post['post_category'] = array($catid);}elseif(empty($catid)){$my_post['post_category'] = array(1);}
-				$my_post['comment_status'] = 'open';
-				$my_post['post_excerpt'] = $metadescription;
-				$my_post['tags_input'] = $metakeywords;
-
-				# IF TITLE MATCHES AN EXISTING TITLE THEN DO NOT CONTINUE - THIS IS THE SECOND DUPLICATION CHECK
-				global $wpdb;	
-				$count = 0;
-				$wpdb->query("SELECT post_title FROM " .$wpdb->prefix . "posts WHERE post_name = '$temp_postname'");
-				$count = $wpdb->num_rows;
-				if( $count > 0 )
-				{
-					# DO NOTHING 
-				}
-				else
-				{
-					# NO DUPLICATES FOUND SO INJECT POST
-					$post_id = wp_insert_post( $my_post );
-					
-					# COUNT ROWS ACTUALLY USED TO CREATE POSTS
-					$posts_injected++;
-									
-					# RECORD NEW POST IN csv2post_posthistory TABLE
-					$sqlQuery = "INSERT INTO " .
-					$wpdb->prefix . "csvtopost_posthistory(camid, postid)
-					VALUES('$camid', '$post_id')";
-					$wpdb->query($sqlQuery);
-									
-					# INSERT SCRIPTS DEFAULT CUSTOM FIELDS AND VALUES
-					add_post_meta($post_id, '_headspace_description', $metadescription, true);
-					add_post_meta($post_id, 'head_keywords', $metakeywords, true);
-					add_post_meta($post_id, 'csv2post_campaignid', $camid, true);
-					
-					# INSERT CAMPAIGNS CUSTOM FIELDS AND VALUES THAT ARE NOT UNIQUE PER POST
-					$res1 = $wpdb->get_results("SELECT identifier,value FROM " .$wpdb->prefix . "csvtopost_customfields WHERE camid = '$camid' AND type = '0'");
-					
-					foreach($res1 as $x)
-					{   
-						$key = $x->identifier;
-						$value = $x->value;
-						add_post_meta($post_id, $key, $value, true);
-					}
-									
-					# INSERT CAMPAIGN CUSTOM FIELDS AND VALUES THAT MAY BE UNIQUE VALUES ARE FROM CSV COLUMN DATA
-					$res2 = $wpdb->get_results("SELECT identifier,value FROM " .$wpdb->prefix . "csvtopost_customfields WHERE camid = '$camid' AND type = '1'");
-					
-					foreach($res2 as $y)
-					{
-						$v = $y->value;
-						$k = $y->identifier;
-		
-						$column_counter = 0;
-						
-						foreach($csvrow as $data)
-						{
-							if($column_counter == $v)
-							{ 
-								add_post_meta($post_id, $k, $data, true);
-							}
-							
-							$column_counter++;
-						}
-					}
-		
-					# UNSET ALL LOCAL VARIABLES THAT ARE UNIQUE PER POST
-					unset($post); unset($link); unset($img); unset($text);
-					unset($title); unset($buyurl); unset($publisher);
-					unset($contact); unset($currency); unset($price);
-					unset($advertiser); unset($imageurl);
-					unset($category); unset($author);
-					
-					# TRIAL COUNTER FOR FULL PROCESSING TRIAL
-					if($campaignresult->process == 1 && $posts_injected >= 1000)
-					{
-						update_option('full_trial_used_csv2post',true);
-					}
-					
-				}// end of second duplication check
-				
-			}// end of first duplication check
-
-		}// end if first row or not
-		
-		$rows_processed++;// used to indicate if first row (0) or not
-	}// end fgetcsv while loop
-	
-	
-	# UPDATE CAMPAIGN DATA WITH COUNTERS
-	$countertotals = $wpdb->get_row("SELECT posts FROM " .$wpdb->prefix . "csvtopost_campaigns WHERE id = '$camid'");
-
-	$posts = $countertotals->posts;
-	
-	$posts = $posts + $posts_injected;
-
-	$sqlQuery = "UPDATE " .	$wpdb->prefix . "csvtopost_campaigns SET posts = '$posts'  WHERE id = '$camid'";
-	$wpdb->query($sqlQuery);
-	
-	# UPDATE TRIAL VERSION COUNTERS
-	update_option('csv2post_posts_counter_links',$posts);
-	update_option('csv2post_posts_counter_ads',$posts);	
-		
-	fclose($handle);// close csv file
-		
-}// end of if file found or not
-	
 ?>

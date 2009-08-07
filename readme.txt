@@ -120,6 +120,8 @@ The options available are to either locate and edit every post that has the WebT
 * Most function names change to prevent conflicts with other plugins but mainly to prevent conflict with CSV 2 POST Plus, the paid edition of this plugin.
 * The link on Stage 1 of New Campaign process updated to point to the main CSV 2 POST page.
 
+= 1.8 =
+* Mismatched function call corrected causing plugin to be unusable after last update.
 
 == Arbitrary section ==
 
