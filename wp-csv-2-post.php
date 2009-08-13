@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: CSV 2 POST
-Version: 1.8
+Version: 1.9
 Plugin URI: http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-post-plugin
 Description: Turns CSV data rows into posts with high seo per post
 Author: Ryan Bayne
@@ -26,14 +26,14 @@ require('functions.php');
 
 function wtg_csvtopost_processcheck()
 { 
-    if(isset($_SESSION['page']) && $_SESSION['page'] == $_SERVER['PHP_SELF'])
+    if(isset($_SESSION['csvtopostpage']) && $_SESSION['csvtopostpage'] == $_SERVER['PHP_SELF'])
     {
     	# DO NOTHING – the current page has not change from the last page load so do not begin process and this approach will hopefully allow plugins like XML-Sitemap and WP-to-Twitter to do their job, trigger page loads but not trigger further processing in CSV 2 POST.
     }
     else
     {
 		# TRIGGER CSV 2 POST PROCESSING
-		$_SESSION['page'] = $_SERVER['PHP_SELF']; // set current page into session and use on next page load to prevent processing if page not differrent
+		$_SESSION['csvtopostpage'] = $_SERVER['PHP_SELF']; // set current page into session and use on next page load to prevent processing if page not differrent
 
 		# CHECK FULL PROCESSING TRIAL STATUS
 		global $wpdb;
@@ -117,18 +117,22 @@ function wtg_csv2post_sublevel_page3()
 	</script>
 	<script type="text/javascript"
 	src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
-	</script><?php
-	require('gnu-gpl.php');?>
+	</script>
+    
+	<?php
+	require('gnu-gpl.php');
+	?>
+    
     <script type="text/javascript"><!--
-google_ad_client = "pub-4923567693678329";
-/* 728x90, created 7/18/09 */
-google_ad_slot = "1325545528";
-google_ad_width = 728;
-google_ad_height = 90;
-//-->
-</script>
-<script type="text/javascript"
-src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
-</script><?php
+	google_ad_client = "pub-4923567693678329";
+	/* 728x90, created 7/18/09 */
+	google_ad_slot = "1325545528";
+	google_ad_width = 728;
+	google_ad_height = 90;
+	//-->
+	</script>
+	<script type="text/javascript"
+	src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+	</script><?php
 }
 ?>

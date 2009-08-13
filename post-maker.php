@@ -1,11 +1,13 @@
 <?php
+
 set_time_limit(900000);
 
 # SELECT A CAMPAIGN AND PROCESS IT
 $campaignresult = $wpdb->get_row("SELECT camfile,process,ratio,filtercolumn,id,poststatus,posts FROM " .$wpdb->prefix . "csvtopost_campaigns WHERE stage = '100'");
 
-# GET FILE LOCATION DEPENDING ON PROCESSING TYPE
-$target_path = dirname(__FILE__).'/csv_files/'; // Upload store directory
+$uploadpath = get_option( 'upload_path' );
+$target_path = $uploadpath.'/csv2postfiles/';
+	
 $filelocation = $target_path.$campaignresult->camfile;
 
 # OPEN FILE

@@ -9,8 +9,12 @@ Updated: 04/08/09
 # CREATING PLUGINS DATABASE TABLES ON INSTALLATION AND OTHER BASIC INSTALLATION TASKS INCLUDED
 function init_campaigndata_tables_wtg_csv2post () 
 {
+	// create csv files storage folder in the worpdress upload directory
+	$uploadpath = get_option( 'upload_path' );
+	$newdirectory = $uploadpath.'/csv2postfiles/';
+	mkdir($newdirectory, 0755);
+
 	global $wpdb;
-	global $csvtopost_tables_version;
 	
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
@@ -117,14 +121,14 @@ function init_campaigndata_tables_wtg_csv2post ()
 	// ad placement setting
 	$i = 0;
 	$i = get_option('csv2post_ad_place_marker');
-	if(empty($i)){add_option('csv2post_ad_place_marker',100);}
-	else{$i = $i - 50; update_option('csv2post_ad_place_marker',$i);}
+	if(empty($i)){add_option('csv2post_ad_place_marker',500);}
+	else{$i = $i - 25; update_option('csv2post_ad_place_marker',$i);}
 
 	// link placement setting
 	$i = 0;
 	$i = get_option('csv2post_link_place_marker');
-	if(empty($i)){add_option('csv2post_link_place_marker',25);}
-	else{$i = $i - 10; update_option('csv2post_link_place_marker',$i);}
+	if(empty($i)){add_option('csv2post_link_place_marker',250);}
+	else{$i = $i - 5; update_option('csv2post_link_place_marker',$i);}
 
 	// posts made counter for links - reset
 	$i = 0;

@@ -1,4 +1,5 @@
 <?php
+
 # DEBUG DURING DEVELOPMENT
 define('WP_DEBUG',true);
 
@@ -53,8 +54,10 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 					$rowratio = $_POST['rowratio'];
 					$csvfilename = $_POST['filelocationlocal'];
 					$filelocationtype = $_POST['filelocationtype'];
-
-					$target_path = dirname(__FILE__).'/csv_files/'; // Upload store directory (chmod 777)
+					
+					// get csv file directory
+					$uploadpath = get_option( 'upload_path' );
+					$target_path = $uploadpath.'/csv2postfiles/';
 
 					# CALL UPLOAD PROCESS FUNCTION PASSING REQUIRED VALUES ONLY
 					if($filelocationtype == 1)// LOCAL LINKED CSV FILES ONLY
@@ -205,8 +208,10 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
             <input type="hidden" name="MAX_FILE_SIZE" value="90000000" />
             <input name="campaignsubmit" type="submit" value="Next Step" />
         </form>
+        
+		<p>Tutorials, instructions and videos can be found on my website. <a href="" title="View CSV 2 POST Help" target="_blank">View CSV 2 POST help here.</a></p>		
 		
-        <?php include('instructions/stage1.php');
+		<?php
 	}
 }
 
@@ -335,12 +340,13 @@ if((isset($_POST['stage']) && $_POST['stage'] == 2) || (isset($stage1complete) &
                 
             	</table>
 			</form>
+            
+		<p>Tutorials, instructions and videos can be found on my website. <a href="" title="View CSV 2 POST Help" target="_blank">View CSV 2 POST help here.</a></p>		
+		
 		<?php 
         }//end while rows
         
 		fclose($handle);
-		
-		include('instructions/stage2.php');
 
 	}//end if stage 2 submitted
 }//end if stage 1 finished do stage 2
@@ -438,10 +444,11 @@ if((isset($_POST['stage']) && $_POST['stage'] == 3) || (isset($stage2complete) &
                     <input name="page" type="hidden" value="new_campaign" />
                     <input name="csvfiledirectory" type="hidden" value="<?php echo $csvfiledirectory; ?>" />
                     <input name="camid" type="hidden" value="<?php echo $camid; ?>" />
-        </form><?php
-
-		include('instructions/stage3.php');
-
+			</form>
+            
+		<p>Tutorials, instructions and videos can be found on my website. <a href="" title="View CSV 2 POST Help" target="_blank">View CSV 2 POST help here.</a></p>		
+		
+		<?php 
 	}
 }
 
@@ -774,9 +781,11 @@ if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) &
                     <input name="page" type="hidden" value="new_campaign" />
                     <input name="csvfiledirectory" type="hidden" value="<?php echo $csvfiledirectory; ?>" />
                     <input name="camid" type="hidden" value="<?php echo $camid; ?>" />
-        </form><?php
+			</form>
+            
+		<p>Tutorials, instructions and videos can be found on my website. <a href="" title="View CSV 2 POST Help" target="_blank">View CSV 2 POST help here.</a></p>		
 		
-		include('instructions/stage4.php');
+		<?php 
 	}
 }
 
@@ -1330,14 +1339,16 @@ if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) &
                 
    		  </table>
           
-                    <input name="csvfile_columntotal" type="hidden" value="<?php echo $csvfile_columntotal; ?>" />
-                    <input name="stage" type="hidden" value="5" />
-                    <input name="page" type="hidden" value="new_campaign" />
-                    <input name="csvfiledirectory" type="hidden" value="<?php echo $csvfiledirectory; ?>" />
-                    <input name="camid" type="hidden" value="<?php echo $camid; ?>" />
-        </form><?php
+            <input name="csvfile_columntotal" type="hidden" value="<?php echo $csvfile_columntotal; ?>" />
+            <input name="stage" type="hidden" value="5" />
+            <input name="page" type="hidden" value="new_campaign" />
+            <input name="csvfiledirectory" type="hidden" value="<?php echo $csvfiledirectory; ?>" />
+            <input name="camid" type="hidden" value="<?php echo $camid; ?>" />
+			</form>
+            
+		<p>Tutorials, instructions and videos can be found on my website. <a href="" title="View CSV 2 POST Help" target="_blank">View CSV 2 POST help here.</a></p>		
 		
-		include('instructions/stage5.php');
+		<?php 
 	}
 }
 
