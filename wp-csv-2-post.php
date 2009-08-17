@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: CSV 2 POST
-Version: 1.9
+Version: 2.0
 Plugin URI: http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-post-plugin
-Description: Turns CSV data rows into posts with high seo per post
+Description: Import csv data files including feeds from affiliate using interface only, no need to edit csv file!
 Author: Ryan Bayne
 Author URI: http://www.webtechglobal.co.uk
 
@@ -21,6 +21,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+
+ini_set('display_errors',1);
+error_reporting(E_ALL);
+
+ini_set('auto_detect_line_endings', '1');
 
 require('functions.php');
 

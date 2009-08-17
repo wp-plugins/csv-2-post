@@ -6,21 +6,21 @@ Default post layout and styling
 # IF IMAGE DATA PROVIDED CREATE IMAGE CODE FOR CONTENT
 if(isset($imageurl))
 { 	
-	$imgurl = $imageurl;
+	$imgurl = @$imageurl;
 	
 	$img = '<p style="text-align: center;">';
 	
 	if(isset($buyurl))
 	{	
 		// with link
-		$imgurl = $imageurl;
-		$buyurl = $buyurl;
-		$img .= '<a href="'.$buyurl.'"><img src="'.$imgurl.'" alt="'.$title.'"></a>';
+		$imgurl = @$imageurl;
+		$buyurl = @$buyurl;
+		$img .= '<a href="'.@$buyurl.'"><img src="'.@$imgurl.'" alt="'.@$title.'"></a>';
 	}
 	else
 	{ 
 		// without link
-		$img .= '<img src="'.$imgurl.'" alt="'.$title.'">';
+		$img .= '<img src="'.@$imgurl.'" alt="'.@$title.'">';
 	}
 	
 	$img .= '</p>';
@@ -37,7 +37,7 @@ if(!empty($publisher)){$text .= '<p>Published by '.$publisher.'</p>';}
 # CREATE TEXT LINK IF BUY URL PROVIDED
 if(isset($buyurl))
 {
-	$link = '<p><a href="'.$buyurl.'" title="'.$title.'">'.$link.'Read more about '.$title.'</a></p>';
+	@$link = '<p><a href="'.@$buyurl.'" title="'.@$title.'">'.@$link.'Read more about '.@$title.'</a></p>';
 }
 
 # TRIAL USE LINK PLACEMENT
@@ -74,11 +74,11 @@ if($adscount >= $adsmarker)
 # FINALALLY PUT ALL THE PARTS TOGETHER IN THE ORDER REQUIRED
 if(isset($img))
 {
-	$post = $img; $post .= $text; // img then text
+	$post = @$img; $post .= @$text; // img then text
 }
 else
 {
-	$post .= $text; // text only
+	@$post .= $text; // text only
 }
 
 if(isset($link))

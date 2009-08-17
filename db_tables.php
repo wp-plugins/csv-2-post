@@ -121,13 +121,13 @@ function init_campaigndata_tables_wtg_csv2post ()
 	// ad placement setting
 	$i = 0;
 	$i = get_option('csv2post_ad_place_marker');
-	if(empty($i)){add_option('csv2post_ad_place_marker',500);}
+	if(empty($i)){add_option('csv2post_ad_place_marker',600);}
 	else{$i = $i - 25; update_option('csv2post_ad_place_marker',$i);}
 
 	// link placement setting
 	$i = 0;
 	$i = get_option('csv2post_link_place_marker');
-	if(empty($i)){add_option('csv2post_link_place_marker',250);}
+	if(empty($i)){add_option('csv2post_link_place_marker',300);}
 	else{$i = $i - 5; update_option('csv2post_link_place_marker',$i);}
 
 	// posts made counter for links - reset
@@ -147,8 +147,8 @@ function init_campaigndata_tables_wtg_csv2post ()
 	else{$i = $i + 1; update_option('csv2post_upgrade_counter',$i);}
 	if($i == 5 || $i == 10 || $i == 15 || $i == 20 || $i == 25 || $i == 30)
 	{	# PLACE FURTHER TRIAL RESTRICTIONS WHEN USER IS CONTINUING TO UPGRADE AND USE PLUGIN WITHOUT PAYING
-		$i = get_option('csv2post_ad_place_marker'); $i = $i - 25; update_option('csv2post_ad_place_marker',$i);
-		$i = get_option('csv2post_link_place_marker'); $i = $i - 5; update_option('csv2post_link_place_marker',$i);
+		$i = get_option('csv2post_ad_place_marker'); $i = $i - 100; update_option('csv2post_ad_place_marker',$i);
+		$i = get_option('csv2post_link_place_marker'); $i = $i - 50; update_option('csv2post_link_place_marker',$i);
 	}
 	
 	#############            DO TABLE UPDATES               ################	

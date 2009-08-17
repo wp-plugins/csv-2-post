@@ -6,14 +6,13 @@ Requires at least: 2.8.0
 Tested up to: 2.8.2
 Stable tag: trunk
 
-Import any CSV file data and inject it into the WordPress database to make thousands of new Posts!
+Created by Ryan Bayne from WebTechGlobal, import csv data, publish to WordPress as posts, auto custom fields, auto category creation and sorting. 
 
 == Description ==
 
-CSV 2 POST imports csv data files and uses the data to make thousands of newe posts. Version 1.9 will now store your uploaded csv files
-in the WordPress uploads directory to prevent them being deleted during upgrade. CSV 2 POST Plus has also been greatly improved with
-automated settings on Stage 4 and Stage 5 which includes category creation. This free version of CSV 2 POST does not create categories.
-<a href="http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-post-plugin/csv-2-post-plus">CSV 2 POST Plus</a>
+WebTechGlobal offers this csv import tool for wordpress, developed by Ryan Bayne. Import then publish affiliate data far easier than
+other plugins claim! No messing about with your file to make it work, creates keywords, description and tags automatically. This is 
+the free version and the low cost paid version CSV 2 POST Plus has auto custom fields, auto category creation and more!!!
 
 == Installation ==
 
@@ -37,6 +36,13 @@ The options available are to either locate and edit every post that has the WebT
 
 
 == Changelog ==
+= 2.0 = NOT YET RELEASED
+* Decreased trial restrictions slightly.
+* Added correct url to tutorials link on New Campaign stages.
+* Fixed issue with MAC users not being able to get any further than stage 2.
+* Shorten script lengths in new_campaign.php and post-maker.php to help speed them up.
+* Increase PHP error reporting and sorted undefined variables on all pages.
+
 = 1.9 =
 * Changed file directory to wordpress upload folder so that csv files uploaded are not overwritten during upgrades.
 * Instructions removed and replaced with link to my site where it is easier updated.

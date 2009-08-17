@@ -5,6 +5,8 @@ define('WP_DEBUG',true);
 
 global $wpdb;
 
+$tutorial_url = '<p>Tutorials, instructions and videos can be found on my website. <a href="http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-post-plugin/csv-2-post-tutorial" title="View CSV 2 POST Help" target="_blank">View CSV 2 POST help here.</a></p>';
+
 # STAGE 1: SUBMISSION OR FIRST TIME VISIT FOR CAPTURING INITIAL CAMPAIGN SETTINGS
 if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 {
@@ -17,142 +19,133 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 		}
 		elseif(!empty($_POST['campaignname']) || is_string($_POST['campaignname']))
 		{
-			$count = $wpdb->get_var("SELECT COUNT(*) FROM $wpdb->csvtopost_campaigns WHERE camname = '$name'");
-			
-			if( $count > 0 )
+			# ENSURE ALL REQUIRED OPTIONS SELECTED AND COMPLETE
+			if(empty($_POST['processrate']))
 			{
-				echo '<h2>Your campaign name is used, please try something different</h2>';
+				echo '<h2>Sorry no process rate selected</h2>';
+			}
+			elseif(!empty($_POST['processrate']) && $_POST['processrate'] == 2 && empty($_POST['rowratio']))
+			{
+				echo '<h2>Sorry you did not enter Row/Visitor ratio number</h2>';
+			}
+			elseif(!empty($_POST['processrate']) && empty($_POST['filelocationtype']))
+			{
+				echo '<h2>Please select a file location type</h2>';	
+			}
+			elseif(!empty($_POST['processrate']) && !empty($_POST['filelocationtype']) && $_POST['filelocationtype'] == 1 && empty($_POST['filelocationlocal']))
+			{
+				echo '<h2>You selected Link for your CSV file location type but did not provide the URL to your file</h2>';
+			}	
+			elseif(!empty($_POST['processrate']) && !empty($_POST['filelocationtype']) && $_POST['filelocationtype'] == 2 && empty($_FILES['csvupload']))
+			{
+				echo '<h2>You selected Upload for your CSV file location type but did not browse and select your CSV file!</h2>';
 			}
 			else
 			{
-				# ENSURE ALL REQUIRED OPTIONS SELECTED AND COMPLETE
-				if(empty($_POST['processrate']))
-				{
-					echo '<h2>Sorry no process rate selected</h2>';
-				}
-				elseif(!empty($_POST['processrate']) && $_POST['processrate'] == 2 && empty($_POST['rowratio']))
-				{
-					echo '<h2>Sorry you did not enter Row/Visitor ratio number</h2>';
-				}
-				elseif(!empty($_POST['processrate']) && empty($_POST['filelocationtype']))
-				{
-					echo '<h2>Please select a file location type</h2>';	
-				}
-				elseif(!empty($_POST['processrate']) && !empty($_POST['filelocationtype']) && $_POST['filelocationtype'] == 1 && empty($_POST['filelocationlocal']))
-				{
-					echo '<h2>You selected Link for your CSV file location type but did not provide the URL to your file</h2>';
-				}	
-				elseif(!empty($_POST['processrate']) && !empty($_POST['filelocationtype']) && $_POST['filelocationtype'] == 2 && empty($_FILES['csvupload']))
-				{
-					echo '<h2>You selected Upload for your CSV file location type but did not browse and select your CSV file!</h2>';
-				}
-				else
-				{
-					# ALL REQUIRED DETAILS CAPTURED SO NOW PROCESS
-					$camname = $_POST['campaignname'];
-					$process = $_POST['processrate'];
-					$rowratio = $_POST['rowratio'];
-					$csvfilename = $_POST['filelocationlocal'];
-					$filelocationtype = $_POST['filelocationtype'];
+				# ALL REQUIRED DETAILS CAPTURED SO NOW PROCESS
+				$camname = $_POST['campaignname'];
+				$process = $_POST['processrate'];
+				$rowratio = $_POST['rowratio'];
+				$csvfilename = $_POST['filelocationlocal'];
+				$filelocationtype = $_POST['filelocationtype'];
+				
+				// get csv file directory
+				$uploadpath = get_option( 'upload_path' );
+				$target_path = $uploadpath.'/csv2postfiles/';
+
+				# CALL UPLOAD PROCESS FUNCTION PASSING REQUIRED VALUES ONLY
+				if($filelocationtype == 1)// LOCAL LINKED CSV FILES ONLY
+				{	
+					$csvfiledirectory = $target_path.$csvfilename;
 					
-					// get csv file directory
-					$uploadpath = get_option( 'upload_path' );
-					$target_path = $uploadpath.'/csv2postfiles/';
-
-					# CALL UPLOAD PROCESS FUNCTION PASSING REQUIRED VALUES ONLY
-					if($filelocationtype == 1)// LOCAL LINKED CSV FILES ONLY
-					{	
-						$csvfiledirectory = $target_path.$csvfilename;
-						
-						# LINK LOCATION - FULL PROCESSING 						
-						$fileexists = file_exists($csvfiledirectory);
-						
-						if($fileexists == false)
+					# LINK LOCATION - FULL PROCESSING 						
+					$fileexists = file_exists($csvfiledirectory);
+					
+					if($fileexists == false)
+					{
+						echo 'CSV file not found';
+					}
+					elseif(!isAllowedExtension_wtg_csv2post($csvfiledirectory))
+					{
+						echo '<h2>Sorry a slight problem! Only CSV files are allowed please try again</h2>';
+					}
+					else
+					{
+						# DO MAIN PROCESS OF FILE AND DATA
+						if($process == 1)
 						{
-							echo 'CSV file not found';
+							# FULL PROCESSING - $criteria1 IS FULL LOCATION
+							$sqlQuery = "INSERT INTO " .
+							$wpdb->prefix . "csvtopost_campaigns(camname, camfile, process, stage, locationtype)
+							VALUES('$camname', '$csvfilename','$process','2','$filelocationtype')";
+							$wpdb->query($sqlQuery);
+							$camid = mysql_insert_id();
+							$stage1complete = true;
 						}
-						elseif(!isAllowedExtension_wtg_csv2post($csvfiledirectory))
+						elseif($process == 2)
 						{
-							echo '<h2>Sorry a slight problem! Only CSV files are allowed please try again</h2>';
-						}
-						else
-						{
-							# DO MAIN PROCESS OF FILE AND DATA
-							if($process == 1)
-							{
-								# FULL PROCESSING - $criteria1 IS FULL LOCATION
-								$sqlQuery = "INSERT INTO " .
-								$wpdb->prefix . "csvtopost_campaigns(camname, camfile, process, stage, csvrows, locationtype)
-								VALUES('$camname', '$csvfilename','$process','2','$rowtotal','$filelocationtype')";
-								$wpdb->query($sqlQuery);
-								$camid = mysql_insert_id();
-								$stage1complete = true;
-							}
-							elseif($process == 2)
-							{
-								# FULL PROCESSING - $criteria1 IS FULL LOCATION
-								$sqlQuery = "INSERT INTO " .
-								$wpdb->prefix . "csvtopost_campaigns(camname, camfile, process, ratio, stage, csvrows, locationtype)
-								VALUES('$camname', '$csvfilename','$process','$rowratio','2','$rowtotal','$filelocationtype')";
-								$wpdb->query($sqlQuery);
-								$camid = mysql_insert_id();
-								$stage1complete = true;
-							}
+							# FULL PROCESSING - $criteria1 IS FULL LOCATION
+							$sqlQuery = "INSERT INTO " .
+							$wpdb->prefix . "csvtopost_campaigns(camname, camfile, process, ratio, stage, locationtype)
+							VALUES('$camname', '$csvfilename','$process','$rowratio','2','$filelocationtype')";
+							$wpdb->query($sqlQuery);
+							$camid = mysql_insert_id();
+							$stage1complete = true;
 						}
 					}
-					elseif($filelocationtype == 2)// UPLOADED CSV PROCESSING ONLY
-					{	
-						# UPLOAD LOCATION - FULL PROCESSING
-						$fileArray = array();
-						$file = $_FILES['csvupload'];
-						
-						if(empty($file))
-						{ 
-							echo '<h2>Sorry a slight problem! CSV file not found!</h2>';
-						}
-						elseif(!isAllowedExtension_wtg_csv2post($_FILES['csvupload']['name']))
-						{
-							echo '<h2>Sorry a slight problem! Only CSV files are allowed please try again</h2>';
-						}
-						else
-						{		
-							# PROCESS UPLOADED FILE AND STORE FILE NAME
-							$csvfilename = basename( $_FILES['csvupload']['name'] );
-							$csvfilename = str_replace(' ', '_', $csvfilename);
-							$csvfilename = str_replace('-', '_', $csvfilename);
-							$csvfilename = strtolower($csvfilename);
-							$csvfilename = $camname . '_' . $csvfilename;// make new filename
-							$target_path .= $csvfilename;
-							$csvfiledirectory = $target_path;				
-							move_uploaded_file($_FILES['csvupload']['tmp_name'], $target_path);
-							
-							if($process == 1)
-							{
-								# FULL PROCESSING - $criteria1 IS FULL LOCATION
-								$sqlQuery = "INSERT INTO " .
-								$wpdb->prefix . "csvtopost_campaigns(camname, camfile, process, stage, csvrows, locationtype)
-								VALUES('$camname', '$csvfilename','$process','2','$rowtotal','$filelocationtype')";
-								$wpdb->query($sqlQuery);
-								$camid = mysql_insert_id();
-								$stage1complete = true;
-							}
-							elseif($process == 2)
-							{
-								# FULL PROCESSING - $criteria1 IS FULL LOCATION
-								$sqlQuery = "INSERT INTO " .
-								$wpdb->prefix . "csvtopost_campaigns(camname, camfile, process, ratio, stage, csvrows, locationtype)
-								VALUES('$camname', '$csvfilename','$process','$rowratio','2','$rowtotal','$filelocationtype')";
-								$wpdb->query($sqlQuery);
-								$camid = mysql_insert_id();
-								$stage1complete = true;
-							}
-						}
-
-						# GET ID OF LAST ENTRY  - ACTS AS CAMPAIGN ID
-						$camid = mysql_insert_id();
+				}
+				elseif($filelocationtype == 2)// UPLOADED CSV PROCESSING ONLY
+				{	
+					# UPLOAD LOCATION - FULL PROCESSING
+					$fileArray = array();
+					$file = $_FILES['csvupload'];
+					
+					if(empty($file))
+					{ 
+						echo '<h2>Sorry a slight problem! CSV file not found!</h2>';
 					}
-				}// check all required posts populated
-			}// if campaign name exists or not
+					elseif(!isAllowedExtension_wtg_csv2post($_FILES['csvupload']['name']))
+					{
+						echo '<h2>Sorry a slight problem! Only CSV files are allowed please try again</h2>';
+					}
+					else
+					{		
+						# PROCESS UPLOADED FILE AND STORE FILE NAME
+						$csvfilename = basename( $_FILES['csvupload']['name'] );
+						$csvfilename = str_replace(' ', '_', $csvfilename);
+						$csvfilename = str_replace('-', '_', $csvfilename);
+						$csvfilename = strtolower($csvfilename);
+						$csvfilename = $camname . '_' . $csvfilename;// make new filename
+						$target_path .= $csvfilename;
+						$csvfiledirectory = $target_path;				
+						move_uploaded_file($_FILES['csvupload']['tmp_name'], $target_path);
+						
+						if($process == 1)
+						{
+							# FULL PROCESSING - $criteria1 IS FULL LOCATION
+							$sqlQuery = "INSERT INTO " .
+							$wpdb->prefix . "csvtopost_campaigns(camname, camfile, process, stage, locationtype)
+							VALUES('$camname', '$csvfilename','$process','2','$filelocationtype')";
+							$wpdb->query($sqlQuery);
+							$camid = mysql_insert_id();
+							$stage1complete = true;
+						}
+						elseif($process == 2)
+						{
+							# FULL PROCESSING - $criteria1 IS FULL LOCATION
+							$sqlQuery = "INSERT INTO " .
+							$wpdb->prefix . "csvtopost_campaigns(camname, camfile, process, ratio, stage, locationtype)
+							VALUES('$camname', '$csvfilename','$process','$rowratio','2','$filelocationtype')";
+							$wpdb->query($sqlQuery);
+							$camid = mysql_insert_id();
+							$stage1complete = true;
+						}
+					}
+
+					# GET ID OF LAST ENTRY  - ACTS AS CAMPAIGN ID
+					$camid = mysql_insert_id();
+				}
+			}// check all required posts populated
 		}// campaign name not empty and is string
 	}
 
@@ -209,9 +202,9 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
             <input name="campaignsubmit" type="submit" value="Next Step" />
         </form>
         
-		<p>Tutorials, instructions and videos can be found on my website. <a href="" title="View CSV 2 POST Help" target="_blank">View CSV 2 POST help here.</a></p>		
-		
 		<?php
+		
+		echo $tutorial_url;
 	}
 }
 
@@ -222,7 +215,6 @@ if((isset($_POST['stage']) && $_POST['stage'] == 2) || (isset($stage1complete) &
 	if(!empty($_POST['matchsubmit']))
 	{
 		# STAGE 2 SUBMISSION MADE - PROCESS POST VARIABLES, THEY SHOULD BE POPULATED AND VALIDATED BEFORE THIS SUBMISSION
-		$poststatus = $_POST['poststatus']; //publish,draft,pending
 		$camid = $_POST['camid'];
 		$csvfiledirectory = $_POST['csvfiledirectory'];
 		$csvfile_columntotal = $_POST['csvfile_columntotal'];
@@ -261,7 +253,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 2) || (isset($stage1complete) &
 
 		# UPDATE CAMPAIGN STAGE COUNTER
 		$sqlQuery = "UPDATE " .
-		$wpdb->prefix . "csvtopost_campaigns SET stage = '3', poststatus = '$poststatus' WHERE id = '$camid'";
+		$wpdb->prefix . "csvtopost_campaigns SET stage = '3' WHERE id = '$camid'";
 		$wpdb->query($sqlQuery);
 	}	
 
@@ -287,7 +279,9 @@ if((isset($_POST['stage']) && $_POST['stage'] == 2) || (isset($stage1complete) &
         <?php	
         # OPEN CSV FILE AGAIN
         $handle = fopen("$csvfiledirectory", "r");
-						
+		
+		$stop = 0;
+		
         while (($data = fgetcsv($handle, 999999, ",")) !== FALSE && $stop != 1)// Gets CSV rows
         {	 
 			$stop++;// used to limit row parsing to just 1
@@ -339,11 +333,12 @@ if((isset($_POST['stage']) && $_POST['stage'] == 2) || (isset($stage1complete) &
                     </tr>
                 
             	</table>
-			</form>
-            
-		<p>Tutorials, instructions and videos can be found on my website. <a href="" title="View CSV 2 POST Help" target="_blank">View CSV 2 POST help here.</a></p>		
+        </form>
+        
+		<?php
 		
-		<?php 
+		echo $tutorial_url;
+		
         }//end while rows
         
 		fclose($handle);
@@ -444,11 +439,11 @@ if((isset($_POST['stage']) && $_POST['stage'] == 3) || (isset($stage2complete) &
                     <input name="page" type="hidden" value="new_campaign" />
                     <input name="csvfiledirectory" type="hidden" value="<?php echo $csvfiledirectory; ?>" />
                     <input name="camid" type="hidden" value="<?php echo $camid; ?>" />
-			</form>
-            
-		<p>Tutorials, instructions and videos can be found on my website. <a href="" title="View CSV 2 POST Help" target="_blank">View CSV 2 POST help here.</a></p>		
+        </form>
+        
+		<?php
 		
-		<?php 
+		echo $tutorial_url;
 	}
 }
 
@@ -781,11 +776,11 @@ if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) &
                     <input name="page" type="hidden" value="new_campaign" />
                     <input name="csvfiledirectory" type="hidden" value="<?php echo $csvfiledirectory; ?>" />
                     <input name="camid" type="hidden" value="<?php echo $camid; ?>" />
-			</form>
-            
-		<p>Tutorials, instructions and videos can be found on my website. <a href="" title="View CSV 2 POST Help" target="_blank">View CSV 2 POST help here.</a></p>		
+        </form>
+        
+		<?php
 		
-		<?php 
+		echo $tutorial_url;
 	}
 }
 
@@ -1283,7 +1278,9 @@ if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) &
                     <td>
                     <?php					
 					   $handle = fopen("$csvfiledirectory", "r");
-
+						
+						$stop = 0;
+						
 					   while (($data = fgetcsv($handle, 999999, ",")) !== FALSE && $stop != 1)// Gets CSV rows
 						{	
 							$stop++;// used to limit row parsing to just 1
@@ -1344,11 +1341,11 @@ if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) &
             <input name="page" type="hidden" value="new_campaign" />
             <input name="csvfiledirectory" type="hidden" value="<?php echo $csvfiledirectory; ?>" />
             <input name="camid" type="hidden" value="<?php echo $camid; ?>" />
-			</form>
-            
-		<p>Tutorials, instructions and videos can be found on my website. <a href="" title="View CSV 2 POST Help" target="_blank">View CSV 2 POST help here.</a></p>		
+        </form>
+        
+		<?php
 		
-		<?php 
+		echo $tutorial_url;
 	}
 }
 

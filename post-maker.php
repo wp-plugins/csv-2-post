@@ -7,23 +7,16 @@ $campaignresult = $wpdb->get_row("SELECT camfile,process,ratio,filtercolumn,id,p
 
 $uploadpath = get_option( 'upload_path' );
 $target_path = $uploadpath.'/csv2postfiles/';
-	
 $filelocation = $target_path.$campaignresult->camfile;
 
 # OPEN FILE
 $handle = fopen("$filelocation", "r");
 		
-if($handle == false)
-{
-	# FILE FAILED TO BE FOUND OR OPEN
-}
-else
+if($handle != false)
 {
 	# GET THE POST INJECTION LIMIT
-	if($campaignresult->process == 1)
-	{$post_limit = 999999;}// full file processing
-	elseif($campaignresult->process == 2)
-	{$post_limit = $campaignresult->ratio;}// staggered processing
+	if($campaignresult->process == 1){$post_limit = 999999;}
+	elseif($campaignresult->process == 2){$post_limit = $campaignresult->ratio;}
 		
 	# GET REQUIRE VARIABLES FOR ENTIRE CAMPAIGN PROCESSING
 	$row_counter = 0;
@@ -31,9 +24,10 @@ else
 	$filterid = $campaignresult->filtercolumn;
 	$camid = $campaignresult->id;
 	$previously_made_posts = $campaignresult->posts;
+	$rows_processed = 0;
 	
 	# START PROCESSING EACH ROW
-	while (($csvrow = fgetcsv($handle, 999999, ",")) !== FALSE && $posts_injected != $post_limit)
+	while (($csvrow = fgetcsv($handle, 5000, ",")) !== FALSE && $posts_injected != $post_limit)
 	{ 		
 		# AVOID PROCESSING THE TOP ROW
 		if($rows_processed != 0 && $rows_processed >= $previously_made_posts)
@@ -79,13 +73,8 @@ else
 			$count = 0;
 			$wpdb->query("SELECT post_title FROM " .$wpdb->prefix . "posts WHERE post_name = '$temp_postname'");
 		 	$count = $wpdb->num_rows;
-			if( $count > 0 )
+			if( $count == 0 )
 			{
-				# DO NOTHING 
-			}
-			else
-			{ 
-				# GET REQUIRED POST CONTENT LAYOUT AND STYLING
 				// currently not dynamic and default
 				require('post_layouts/default.php');
 				
@@ -109,11 +98,7 @@ else
 				$count = 0;
 				$wpdb->query("SELECT post_title FROM " .$wpdb->prefix . "posts WHERE post_name = '$temp_postname'");
 				$count = $wpdb->num_rows;
-				if( $count > 0 )
-				{
-					# DO NOTHING 
-				}
-				else
+				if( $count == 0 )
 				{
 					# NO DUPLICATES FOUND SO INJECT POST
 					$post_id = wp_insert_post( $my_post );

@@ -1,19 +1,23 @@
 <h2>CSV 2 POST Free Edition  </h2>
 <p>Thank you for installing CSV 2 POST, developed and released July 2009 by <a href="http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-post-plugin" title="Visit WebTechGlobal's Plugin Page" target="_blank">WebTechGlobal</a>.</p>
 
+<h3>&nbsp;</h3>
 <h3>Free/Trial Edition Restrictions</h3>
 <p>This plugin is provided free of any charge but there are restrictions that increase during the use of this software. I have no doubt
 whatsoever that if my plugin is used correctly it can increase site traffic, make you money and do a massive job for you. Well worth paying
 for if you feel it is a key part of a project&nbsp;and you can buy the paid edition &quot;CSV 2 POST Plus&quot; <a href="http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-post-plugin" title="CSV 2 POST" target="_blank">here</a>.</p>
+<h3>&nbsp;</h3>
 <h3>Current Restrictions</h3>
 <ol>
   <li>A link to the WebTechGlobal website will be placed at the bottom of every <?php echo get_option('csv2post_link_place_marker'); ?> posts created using this plugin.</li>
   <li>An AdSense ad will be placed at the bottom of every <?php echo get_option('csv2post_ad_place_marker'); ?> posts created using this plugin.</li>
   <li>Full processing will be disabled after the first use.&nbsp;<a href="http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-post-plugin" title="CSV 2 POST Plus" target="_blank">CSV 2 POST Plus</a> allows full processing of an entire file, buy for only &pound;19.99! Seriously cheap don't you think?</li>
 </ol>
+<h2>&nbsp;</h2>
 <h2>DISCLAIMER</h2>
 <p><strong>Please read and fully understand all instructions before using this plugin for the first time</strong>. The plugin has a lot of power and will have a mass effect on your blog in a very short time. Taking that into consideration you use this plugin at your own risk.</p>
 <p>If there is anything your not 100% sure about  please email  <a href="mailto:wordpress@webtechglobal.co.uk">wordpress@webtechglobal.co.uk</a> or <a href="http://www.webtechglobal.co.uk/category/wordpress-articles/csv-2-post-instructions" title="View CSV 2 POST Instructions" target="_parent">view full plugin instructions</a> on my website.</p>
+
 
 <h2>&nbsp;</h2>
 <h2>CSV File Search</h2>
