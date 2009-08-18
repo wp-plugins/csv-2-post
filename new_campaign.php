@@ -1,7 +1,7 @@
 <?php
 
 # DEBUG DURING DEVELOPMENT
-define('WP_DEBUG',true);
+//define('WP_DEBUG',true);
 
 global $wpdb;
 

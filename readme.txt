@@ -36,6 +36,9 @@ The options available are to either locate and edit every post that has the WebT
 
 
 == Changelog ==
+= 2.1 =
+* Removed php ini error reporting code which caused the displaying of undefined variable errors on other plugins.
+
 = 2.0 = NOT YET RELEASED
 * Decreased trial restrictions slightly.
 * Added correct url to tutorials link on New Campaign stages.
