@@ -91,4 +91,10 @@ Please email wordpress@webtechglobal.co.uk with any questions regarding this plu
 
 == A brief Markdown Example ==
 
-What to put here I wonder?
+TEST ONLY
+
+Link test [Markdown's Syntax Documentation][markdown syntax].
+Link test [Markdown's Syntax Documentation]WTG[markdown syntax].
+
+[markdown syntax]: http://daringfireball.net/projects/markdown/syntax "Markdown is what the parser uses to process much of the readme file"
+[markdown syntax]: http://www.webtechglobal.co.uk "WTG WebSite"
