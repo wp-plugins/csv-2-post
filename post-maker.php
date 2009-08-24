@@ -27,7 +27,7 @@ if($handle != false)
 	$rows_processed = 0;
 	
 	# START PROCESSING EACH ROW
-	while (($csvrow = fgetcsv($handle, 5000, ",")) !== FALSE && $posts_injected != $post_limit)
+	while (($csvrow = fgetcsv($handle, 9999, ",")) !== FALSE && $posts_injected != $post_limit)
 	{ 		
 		# AVOID PROCESSING THE TOP ROW
 		if($rows_processed != 0 && $rows_processed >= $previously_made_posts)
@@ -154,12 +154,6 @@ if($handle != false)
 					unset($contact); unset($currency); unset($price);
 					unset($advertiser); unset($imageurl);
 					unset($category); unset($author);
-					
-					# TRIAL COUNTER FOR FULL PROCESSING TRIAL
-					if($campaignresult->process == 1 && $posts_injected >= 1000)
-					{
-						update_option('full_trial_used_csv2post',true);
-					}
 					
 				}// end of second duplication check
 				

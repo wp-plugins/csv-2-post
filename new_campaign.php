@@ -1,7 +1,6 @@
 <?php
 
 # DEBUG DURING DEVELOPMENT
-//define('WP_DEBUG',true);
 
 global $wpdb;
 
@@ -164,7 +163,7 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
             <p>Select full will process the file all at once, not recommended unless you know your server/hosting will be ok with this!</p>
             
             <label>
-            <input type="radio" name="processrate" value="1" id="ProcessRate_0" <?php if(get_option('full_trial_used_csv2post') == true){?>disabled="disabled"<?php }?> />
+            <input type="radio" name="processrate" value="1" id="ProcessRate_0" />
             Full - attempt to process entire file, may cause memory errors and is recommend for localhost use only.</label>
 			<br />
             

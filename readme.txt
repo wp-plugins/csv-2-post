@@ -10,19 +10,46 @@ Created by Ryan Bayne from WebTechGlobal, import csv data, publish to WordPress 
 
 == Description ==
 
-WebTechGlobal offers this csv import tool for wordpress, developed by Ryan Bayne. Import then publish affiliate data far easier than
-other plugins claim! No messing about with your file to make it work, creates keywords, description and tags automatically. This is 
-the free version and the low cost paid version CSV 2 POST Plus has auto custom fields, auto category creation and more!!!
+CSV Import plugin developed by <a href="http://www.webtechglobal.co.uk/about" title="Visit WebTechGlobal Home">Ryan Bayne</a>.
+
+SPECIAL OFFER
+If you find a bug that no one else has reported on the WebTechGlobal Forum already and I can witness it or make it happen then you
+will get CSV 2 POST Plus for half price.
+
+ABOUT
+CSV 2 POST quick install on WordPress is the free edition of this csv import tool. It is a great tool even as a trial plugin and can
+import thousands of affiliate products from your affiliate feeds in a matter of minutes. The interface is unique and you DO NOT have
+to edit your csv file to make it work with my scripts. The interface helps you connect csv columns to post parts, it does not 
+assume your csv file is laid out in a specific way that I've set but instead you tell the plugin the order of your columns and what
+each column is to be used for.
+
+<a href="http://www.webtechglobal.co.uk/wordpress-services/wordpress-plugins/wordpress-csv-2-post-plugin" title="CSV 2 POST Free Edition Home Page">Read more and watch a video!</a>
+
+CSV 2 POST PLUS
+The paid edition of this plugin is aimed at those who import data as part of their job or longer term ambitions. It allows custom
+layouts to be created and customisation can be applied easily for every customer. I offer this service free and will even help you
+import the data if your short on time.
+
+The paid edition also has far more control over SEO, Tags, Custom Fields, Categorising and general configuration.
+
+<a href="http://www.webtechglobal.co.uk/wordpress-services/wordpress-plugins/csv-2-post-plus" title="CSV 2 POST Plus Home Page">Read more about CSV 2 POST Plus here.</a>
 
 == Installation ==
 
-No coding skills required to use this plugin and you can install as you would most plugins.
-
-1. Upload `plugin-name.php` to the `/wp-content/plugins/` directory
-2. Activate the plugin through the 'Plugins' menu in WordPress
-
+There are 3 methods.
+1. Download through the quick installation in WordPress administration, simply search on CSV 2 POST to locate the plugin.
+2. Download the files to your desktop from WordPress or the WebTechGlobal website and place into the plugins directory via FTP.
+3. Download the plugin to your desktop then using the upload tool on the plugins page in WordPress directory.
 
 == Frequently Asked Questions ==
+
+= Can it import any affiliate data feeds and display all the information in posts? =
+
+Yes whatever data you have CSV 2 POST can easily be configured to import thousands of rows from affiliate data feeds in csv file format.
+You can see an example website here 
+
+<a href="http://www.1book2books.co.uk" title="View 1 Book 2 Books">www.1book2books.co.uk</a>
+
 
 = Can I get the AdSense and links removed from my post made by CSV 2 POST? =
 
@@ -36,10 +63,16 @@ The options available are to either locate and edit every post that has the WebT
 
 
 == Changelog ==
+
+=2.2 =
+* Full processing is no longer disabled after the first use.
+* Moved include_once('functions.php') to be called only when required.
+* Replaced links on main page with the new ones.
+
 = 2.1 =
 * Removed php ini error reporting code which caused the displaying of undefined variable errors on other plugins.
 
-= 2.0 = NOT YET RELEASED
+= 2.0 =
 * Decreased trial restrictions slightly.
 * Added correct url to tutorials link on New Campaign stages.
 * Fixed issue with MAC users not being able to get any further than stage 2.
@@ -51,27 +84,6 @@ The options available are to either locate and edit every post that has the WebT
 * Instructions removed and replaced with link to my site where it is easier updated.
 * Relaxed restrictions on link and ad placement as it was a bit much I think.
 * Change page session name in wp-csv-2-post.php to avoid any conflicts.
-
-= 1.8 =
-* Mismatched function call corrected causing plugin to be unusable after last update.
-
-= 1.7 =
-* Seperated database create queries and put them in db_tables.php, also greatly improved the create database queries and updates.
-* Database create queries are also only initiated if the database version numbers do not match making it quicker.
-* Free edition now has trial like restrictions including my links in some posts, my adsense in some posts and full processing disabled.
-* Functions.php file is only included when needed instead of all the time, same with db_tables.php.
-* Most function names change to prevent conflicts with other plugins but mainly to prevent conflict with CSV 2 POST Plus, the paid edition of this plugin.
-* The link on Stage 1 of New Campaign process updated to point to the main CSV 2 POST page.
-
-
-= 1.6 =
-* Change duplication check from checking "post_title" to checking "post_name" in the wp_posts table, this is 100% accurate now.
-* Change SQL queries to not use "*" which should help speed the plugin up a little.
-* Extend list of keyword exclusion, please see my new blog post for Version 1.6 release for a full list of excluded keywords.
-
-= 1.5 =
-* The so called fix for overwriting existing csv files when updating was pretty much a joke so I've went back to the old way and will spend more time considering a solution.
-* Hoping what is a final fix to category issues. They can still be uncategoried depending on certain settings but I fixed that too.
 
 == Arbitrary section ==
 

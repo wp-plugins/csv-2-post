@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: CSV 2 POST
-Version: 2.1
+Version: 2.2
 Plugin URI: http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-post-plugin
 Description: Import csv data files including feeds from affiliate using interface only, no need to edit csv file!
 Author: Ryan Bayne
@@ -25,10 +25,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //ini_set('display_errors',1);
 //error_reporting(E_ALL);
 
-ini_set('auto_detect_line_endings', '1');
 
-require('functions.php');
+// installation
+function init_campaigndata_tables_wtg_csv2post () 
+{
+	include('db_tables.php');
+}
+register_activation_hook(__FILE__,'init_campaigndata_tables_wtg_csv2post');
 
+
+
+// processing check
 function wtg_csvtopost_processcheck()
 { 
     if(isset($_SESSION['csvtopostpage']) && $_SESSION['csvtopostpage'] == $_SERVER['PHP_SELF'])
@@ -42,7 +49,9 @@ function wtg_csvtopost_processcheck()
 
 		# CHECK FULL PROCESSING TRIAL STATUS
 		global $wpdb;
+		
 		$full_trial_used_csv2post = get_option( "full_trial_used_csv2post" );
+		
 		if($full_trial_used_csv2post != true)
 		{	
 			# ANY PROCESS CAN BE USED
@@ -56,6 +65,8 @@ function wtg_csvtopost_processcheck()
 		
 		if( $count > 0 )
 		{
+			ini_set('auto_detect_line_endings', '1');
+			include_once('functions.php');
 			include('post-maker.php');
 		}
 		else
@@ -64,12 +75,7 @@ function wtg_csvtopost_processcheck()
 		}
 	}
 }
-
 add_action('shutdown', 'wtg_csvtopost_processcheck');// trigger processing
-
-include('db_tables.php');
-
-register_activation_hook(__FILE__,'init_campaigndata_tables_wtg_csv2post');
 
 // Hook for adding admin menus
 add_action('admin_menu', 'wtg_csv2post_add_pages');
@@ -90,6 +96,7 @@ function wtg_csv2post_add_pages()
 // mt_toplevel_page() displays the page content for the custom Test Toplevel menu
 function wtg_csv2post_toplevel_page() 
 {
+	include_once('functions.php');
     require('main_page.php');
 }
 
@@ -97,6 +104,8 @@ function wtg_csv2post_toplevel_page()
 // of the custom Test Toplevel menu
 function wtg_csv2post_sublevel_page1() 
 {
+	ini_set('auto_detect_line_endings', '1');
+	include_once('functions.php');
 	require('new_campaign.php');
 }
 
@@ -104,12 +113,14 @@ function wtg_csv2post_sublevel_page1()
 // of the custom Test Toplevel menu
 function wtg_csv2post_sublevel_page2() 
 {
+	include_once('functions.php');
 	require('edit_campaign.php');
 }
 
 // sub menu for disclaimer, terms and conditions
 function wtg_csv2post_sublevel_page3() 
 {
+	include_once('functions.php');
 	require('disclaimer.php');?>
 
 	<script type="text/javascript"><!--
