@@ -63,8 +63,11 @@ The options available are to either locate and edit every post that has the WebT
 
 
 == Changelog ==
+= 2.3 =
+* Now displays disabled form objects that are made available with CSV 2 POST Plus the paid version of this plugin.
+* Decreased restrictions so that WTG links and adsense appear less.
 
-=2.2 =
+= 2.2 =
 * Full processing is no longer disabled after the first use.
 * Moved include_once('functions.php') to be called only when required.
 * Replaced links on main page with the new ones.
@@ -90,5 +93,3 @@ The options available are to either locate and edit every post that has the WebT
 Please email wordpress@webtechglobal.co.uk with any questions regarding this plugin.
 
 == A brief Markdown Example ==
-
-<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="452" height="372" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="src" value="http://youtube.com/v/X0KNYA163MQ" /><embed type="application/x-shockwave-flash" width="452" height="372" src="http://youtube.com/v/X0KNYA163MQ"> </embed></object>

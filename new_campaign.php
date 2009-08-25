@@ -193,12 +193,27 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
             
             <input type="file" name="csvupload" id="csvupload" size="40" />
             <?php $filelimit = ini_get( "upload_max_filesize"); echo $filelimit.' file size limit.'; ?>
+            
+            <br />
+
+ 			<h3>(c) Post Content Layout (CSV 2 POST Plus Only)</h3>
+            <label><input type="radio" name="layoutfile" value="0" disabled="disabled" />products_layout.php</label>
+            <label><input type="radio" name="layoutfile" value="0" disabled="disabled" />addressbook.php</label>
+            <label><input type="radio" name="layoutfile" value="0" disabled="disabled" />commissionjunction.php</label>
+            
+            <br />
+            
+            <h3>(d) Delimiter (CSV 2 POST Plus Only)</h3><!-- for display purposes only -->            
+            <label>Comma ( , ) <input type="radio" name="delimiter" value="," id="delimiter_1" disabled="disabled" /></label><br />
+            <label>Semicolon ( ; ) <input type="radio" name="delimiter" value=";" id="delimiter_2" disabled="disabled" /></label><br />
+            <label>Tab ( | ) <input type="radio" name="delimiter" value="|" id="delimiter_3" disabled="disabled" /></label><br />
+            
             <br />
             
             <input name="stage" type="hidden" value="1" />
             <input name="page" type="hidden" value="new_campaign" />
             <input type="hidden" name="MAX_FILE_SIZE" value="90000000" />
-            <input name="campaignsubmit" type="submit" value="Next Step" />
+            <input name="campaignsubmit" class="button-primary" type="submit" value="Next Step" />
         </form>
         
 		<?php
@@ -287,7 +302,14 @@ if((isset($_POST['stage']) && $_POST['stage'] == 2) || (isset($stage1complete) &
 			?>
             <form method="post" action="<?php $_SERVER['PHP_SELF']; ?>" name="new_campaign2">
                 <table width="562">
-                    <tr><td width="132"><h4>(ID)CSV Column Titles</h4></td><td width="46"></td><td width="258"><h4>Select WordPress Post Parts</h4></td></tr><?php
+                    <tr>
+                        <td width="182"><h4>CSV Column Titles</h4></td>
+                        <td width="12"></td>
+                        <td width="111"><h4>Post Parts</h4></td>
+                        <td width="98"><h4>Keywords</h4></td>
+                        <td width="110"><h4>Description</h4></td>
+                        <td width="57"><h4>Tags</h4></td>
+                    </tr><?php
                    
 				   $i = 0;
              
@@ -312,6 +334,9 @@ if((isset($_POST['stage']) && $_POST['stage'] == 2) || (isset($stage1complete) &
                                         <option value="publisher">Publisher</option>
                                     </select>
                                 </td>
+                                <td><input type="radio" name="metakeywordcolumn" value="0" disabled="disabled" /></td>
+                                <td><input type="radio" name="metadescriptioncolumn" value="0" disabled="disabled" /></td>
+                                <td><input type="radio" name="tagscolumn" value="0" disabled="disabled" /></td>
                             </tr><?php
                         $i++; // $i will equal number of columns - use to process submission
                     }
@@ -327,7 +352,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 2) || (isset($stage1complete) &
     
                     <tr>
                         <td></td>
-                        <td><input name="matchsubmit" type="submit" value="Submit" /></td>
+                        <td><input name="matchsubmit" class="button-primary" type="submit" value="Submit" /></td>
                         <td></td>
                     </tr>
                 
@@ -428,7 +453,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 3) || (isset($stage2complete) &
                                
                 <tr>
                     <td></td>
-                    <td><input name="statussubmit" type="submit" value="Submit" /></td>
+                    <td><input name="statussubmit" class="button-primary" type="submit" value="Submit" /></td>
                     <td></td>
                 </tr>
             </table>
@@ -603,6 +628,13 @@ if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) &
         <form method="post" action="<?php $_SERVER['PHP_SELF']; ?>" name="new_campaign4">
         	<table>
             
+             <label><input type="radio" name="customfieldsmethod" value="manual" disabled="disabled" />Manual - </label>
+             <label><input type="radio" name="customfieldsmethod" value="automated" disabled="disabled" />Automated - </label>
+             <label><input type="radio" name="customfieldsmethod" value="mixed" disabled="disabled" />Mixed</label>
+             
+             <br />
+             <br />
+             
                 <tr>
                     <td></td>
                     <td><b>Identifier</b></td>
@@ -764,7 +796,7 @@ if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) &
                 <tr>
                     <td></td>
                     <td></td>
-                    <td><input name="customfieldssubmit" type="submit" value="Submit" /></td>
+                    <td><input name="customfieldssubmit" class="button-primary" type="submit" value="Submit" /></td>
                     <td></td>
                 </tr>
                 
@@ -909,18 +941,6 @@ if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) &
 				VALUES('$camid','$cat','$value')";
 				$wpdb->query($sqlQuery);
 			}
- 			if(!empty($_POST['cat7a']))
-			{
-				# SAVE TO CUSTOM FIELD TABLE
-				$value = $_POST['cat7a'];
-				$cat = $_POST['cat3b'];
-				
-				global $wpdb;
-				$sqlQuery = "INSERT INTO " .
-				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
-				VALUES('$camid','$cat','$value')";
-				$wpdb->query($sqlQuery);
-			}
  			if(!empty($_POST['cat8a']))
 			{
 				# SAVE TO CUSTOM FIELD TABLE
@@ -1004,250 +1024,6 @@ if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) &
 				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
 				VALUES('$camid','$cat','$value')";
 				$wpdb->query($sqlQuery);
-			}
- 			if(!empty($_POST['cat16a']))
-			{
-				# SAVE TO CUSTOM FIELD TABLE
-				$value = $_POST['cat16a'];
-				$cat = $_POST['cat16b'];
-				
-				global $wpdb;
-				$sqlQuery = "INSERT INTO " .
-				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
-				VALUES('$camid','$cat','$value')";
-				$wpdb->query($sqlQuery);
-			}
- 			if(!empty($_POST['cat17a']))
-			{
-				# SAVE TO CUSTOM FIELD TABLE
-				$value = $_POST['cat17a'];
-				$cat = $_POST['cat17b'];
-				
-				global $wpdb;
-				$sqlQuery = "INSERT INTO " .
-				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
-				VALUES('$camid','$cat','$value')";
-				$wpdb->query($sqlQuery);
-			}
- 			if(!empty($_POST['cat18a']))
-			{
-				# SAVE TO CUSTOM FIELD TABLE
-				$value = $_POST['cat18a'];
-				$cat = $_POST['cat18b'];
-				
-				global $wpdb;
-				$sqlQuery = "INSERT INTO " .
-				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
-				VALUES('$camid','$cat','$value')";
-				$wpdb->query($sqlQuery);
-			}
- 			if(!empty($_POST['cat19a']))
-			{
-				# SAVE TO CUSTOM FIELD TABLE
-				$value = $_POST['cat19a'];
-				$cat = $_POST['cat19b'];
-				
-				global $wpdb;
-				$sqlQuery = "INSERT INTO " .
-				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
-				VALUES('$camid','$cat','$value')";
-				$wpdb->query($sqlQuery);
-			}
- 			if(!empty($_POST['cat20a']))
-			{
-				# SAVE TO CUSTOM FIELD TABLE
-				$value = $_POST['cat20a'];
-				$cat = $_POST['cat20b'];
-				
-				global $wpdb;
-				$sqlQuery = "INSERT INTO " .
-				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
-				VALUES('$camid','$cat','$value')";
-				$wpdb->query($sqlQuery);
-			}
- 			if(!empty($_POST['cat21a']))
-			{
-				# SAVE TO CUSTOM FIELD TABLE
-				$value = $_POST['cat21a'];
-				$cat = $_POST['cat21b'];
-				
-				global $wpdb;
-				$sqlQuery = "INSERT INTO " .
-				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
-				VALUES('$camid','$cat','$value')";
-				$wpdb->query($sqlQuery);
-			}
- 			if(!empty($_POST['cat22a']))
-			{
-				# SAVE TO CUSTOM FIELD TABLE
-				$value = $_POST['cat22a'];
-				$cat = $_POST['cat22b'];
-				
-				global $wpdb;
-				$sqlQuery = "INSERT INTO " .
-				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
-				VALUES('$camid','$cat','$value')";
-				$wpdb->query($sqlQuery);
-			}
- 			if(!empty($_POST['cat23a']))
-			{
-				# SAVE TO CUSTOM FIELD TABLE
-				$value = $_POST['cat23a'];
-				$cat = $_POST['cat23b'];
-				
-				global $wpdb;
-				$sqlQuery = "INSERT INTO " .
-				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
-				VALUES('$camid','$cat','$value')";
-				$wpdb->query($sqlQuery);
-			}
- 			if(!empty($_POST['cat24a']))
-			{
-				# SAVE TO CUSTOM FIELD TABLE
-				$value = $_POST['cat24a'];
-				$cat = $_POST['cat24b'];
-				
-				global $wpdb;
-				$sqlQuery = "INSERT INTO " .
-				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
-				VALUES('$camid','$cat','$value')";
-				$wpdb->query($sqlQuery);
-			}
- 			if(!empty($_POST['cat25a']))
-			{
-				# SAVE TO CUSTOM FIELD TABLE
-				$value = $_POST['cat25a'];
-				$cat = $_POST['cat25b'];
-				
-				global $wpdb;
-				$sqlQuery = "INSERT INTO " .
-				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
-				VALUES('$camid','$cat','$value')";
-				$wpdb->query($sqlQuery);
-			}
- 			if(!empty($_POST['cat26a']))
-			{
-				# SAVE TO CUSTOM FIELD TABLE
-				$value = $_POST['cat26a'];
-				$cat = $_POST['cat26b'];
-				
-				global $wpdb;
-				$sqlQuery = "INSERT INTO " .
-				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
-				VALUES('$camid','$cat','$value')";
-				$wpdb->query($sqlQuery);
-			}
- 			if(!empty($_POST['cat27a']))
-			{
-				# SAVE TO CUSTOM FIELD TABLE
-				$value = $_POST['cat27a'];
-				$cat = $_POST['cat27b'];
-				
-				global $wpdb;
-				$sqlQuery = "INSERT INTO " .
-				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
-				VALUES('$camid','$cat','$value')";
-				$wpdb->query($sqlQuery);
-			}
- 			if(!empty($_POST['cat28a']))
-			{
-				# SAVE TO CUSTOM FIELD TABLE
-				$value = $_POST['cat28a'];
-				$cat = $_POST['cat28b'];
-				
-				global $wpdb;
-				$sqlQuery = "INSERT INTO " .
-				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
-				VALUES('$camid','$cat','$value')";
-				$wpdb->query($sqlQuery);
-			}
- 			if(!empty($_POST['cat29a']))
-			{
-				# SAVE TO CUSTOM FIELD TABLE
-				$value = $_POST['cat29a'];
-				$cat = $_POST['cat29b'];
-				
-				global $wpdb;
-				$sqlQuery = "INSERT INTO " .
-				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
-				VALUES('$camid','$cat','$value')";
-				$wpdb->query($sqlQuery);
-			}
-  			if(!empty($_POST['cat30a']))
-			{
-				# SAVE TO CUSTOM FIELD TABLE
-				$value = $_POST['cat30a'];
-				$cat = $_POST['cat30b'];
-				
-				global $wpdb;
-				$sqlQuery = "INSERT INTO " .
-				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
-				VALUES('$camid','$cat','$value')";
-				$wpdb->query($sqlQuery);
-			}
-  			if(!empty($_POST['cat31a']))
-			{
-				# SAVE TO CUSTOM FIELD TABLE
-				$value = $_POST['cat31a'];
-				$cat = $_POST['cat31b'];
-				
-				global $wpdb;
-				$sqlQuery = "INSERT INTO " .
-				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
-				VALUES('$camid','$cat','$value')";
-				$wpdb->query($sqlQuery);
-			}
-			
-  			if(!empty($_POST['cat32a']))
-			{
-				# SAVE TO CUSTOM FIELD TABLE
-				$value = $_POST['cat32a'];
-				$cat = $_POST['cat32b'];
-				
-				global $wpdb;
-				$sqlQuery = "INSERT INTO " .
-				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
-				VALUES('$camid','$cat','$value')";
-				$wpdb->query($sqlQuery);
-			}
-			
-  			if(!empty($_POST['cat33a']))
-			{
-				# SAVE TO CUSTOM FIELD TABLE
-				$value = $_POST['cat33a'];
-				$cat = $_POST['cat33b'];
-				
-				global $wpdb;
-				$sqlQuery = "INSERT INTO " .
-				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
-				VALUES('$camid','$cat','$value')";
-				$wpdb->query($sqlQuery);
-			}
-			
-  			if(!empty($_POST['cat34a']))
-			{
-				# SAVE TO CUSTOM FIELD TABLE
-				$value = $_POST['cat34a'];
-				$cat = $_POST['cat34b'];
-				
-				global $wpdb;
-				$sqlQuery = "INSERT INTO " .
-				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
-				VALUES('$camid','$cat','$value')";
-				$wpdb->query($sqlQuery);
-			}
-			
-  			if(!empty($_POST['cat35a']))
-			{
-				# SAVE TO CUSTOM FIELD TABLE
-				$value = $_POST['cat35a'];
-				$cat = $_POST['cat35b'];
-				
-				global $wpdb;
-				$sqlQuery = "INSERT INTO " .
-				$wpdb->prefix . "csvtopost_categories(camid,catid,uniquevalue)
-				VALUES('$camid','$cat','$value')";
-				$wpdb->query($sqlQuery);
 			} 		
 		}
 		
@@ -1269,12 +1045,18 @@ if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) &
         
         <form method="post" action="<?php $_SERVER['PHP_SELF']; ?>" name="new_campaign3">
         	<table>
-
                 <tr>
-                	<td></td>
-                    <td><b>Selected Filter Column</b></td>
-                    <td></td>
+                    <td><h3>Select Filter Method (CSV 2 POST Plus Only)</h3>
+                    <label><input type="radio" name="filtermethod" value="manual" disabled="disabled" />Manual - </label>
+                    <label><input type="radio" name="filtermethod" value="automated" disabled="disabled" />Automated - </label>
+                    <label><input type="radio" name="filtermethod" value="mixed" disabled="disabled" />Mixed - </label>
+                    <label><input type="radio" name="filtermethod" value="NA" disabled="disabled" />Not Required</label>
                     <td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><b>Selected Filter Column</b>
                     <?php					
 					   $handle = fopen("$csvfiledirectory", "r");
 						
@@ -1299,37 +1081,35 @@ if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) &
 						
 						fclose($handle);
 						?>
-                    
-                    </td>
-                </tr>
-                
-                <tr>
-                	<td></td>
-                    <td><b>Data Value</b></td>
+                        </td>
                     <td></td>
-                    <td><b>Category</b></td>
+                    <td></td>
+                </tr>                
+                <tr>
+                    <td><h3>Enter Manual Filter Values</h3><td><td></td><td></td>
                 </tr>
-
+                <tr>
+                	<td><b>Data Value</b> - <b>Category</b></td><td></td><td></td>
+                </tr>
 				<?php
-				$number = 36;
+				$number = 16;// total of form items + 1
 				$count = 1;
 				while($count != $number)
 				{
 					# ECHO A SET OF FILTER FIELDS ?>
                     <tr>
-                    	<td><?php echo $count; ?>: </td>
-                        <td><input name="cat<?php echo $count; ?>a" type="text" value="" maxlength="30" /></td>
+                    	<td><?php echo $count; ?>: <input name="cat<?php echo $count; ?>a" type="text" value="" maxlength="30" /><select name="cat<?php echo $count; ?>b" size="1"><?php get_categories_fordropdownmenu_wtg_csv2post();?></select></td>
                         <td></td>
-                        <td><select name="cat<?php echo $count; ?>b" size="1"><?php get_categories_fordropdownmenu_wtg_csv2post();?></select></td>
+                        <td></td>
                     </tr><?php 
 					$count++;
 				}
 				?>
                 
                 <tr>
+                    <td><input name="categoryfiltervalues" class="button-primary" type="submit" value="Submit" /></td>
                     <td></td>
                     <td></td>
-                    <td><input name="categoryfiltervalues" type="submit" value="Submit" /></td>
                     <td></td>
                 </tr>
                 

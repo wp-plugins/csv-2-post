@@ -1,18 +1,11 @@
 <h2>CSV 2 POST Free Edition  </h2>
-<p>Thank you for installing CSV 2 POST, developed and released July 2009 by <a href="http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-post-plugin" title="Visit WebTechGlobal's Plugin Page" target="_blank">WebTechGlobal</a>.</p>
+<p>Thank you for installing CSV 2 POST, developed and released July 2009 by Ryan Bayne froom <a href="http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-post-plugin" title="Visit WebTechGlobal's Plugin Page" target="_blank">WebTechGlobal</a>.</p>
 
 <h3>Free/Trial Edition Restrictions</h3>
-<p>This plugin is provided free of any charge but there are restrictions that increase during the use of this software. I have no doubt
-whatsoever that if my plugin is used correctly it can increase site traffic, make you money and do a massive job for you. Well worth paying
-for if you feel it is a key part of a project&nbsp;and you can buy the paid edition &quot;CSV 2 POST Plus&quot; <a href="http://www.webtechglobal.co.uk/wordpress-services/wordpress-plugins/csv-2-post-plus" title="CSV 2 POST Plus" target="_blank">here</a>.</p>
+<p>This plugin is provided free of any charge and has restrictions which increase the more you use it. You will also see many disabled form items on CSV 2 POST pages. This is to give you the best preview before you purchase the none restricted edition called <a href="http://www.webtechglobal.co.uk/wordpress-services/wordpress-plugins/csv-2-post-plus" title="CSV 2 POST Plus Home" target="_blank">CSV 2 POST Plus</a>.</p>
 
-<h3>Get CSV 2 POST Plus Half Price!</h3>
-<p>I'm offering bug hunters the chance to get CSV 2 POST half price, currently £15.99/$26.50.
- All you need to do is report  bugs you find that have not been found already and reported on the WebTechGlobal Forum. 
-I also need to be able to witness the bug/error or create it myself and it must not be related specifically to your data.
-Find two different bugs and I will give you CSV 2 POST Plus with 75% OFF! I suggest you send me screenshots and description of what you think triggered the error.</p>
 <h3>Current Trial Restrictions</h3>
-<p>These restrictions are relaxed more and more if people get involved in reporting problems, providing feedback and signing up to the forum. Such participation supports my website and in&nbsp;turn I try to give something back.</p>
+<p>These restrictions are relaxed with each new edition and the more support the community gives the plugin.</p>
 <ol>
   <li>A link to the WebTechGlobal website will be placed at the bottom of every <?php echo get_option('csv2post_link_place_marker'); ?> posts created using this plugin.</li>
   <li>An AdSense ad will be placed at the bottom of every <?php echo get_option('csv2post_ad_place_marker'); ?> posts created using this plugin.</li>
