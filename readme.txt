@@ -63,6 +63,10 @@ The options available are to either locate and edit every post that has the WebT
 
 
 == Changelog ==
+= 2.4 =
+* Added staggered processing time limit option to post-maker.php, will be on a settings page later.
+* Fixed installation issue with init_campaigndata_tables_wtg_csv2post() being declared twice.
+ 
 = 2.3 =
 * Now displays disabled form objects that are made available with CSV 2 POST Plus the paid version of this plugin.
 * Decreased restrictions so that WTG links and adsense appear less.

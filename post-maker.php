@@ -1,7 +1,5 @@
 <?php
 
-set_time_limit(900000);
-
 # SELECT A CAMPAIGN AND PROCESS IT
 $campaignresult = $wpdb->get_row("SELECT camfile,process,ratio,filtercolumn,id,poststatus,posts FROM " .$wpdb->prefix . "csvtopost_campaigns WHERE stage = '100'");
 
@@ -14,9 +12,17 @@ $handle = fopen("$filelocation", "r");
 		
 if($handle != false)
 {
-	# GET THE POST INJECTION LIMIT
-	if($campaignresult->process == 1){$post_limit = 999999;}
-	elseif($campaignresult->process == 2){$post_limit = $campaignresult->ratio;}
+	// post limit and script time limit
+	if($campaignresult->process == 1)
+	{
+		$post_limit = 999999;
+		set_time_limit(900000);
+	}
+	elseif($campaignresult->process == 2)
+	{
+		$post_limit = get_option('csv2post_postsperhit');
+		set_time_limit(get_option('csv2post_maxstagtime'));
+	}
 		
 	# GET REQUIRE VARIABLES FOR ENTIRE CAMPAIGN PROCESSING
 	$row_counter = 0;
