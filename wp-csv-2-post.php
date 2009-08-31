@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: CSV 2 POST
-Version: 2.4
+Version: 2.5
 Plugin URI: http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-post-plugin
 Description: Import csv data files including feeds from affiliate using interface only, no need to edit csv file!
 Author: Ryan Bayne
@@ -22,15 +22,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-//ini_set('display_errors',1);
-//error_reporting(E_ALL);
-
 // installation
-function init_campaigndata_tables_wtg_csv2post () 
+function campaigndata_tables_wtg_csv2post () 
 {
-	include_once('db_tables.php');
+	require('db_tables.php');
 }
-register_activation_hook(__FILE__,'init_campaigndata_tables_wtg_csv2post');
+register_activation_hook(__FILE__,'campaigndata_tables_wtg_csv2post');
 
 // processing check
 function wtg_csvtopost_processcheck()
@@ -72,6 +69,7 @@ function wtg_csvtopost_processcheck()
 		}
 	}
 }
+
 add_action('shutdown', 'wtg_csvtopost_processcheck');// trigger processing
 
 // Hook for adding admin menus
@@ -80,25 +78,21 @@ add_action('admin_menu', 'wtg_csv2post_add_pages');
 // action function for above hook
 function wtg_csv2post_add_pages() 
 {
-    // Add a new top-level menu (ill-advised):
     add_menu_page('CSV 2 POST', 'CSV 2 POST', 8, __FILE__, 'wtg_csv2post_toplevel_page');
-    // Add a submenu to the custom top-level menu:
     add_submenu_page(__FILE__, 'New Campaign', 'New Campaign', 8, 'new_campaign', 'wtg_csv2post_sublevel_page1');
-    // Add a second submenu to the custom top-level menu:
     add_submenu_page(__FILE__, 'Manage Campaigns', 'Manage Campaigns', 8, 'manage_campaigns', 'wtg_csv2post_sublevel_page2');
-    // Add a third submenu to the custom top-level menu:
     add_submenu_page(__FILE__, 'Disclaimer', 'Disclaimer', 8, 'disclaimer', 'wtg_csv2post_sublevel_page3');
+    add_submenu_page(__FILE__, 'Settings', 'Settings', 8, 'settings', 'wtg_csv2post_sublevel_page4');
+    add_submenu_page(__FILE__, 'Tools', 'Tools', 8, 'tools', 'wtg_csv2post_sublevel_page5');
+    add_submenu_page(__FILE__, 'Layouts', 'Layouts', 8, 'layouts', 'wtg_csv2post_sublevel_page6');
 }
 
-// mt_toplevel_page() displays the page content for the custom Test Toplevel menu
 function wtg_csv2post_toplevel_page() 
 {
 	include_once('functions.php');
     require('main_page.php');
 }
 
-// mt_sublevel_page() displays the page content for the first submenu
-// of the custom Test Toplevel menu
 function wtg_csv2post_sublevel_page1() 
 {
 	ini_set('auto_detect_line_endings', '1');
@@ -106,15 +100,12 @@ function wtg_csv2post_sublevel_page1()
 	require('new_campaign.php');
 }
 
-// mt_sublevel_page2() displays the page content for the second submenu
-// of the custom Test Toplevel menu
 function wtg_csv2post_sublevel_page2() 
 {
 	include_once('functions.php');
 	require('edit_campaign.php');
 }
 
-// sub menu for disclaimer, terms and conditions
 function wtg_csv2post_sublevel_page3() 
 {
 	include_once('functions.php');
@@ -147,5 +138,21 @@ function wtg_csv2post_sublevel_page3()
 	<script type="text/javascript"
 	src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 	</script><?php
+}
+
+function wtg_csv2post_sublevel_page4() 
+{
+	include_once('functions.php');
+	require('settings.php');
+}
+function wtg_csv2post_sublevel_page5() 
+{
+	include_once('functions.php');
+	require('tools_csv2post.php');
+}
+function wtg_csv2post_sublevel_page6() 
+{
+	include_once('functions.php');
+	require('layouts_csv2post.php');
 }
 ?>

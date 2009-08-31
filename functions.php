@@ -1,4 +1,57 @@
+<style type="text/css">
+<!--
+.okgreen_csv2post {
+	color: #008000;
+	font-weight: bolder;
+}
+
+.problemred_csv2post {
+	color: #008000;
+	font-weight: bolder;
+}
+-->
+</style>
 <?php
+
+// create csv files storage folder
+function csv2post_doesexist_csvfilesfolder()
+{
+	$uploadpath = get_option( 'upload_path' );
+	$filename = $uploadpath.'/csv2postfiles/';
+
+	if (is_writable($filename)) 
+	{
+		return '<span class="okgreen">OK - Folder is present and writeable</span>';
+	} 
+	else 
+	{
+		$outcome = mkdir($filename, 0755);
+		
+		if(!$outcome)
+		{
+			return '<span class="problemred">ERROR - Folder is not present and cannot be created!</span>';
+		}
+		else
+		{
+			return '<span class="okgreen">OK - Folder has just been created for you.</span>';
+		}
+	}
+}
+
+function csv2post_autolineendings_status()
+{
+	$status = ini_get('auto_detect_line_endings');
+	
+	if($status == 1)
+	{
+		return '<span class="okgreen">Currently ON</span>';
+	}
+	elseif($status == 0)
+	{
+		return '<span class="problemred">Currently OFF! May cause problems uploading csv files from a MAC.</span>';
+	}
+}
+
 # USED TO CHECK ALLOWED FILE EXTENSIONS
 function isAllowedExtension_wtg_csv2post($fileName)
 {

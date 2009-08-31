@@ -1,16 +1,7 @@
 <?php
-/*
-Purpose: Database table creation and update for CSV 2 POST FREE EDITION
-Author: Ryan Bayne
-Site: http://www.webtechglobal.co.uk
-Updated: 04/08/09
-*/
 
-# CREATING PLUGINS DATABASE TABLES ON INSTALLATION AND OTHER BASIC INSTALLATION TASKS INCLUDED
-// insert initial settings and configuration
-add_option('csv2post_maxstagtime',50)
+add_option('csv2post_maxstagtime',20);
 
-// create csv files storage folder in the worpdress upload directory
 $uploadpath = get_option( 'upload_path' );
 $newdirectory = $uploadpath.'/csv2postfiles/';
 mkdir($newdirectory, 0755);
@@ -112,49 +103,11 @@ if($wpdb->get_var("show tables like '$table_name'") != $table_name)
 }		
 
 
-#############           TRIAL USE COUNTERS              ################	
-
-// full processing trial availability
-$i = 0;
-$i = get_option('full_trial_used_csv2post');
-if(empty($i)){add_option('full_trial_used_csv2post',false);}	
-
-// ad placement setting
-$i = 0;
-$i = get_option('csv2post_ad_place_marker');
-if(empty($i)){add_option('csv2post_ad_place_marker',1000);}
-else{$i = $i - 25; update_option('csv2post_ad_place_marker',$i);}
-
-// link placement setting
-$i = 0;
-$i = get_option('csv2post_link_place_marker');
-if(empty($i)){add_option('csv2post_link_place_marker',500);}
-else{$i = $i - 5; update_option('csv2post_link_place_marker',$i);}
-
-// posts made counter for links - reset
-$i = 0;
-$i = get_option('csv2post_posts_counter_links');
-if(empty($i)){add_option('csv2post_posts_counter_links',0);}
-
-// posts made counter for ads - reset
-$i = 0;
-$i = get_option('csv2post_posts_counter_ads');
-if(empty($i)){add_option('csv2post_posts_counter_ads',0);}
-
-// upgrade counter
-$i = 0;
-$i = get_option('csv2post_upgrade_counter');
-if(empty($i)){add_option('csv2post_upgrade_counter',0);}
-else{$i = $i + 1; update_option('csv2post_upgrade_counter',$i);}
-if($i == 5 || $i == 10 || $i == 15 || $i == 20 || $i == 25 || $i == 30)
-{	# PLACE FURTHER TRIAL RESTRICTIONS WHEN USER IS CONTINUING TO UPGRADE AND USE PLUGIN WITHOUT PAYING
-	$i = get_option('csv2post_ad_place_marker'); $i = $i - 100; update_option('csv2post_ad_place_marker',$i);
-	$i = get_option('csv2post_link_place_marker'); $i = $i - 50; update_option('csv2post_link_place_marker',$i);
-}
-
 
 
 #############            DO TABLE UPDATES  BELOW             ################	
+
+
 
 
 

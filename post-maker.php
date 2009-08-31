@@ -180,10 +180,7 @@ if($handle != false)
 
 	$sqlQuery = "UPDATE " .	$wpdb->prefix . "csvtopost_campaigns SET posts = '$posts'  WHERE id = '$camid'";
 	$wpdb->query($sqlQuery);
-	
-	# UPDATE TRIAL VERSION COUNTERS
-	update_option('csv2post_posts_counter_links',$posts);
-	update_option('csv2post_posts_counter_ads',$posts);	
+
 		
 	fclose($handle);// close csv file
 		

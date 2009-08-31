@@ -56,13 +56,21 @@ You can see an example website here
 The options available are to either locate and edit every post that has the WebTechGlobal links in them or purchase CSV 2 POST Plus.
 
 == Screenshots ==
-
-1.Image 1 /images/csv2post_wordpressplugin_stage1.jpg 
-2.Image 2 /images/csv2post_wordpressplugin_stage2.jpg 
-3.Image 3 /images/csv2post_wordpressplugin_stage4.jpg 
+<img src="http://www.webtechglobal.co.uk/wp-content/gallery/csv-2-post-plugin-version-1-6/csv2post_wordpressplugin_mainpage.jpg" alt="Angry face" />
+<img src="http://www.webtechglobal.co.uk/wp-content/gallery/csv-2-post-plugin-version-1-6/csv2post_wordpressplugin_manage.jpg" alt="Angry face" />
+<img src="http://www.webtechglobal.co.uk/wp-content/gallery/csv-2-post-plugin-version-1-6/csv2post_wordpressplugin_stage1.jpg" alt="Angry face" />
+<img src="http://www.webtechglobal.co.uk/wp-content/gallery/csv-2-post-plugin-version-1-6/csv2post_wordpressplugin_stage2.jpg" alt="Angry face" />
+<img src="http://www.webtechglobal.co.uk/wp-content/gallery/csv-2-post-plugin-version-1-6/csv2post_wordpressplugin_stage3.jpg" alt="Angry face" />
+<img src="http://www.webtechglobal.co.uk/wp-content/gallery/csv-2-post-plugin-version-1-6/csv2post_wordpressplugin_stage4.jpg" alt="Angry face" />
+<img src="http://www.webtechglobal.co.uk/wp-content/gallery/csv-2-post-plugin-version-1-6/csv2post_wordpressplugin_stage5.jpg" alt="Angry face" />
 
 
 == Changelog ==
+= 2.5 =
+* Removed trial restrictions, none at all exist! A fresh install will allow normal use.
+* Added paid edition pages for better a better preview of what the paid edition offers and what is still to come!
+* Added screenshots to WordPress plugin directory page.
+ 
 = 2.4 =
 * Added staggered processing time limit option to post-maker.php, will be on a settings page later.
 * Fixed installation issue with init_campaigndata_tables_wtg_csv2post() being declared twice.

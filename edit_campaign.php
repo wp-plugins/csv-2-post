@@ -1,5 +1,6 @@
 <h2>CSV 2 POST Campaign Management</h2>
-<p>Here you can manage your campaigns including pause, start or undo them.</p>
+<p>Here you can manage your campaigns including pause, start or undo them. The paid edition lets you view your campaign settings and ongoing
+status.</p>
 
 <?php
 /*
