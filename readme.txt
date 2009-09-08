@@ -66,6 +66,9 @@ The options available are to either locate and edit every post that has the WebT
 
 
 == Changelog ==
+= 2.6 =
+* Three new files for paid edition preview failed to upload, they are now available.
+
 = 2.5 =
 * Removed trial restrictions, none at all exist! A fresh install will allow normal use.
 * Added paid edition pages for better a better preview of what the paid edition offers and what is still to come!
