@@ -12,11 +12,6 @@ Created by Ryan Bayne from WebTechGlobal, import csv data, publish to WordPress 
 
 CSV Import plugin developed by <a href="http://www.webtechglobal.co.uk/about" title="Visit WebTechGlobal Home">Ryan Bayne</a>.
 
-<h3>SPECIAL OFFER</h3>
-If you find a bug that no one else has reported on the WebTechGlobal Forum already and I can witness it or make it happen then you
-will get CSV 2 POST Plus for half price.
-
-<h3>ABOUT</h3>
 CSV 2 POST quick install on WordPress is the free edition of this csv import tool. It is a great tool even as a trial plugin and can
 import thousands of affiliate products from your affiliate feeds in a matter of minutes. The interface is unique and you DO NOT have
 to edit your csv file to make it work with my scripts. The interface helps you connect csv columns to post parts, it does not 
@@ -56,16 +51,13 @@ You can see an example website here
 The options available are to either locate and edit every post that has the WebTechGlobal links in them or purchase CSV 2 POST Plus.
 
 == Screenshots ==
-<img src="http://www.webtechglobal.co.uk/wp-content/gallery/csv-2-post-plugin-version-1-6/csv2post_wordpressplugin_mainpage.jpg" alt="Angry face" />
-<img src="http://www.webtechglobal.co.uk/wp-content/gallery/csv-2-post-plugin-version-1-6/csv2post_wordpressplugin_manage.jpg" alt="Angry face" />
-<img src="http://www.webtechglobal.co.uk/wp-content/gallery/csv-2-post-plugin-version-1-6/csv2post_wordpressplugin_stage1.jpg" alt="Angry face" />
-<img src="http://www.webtechglobal.co.uk/wp-content/gallery/csv-2-post-plugin-version-1-6/csv2post_wordpressplugin_stage2.jpg" alt="Angry face" />
-<img src="http://www.webtechglobal.co.uk/wp-content/gallery/csv-2-post-plugin-version-1-6/csv2post_wordpressplugin_stage3.jpg" alt="Angry face" />
-<img src="http://www.webtechglobal.co.uk/wp-content/gallery/csv-2-post-plugin-version-1-6/csv2post_wordpressplugin_stage4.jpg" alt="Angry face" />
-<img src="http://www.webtechglobal.co.uk/wp-content/gallery/csv-2-post-plugin-version-1-6/csv2post_wordpressplugin_stage5.jpg" alt="Angry face" />
+<img src="http://www.webtechglobal.co.uk/wp-content/gallery/csv-2-post-plugin-version-1-6/csv2post_wordpressplugin_mainpage.jpg" alt="CSV 2 POST Screenshot" />
 
 
 == Changelog ==
+= 2.7 =
+* Link added on the main page to the paid edition demo and at the end of the new campaign process.
+
 = 2.6 =
 * Three new files for paid edition preview failed to upload, they are now available.
 

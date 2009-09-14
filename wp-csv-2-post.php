@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: CSV 2 POST
-Version: 2.6
+Version: 2.7
 Plugin URI: http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-post-plugin
 Description: Import csv data files including feeds from affiliate using interface only, no need to edit csv file!
 Author: Ryan Bayne
@@ -21,6 +21,14 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+
+$testmode = 0; // 1 = on and 0 = off
+if($testmode == 1)
+{
+	$wpdb->show_errors();
+	ini_set('display_errors',1);
+	error_reporting(E_ALL);
+}
 
 // installation
 function campaigndata_tables_wtg_csv2post () 

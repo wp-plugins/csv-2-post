@@ -35,7 +35,7 @@ $usernames = array(
         <tr>
             <th scope="row">Debugging Mode:</th>
             <td>
-              <input name="csv2post_debugmode" type="checkbox" value="<?php csv2post_checkboxstatus1($debugmode); ?>" <?php csv2post_checkboxstatus2($debugmode); ?> />
+              <input name="csv2post_debugmode" type="checkbox" value="" />
           </td>
         </tr>
         
@@ -43,7 +43,7 @@ $usernames = array(
         
         <tr>
             <th scope="row">Posts Per Hit:</th>
-            <td><input type="text" name="csv2post_postsperhit" value="<?php echo $postsperhit; ?>" size="3" maxlength="3" /></td>
+            <td><input type="text" name="csv2post_postsperhit" value="" size="3" maxlength="3" /></td>
         </tr>   
 
         <tr>
@@ -56,7 +56,7 @@ $usernames = array(
         <tr>
             <th scope="row">Maximum Execution Time In Staggered Mode:</th>
             <td>
-            <input type="text" name="csv2post_maxstagtime" value="<?php echo $maxstagtime; ?>" size="8" maxlength="8" />
+            <input type="text" name="csv2post_maxstagtime" value="" size="8" maxlength="8" />
           </td>
         </tr>
 
@@ -65,33 +65,33 @@ $usernames = array(
         <tr>
             <th scope="row">Allow Automatic Keyword Creation:</th>
             <td>
-              <input name="csv2post_autokeywords" type="checkbox" value="<?php csv2post_checkboxstatus1($autokeywords); ?>" <?php csv2post_checkboxstatus2($autokeywords); ?> />
+              <input name="csv2post_autokeywords" type="checkbox" value=""  />
           </td>
         </tr>
 
         <tr>
             <th scope="row">Allow Automatic Description Creation:</th>
             <td>
-              <input name="csv2post_autodescription" type="checkbox" value="<?php csv2post_checkboxstatus1($autodescription); ?>" <?php csv2post_checkboxstatus2($autodescription); ?> />
+              <input name="csv2post_autodescription" type="checkbox" value="" />
           </td>
         </tr>
 
         <tr>
             <th scope="row">Allow Automatic Tag Creation:</th>
             <td>
-              <input name="csv2post_autotags" type="checkbox" value="<?php csv2post_checkboxstatus1($autotags); ?>" <?php csv2post_checkboxstatus2($autotags); ?> />
+              <input name="csv2post_autotags" type="checkbox" value="" />
           </td>
         </tr>
 
         <tr>
             <th scope="row">Post TAG's Maximum Length:</th>
-            <td><input type="text" name="csv2post_tagslength" value="<?php echo $tagslength; ?>" size="3" maxlength="3" /></td>
+            <td><input type="text" name="csv2post_tagslength" value="" size="3" maxlength="3" /></td>
         </tr>
 
         <tr>
             <th scope="row">Allow Numeric Tags:</th>
             <td>
-              <input name="csv2post_numerictags" type="checkbox" value="<?php csv2post_checkboxstatus1($numerictags); ?>" <?php csv2post_checkboxstatus2($numerictags); ?> />
+              <input name="csv2post_numerictags" type="checkbox" value=""  />
           </td>
         </tr>
                                        
@@ -109,35 +109,35 @@ $usernames = array(
         <tr>
             <th scope="row">Activate LH:</th>
             <td>
-              <input name="csv2post_localhostinstalled" type="checkbox" value="<?php csv2post_checkboxstatus1($localhostinstalled); ?>" <?php csv2post_checkboxstatus2($localhostinstalled); ?> />
+              <input name="csv2post_localhostinstalled" type="checkbox" value="" />
           </td>
         </tr>
 
         <tr>
             <th scope="row">Default Host:</th>
             <td>
-            <input type="text" name="csv2post_lhhost" value="<?php echo $lhhost; ?>" size="30" maxlength="30" />
+            <input type="text" name="csv2post_lhhost" value="" size="30" maxlength="30" />
           </td>
         </tr>
 
         <tr>
             <th scope="row">Default Username:</th>
             <td>
-            <input type="text" name="csv2post_lhusername" value="<?php echo $lhusername; ?>" size="30" maxlength="30" />
+            <input type="text" name="csv2post_lhusername" value="" size="30" maxlength="30" />
           </td>
         </tr>
 
         <tr>
             <th scope="row">Default Password:</th>
             <td>
-            <input type="text" name="csv2post_lhpassword" value="<?php echo $lhpassword; ?>" size="30" maxlength="30" />
+            <input type="text" name="csv2post_lhpassword" value="" size="30" maxlength="30" />
           </td>
         </tr>
         
         <tr>
             <th scope="row">Default Database:</th>
             <td>
-            <input type="text" name="csv2post_lhdatabase" value="<?php echo $lhdatabase; ?>" size="30" maxlength="30" />
+            <input type="text" name="csv2post_lhdatabase" value="" size="30" maxlength="30" />
           </td>
         </tr>
 

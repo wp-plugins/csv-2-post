@@ -176,7 +176,7 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
                 <option value="1">Create 1 Posts</option>
             </select> for every page visit!
             </label>
-      Need a higher limit? <a href="http://www.webtechglobal.co.uk/wordpress-csv-2-post-plugin" title="Buy CSV 2 POST Plus" target="_blank">Buy CSV 2 POST Plus</a><br />
+      Need a higher limit? <a href="http://www.csv2post.com/" title="Buy CSV 2 POST Plus" target="_blank">Buy CSV 2 POST Plus</a><br />
     
 			<h3>(b) Upload or Link</h3>
             
@@ -1185,7 +1185,12 @@ if((isset($_POST['stage']) && $_POST['stage'] == 6) || (isset($stage5complete) &
 		?>
 		<h2>New Campaign Stage 6 - Campaign Complete!</h2>
         <p>Your campaign has been created and is already running. To pause it please go to the Campaign Management screen.</p>
-        <?php
+        <h3>Paid Edition Demo Launched</h3>
+<p>You can now login to a Demo blog and tryout version 2.2 of CSV 2 POST PLUS. Some restrictions are in place for security and to prevent abuse but you will be able to test the multiple layout options, meta column selection, automated custom fields and automated categories. Login details are on the login form. </p>
+<p><a href="http://www.csv2post.com/demo/wp-login.php" title="Go to paid edition demo"><strong>Go To Paid Edition Demo</strong></a></p>
+
+		
+		<?php
 	}		
 }
 ?>
