@@ -49,13 +49,12 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
 				$filelocationtype = $_POST['filelocationtype'];
 				
 				// get csv file directory
-				$uploadpath = get_option( 'upload_path' );
-				$target_path = $uploadpath.'/csv2postfiles/';
+				$target_path = csv2post_getcsvfilesdir();
 
 				# CALL UPLOAD PROCESS FUNCTION PASSING REQUIRED VALUES ONLY
 				if($filelocationtype == 1)// LOCAL LINKED CSV FILES ONLY
 				{	
-					$csvfiledirectory = $target_path.$csvfilename;
+					$csvfiledirectory = $target_path . $csvfilename;
 					
 					# LINK LOCATION - FULL PROCESSING 						
 					$fileexists = file_exists($csvfiledirectory);
@@ -164,7 +163,7 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
             
             <label>
             <input type="radio" name="processrate" value="1" id="ProcessRate_0" />
-            Full - attempt to process entire file, may cause memory errors and is recommend for localhost use only.</label>
+            Full - attempt to process entire file (free edition is limited to 1000 posts per campaign)</label>
 			<br />
             
             <label>
@@ -176,7 +175,7 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
                 <option value="1">Create 1 Posts</option>
             </select> for every page visit!
             </label>
-      Need a higher limit? <a href="http://www.csv2post.com/" title="Buy CSV 2 POST Plus" target="_blank">Buy CSV 2 POST Plus</a><br />
+Need a higher limit? <a href="http://www.csv2post.com/demo/wp-login.php" title="Buy CSV 2 POST Plus" target="_blank">Try CSV 2 POST Plus Demo</a><br />
     
 			<h3>(b) Upload or Link</h3>
             
@@ -217,8 +216,6 @@ if(!isset($_POST['stage']) || $_POST['stage'] == 1)
         </form>
         
 		<?php
-		
-		echo $tutorial_url;
 	}
 }
 
@@ -361,8 +358,6 @@ if((isset($_POST['stage']) && $_POST['stage'] == 2) || (isset($stage1complete) &
         
 		<?php
 		
-		echo $tutorial_url;
-		
         }//end while rows
         
 		fclose($handle);
@@ -466,8 +461,6 @@ if((isset($_POST['stage']) && $_POST['stage'] == 3) || (isset($stage2complete) &
         </form>
         
 		<?php
-		
-		echo $tutorial_url;
 	}
 }
 
@@ -810,8 +803,6 @@ if((isset($_POST['stage']) && $_POST['stage'] == 4) || (isset($stage3complete) &
         </form>
         
 		<?php
-		
-		echo $tutorial_url;
 	}
 }
 
@@ -1123,8 +1114,6 @@ if((isset($_POST['stage']) && $_POST['stage'] == 5) || (isset($stage4complete) &
         </form>
         
 		<?php
-		
-		echo $tutorial_url;
 	}
 }
 
@@ -1173,7 +1162,12 @@ if((isset($_POST['stage']) && $_POST['stage'] == 6) || (isset($stage5complete) &
 		?>
 		<h2>New Campaign Stage 6 - Campaign Complete!</h2>
         <p>Your campaign has been saved but you currently have an active campaign. Only one campaign can run at a time. Please pause the other campaign on the Campaign Management screen or wait until it is finished.</p>
-        <?php
+
+        <h3>Paid Edition Demo Launched</h3>
+		<p>You can now login to a Demo blog and tryout version 2.2 of CSV 2 POST PLUS. Some restrictions are in place for security and to prevent abuse but you will be able to test the multiple layout options, meta column selection, automated custom fields and automated categories. Login details are on the login form. </p>
+		<p><a href="http://www.csv2post.com/demo/wp-login.php" title="Go to paid edition demo"><strong>Go To Paid Edition Demo</strong></a></p>
+		
+		<?php
 	}
 	else
 	{

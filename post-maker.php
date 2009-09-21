@@ -3,9 +3,7 @@
 # SELECT A CAMPAIGN AND PROCESS IT
 $campaignresult = $wpdb->get_row("SELECT camfile,process,ratio,filtercolumn,id,poststatus,posts FROM " .$wpdb->prefix . "csvtopost_campaigns WHERE stage = '100'");
 
-$uploadpath = get_option( 'upload_path' );
-$target_path = $uploadpath.'/csv2postfiles/';
-$filelocation = $target_path.$campaignresult->camfile;
+$filelocation = csv2post_getcsvfilesdir() . $campaignresult->camfile;
 
 # OPEN FILE
 $handle = fopen("$filelocation", "r");
@@ -15,8 +13,8 @@ if($handle != false)
 	// post limit and script time limit
 	if($campaignresult->process == 1)
 	{
-		$post_limit = 999999;
-		set_time_limit(900000);
+		$post_limit = 1000;
+		set_time_limit(9000);
 	}
 	elseif($campaignresult->process == 2)
 	{
@@ -107,7 +105,8 @@ if($handle != false)
 				if( $count == 0 )
 				{
 					# NO DUPLICATES FOUND SO INJECT POST
-					$post_id = wp_insert_post( $my_post );
+					if($post_limit != 1000){}
+					else{$post_id = wp_insert_post( $my_post );}
 					
 					# COUNT ROWS ACTUALLY USED TO CREATE POSTS
 					$posts_injected++;

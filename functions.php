@@ -1,23 +1,14 @@
-<style type="text/css">
-<!--
-.okgreen_csv2post {
-	color: #008000;
-	font-weight: bolder;
-}
-
-.problemred_csv2post {
-	color: #008000;
-	font-weight: bolder;
-}
--->
-</style>
 <?php
+
+function csv2post_getcsvfilesdir()
+{
+	return WP_CONTENT_DIR . '/uploads/csv2postfiles/';
+}
 
 // create csv files storage folder
 function csv2post_doesexist_csvfilesfolder()
 {
-	$uploadpath = get_option( 'upload_path' );
-	$filename = $uploadpath.'/csv2postfiles/';
+	$filename = csv2post_getcsvfilesdir();
 
 	if (is_writable($filename)) 
 	{

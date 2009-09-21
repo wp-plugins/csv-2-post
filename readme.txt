@@ -12,22 +12,21 @@ Created by Ryan Bayne from WebTechGlobal, import csv data, publish to WordPress 
 
 CSV Import plugin developed by <a href="http://www.webtechglobal.co.uk/about" title="Visit WebTechGlobal Home">Ryan Bayne</a>.
 
-CSV 2 POST quick install on WordPress is the free edition of this csv import tool. It is a great tool even as a trial plugin and can
-import thousands of affiliate products from your affiliate feeds in a matter of minutes. The interface is unique and you DO NOT have
-to edit your csv file to make it work with my scripts. The interface helps you connect csv columns to post parts, it does not 
-assume your csv file is laid out in a specific way that I've set but instead you tell the plugin the order of your columns and what
-each column is to be used for.
+Import any data with far more ease than any other import plugin because you don't need to name columns anything specific and your columns can be in any order!
+This is not an adaptation of Import CSV. All code an interface is totally unique and I have never used another csv import plugin. CSV 2 POST is my first plugin
+and it was the result of a data import script for getting affiliate data to WordPress. Somehow being new to WordPress and creating my very first plugin I ended
+up with a product 3 months later called CSV 2 POST PLUS which is even better and growing daily. Demo available at www.csv2post.com
 
-<a href="http://www.webtechglobal.co.uk/wordpress-services/wordpress-plugins/wordpress-csv-2-post-plugin" title="CSV 2 POST Free Edition Home Page">Read more and watch a video!</a>
+<a href="http://www.csv2post.com/demo/wp-login.php" title="CSV 2 POST Plus Demo Login">Login to Demo for CSV 2 POST PLUS</a>
 
 <h3>CSV 2 POST PLUS</h3>
 The paid edition of this plugin is aimed at those who import data as part of their job or longer term ambitions. It allows custom
 layouts to be created and customisation can be applied easily for every customer. I offer this service free and will even help you
 import the data if your short on time.
 
-The paid edition also has far more control over SEO, Tags, Custom Fields, Categorising and general configuration.
+The paid edition also has far more control over SEO, Tags, Custom Fields, Categorising and general configuration. Try the demo on the official website.
 
-<a href="http://www.webtechglobal.co.uk/wordpress-services/wordpress-plugins/csv-2-post-plus" title="CSV 2 POST Plus Home Page">Read more about CSV 2 POST Plus here.</a>
+<a href="http://www.csv2post.com/demo/wp-login.php" title="CSV 2 POST Plus Demo Login">Login to Demo for CSV 2 POST PLUS</a>
 
 == Installation ==
 
@@ -55,6 +54,11 @@ The options available are to either locate and edit every post that has the WebT
 
 
 == Changelog ==
+= 2.8 =
+* Fixed issue with the csv files directory in uploads folder not being found.
+* Applied full processing limit due to complaints of abuse of this plugin and mass spamming.
+* Removed broken tutorial links from the bottom of each campaign stage.
+
 = 2.7 =
 * Link added on the main page to the paid edition demo and at the end of the new campaign process.
 
