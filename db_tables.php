@@ -1,12 +1,10 @@
 <?php
+global $wpdb;
 
 add_option('csv2post_maxstagtime',20);
 
-$uploadpath = get_option( 'upload_path' );
-$newdirectory = $uploadpath.'/csv2postfiles/';
+$newdirectory = WP_CONTENT_DIR . '/csv2postfiles/';
 mkdir($newdirectory, 0755);
-
-global $wpdb;
 
 require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 

@@ -6,3 +6,6 @@
 <h3>Plugin Status</h3>
 <p>CSV Files Folder: <?php echo csv2post_doesexist_csvfilesfolder(); ?></p>
 <p>Auto Line Ending (MAC fix): <?php  echo csv2post_autolineendings_status(); ?></p>
+
+<h3>Recommended Services For Using With CSV 2 POST</h3>
+<a href='https://www.e-junkie.com/ecom/gb.php?cl=29717&c=ib&aff=85223'><img src='http://i627.photobucket.com/albums/tt355/classipress/aff/classipress_468x60_02.jpg' border='0' width='468' height='60' alt='Premium WordPress Theme' /></a>

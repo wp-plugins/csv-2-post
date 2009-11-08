@@ -1,8 +1,8 @@
 <?php
 /*
 Plugin Name: CSV 2 POST
-Version: 2.8
-Plugin URI: http://www.webtechglobal.co.uk/wordpress-services/wordpress-csv-2-post-plugin
+Version: 3.0
+Plugin URI: http://www.csv2post.com
 Description: Import csv data files including feeds from affiliate using interface only, no need to edit csv file!
 Author: Ryan Bayne
 Author URI: http://www.webtechglobal.co.uk
@@ -92,7 +92,6 @@ function wtg_csv2post_add_pages()
     add_submenu_page(__FILE__, 'Disclaimer', 'Disclaimer', 8, 'disclaimer', 'wtg_csv2post_sublevel_page3');
     add_submenu_page(__FILE__, 'Settings', 'Settings', 8, 'settings', 'wtg_csv2post_sublevel_page4');
     add_submenu_page(__FILE__, 'Tools', 'Tools', 8, 'tools', 'wtg_csv2post_sublevel_page5');
-    add_submenu_page(__FILE__, 'Layouts', 'Layouts', 8, 'layouts', 'wtg_csv2post_sublevel_page6');
 }
 
 function wtg_csv2post_toplevel_page() 
@@ -157,10 +156,5 @@ function wtg_csv2post_sublevel_page5()
 {
 	include_once('functions.php');
 	require('tools_csv2post.php');
-}
-function wtg_csv2post_sublevel_page6() 
-{
-	include_once('functions.php');
-	require('layouts_csv2post.php');
 }
 ?>

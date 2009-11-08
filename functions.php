@@ -2,7 +2,7 @@
 
 function csv2post_getcsvfilesdir()
 {
-	return WP_CONTENT_DIR . '/uploads/csv2postfiles/';
+	return WP_CONTENT_DIR . '/csv2postfiles/';
 }
 
 // create csv files storage folder
