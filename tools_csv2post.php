@@ -10,12 +10,4 @@ custom fields and comments are also deleted automatically.</p>
     <input name="massdelete_opentool" class="button-primary" type="submit" value="Open Mass Post Delete Tool" disabled />
 </form>
 
-<h3>What should the next new tool be?</h3>
-<p>Let me know what you think the next tool should be and I'll add it to the to do list!</p>
-
-<br />
-<br />
-<br />
-
-<p>Copyright &copy; 2009 WebTechGlobal All Rights Reserved</p>
-<p>This software does not come under the GNU General Public License.</p>
+<h3><a href="http://www.csv2post.com/blog/instructions/using-csv-2-post-tools-page">View&nbsp;this page on the paid edition!</a></h3>

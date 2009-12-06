@@ -47,6 +47,10 @@ The options available are to either locate and edit every post that has the WebT
 Coming Soon!
 
 == Changelog ==
+= 3.1 =
+* Change page names to prevent conflict with other plugins using basic terms such as "settings", happened with ShopperPress.
+* Updated links to go to the official www.csv2post.com website and the new WebTechGlobal site.
+
 = 3.0 =
 * Installation was creating the csv files folder in the old directory but looking for it in the new directory.
 

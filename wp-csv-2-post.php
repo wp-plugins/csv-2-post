@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: CSV 2 POST
-Version: 3.0
+Version: 3.1
 Plugin URI: http://www.csv2post.com
 Description: Import csv data files including feeds from affiliate using interface only, no need to edit csv file!
 Author: Ryan Bayne
@@ -87,36 +87,36 @@ add_action('admin_menu', 'wtg_csv2post_add_pages');
 function wtg_csv2post_add_pages() 
 {
     add_menu_page('CSV 2 POST', 'CSV 2 POST', 8, __FILE__, 'wtg_csv2post_toplevel_page');
-    add_submenu_page(__FILE__, 'New Campaign', 'New Campaign', 8, 'new_campaign', 'wtg_csv2post_sublevel_page1');
-    add_submenu_page(__FILE__, 'Manage Campaigns', 'Manage Campaigns', 8, 'manage_campaigns', 'wtg_csv2post_sublevel_page2');
-    add_submenu_page(__FILE__, 'Disclaimer', 'Disclaimer', 8, 'disclaimer', 'wtg_csv2post_sublevel_page3');
-    add_submenu_page(__FILE__, 'Settings', 'Settings', 8, 'settings', 'wtg_csv2post_sublevel_page4');
-    add_submenu_page(__FILE__, 'Tools', 'Tools', 8, 'tools', 'wtg_csv2post_sublevel_page5');
+    add_submenu_page(__FILE__, 'New Campaign', 'New Campaign', 8, 'newcampaign_csv2post', 'wtg_csv2post_sublevel_page1');
+    add_submenu_page(__FILE__, 'Manage Campaigns', 'Manage Campaigns', 8, 'managecampaigns_csv2post', 'wtg_csv2post_sublevel_page2');
+    add_submenu_page(__FILE__, 'Disclaimer', 'Disclaimer', 8, 'disclaimer_csv2post', 'wtg_csv2post_sublevel_page3');
+    add_submenu_page(__FILE__, 'Settings', 'Settings', 8, 'settings_csv2post', 'wtg_csv2post_sublevel_page4');
+    add_submenu_page(__FILE__, 'Tools', 'Tools', 8, 'tools_csv2post', 'wtg_csv2post_sublevel_page5');
 }
 
 function wtg_csv2post_toplevel_page() 
 {
 	include_once('functions.php');
-    require('main_page.php');
+    require('mainpage_csv2post.php');
 }
 
 function wtg_csv2post_sublevel_page1() 
 {
 	ini_set('auto_detect_line_endings', '1');
 	include_once('functions.php');
-	require('new_campaign.php');
+	require('newcampaign_csv2post.php');
 }
 
 function wtg_csv2post_sublevel_page2() 
 {
 	include_once('functions.php');
-	require('edit_campaign.php');
+	require('editcampaign_csv2post.php');
 }
 
 function wtg_csv2post_sublevel_page3() 
 {
 	include_once('functions.php');
-	require('disclaimer.php');?>
+	require('disclaimer_csv2post.php');?>
 
 	<script type="text/javascript"><!--
 	google_ad_client = "pub-4923567693678329";
@@ -150,11 +150,11 @@ function wtg_csv2post_sublevel_page3()
 function wtg_csv2post_sublevel_page4() 
 {
 	include_once('functions.php');
-	require('settings.php');
+	require('settings_csv2post.php');
 }
 function wtg_csv2post_sublevel_page5() 
 {
 	include_once('functions.php');
-	require('tools_csv2post.php');
+	require('toolscsv2post_csv2post.php');
 }
 ?>
