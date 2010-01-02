@@ -41,12 +41,19 @@ You can see an example website here
 
 = Can I get the AdSense and links removed from my post made by CSV 2 POST? =
 
-The options available are to either locate and edit every post that has the WebTechGlobal links in them or purchase CSV 2 POST Plus.
+The options available are to either locate and edit every post that has the WebTechGlobal links in them or purchase CSV 2 POST Pro.
 
 == Screenshots ==
-Coming Soon!
+Please see the plugin website at www.csv2post.com for many videos and screenshots.
 
 == Changelog ==
+= 3.2 =
+* Removed 1000 post restriction for full processing.
+* Improved main page and will be adding more standard wordpress styles in future.
+* Tools page removed, only available in Pro edition.
+* Added news box to the main page.
+* Added WebTechGlobal link placement function.
+
 = 3.1 =
 * Change page names to prevent conflict with other plugins using basic terms such as "settings", happened with ShopperPress.
 * Updated links to go to the official www.csv2post.com website and the new WebTechGlobal site.
@@ -57,51 +64,6 @@ Coming Soon!
 = 2.9 =
 * Changed csv files directory to wordpress content folder not the uploads folder within the content folder.
 * Removed layouts page as it will not be upgraded with the wysiwyg editor in the free edition only paid editions.
-
-= 2.8 =
-* Fixed issue with the csv files directory in uploads folder not being found.
-* Applied full processing limit due to complaints of abuse of this plugin and mass spamming.
-* Removed broken tutorial links from the bottom of each campaign stage.
-
-= 2.7 =
-* Link added on the main page to the paid edition demo and at the end of the new campaign process.
-
-= 2.6 =
-* Three new files for paid edition preview failed to upload, they are now available.
-
-= 2.5 =
-* Removed trial restrictions, none at all exist! A fresh install will allow normal use.
-* Added paid edition pages for better a better preview of what the paid edition offers and what is still to come!
-* Added screenshots to WordPress plugin directory page.
- 
-= 2.4 =
-* Added staggered processing time limit option to post-maker.php, will be on a settings page later.
-* Fixed installation issue with init_campaigndata_tables_wtg_csv2post() being declared twice.
- 
-= 2.3 =
-* Now displays disabled form objects that are made available with CSV 2 POST Plus the paid version of this plugin.
-* Decreased restrictions so that WTG links and adsense appear less.
-
-= 2.2 =
-* Full processing is no longer disabled after the first use.
-* Moved include_once('functions.php') to be called only when required.
-* Replaced links on main page with the new ones.
-
-= 2.1 =
-* Removed php ini error reporting code which caused the displaying of undefined variable errors on other plugins.
-
-= 2.0 =
-* Decreased trial restrictions slightly.
-* Added correct url to tutorials link on New Campaign stages.
-* Fixed issue with MAC users not being able to get any further than stage 2.
-* Shorten script lengths in new_campaign.php and post-maker.php to help speed them up.
-* Increase PHP error reporting and sorted undefined variables on all pages.
-
-= 1.9 =
-* Changed file directory to wordpress upload folder so that csv files uploaded are not overwritten during upgrades.
-* Instructions removed and replaced with link to my site where it is easier updated.
-* Relaxed restrictions on link and ad placement as it was a bit much I think.
-* Change page session name in wp-csv-2-post.php to avoid any conflicts.
 
 == Arbitrary section ==
 

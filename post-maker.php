@@ -7,7 +7,7 @@ if($handle != false)
 {
 	if($campaignresult->process == 1)
 	{
-		$post_limit = 1000;
+		$post_limit = 999999;
 		set_time_limit(9000);
 	}
 	elseif($campaignresult->process == 2)
@@ -71,7 +71,7 @@ if($handle != false)
 				$count = $wpdb->num_rows;
 				if( $count == 0 )
 				{
-					if($post_limit != 1000){}
+					if($post_limit != 999999){}
 					else{$post_id = wp_insert_post( $my_post );}
 					$posts_injected++;
 					$sqlQuery = "INSERT INTO " .

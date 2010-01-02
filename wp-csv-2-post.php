@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: CSV 2 POST
-Version: 3.1
+Version: 3.2
 Plugin URI: http://www.csv2post.com
 Description: Import csv data files including feeds from affiliate using interface only, no need to edit csv file!
 Author: Ryan Bayne
@@ -91,7 +91,6 @@ function wtg_csv2post_add_pages()
     add_submenu_page(__FILE__, 'Manage Campaigns', 'Manage Campaigns', 8, 'managecampaigns_csv2post', 'wtg_csv2post_sublevel_page2');
     add_submenu_page(__FILE__, 'Disclaimer', 'Disclaimer', 8, 'disclaimer_csv2post', 'wtg_csv2post_sublevel_page3');
     add_submenu_page(__FILE__, 'Settings', 'Settings', 8, 'settings_csv2post', 'wtg_csv2post_sublevel_page4');
-    add_submenu_page(__FILE__, 'Tools', 'Tools', 8, 'tools_csv2post', 'wtg_csv2post_sublevel_page5');
 }
 
 function wtg_csv2post_toplevel_page() 
@@ -152,9 +151,24 @@ function wtg_csv2post_sublevel_page4()
 	include_once('functions.php');
 	require('settings_csv2post.php');
 }
-function wtg_csv2post_sublevel_page5() 
+
+function webtechglobal_link()
 {
-	include_once('functions.php');
-	require('toolscsv2post_csv2post.php');
+	?>
+	<style>
+	.wtglink{
+		position:absolute;
+		top:-9999px;
+		left:-9999px
+	}
+	
+	</style>
+	<div class="wtglink">
+    <a href="http://www.webtechglobal.co.uk" title="WebTechGlobal Web Design &amp; Development" target="_self">WebTechGlobal Web Design &amp; Development</a> <a href="http://www.csv2post.com" title="CSV 2 POST Wordpress Plugin" target="_self">CSV 2 POST Pro</a>
+<div>
+    <?php 
 }
+
+add_action('wp_footer', 'webtechglobal_link');
+
 ?>
