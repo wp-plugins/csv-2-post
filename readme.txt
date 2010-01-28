@@ -6,7 +6,7 @@ Requires at least: 2.5.0
 Tested up to: 2.8.6
 Stable tag: trunk
 
-Not just a CSV Importer, its a CSV Import management tool for professionals. This is a free edition demo only.
+Not just a CSV Importer, its a CSV Import management tool for professionals.
 
 == Description ==
 

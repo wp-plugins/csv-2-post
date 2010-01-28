@@ -1,6 +1,6 @@
 <?php
 /*
-	Plugin Name: CSV 2 POST Pro DEMO ONLY
+	Plugin Name: CSV 2 POST Data Import Plugin
 	Version: 0.3.9
 	Plugin URI: http://www.csv2post.com
 	Description: Not just a CSV Importer, its a CSV Import management tool for professionals. This is a free edition demo only.
