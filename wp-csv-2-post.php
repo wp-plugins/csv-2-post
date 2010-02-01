@@ -16,7 +16,7 @@ include('functions/reporting_functions.php');
 ini_set('auto_detect_line_endings', 1);
 
 // current edition - pro is full edition - free is download on wordpress - demo is online demo
-$csv2post_edition = 'pro';
+$csv2post_edition = 'free';
 
 // include PEAR csv function files
 if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN'){ini_set('include_path',rtrim(ini_get('include_path'),';').';'.dirname(__FILE__).'/pear/');} 
