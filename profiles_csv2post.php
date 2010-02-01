@@ -35,7 +35,7 @@
 		if( isset ($_POST['delimiter'] ) )
 		{
 			$csvprofile = csv2post_getcsvprofile( $_POST['csvfilename'] );		
-			$csvprofile['format'] = array('delimiter' => $_POST['delimiter']);
+			$csvprofile['format']['delimiter'] = $_POST['delimiter'];
 			update_option( csv2post_csvfilesprofilename($csvfilename), $csvprofile );
 		}
 		
@@ -290,8 +290,7 @@
 											$delimiter = $csvprofile['format']['delimiter'];
 											?>
 											<label>
-											<input type="radio" name="csvfilename" value="<?php echo $csvfiles;?>" <?php if(empty($delimiter)){echo 'disabled="disabled"';}?> /><?php echo $csvfiles; ?> 
-											<?php if(empty($delimiter)){echo 'Enter Delimiter On CSV Uploader Page To Use';}?>
+												<input type="radio" name="csvfilename" value="<?php echo $csvfiles;?>" /><?php echo $csvfiles; ?> 
 											</label>
 											<br /><?php
 										}
@@ -678,6 +677,8 @@
                 <input name="csvfilename" type="hidden" value="<?php echo $csvfilename;?>" />
 		        <input class="button-primary" type="submit" value="Save Profile" />
 
+              <h2>Special Functions Tutorial</h2>
+                <object width="602" height="583"><param name="movie" value="http://www.youtube.com/v/wgSaKdJ4dyw&hl=en&fs=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/wgSaKdJ4dyw&hl=en&fs=1" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="602" height="583"></embed></object>
                 
           </div>
         </div>    <!-- END OF ACCORDIAN -->

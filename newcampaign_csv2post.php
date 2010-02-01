@@ -112,27 +112,25 @@ if((isset($_POST['stage']) && $_POST['stage'] == 6) || (isset($stage5complete) &
 { 
 	// echos errors if stage to stage variables are not set
 	require( 'new_campaign_stages/stage_varto_stage.php' );
-	
-	// if in demo mode pause all current campaigns
-	if(get_option('csv2post_demomode') == 1)
-	{
-		$sqlQuery = "UPDATE " .
-		$wpdb->prefix . "csv2post_campaigns SET stage = '200' WHERE stage = '100'";
-		$wpdb->query($sqlQuery);
-	}
-    
-	// update campaign to complete but in paused mode
-	$sqlQuery = "UPDATE " .
-	$wpdb->prefix . "csv2post_campaigns SET filtercolumn = '$filtercolumn', stage = '100' WHERE id = '$camid'";
-	$wpdb->query($sqlQuery);
 
 	echo '<h2>New Campaign Stage 6 - Campaign Complete!</h2>';
-	echo '<div id="message" class="updated fade"><p>This is as far as this free edition will go. The script that actually import data, create posts, update posts, cloak urls and process clicked urls have all been removed. Please visit www.csv2post.com for information on buying the full edition if you like what you have seen so far.</p></div>';
 	
-	if($demomode = get_option('csv2post_demomode') == 1)
-	{ 
-		echo '<div id="message" class="updated fade"><p>Demo Mode: In demo mode any existing campaigns are paused automatically to allow the new campaign to run straight away.</p></div>';
-	}    
+	if( $csv2post_edition == 'pro' )
+	{
+		echo '<div id="message" class="updated fade"><p>Success - Your campaign has been created and already started.</p></div>';
+	}
+	elseif( $csv2post_edition == 'free' )
+	{
+		echo '<div id="message" class="updated fade"><p>Success - Your campaign has been created but this is as far as you can go in the free edition, please try the only demo or purchase at www.csv2post.com, thank you for trying CSV 2 POST</p></div>';
+	}
+	elseif( $csv2post_edition == 'demo' )
+	{
+		echo '<div id="message" class="updated fade"><p>Success - Your campaign has been created and should begin straight away however please ensure other demo users campaign are not running first.</p></div>';
+	}
+	
+	$campaignarray = get_option( $_POST['camid_option'] );
+	$campaignarray['settings']['stage'] = 100;
+	update_option( $_POST['camid_option'], $campaignarray );
 }
 
 $debugmode = get_option('csv2post_debugmode');

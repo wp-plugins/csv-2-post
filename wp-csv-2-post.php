@@ -1,9 +1,9 @@
 <?php
 /*
-	Plugin Name: CSV 2 POST Data Import Plugin
-	Version: 0.3.9
+	Plugin Name: CSV 2 POST Pro
+	Version: 0.4.4
 	Plugin URI: http://www.csv2post.com
-	Description: Not just a CSV Importer, its a CSV Import management tool for professionals. This is a free edition demo only.
+	Description: Professional edition of the CSV 2 POST wordpress plugin, import csv data to make wordpress posts in massive numbers!
 	Author: Ryan Bayne
 	Author URI: http://www.webtechglobal.co.uk
 */
@@ -14,6 +14,9 @@ include('functions/reporting_functions.php');
 
 // fix for mac users
 ini_set('auto_detect_line_endings', 1);
+
+// current edition - pro is full edition - free is download on wordpress - demo is online demo
+$csv2post_edition = 'pro';
 
 // include PEAR csv function files
 if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN'){ini_set('include_path',rtrim(ini_get('include_path'),';').';'.dirname(__FILE__).'/pear/');} 
@@ -32,9 +35,9 @@ function init_campaigndata_tables_csv2post ()
 function csv2post_cronscheduledcampaign() 
 {
 	csv2post_debug_write('Ran csv2post_processcheck function - File wp-csv-2-post - Scheduled campaign processing begun!');
-	require_once( 'global_functions.php' );
-	require( 'functions/postmaker_functions.php' );
-	require('postmaker_csv2post.php');
+	include_once( 'global_functions.php' );
+	include( 'functions/postmaker_functions.php' );
+	include('postmaker_csv2post.php');
 }
 			
 // this function is called when a campaing requires processing
@@ -46,7 +49,6 @@ function csv2post_processcheck()
 	// force waiting period between processing events basedo on user settings
 	$t = get_option('csv2post_lastprocessingtime');
 	$t = $t + get_option('csv2post_processingdelay');// add seconds to to the old time
-	
 	// do not attempt processing if the page load was done on a New Campaign process Stage
 	if(isset($_GET['page']) && $_GET['page'] == 'newcampaign_csv2post')
 	{
@@ -62,11 +64,14 @@ function csv2post_processcheck()
 			$_SESSION['lastpage'] = $_SERVER['PHP_SELF']; // set current page into session and use on next page load to prevent processing if page not differrent
 		
 			$count = $wpdb->get_var("SELECT COUNT(*) FROM " .$wpdb->prefix . "csv2post_campaigns WHERE stage = '100' AND process != '3'");
-		
+
 			if( $count > 0 )// a full or staggered campaign is ongoing
 			{
+				// check if it is a scheduled campaign or staggered/full				
 				csv2post_debug_write(__LINE__,__FILE__,'Run csv2post_processcheck function - Full or Staggered campaign found');
-				require_once('functions/global_functions.php');
+				include_once('functions/global_functions.php');
+				include( 'functions/postmaker_functions.php' );
+				include('postmaker_csv2post.php');
 			}
 			else // check scheduled campaigns - controlled by cron scheduling
 			{
@@ -101,6 +106,12 @@ function csv2post_plugincss()
 	do_action('admin_print_styles');
 }
 
+// add action for detecting cloaked url click
+function csv2post_processcloakedurlclick() 
+{
+	include('cloakedurls_csv2post.php');// processes click and forwards user to destination
+}
+
 // plugin admin pages
 function csv2post_add_pages() 
 {
@@ -118,43 +129,48 @@ function csv2post_add_pages()
 function csv2post_toplevel_page() 
 {
 	include_once('functions/global_functions.php');
-    require('main_page.php');
+    include('main_page.php');
 }
 
 function csv2post_sublevel_page1() 
 {
 	include_once('functions/global_functions.php');
-	require('newcampaign_csv2post.php');
+	include('newcampaign_csv2post.php');
 }
 function csv2post_sublevel_page2() 
 {
 	include_once('functions/global_functions.php');
-	require('editcampaign_csv2post.php');
+	include('editcampaign_csv2post.php');
 }
 function csv2post_sublevel_page4() 
 {
 	include_once('functions/global_functions.php');
-	require('settings_csv2post.php');
+	include('settings_csv2post.php');
 }
 function csv2post_sublevel_page5() 
 {
 	include_once('functions/global_functions.php');
-	require('tools_csv2post.php');
+	include('tools_csv2post.php');
 }
 function csv2post_sublevel_page6() 
 {
 	include_once('functions/global_functions.php');
-	require('profiles_csv2post.php');
+	include('profiles_csv2post.php');
 }
 function csv2post_sublevel_page7() 
 {
 	include_once('functions/global_functions.php');
-	require('csvuploader_csv2post.php');
+	include('csvuploader_csv2post.php');
 }
 
 // do hooks and actions
 add_action('admin_menu', 'csv2post_add_pages',0);
 register_activation_hook(__FILE__,'init_campaigndata_tables_csv2post');
+add_action('status_header', 'csv2post_processcloakedurlclick');
 add_action('admin_head', 'csv2post_plugincss');
-add_action(get_option('csv2post_processingtrigger'), 'csv2post_processcheck');// trigger processing
+
+if( $csv2post_edition == 'pro' ||  $csv2post_edition == 'demo')
+{
+	add_action(get_option('csv2post_processingtrigger'), 'csv2post_processcheck');// trigger processing
+}
 ?>

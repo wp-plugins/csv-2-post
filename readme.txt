@@ -6,12 +6,13 @@ Requires at least: 2.5.0
 Tested up to: 2.8.6
 Stable tag: trunk
 
-Not just a CSV Importer, its a CSV Import management tool for professionals.
+Inject any CSV file data into the WordPress database as new Posts!
 
 == Description ==
 
-Free edition of the best CSV Import plugin for Wordpress. This plugin is a sample of the professional plugin that improves week by week, constantly delivering new
-ideas and approachs to not just getting data in your blog but managing your entire campaign.
+Use CSV 2 POST Plus to import a csv data file and inject up to 1 million posts in WordPress! It is free to use and has some cool features that other
+similiar plugins don't with many more cool new ideas coming soon. Developed by Ryan Bayne from WebTechGlobal, a University graduate
+in 2009.
 
 == Installation ==
 
@@ -20,29 +21,19 @@ ideas and approachs to not just getting data in your blog but managing your enti
 3. Ensure plugin files are in a folder named 'csv-2-post-plus' i.e `/wp-content/plugins/csv-2-post-plus/csv-2-post-plus.php`
 
 == Changelog ==
-0.3.9
-1. Removed disclaimer page, not really required. Terms and Conditions will soon be made available for presale.
-2. Removed multiple debug function lines in postmaker file to help speed up importing.
-3. Auto keywords, description and tags settings is per campaign now. No longer a global plugin setting for all campaigns.
-4. Custom Post Layouts are now part of a CSV Profile system. Layouts page renamed to CSV Profiles.
-5. Settings for special functions such as tag generating or custom permalink are now stored in Wordpress options as an array.
-6. Stage 2 no longer has any column pairing, it is now always automated due to the new CSV Profile system.
-7. Stage 2 special functions columns have been replaced with checkboxes. Columns for each special function are set in the CSV Profile.
-8. Corrected an issue with the Posts Per Hit value not being saved properly in Settings.
-9. Fixed custom slug function. Rarely used function so it was never picked up on that it was not working properly.
-10. Applying your own dates from csv file did not always work, changes have been made to improve this and it works far better.
-11. Change the name of all variables involved in processing CSV Profile name as a conflict with language translator plugin suspected.
-12. CSV Profile text object for name had the ID of "Title" which is the same as the WYSIWYG editor title which was causing conflict.
-13. Campaign management now shows last 100 posts created for viewing or edit. Later will have pagination for listing all posts created by a campaign.
-14. CSV Uploader page now uses the new csv profile array.
-15. Moved delimiter entry to CSV Profile page, underneath special column title tokens where it becomes apparent if the delimiter is correct or not.
-16. CSV files can now only have one profile and the interface has been changed to prevent selection of csv files with a profile already. 
-17. Profiles cannot be named manually, they are automatically named using the csv file name they are created for. This is less to do for the user.
-18. Table names have had "plus" removed since the plugin originally had 3 editions. It has been removed from sql code and all php.
-19. My own styles plus images have been removed from plugin files and standard Wordpress styling is now being applied.
-20. There is now a menu for quickly applying a files profile to another csv file. Only possible when files are formatted the same in every way.
-21. Stage 1 will only show csv file that have had a profile completed. This will now make the initial campaign setup quicker overall.
+0.4.4
+* You can now reset campaigns, this will delete all posts created by that campaign and reset counters.
+* You can now view the last 100 posts created in a campaign on campaign management.
+* Changed message on Stage 6, no longer tells you to click start on campaign management.
 
+0.4.3
+* Campaign management link now fixed, it was not passing the new CSV Profile ID in the URL.
+
+0.4.2
+* A new table column required on Stage 1 was not being created on installation. You can now get past stage 1.
+
+0.4.1
+* Fixed problem where we could not select csv files on the CSV Profile page.
 
 == Arbitrary section ==
 
