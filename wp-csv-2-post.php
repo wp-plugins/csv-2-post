@@ -1,7 +1,7 @@
 <?php
 /*
-	Plugin Name: CSV 2 POST
-	Version: 0.4.4
+	Plugin Name: CSV 2 POST Pro
+	Version: 0.4.5
 	Plugin URI: http://www.csv2post.com
 	Description: Professional edition of the CSV 2 POST wordpress plugin, import csv data to make wordpress posts in massive numbers!
 	Author: Ryan Bayne
@@ -10,13 +10,13 @@
 global $wpdb;
 
 // set error handler function
-include('functions/reporting_functions.php');
+include_once('functions/reporting_functions.php');
 
 // fix for mac users
 ini_set('auto_detect_line_endings', 1);
 
 // current edition - pro is full edition - free is download on wordpress - demo is online demo
-$csv2post_edition = 'free';
+$csv2post_edition = 'pro';
 
 // include PEAR csv function files
 if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN'){ini_set('include_path',rtrim(ini_get('include_path'),';').';'.dirname(__FILE__).'/pear/');} 
@@ -26,7 +26,7 @@ require_once 'File/CSV.php';
 // plugin activation and installation hook then functions
 function init_campaigndata_tables_csv2post () 
 {
-	include('functions/config_functions.php');
+	include_once('functions/config_functions.php');
 	csv2post_databaseinstallation(0);
 	csv2post_optionsinstallation(0);
 }
@@ -36,8 +36,8 @@ function csv2post_cronscheduledcampaign()
 {
 	csv2post_debug_write('Ran csv2post_processcheck function - File wp-csv-2-post - Scheduled campaign processing begun!');
 	include_once( 'global_functions.php' );
-	include( 'functions/postmaker_functions.php' );
-	include('postmaker_csv2post.php');
+	include_once( 'functions/postmaker_functions.php' );
+	include_once('postmaker_csv2post.php');
 }
 			
 // this function is called when a campaing requires processing
@@ -70,8 +70,8 @@ function csv2post_processcheck()
 				// check if it is a scheduled campaign or staggered/full				
 				csv2post_debug_write(__LINE__,__FILE__,'Run csv2post_processcheck function - Full or Staggered campaign found');
 				include_once('functions/global_functions.php');
-				include( 'functions/postmaker_functions.php' );
-				include('postmaker_csv2post.php');
+				include_once( 'functions/postmaker_functions.php' );
+				include_once('postmaker_csv2post.php');
 			}
 			else // check scheduled campaigns - controlled by cron scheduling
 			{
@@ -109,7 +109,10 @@ function csv2post_plugincss()
 // add action for detecting cloaked url click
 function csv2post_processcloakedurlclick() 
 {
-	include('cloakedurls_csv2post.php');// processes click and forwards user to destination
+	if( isset($_GET['viewitem']) )
+	{
+		include_once('cloakedurls_csv2post.php');// processes click and forwards user to destination
+	}
 }
 
 // plugin admin pages

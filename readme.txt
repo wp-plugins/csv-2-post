@@ -21,6 +21,15 @@ in 2009.
 3. Ensure plugin files are in a folder named 'csv-2-post-plus' i.e `/wp-content/plugins/csv-2-post-plus/csv-2-post-plus.php`
 
 == Changelog ==
+0.4.6
+* Tags now work after switching them to the new per campaign settings instead of a global pluging setting.
+* cloakedurls_csv2post.php will only be included now if $_GET['viewitem'] is set, errors on uninstall now fixed.
+
+0.4.5
+* The categorising part of my script was not fully updated since re-coding a lot of the plugin but it now works properly.
+* Adding video to Stage 4 for manual custom field setup.
+* Duplication should now be prevented when using draft or pending post status. function csv2post_duplicates($posttitle) now handles duplication prevention.
+
 0.4.4
 * You can now reset campaigns, this will delete all posts created by that campaign and reset counters.
 * You can now view the last 100 posts created in a campaign on campaign management.
