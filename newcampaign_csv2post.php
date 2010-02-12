@@ -3,9 +3,7 @@ global $wpdb;
 
 if(get_option('csv2post_debugmode') == 1)
 {
-	$wpdb->show_errors();
-	ini_set('display_errors',1);
-	error_reporting(E_ALL);
+
 }
 
 # GET OPTIONS
@@ -115,15 +113,15 @@ if((isset($_POST['stage']) && $_POST['stage'] == 6) || (isset($stage5complete) &
 
 	echo '<h2>New Campaign Stage 6 - Campaign Complete!</h2>';
 	
-	if( $csv2post_edition == 'pro' )
+	if( $_SESSION['csv2post_edition'] == 'pro' )
 	{
 		echo '<div id="message" class="updated fade"><p>Success - Your campaign has been created and already started.</p></div>';
 	}
-	elseif( $csv2post_edition == 'free' )
+	elseif( $_SESSION['csv2post_edition'] == 'free' )
 	{
-		echo '<div id="message" class="updated fade"><p>Success - Your campaign has been created but this is as far as you can go in the free edition, please try the only demo or purchase at www.csv2post.com, thank you for trying CSV 2 POST</p></div>';
+		echo '<div id="message" class="updated fade"><p>Success - Your campaign has been created but this is as far as you can go in the demo edition, please try the full online demo or purchase at www.csv2post.com, thank you for trying CSV 2 POST</p></div>';
 	}
-	elseif( $csv2post_edition == 'demo' )
+	elseif( $_SESSION['csv2post_edition'] == 'demo' )
 	{
 		echo '<div id="message" class="updated fade"><p>Success - Your campaign has been created and should begin straight away however please ensure other demo users campaign are not running first.</p></div>';
 	}
