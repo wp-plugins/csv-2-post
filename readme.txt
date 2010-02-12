@@ -6,13 +6,13 @@ Requires at least: 2.5.0
 Tested up to: 2.8.6
 Stable tag: trunk
 
-Inject any CSV file data into the WordPress database as new Posts!
+Inject any CSV file data into the WordPress database as new Posts with CSV 2 POST Pro, try the demo now!
 
 == Description ==
 
-Use CSV 2 POST Plus to import a csv data file and inject up to 1 million posts in WordPress! It is free to use and has some cool features that other
+Use CSV 2 POST Pro to import a csv data file and inject up to 1 million posts in WordPress! It is free to use and has some cool features that other
 similiar plugins don't with many more cool new ideas coming soon. Developed by Ryan Bayne from WebTechGlobal, a University graduate
-in 2009.
+in 2009. This is a demo.
 
 == Installation ==
 
@@ -24,6 +24,7 @@ in 2009.
 0.4.6
 * Tags now work after switching them to the new per campaign settings instead of a global pluging setting.
 * cloakedurls_csv2post.php will only be included now if $_GET['viewitem'] is set, errors on uninstall now fixed.
+* Tools page removed, all mass delete buttons will be found on a campaigns own management page.
 
 0.4.5
 * The categorising part of my script was not fully updated since re-coding a lot of the plugin but it now works properly.
