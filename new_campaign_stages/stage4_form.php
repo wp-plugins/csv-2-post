@@ -106,6 +106,7 @@
     <input name="page" type="hidden" value="new_campaign" />
     <input name="csvfiledirectory" type="hidden" value="<?php echo $csvfiledirectory; ?>" />
     <input name="camid" type="hidden" value="<?php echo $camid; ?>" />
+    <input name="camid_option" type="hidden" value="<?php echo $_POST['camid_option']; ?>" />
     <input name="poststatus" type="hidden" value="<?php echo $status; ?>" />
     <input name="randomdate" type="hidden" value="<?php echo $randomdate; ?>" />
 	<input name="csvfilename" type="hidden" value="<?php echo $_POST['csvfilename']; ?>" />
@@ -137,3 +138,5 @@
         </div>
     </div>
 </div>
+
+<object width="425" height="344"><param name="movie" value="http://www.youtube.com/v/kvVLyfO5Y90&hl=en&fs=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/kvVLyfO5Y90&hl=en&fs=1" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="425" height="344"></embed></object>

@@ -163,12 +163,20 @@ else
 	@$defaultpostcategory = $_POST['defaultpostcategory'];
 	$defaultphase =	get_option('csv2post_defaultphase');
 
-	$sqlQuery = "UPDATE " .
-	$wpdb->prefix . "csv2post_campaigns SET defaultcat = '$defaultpostcategory',filtercolumn = '$filtercolumn',filtercolumn2 = '$filtercolumn2',filtercolumn3 = '$filtercolumn3',filtermethod = '$pfm',stage = '5',allowupdate = '$defaultphase' WHERE id = '$camid'";
+	$sqlQuery = "UPDATE " .	$wpdb->prefix . "csv2post_campaigns SET stage='100' WHERE id = '$camid'";
 	$wpdb->query($sqlQuery);
+
+	$campaign = get_option( $_POST['camid_option'] );
+	$campaign['settings']['stage'] = '5';
+	$campaign['settings']['updatesetting'] = $defaultphase;
+	$campaign['settings']['catparent'] = $filtercolumn;
+	$campaign['settings']['catchild1'] = $filtercolumn2;
+	$campaign['settings']['catchild2'] = $filtercolumn3;
+	$campaign['settings']['catdefault'] = $defaultpostcategory;
+	$campaign['settings']['categorymethod'] = $pfm;	
+	update_option( $_POST['camid_option'], $campaign );
 	
 	$stage5complete = true;
 
 }// end if filter method selected
-
 ?>

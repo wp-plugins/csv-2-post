@@ -29,11 +29,11 @@ elseif(!empty($_POST['campaignname']) || is_string($_POST['campaignname']))
 			{
 				if(empty($_POST['processratescheduled']))
 				{
-					$schedulednumber = 24;
+					$campaignarray['settings']['scheduledhour'] = 24;
 				}
 				else
 				{
-					$schedulednumber = $_POST['processratescheduled'];
+					$campaignarray['settings']['scheduledhour'] = $_POST['processratescheduled'];
 				}
 				
 				// figure out the spread of posts over 24 hour period (86400 seconds)
@@ -55,8 +55,6 @@ elseif(!empty($_POST['campaignname']) || is_string($_POST['campaignname']))
 			// get csv file directory
 			$target_path = csv2post_getcsvfilesdir();
 
-			# CALL UPLOAD PROCESS FUNCTION PASSING REQUIRED VALUES ONLY
-
 			$csvfiledirectory = $target_path . $csvfilename;
 			
 			# LINK LOCATION - FULL PROCESSING 						
@@ -75,23 +73,24 @@ elseif(!empty($_POST['campaignname']) || is_string($_POST['campaignname']))
 				// file exists - store name for displaying as "Last Used Filename"
 				update_option('csv2post_lastfilename',$csvfilename);
 							
-				// get posts per hit ratio from options
-				$ratio = get_option('csv2post_postsperhit');
-							
-				$sqlQuery = "INSERT INTO ";
-				if($process == 1 || $process == 2)// full processing
-				{	
-					$sqlQuery .= $wpdb->prefix . "csv2post_campaigns(camname,camfile,process,stage,ratio)
-					VALUES('$camname', '$csvfilename','$process','2','$ratio')";
-				}
-				elseif($process == 3)// scheduled processing
-				{	
-					$sqlQuery .= $wpdb->prefix . "csv2post_campaigns(camname,camfile,process,stage,schedulednumber,ratio)
-					VALUES('$camname', '$csvfilename','$process','2',$schedulednumber,'$ratio')";
+				// create campaign data
+				$camid_option = csv2post_createcampaign();
+				// update campaign data
+				$campaignarray = get_option( $camid_option );	
 
-				}
+				$campaignarray['settings']['camid_option'] = $camid_option;
+				$campaignarray['settings']['stage'] = '2';
+				$campaignarray['settings']['name'] = $camname;
+				$campaignarray['settings']['process'] = $process;
+				$campaignarray['settings']['file'] = $csvfilename;
+				$campaignarray['settings']['staggeredratio'] = get_option('csv2post_postsperhit_global');
+					
+				$sqlQuery = "INSERT INTO " . $wpdb->prefix . "csv2post_campaigns(camname,camid_option,stage,process)VALUES('$camname', '$camid_option','2','$process')";
 				$stage1complete = csv2post_queryresult($wpdb->query($sqlQuery));
 				$camid = $wpdb->insert_id;
+				
+				// update the wp options array for this campaign
+				update_option( $camid_option, $campaignarray );
 			}
 		}// check all required posts populated
 	}// end of ensure file selected

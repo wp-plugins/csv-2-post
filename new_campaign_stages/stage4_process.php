@@ -75,19 +75,23 @@ else
             }';
 			eval($php_code);
 			$value = $value - 1;// adjust counter value so first column is 0
-			$sqlQuery = "INSERT INTO " . 
-			$wpdb->prefix . "csv2post_customfields(camid,identifier,value,type)VALUES('$camid','$ident','$value','1')";
+			$sqlQuery = "INSERT INTO " . $wpdb->prefix . "csv2post_customfields(camid,identifier,value,type)VALUES('$camid','$ident','$value','1')";
 			$wpdb->query($sqlQuery);
 			$typ2_counter++;
 		}
 	}// end if manual or mixed
 	
-	$stage4complete = true;
-	
 	# UPDATE CAMPAIGN STAGE COUNTER
-	$sqlQuery = "UPDATE " .
-	$wpdb->prefix . "csv2post_campaigns SET stage = '4', customfieldsmethod = '$customfieldsmethod' WHERE id = '$camid'";
+	$sqlQuery = "UPDATE " .	$wpdb->prefix . "csv2post_campaigns SET stage='5',customfieldsmethod = '$customfieldsmethod' WHERE id = '$camid'";
 	$wpdb->query($sqlQuery);
 
+	$campaign = get_option( $_POST['camid_option'] );
+	$campaign['settings']['stage'] = '5';
+	$campaign['settings']['customfield'] = $customfieldsmethod;
+	update_option( $_POST['camid_option'], $campaign );
+	
+	$stage4complete = true;
+
 }// end if empty customfieldmethod
+
 ?>

@@ -1,6 +1,6 @@
 <h2> New Campaign Stage 2 - Count Rows<a href="http://www.csv2post.com/blog/instructions/how-to-use-new-campaign-stage-2" target="_blank"><img src="http://www.csv2post.com/images/question_small.png" width="35" height="35" alt="Get help for Stage 2" /></a></h2>
 
-<?php			
+<?php		
 $res1 = $wpdb->get_row("SELECT * FROM " .$wpdb->prefix . "csv2post_layouts WHERE csvfile = '$csvfilename' AND name = '$csvfilename'");
 $cpl_code = $res1->code;
 eval( $cpl_code );// imports functions
@@ -101,6 +101,7 @@ while (($data = fgetcsv($handle, 5000, $csvprofile['format']['delimiter'])) !== 
 								<input name="page" type="hidden" value="new_campaign" />
 								<input name="csvfiledirectory" type="hidden" value="<?php echo $csvfiledirectory; ?>" />
 								<input name="camid" type="hidden" value="<?php echo $camid; ?>" />
+								<input name="camid_option" type="hidden" value="<?php echo $camid_option; ?>" />
 								<input name="csvfilename" type="hidden" value="<?php echo $csvfilename; ?>" />
 							
 							</table>

@@ -184,6 +184,7 @@ $csvprofile = csv2post_getcsvprofile( $_POST['csvfilename'] );
     <input name="page" type="hidden" value="new_campaign" />
     <input name="csvfiledirectory" type="hidden" value="<?php echo $csvfiledirectory; ?>" />
     <input name="camid" type="hidden" value="<?php echo $camid; ?>" />
+    <input name="camid_option" type="hidden" value="<?php echo $_POST['camid_option']; ?>" />
     <input name="poststatus" type="hidden" value="<?php echo $_POST['poststatus']; ?>" />
 	<input name="csvfilename" type="hidden" value="<?php echo $_POST['csvfilename']; ?>" />
 </form>

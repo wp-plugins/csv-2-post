@@ -53,25 +53,22 @@ $optionname = 'csvprofile_' . $_POST['csvfilename'];
 $specialfunctions = get_option($optionname);
 
 // the state is a boolean switch which will be used to switch the special function on or off per campaign on stage 2
-$specialfunctions['states'] = array(
-	'excerpt_state' => csv2post_decidestate(@$_POST['excerpt_column']),
-	'tags_state' => csv2post_decidestate(@$_POST['tags_column']),
-	'uniqueid_state' => csv2post_decidestate(@$_POST['uniqueid_column']),
-	'urlcloaking_state' => csv2post_decidestate(@$_POST['urlcloaking_column']),
-	'permalink_state' => csv2post_decidestate(@$_POST['permalink_column']),
-	'dates_state' => csv2post_decidestate(@$_POST['dates_column'])
-);
-
-// save the profile option for this csv file using submitted values
+$specialfunctions['states']['excerpt_state'] = csv2post_decidestate(@$_POST['excerpt_column']);
+$specialfunctions['states']['tags_state'] = csv2post_decidestate(@$_POST['tags_column']);
+$specialfunctions['states']['uniqueid_state'] = csv2post_decidestate(@$_POST['uniqueid_column']);
+$specialfunctions['states']['urlcloaking_state'] = csv2post_decidestate(@$_POST['urlcloaking_column']);
+$specialfunctions['states']['permalink_state'] = csv2post_decidestate(@$_POST['permalink_column']);
+$specialfunctions['states']['dates_state'] = csv2post_decidestate(@$_POST['dates_column']);
+$specialfunctions['format']['rows'] = $rows_total;
 update_option( $optionname, $specialfunctions );
 			
-$stage2complete = true;
+$campaign = get_option( $_POST['camid_option'] );
+$campaign['settings']['stage'] = '3';
+update_option( $_POST['camid_option'], $campaign );
 
-# UPDATE CAMPAIGN STAGE COUNTER
-$sqlQuery = "
-UPDATE " .	$wpdb->prefix . "csv2post_campaigns 
-SET stage = '3',csvrows = '$rows_total' 
-WHERE id = '$camid'";	
+$sqlQuery = "UPDATE " .	$wpdb->prefix . "csv2post_campaigns SET stage='3' WHERE id = '$camid'";
 $wpdb->query($sqlQuery);
+	
+$stage2complete = true;
 
 ?>

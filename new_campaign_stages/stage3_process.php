@@ -5,6 +5,8 @@ if(!isset($_POST['poststatus']))
 }
 elseif(isset($_POST['poststatus']))
 {
+	global $wpdb;
+
 	$status = $_POST['poststatus'];
 
 	if(isset($_POST['randomdate']) && $_POST['randomdate'] == 1)
@@ -16,12 +18,15 @@ elseif(isset($_POST['poststatus']))
 		$randomdate = 0;
 	}
 	
-	global $wpdb;
-	
 	# UPDATE CAMPAIGN STAGE COUNTER
-	$sqlQuery = "UPDATE " .
-	$wpdb->prefix . "csv2post_campaigns SET stage = '4', poststatus = '$status',randomdate = '$randomdate' WHERE id = '$camid'";
+	$sqlQuery = "UPDATE " .	$wpdb->prefix . "csv2post_campaigns SET stage='4', randomdate = '$randomdate' WHERE id = '$camid'";
 	$wpdb->query($sqlQuery);
 	$stage3complete = true;
+	
+	$campaign = get_option( $_POST['camid_option'] );
+	$campaign['settings']['stage'] = '4';
+	$campaign['settings']['poststatus'] = $status;
+	$campaign['settings']['randomdate'] = $randomdate;
+	update_option( $_POST['camid_option'], $campaign );
 }
 ?>
