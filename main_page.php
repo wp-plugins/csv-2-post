@@ -1,24 +1,17 @@
 <div class="wrap">
-    <h2>CSV 2 POST Main Page <?php if(get_option('csv2post_demomode') == 1){echo ' (Demo Edition)';}?><a href="http://www.csv2post.com/blog/instructions/using-csv-2-post-settings-page" target="_blank"><img src="http://www.csv2post.com/images/question_small.png" width="35" height="35" alt="Get help for Settings page" /></a></h2>
- 
-	<?php if(get_option('csv2post_demomode') == 1){?>
+    <h2>CSV 2 POST Demo Edition Only</h2>
+
     <div id="poststuff" class="metabox-holder">
         <div id="post-body">
             <div id="post-body-content">
                 <div class="postbox">
-                
                     <h3 class='hndle'><span>Demo Edition Information - Please Read</span></h3>
-                    <p>Some functions have been disabled or removed for security. There are functions in CSV 2 POST that can easily effect a server if abused.
-                    The plugin also operates slightly different in order to help avoid users conflicting with each other.</p>
-                    <ul>
-                        <li>Errors? Most errors are caused by data or csv file configuration/formatting and can easily be&nbsp;fixed, please email info@csv2post.com.</li>
-                      <li>Posts To Wide?&nbsp;- Don't copy multiple special column values to  WYSIWYG editor or use tables in your posts that are wider than the theme.</li>
-                      <li>No Title? - There is a blank box for creating a title above the WYSIWYG editor, you can place the special column values there too.</li>
-                    </ul>
+                    <p>Some functions have been disabled or removed for security and so this demo edition may not always work as expected. It is meant to be a preview
+                    so you can make a better decision on the right solution for your csv import needs.</p>
                 </div>                    
             </div>
         </div>
-    </div><?php }   ?> 
+    </div>
   
     <div id="poststuff" class="meta-box-sortables" style="position: relative; margin-top:10px;">
         <div class="postbox closed">
