@@ -1,6 +1,6 @@
 <?php
 /*
-	Plugin Name: CSV 2 POST Pro
+	Plugin Name: CSV 2 POST Free Edition
 	Version: 0.4.6
 	Plugin URI: http://www.csv2post.com
 	Description: Professional edition of the CSV 2 POST wordpress plugin, import csv data to make wordpress posts in massive numbers!
