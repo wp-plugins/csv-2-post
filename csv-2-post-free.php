@@ -1,7 +1,7 @@
 <?php
 /*
 	Plugin Name: CSV 2 POST Free
-	Version: 3.7
+	Version: 4.0
 	Plugin URI:http://www.csv2post.com
 	Description: Stay updated using the <a href="http://www.csv2post.co.uk?feed=rss">RSS </a>Feed. <a href="http://www.csv2post.co.uk/wp-login.php?action=register">Register </a> using your Paypal email address for download access. <a href="http://www.csv2post.eu/wp-login.php">Login</a> now to download new versions. Go to the <a href="http://forum.csv2post.co.uk">CSV 2 POST Forum</a>.
 	Author: CSV 2 POST

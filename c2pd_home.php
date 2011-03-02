@@ -159,7 +159,7 @@ $pro = get_option( 'c2pd_pro' );
 			<div class="inside">
             	<p>Many test blogs are available and more can be created on request. A standard theme is setup on many but I can set them up with your theme so you can
                 do all the testing you need to before buying CSV 2 POST.</p><br />
-				<a href="http://www.importcsv.eu/testblog<?php echo rand ( 1,3 );?>" title="Visit CSV 2 POST Test Blog">Visit test blog now</a>   
+				<a href="http://www.importcsv.eu/testblog<?php echo rand ( 1,3 );?>/wp-login.php?action=register" title="Visit CSV 2 POST Test Blog">Visit and register on test blog now</a>   
 			</div>
 		</div>    
     
