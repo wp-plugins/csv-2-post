@@ -116,10 +116,8 @@ $pro = get_option( 'c2pd_pro' );
 					<div class="handlediv" title="Click to toggle"><br /></div>
 					<h3 class='hndle'><span>CSV 2 POST Free Edition</span></h3>
 					<div class="inside">
-                    This free edition has been created to help you locate all the places where you will find information about CSV 2 POST. I plan to add a page for tutorials
-                    with the ability to change the size of the video to suit your needs. This plugin can be activated at the same time as the full version allowing users to have
-                    the tutorials at hand.
-					</div>
+                    This free edition has been created to help you locate all the places where you will find information about CSV 2 POST. The plugin has recently been designed and built from scratch. It is similiar to Easy CSV Importer but both plugins will now go their own ways and be developed to suit different types of users/projects. CSV 2 POST will continue to receive new features and ECI will receive improvements to the interface plus some features will be removed to make it easier to understand. For now the Easy CSV Importer tutorials will give you an idea of what the plugin can do and there are also test blogs you can try.
+					CSV 2 POST is the professional choice that suits a wider range of projects and will allow developers to complete their clients sites in shorter time than any other csv import plugin.</div>
 				</div>
 						
 				<div id="dashboard_plugins" class="postbox closed">
