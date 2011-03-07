@@ -1,0 +1,107 @@
+DATE,ACTION,DESCRIPTION,PROJECT,PRIORITY
+"2011-03-03 10:52:18",Schedule,"Checked for due processing slots",Operation,Low
+"2011-03-03 10:52:23",Schedule,"Checked for due processing slots",Operation,Low
+"2011-03-03 10:52:34",Schedule,"Checked for due processing slots",Operation,Low
+"2011-03-03 12:25:52",Schedule,"Checked for due processing slots",Operation,Low
+"2011-03-03 12:30:08",Schedule,"Checked for due processing slots",Operation,Low
+"2011-03-03 12:30:51",Schedule,"Checked for due processing slots",Operation,Low
+"2011-03-03 12:32:55",Schedule,"Checked for due processing slots",Operation,Low
+"2011-03-03 12:33:29",Schedule,"Checked for due processing slots",Operation,Low
+"2011-03-03 12:33:54",Schedule,"Checked for due processing slots",Operation,Low
+"2011-03-03 12:50:20",Schedule,"Checked for due processing slots",Operation,Low
+"2011-03-03 16:28:55",Schedule,"Checked for due processing slots",Operation,Low
+"2011-03-04 00:23:00","Created Table","A new database table was created for project ecilog.csv",ecilog.csv,Low
+"2011-03-04 00:23:00","Table Failed","A table named wp_ecilog could not be made",ecilog.csv,Failure
+"2011-03-04 00:31:57","Created Table","A new database table was created for project ecilog.csv",ecilog.csv,Low
+"2011-03-04 00:31:57","Table Failed","A table named wp_ecilog could not be made",ecilog.csv,Failure
+"2011-03-04 00:39:58","Created Table","A new database table was created for project ecilog.csv",ecilog.csv,Low
+"2011-03-04 00:39:58","Table Failed","A table named wp_ecilog could not be made",ecilog.csv,Failure
+"2011-03-04 00:42:22","Created Table","A new database table was created for project ecilog.csv",ecilog.csv,Low
+"2011-03-04 00:42:22","Table Failed","A table named wp_ecilog could not be made",ecilog.csv,Failure
+"2011-03-04 00:46:35","Created Table","A new database table was created for project ecilog.csv",ecilog.csv,Low
+"2011-03-04 00:46:35","Table Failed","A table named wp_ecilog could not be made",ecilog.csv,Failure
+"2011-03-04 00:46:52","Created Table","A new database table was created for project ecilog.csv",ecilog.csv,Low
+"2011-03-04 00:46:52","Table Failed","A table named wp_ecilog could not be made",ecilog.csv,Failure
+"2011-03-04 00:49:14","Created Table","A new database table was created for project ecilog.csv",ecilog.csv,Low
+"2011-03-04 00:49:14","Table Failed","A table named wp_ecilog could not be made",ecilog.csv,Failure
+"2011-03-04 00:49:48","Created Table","A new database table was created for project ecilog.csv",ecilog.csv,Low
+"2011-03-04 00:49:48","Table Failed","A table named wp_ecilog could not be made",ecilog.csv,Failure
+"2011-03-04 00:52:27","Created Table","A new database table was created for project ecilog.csv",ecilog.csv,Low
+"2011-03-04 00:52:27","Table Created","A table named wp_ecilog was created",ecilog.csv,Low
+"2011-03-05 01:35:59",Schedule,"Progress reset complete. Reason: eci_filetime detected new file",Operation,Low
+"2011-03-05 01:39:07",Schedule,"Progress reset complete. Reason: eci_filetime detected new file",Operation,Low
+"2011-03-05 02:01:45",Schedule,"Progress reset complete. Reason: eci_filetime detected new file",Operation,Low
+"2011-03-05 02:03:40",Schedule,"Progress reset complete. Reason: eci_filetime detected new file",Operation,Low
+"2011-03-05 02:07:41","Import Started","Data import started",ecilog.csv,Low
+"2011-03-05 02:07:41",Schedule,"Progress reset complete. Reason: eci_filetime detected new file",Operation,Low
+"2011-03-05 02:07:41",Import,"Imported:5 Import Failed:0 Updated:Paid Support Edition Only, Updated Failed:Paid Support Edition Only ",ecilog.csv,Low
+"2011-03-05 02:07:41",Schedule,"Progress reset complete. Reason: eci_filetime detected new file",Operation,Low
+"2011-03-05 02:08:13","Create Posts","Post creation procedure started",ecilog.csv,Low
+"2011-03-05 02:08:13","Created Post","A base post with id 4 was created",ecilog.csv,Low
+"2011-03-05 02:08:13","Create Posts","Posts Created:1 Create Failed:0 Adopted: Adopt Failed:",ecilog.csv,High
+"2011-03-05 02:08:13",Schedule,"Progress reset complete. Reason: eci_filetime detected new file",Operation,Low
+"2011-03-05 02:47:55","Create Posts","Post creation procedure started",ecilog.csv,Low
+"2011-03-05 02:47:55","Created Post","A base post with id 6 was created",ecilog.csv,Low
+"2011-03-05 02:47:55","Create Post Duplicate Check","post created with id 6 with title Schedule  Low  is considered a duplicate",ecilog.csv,Low
+"2011-03-05 02:47:55","Create Posts","Posts Created:1 Create Failed:0 Adopted: Adopt Failed:",ecilog.csv,High
+"2011-03-05 02:47:55",Schedule,"Progress reset complete. Reason: eci_filetime detected new file",Operation,Low
+"2011-03-05 02:48:54","Create Posts","Post creation procedure started",ecilog.csv,Low
+"2011-03-05 02:48:54","Created Post","A base post with id 8 was created",ecilog.csv,Low
+"2011-03-05 02:48:54","Create Post Duplicate Check","post created with id 8 with title Schedule  Low  is considered a duplicate",ecilog.csv,Low
+"2011-03-05 02:48:54","Create Posts","Posts Created:1 Create Failed:0 Adopted: Adopt Failed:",ecilog.csv,High
+"2011-03-05 02:48:54",Schedule,"Progress reset complete. Reason: eci_filetime detected new file",Operation,Low
+"2011-03-05 02:51:09","Create Posts","Post creation procedure started",ecilog.csv,Low
+"2011-03-05 02:51:09","Created Post","A base post with id 16 was created",ecilog.csv,Low
+"2011-03-05 02:51:09","Create Post Duplicate Check","post created with id 16 with title Schedule  Low  is considered a duplicate",ecilog.csv,Low
+"2011-03-05 02:51:09","Create Posts","Posts Created:1 Create Failed:0 Adopted: Adopt Failed:",ecilog.csv,High
+"2011-03-05 02:51:09",Schedule,"Progress reset complete. Reason: eci_filetime detected new file",Operation,Low
+"2011-03-05 02:51:57","Create Posts","Post creation procedure started",ecilog.csv,Low
+"2011-03-05 02:51:57","Created Post","A base post with id 18 was created",ecilog.csv,Low
+"2011-03-05 02:51:57","Create Post Duplicate Check","post created with id 18 with title Schedule  Low  is considered a duplicate",ecilog.csv,Low
+"2011-03-05 02:51:57","Create Posts","Posts Created:1 Create Failed:0 Adopted: Adopt Failed:",ecilog.csv,High
+"2011-03-05 02:51:57",Schedule,"Progress reset complete. Reason: eci_filetime detected new file",Operation,Low
+"2011-03-05 02:52:49","Create Posts","No posts created as no records were available",ecilog.csv,High
+"2011-03-05 02:52:49",Schedule,"Progress reset complete. Reason: eci_filetime detected new file",Operation,Low
+"2011-03-05 02:53:09","Create Posts","No posts created as no records were available",ecilog.csv,High
+"2011-03-05 02:53:09",Schedule,"Progress reset complete. Reason: eci_filetime detected new file",Operation,Low
+"2011-03-05 02:53:26","Import Started","Data import started",ecilog.csv,Low
+"2011-03-05 02:53:26",Schedule,"Progress reset complete. Reason: eci_filetime detected new file",Operation,Low
+"2011-03-05 02:53:26",Import,"Imported:5 Import Failed:0 Updated:Paid Support Edition Only, Updated Failed:Paid Support Edition Only ",ecilog.csv,Low
+"2011-03-05 02:53:26",Schedule,"Progress reset complete. Reason: eci_filetime detected new file",Operation,Low
+"2011-03-05 02:53:30","Import Started","Data import started",ecilog.csv,Low
+"2011-03-05 02:53:30",Schedule,"Progress reset complete. Reason: eci_filetime detected new file",Operation,Low
+"2011-03-05 02:53:30",Import,"Imported:5 Import Failed:0 Updated:Paid Support Edition Only, Updated Failed:Paid Support Edition Only ",ecilog.csv,Low
+"2011-03-05 02:53:30",Schedule,"Progress reset complete. Reason: eci_filetime detected new file",Operation,Low
+"2011-03-05 02:53:34","Import Started","Data import started",ecilog.csv,Low
+"2011-03-05 02:53:34",Schedule,"Progress reset complete. Reason: eci_filetime detected new file",Operation,Low
+"2011-03-05 02:53:34",Import,"Imported:5 Import Failed:0 Updated:Paid Support Edition Only, Updated Failed:Paid Support Edition Only ",ecilog.csv,Low
+"2011-03-05 02:53:34",Schedule,"Progress reset complete. Reason: eci_filetime detected new file",Operation,Low
+"2011-03-05 02:53:37","Import Started","Data import started",ecilog.csv,Low
+"2011-03-05 02:53:37",Schedule,"Progress reset complete. Reason: eci_filetime detected new file",Operation,Low
+"2011-03-05 02:53:37",Import,"Imported:5 Import Failed:0 Updated:Paid Support Edition Only, Updated Failed:Paid Support Edition Only ",ecilog.csv,Low
+"2011-03-05 02:53:37",Schedule,"Progress reset complete. Reason: eci_filetime detected new file",Operation,Low
+"2011-03-05 02:53:49","Import Started","Data import started",ecilog.csv,Low
+"2011-03-05 02:53:49",Schedule,"Progress reset complete. Reason: eci_filetime detected new file",Operation,Low
+"2011-03-05 02:53:49",Import,"Imported:5 Import Failed:0 Updated:Paid Support Edition Only, Updated Failed:Paid Support Edition Only ",ecilog.csv,Low
+"2011-03-05 02:53:49",Schedule,"Progress reset complete. Reason: eci_filetime detected new file",Operation,Low
+"2011-03-05 02:54:07","Created Table","A new database table was created for project WTGTestB.csv",WTGTestB.csv,Low
+"2011-03-05 02:54:07","Table Created","A table named wp_wtgtestb was created",WTGTestB.csv,Low
+"2011-03-05 02:54:21","Import Started","Data import started",WTGTestB.csv,Low
+"2011-03-05 02:54:21",Import,"Imported:5 Import Failed:0 Updated:Paid Support Edition Only, Updated Failed:Paid Support Edition Only ",WTGTestB.csv,Low
+"2011-03-05 02:54:26","Import Started","Data import started",WTGTestB.csv,Low
+"2011-03-05 02:54:26",Import,"Imported:4 Import Failed:0 Updated:Paid Support Edition Only, Updated Failed:Paid Support Edition Only ",WTGTestB.csv,Low
+"2011-03-05 02:54:30","Import Started","Data import started",WTGTestB.csv,Low
+"2011-03-05 02:54:30",Import,"Imported:0 Import Failed:0 Updated:Paid Support Edition Only, Updated Failed:Paid Support Edition Only ",WTGTestB.csv,Low
+"2011-03-05 02:55:24","Create Posts","Post creation procedure started",WTGTestB.csv,Low
+"2011-03-05 02:55:24","Created Post","A base post with id 22 was created",WTGTestB.csv,Low
+"2011-03-05 02:55:24","Create Posts","Posts Created:1 Create Failed:0 Adopted: Adopt Failed:",WTGTestB.csv,High
+"2011-03-05 03:00:08","Create Posts","Post creation procedure started",WTGTestB.csv,Low
+"2011-03-05 03:00:08","Created Post","A base post with id 24 was created",WTGTestB.csv,Low
+"2011-03-05 03:00:08","Create Post Duplicate Check","post created with id 24 with title +ACTION+  +PRIORITY+  is considered a duplicate",WTGTestB.csv,Low
+"2011-03-05 03:00:08","Create Posts","Posts Created:1 Create Failed:0 Adopted: Adopt Failed:",WTGTestB.csv,High
+"2011-03-05 11:39:57","Create Posts","Post creation procedure started",WTGTestB.csv,Low
+"2011-03-05 11:39:57","Created Post","A base post with id 26 was created",WTGTestB.csv,Low
+"2011-03-05 11:39:57","Create Post Duplicate Check","post created with id 26 with title +ACTION+  +PRIORITY+  is considered a duplicate",WTGTestB.csv,Low
+"2011-03-05 11:39:57","Create Posts","Posts Created:1 Create Failed:0 Adopted: Adopt Failed:",WTGTestB.csv,High
+"2011-03-07 16:13:33","Created Table","A new database table was created for project WTGTestB.csv",WTGTestB.csv,Low
+"2011-03-07 16:13:33","Table Created","A table named wp_wtgtestb was created",WTGTestB.csv,Low

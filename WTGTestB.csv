@@ -1,0 +1,10 @@
+productid,productname,itemdesc,price,page,img,published,category1,cat2,childcat3
+1a,My Title 1,ECI test description 1,10.00,http://www.webtechglobal.co.uk/ecitest1,http://www.webtechglobal.co.uk/images/ecitestimages/ecitestimage_1.jpg,01/01/2001,Aone,Bone,Cone
+2a,My Title 2,ECI test description 2,20.00,http://www.webtechglobal.co.uk/ecitest2,http://www.webtechglobal.co.uk/images/ecitestimages/ecitestimage_2.jpg,02/02/2002,Atwo,Btwo,Ctwo
+3a,My Title 3,ECI test description 3,30.00,http://www.webtechglobal.co.uk/ecitest3,http://www.webtechglobal.co.uk/images/ecitestimages/ecitestimage_3.jpg,03/03/2003,Athree,Bthree,Cthree
+4a,My Title 4,ECI test description 4,40.00,http://www.webtechglobal.co.uk/ecitest4,http://www.webtechglobal.co.uk/images/ecitestimages/ecitestimage_4.jpg,04/04/2004,Afour,Bfour,Cfour
+5a,My Title 5,ECI test description 5,50.00,http://www.webtechglobal.co.uk/ecitest5,http://www.webtechglobal.co.uk/images/ecitestimages/ecitestimage_5.jpg,05/05/2005,Afive,Bfive,Cfive
+6a,My Title 6,ECI test description 6,60.00,http://www.webtechglobal.co.uk/ecitest6,http://www.webtechglobal.co.uk/images/ecitestimages/ecitestimage_6.jpg,06/06/2006,Asix,Bsix,Csix
+7a,My Title 7,ECI test description 7,70.00,http://www.webtechglobal.co.uk/ecitest7,http://www.webtechglobal.co.uk/images/ecitestimages/ecitestimage_7.jpg,07/07/2007,Aseven,Bseven,Cseven
+8a,My Title 8,ECI test description 8,80.00,http://www.webtechglobal.co.uk/ecitest8,http://www.webtechglobal.co.uk/images/ecitestimages/ecitestimage_8.jpg,08/08/2008,Aeight,Beight,Ceight
+9a,My Title 9,ECI test description 9,90.00,http://www.webtechglobal.co.uk/ecitest9,http://www.webtechglobal.co.uk/images/ecitestimages/ecitestimage_9.jpg,09/09/2009,Anine,Bnine,Cnine
