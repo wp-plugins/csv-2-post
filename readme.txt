@@ -1,17 +1,16 @@
 === Plugin Name ===
 Contributors: Ryan Bayne
-Donate link: http://www.csv2post.com
-Tags: csv,import,importer,data,affiliate,datafeed,csv2post,plugin,wordpress
-Requires at least: 3.0.0
+Donate link: http://www.csv2post.eu
+Tags: csv,import,importer,data,affiliate,datafeed,csv2post
+Requires at least: 3.0.5
 Tested up to: 3.0.5
 Stable tag: trunk
 
-CSV 2 POST Demo Wordpress Plugin
+CSV 2 POST Free Edition by WebTechGlobal
 
 == Description ==
 
-CSV 2 POST professional csv import plugin, this is a visual demo only, test blogs are available for trying your
-own csv file with various premium themes.
+CSV data file importer and post creation tool. Aimed at developers and has 2 years development behind it. Use it for autoblogging networks or to complete clients websites.
 
 == Installation ==
 
@@ -20,6 +19,6 @@ Standard Wordpress upload
 == Changelog ==
 
 = 4.0 =
-* Main plugin name changed to suit path and indicate free edition to avoid confusion with paid edition
+* Released 7th March 2011
 
 == Arbitrary section ==
