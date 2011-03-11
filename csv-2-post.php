@@ -1,9 +1,9 @@
 <?php
 /*
 	Plugin Name: CSV 2 POST Free Data Importer
-	Version: 4.2
+	Version: 4.3
 	Plugin URI:http://www.csv2post.com
-	Description: CSV data file importer and post creation tool. Aimed at developers and has 2 years development behind it. Use it for autoblogging networks or to complete clients websites.
+	Description: CSV 2 POST imports data to database very easily, then creates posts with it and if you hire us we can provide the customisation needed for automatic updating,displaying content in widgets and much more. This is the professionals choice of plugin and the service to support your clients.
 	Author: WebTechGlobal
 	Author URI: http://www.csv2post.co.uk
 */
