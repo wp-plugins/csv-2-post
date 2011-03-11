@@ -20,7 +20,7 @@ Standard Wordpress upload
 
 == Changelog ==
 
-= 4.0 =
-* Released 7th March 2011
+== 4.3 ==
+* Released 11th March 2011
 
 == Arbitrary section ==
