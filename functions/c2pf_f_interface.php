@@ -423,7 +423,7 @@ function c2pf_postboxabout( $title,$txtfile,$set )
 }
 
 # Builds Form Menu For Design Selection Per Category On Conditions Stage
-function eco_maindesignsmenu( $csv )
+function c2pf_maindesignsmenu( $csv )
 {
 	$des = get_option('c2pf_des');
 	
@@ -460,7 +460,7 @@ function eco_maindesignsmenu( $csv )
 }
 
 # Builds Form Menu For Design Selection Per Category On Conditions Stage
-function eco_categorydesignsmenu( $id, $csv, $category )
+function c2pf_categorydesignsmenu( $id, $csv, $category )
 {
 	return 'Paid edition only';
 }
@@ -488,7 +488,7 @@ function c2pf_listcategorydesigns( $csv )
 	{	
 		if( $c->parent < 1 && $c->name != 'Uncategorized' )
 		{
-			echo '<tr><td><input name="category'.$i.'" type="text" value="'.$c->name.'" size="50" maxlength="100" readonly="true" /></td><td>'.eco_categorydesignsmenu( $i,$csv,$c->name ).'</td></tr>';
+			echo '<tr><td><input name="category'.$i.'" type="text" value="'.$c->name.'" size="50" maxlength="100" readonly="true" /></td><td>'.c2pf_categorydesignsmenu( $i,$csv,$c->name ).'</td></tr>';
 			++$i;
 		}
 	}	
@@ -622,15 +622,15 @@ function c2pf_header()
 	<link rel='stylesheet' id='ie-css'  href='<?php echo get_bloginfo( 'url' );?>/wp-admin/css/ie.css?ver=20100610' type='text/css' media='all' />
 	<![endif]--><?php
 	
-	c2pf_mes( 'Free Edition In Use','I provide an instant download as part of my hire services. You may hire me from &pound;19.99 upwards depending on your exact needs. The onsite fee gets you the
-			 plugin, installation support and support to get started. You will also get access to download new version and to use the forum.
-			 <a href="http://www.csv2post.com">Click to get a better plugin by hiring my services</a>.' );
+	c2pf_mes( 'Free Edition','I improve my plugins on a weekly basis but the best version is only provided when I am hired. Prices start at £19.99 for a full hour
+			 of my time and continued standard support when I can give it. You also get the latest version of the plugin which has already been improved since
+			 this free edition was released. <a href="http://www.csv2post.com">Click to learn more about hiring my services.</a>.' );
 } 
       
 # Displays WTG Copyright And Provides Script For Post Boxes
 function c2pf_footer()
 {?>
-	<p>Hire WebTechGlobals support and get a customised plugin to suit your needs <a href="http://www.csv2post.com" title="Visit the plugin author website">here</a></p> 
+	<p><a href="http://www.csv2post.com" title="Visit the plugin author website">Hire my support and get a customised plugin to suit your needs plus data import help</a></p> 
 	<?php 
 	$errordisplay = 1;
 	if( $errordisplay == 1 )

@@ -131,7 +131,22 @@ $pro = get_option( 'c2pf_pro' );
                     </div>
                 </div>
             </div>
-                    
+ 
+ 				<div id="dashboard_recent_comments" class="postbox" >
+					<div class="handlediv" title="Click to toggle"><br /></div>
+					<h3 class='hndle'><span>Blog 2 Blog Import Service<span class="postbox-title-action"></span></span></h3>
+					<div class="inside">
+						<p>Hire WebTechGlobals services to import your data, hassle free, simply send us your csv file and blog database
+                        connection details. We will inject the data to your Wordpress database from our own server and make it ready for CSV 2 POST
+                        import or our other data related plugins to use. For an optional extra fee you can also get us to setup your
+                        blog so that it generates posts automatically. We also do this from our own server by installing all the plugins
+                        settings data. It only costs &pound;10.00 for any sized csv file to be put into your database. It costs &pound;10.00 for posts to be
+                        generated at the rate you request and you may also choose any other project configuration options from what the plugin
+                        offers i.e custom fields, categories, tags etc.</p>
+					</div>
+				</div>
+						
+                   
             <div id="dashboard_plugins" class="postbox">
                 <div class="handlediv" title="Click to toggle"><br /></div>
                 <h3 class='hndle'><span>Author</span></h3>

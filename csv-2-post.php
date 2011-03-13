@@ -1,16 +1,35 @@
 <?php
 /*
 	Plugin Name: CSV 2 POST Free Data Importer
-	Version: 4.3
+	Version: 4.4
 	Plugin URI:http://www.csv2post.com
 	Description: CSV 2 POST imports data to database very easily, then creates posts with it and if you hire us we can provide the customisation needed for automatic updating,displaying content in widgets and much more. This is the professionals choice of plugin and the service to support your clients.
 	Author: WebTechGlobal
 	Author URI: http://www.csv2post.co.uk
 */
+
+register_activation_hook( __FILE__ ,'c2pf_activate');
+
+/*  Copyright 2011  WebTechGlobal Ltd  (email : info@csv2post.com)
+
+    This edition of the program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License, version 2, as 
+    published by the Free Software Foundation. This does not apply to editions provided
+	when hiring WebTechGlobal Ltd.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+
 //ini_set('display_errors',1);
 //error_reporting(E_ALL);
 // installation trigger
-register_activation_hook( __FILE__ ,'c2pf_activate');
 function c2pf_activate()
 {
 	require_once('functions/c2pf_f_install.php');

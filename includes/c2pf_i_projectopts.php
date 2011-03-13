@@ -11,7 +11,7 @@ if( isset( $csv['conditions']['switches']['dropposts'] ) && $csv['conditions']['
 
 <form method="post" name="c2pf_projectoptions_form" action="">   
 	<br />
-	<strong>Main Design</strong><br /><?php echo eco_maindesignsmenu( $csv ); ?>   <br /><br />
+	<strong>Main Design</strong><br /><?php echo c2pf_maindesignsmenu( $csv ); ?>   <br /><br />
 
     <strong>Post Publish Date Method</strong><br />
 	<select name="c2pf_datemethod" size="1" >
