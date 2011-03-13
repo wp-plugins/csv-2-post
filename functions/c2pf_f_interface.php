@@ -622,15 +622,26 @@ function c2pf_header()
 	<link rel='stylesheet' id='ie-css'  href='<?php echo get_bloginfo( 'url' );?>/wp-admin/css/ie.css?ver=20100610' type='text/css' media='all' />
 	<![endif]--><?php
 	
-	c2pf_mes( 'Free Edition','I improve my plugins on a weekly basis but the best version is only provided when I am hired. Prices start at £19.99 for a full hour
-			 of my time and continued standard support when I can give it. You also get the latest version of the plugin which has already been improved since
-			 this free edition was released. <a href="http://www.csv2post.com">Click to learn more about hiring my services.</a>.' );
+	c2pf_mes( 'Free Edition','I improve my plugins on a weekly basis but the best version is only provided when I am hired. Prices start at &pound;49.99 for 
+			 hands on installation and project configuration support. <a href="http://www.csv2post.com">Read more</a>. Please remember to replace the AdSense
+			 code in this plugin with your own.' );
 } 
       
 # Displays WTG Copyright And Provides Script For Post Boxes
 function c2pf_footer()
 {?>
-	<p><a href="http://www.csv2post.com" title="Visit the plugin author website">Hire my support and get a customised plugin to suit your needs plus data import help</a></p> 
+	<script type="text/javascript"><!--
+    google_ad_client = "ca-pub-4923567693678329";
+    /* CSV 2 POST Free - Admin */
+    google_ad_slot = "6336698412";
+    google_ad_width = 468;
+    google_ad_height = 15;
+    //-->
+    </script>
+    <script type="text/javascript"
+    src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+    </script>	
+	
 	<?php 
 	$errordisplay = 1;
 	if( $errordisplay == 1 )
