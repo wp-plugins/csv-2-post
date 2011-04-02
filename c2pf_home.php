@@ -172,7 +172,7 @@ $pro = get_option( 'c2pf_pro' );
 			<h3 class='hndle'><span>Plugin News<span class="postbox-title-action"></span></span></h3>
 			<div class="inside">
 				<script src="http://feeds.feedburner.com/csv2post?format=sigpro" type="text/javascript" ></script><noscript><p>Subscribe to RSS headline updates from: <a href="http://feeds.feedburner.com/csv2post"></a><br/>Powered by FeedBurner</p> </noscript>
-			</div>
+            </div>
 		</div>
 
 		<div id="dashboard_primary" class="postbox " >

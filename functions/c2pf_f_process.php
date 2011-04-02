@@ -312,9 +312,6 @@ function c2pf_newproject( $filepath,$set )
 			$csv['format']['titles'][$count] = $title;
 			$count++;
 		}
-					
-		// calculate loop time (use to recommend import speeds etc) - scale of 4
-		$csv['operation']['looptime'] = bcsub( time(), $starttime, 4 );
 		
 		// set csv format
 		$csv['format']['rows'] = $i;

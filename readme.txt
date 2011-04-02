@@ -18,7 +18,9 @@ generate as many posts as you need.
 <strong>[Feature instructions](http://www.csv2post.com/category/plugin-features "Feature instructions")</strong>
 
 <strong>Features List:</strong>
-* Create posts or pages or a custom type 
+* Create posts or pages or a custom type with full custom fields
+* Tag support - ability use existing tags or generate from your content
+* Apply up to 3 levels of categories
 * tool for selecting which parts of a post to update (paid edition)
 * has growing phpdoc and other developer support
 * support for featured images
@@ -68,6 +70,8 @@ generate as many posts as you need.
 6. CSV 2 POST - Log page where you can monitor everything the plugin does
 
 == Changelog ==
+= 4.5 =
+* The function bcsub has been removed as it is not available on all servers and was not important for the operation of the plugin
 
 = 4.4 =
 * Released 13th March 2011
