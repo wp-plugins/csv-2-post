@@ -96,9 +96,10 @@ not push users through a linear step by step process.
 6. You can use up to 3 columns of data to create 3 levels of categories.
  
 == Changelog ==
-= 0.2.4 =
+= 6.5.2 =
 * Public Messages
-    * Plugin has been removed to avoid trademark violation with Wordpress, we thank you for your patience at this time while the plugin is still very new 
+    * CSV 2 POST was previously known as Wordpress CSV Importer but due to conflicts with the Wordpress trademark it had to be renamed
+	* Version has been advanced to 5.0.0 to force update on all users of the old CSV 2 POST, a fresh new beginning, thank you for your patience
 * Bug Fixes
     * Removed 4th parameter (count) from all uses of csv2post_parse_columnreplacement_advanced() and str_replace()
     * Invalid argument supplied for foreach() on Tags screen  
