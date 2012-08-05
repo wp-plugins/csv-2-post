@@ -9,8 +9,14 @@ if($csv2post_is_free){
 }else{
     $page_title_string = $csv2post_mpt_arr[$pageid]['title'] . csv2post_get_current_project_name() . ' (ID: '.csv2post_convertvalue_projectcodefalse_toostring().')';
 }
+
 csv2post_header_page($page_title_string,0);
  
+// if no projects have been set, display notice telling user a project is required
+if(!isset($csv2post_currentproject_code) || $csv2post_currentproject_code == false){
+    echo csv2post_notice_display_step('http://www.games-hq.com/testing/wpcsvimp/wp-admin/admin.php?page=csv2post_yourprojects#tabs-0','Please Create A Project','You do not have any projects or no project has been set as your current one. Please either create a project on the Projects screen below or use the Select Current Project panel.');
+}
+                    
 // create tab menu for the giving page
 csv2post_createmenu($pageid);
 

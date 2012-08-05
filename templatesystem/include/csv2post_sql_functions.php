@@ -1,4 +1,49 @@
-<?php
+<?php                  
+/**
+* Queries a projects database table for records that have not been used to create posts yet.
+* 1. Always queries the main project table, if main table not set in project array then defaults to the first in tables array 
+* 2. Only returns record date record was last update
+* 
+* @returns the date value from csv2post_updated, if it is a valid date value only else returns false
+*/
+function csv2post_sql_query_records_last_update($project_code,$post_id){
+    // establish main project table
+    $main_table = csv2post_get_project_maintable($project_code);
+    // ensure user has not manually deleted table 
+    $table_exist = csv2post_does_table_exist($main_table);
+    if(!$table_exist){return false;}
+
+    // csv2post_updated is not changed in a multiple table project until all tables are updated so we dont need to 
+    // be concerned with that here   
+    global $wpdb; 
+    $record_array = $wpdb->get_results( 'SELECT csv2post_updated 
+    FROM '. $main_table .' 
+    WHERE csv2post_postid = ' . $post_id . '',ARRAY_A ); 
+    if(!$record_array){
+        return false;
+    }else{          
+        return $record_array  
+    }
+}   
+
+/**
+* Determines if all tables in a giving array exist or not
+* @returns boolean true if all table exist else false if even one does not
+*/
+function csv2post_sql_do_tables_exist($tables_array){
+    if($tables_array && is_array($tables_array)){         
+        // foreach table in array, if one does not exist return false
+        foreach($tables_array as $key => $table_name){
+            $table_exists = csv2post_does_table_exist($table_name);  
+            if(!$table_exists){          
+                ### TODO:LOWPRIORITY, log this event so we can make user aware that an active project has am missing table
+                return false;
+            }
+        }        
+    }
+    return true;    
+}
+
 /**
 * Queries distinct values in a giving column
 * 

@@ -103,11 +103,6 @@ function csv2post_php_version_check_wp_die(){
     }
 }
 
-/**
-* Processes data import from giving filename and project ID
-* 
-* @todo HIGHPRIORITY, add ability too work with a key within a group of files, all files must have the same column however
-*/
 function csv2post_data_import_from_csvfile( $csvfile_name, $table_name, $rate, $jobcode ){
     
     global $wpdb;
@@ -256,7 +251,7 @@ function csv2post_data_import_from_csvfile( $csvfile_name, $table_name, $rate, $
     csv2post_save_dataimportjob($dataimportjob_array,$jobcode);
         
     return $dataimportjob_array;    
-}    
+}   
 
 /**
 * CSV file test - uses the configuration established through fget function and over-rides the configuration
@@ -1033,6 +1028,27 @@ function csv2post_notice_output(){
 }
 
 /**
+* Returns the html for a notice box that can be clicked on and styled as the "Next Step".
+* This is easier to use than wtgcsv_notice() for when the next step box is required.
+* 
+* 1. Do not add links inside the message content as the entire div is linked
+* 2. This is only be used to suggest the next step users should take
+* 3. This function always returns, it cannot be used to update the notifications array
+* 
+* @param mixed $type
+* @param mixed $helpurl
+* @param mixed $size
+* @param mixed $title
+* @param mixed $message
+* @todo MEDIUMPRIORITY, do a check to determine if user is already on the clickable url, if they are then we suggest it on the message
+*/
+function csv2post_notice_display_step($helpurl,$title,$message){
+    $output = '<div class="stepLargeTest"><a href="'.$helpurl.'">    
+    <div class="stepLarge"><h4>'.$title.'</h4>'. $message .'</div></a></div>';
+    return $output;    
+}
+
+/**
  * Adds a jquery effect submit button, for using in form
  * 
  * @param string $panel_name (original use for in panels,panel name acts as an identifier)
@@ -1626,7 +1642,7 @@ function csv2post_update_option_jobtables_array($csv2post_jobtable_array){
 * @return false if get_option does not return an array else the array is returned
 */
 function csv2post_get_dataimportjob($jobcode){
-    $val = unserialize(get_option('csv2post_' . $jobcode));// should return an array
+    $val = maybe_unserialize(get_option('csv2post_' . $jobcode));// should return an array
     if(!is_array($val)){
         return false;    
     }
@@ -1769,5 +1785,20 @@ function csv2post_get_array_nextkey($array){
     ksort($array);
     end($array);
     return key($array) + 1;
-}  
+} 
+
+/**
+* Returns a project table, either the already set [main] table or the first one in the list as default 
+*/
+function csv2post_get_project_maintable($project_code){
+    // get project array
+    $project_array = csv2post_get_project_array($project_code);
+    if(isset($project_array['maintable'])){
+        return $project_array['maintable'];
+    }elseif(isset($project_array['tables'][0])){
+        return $project_array['tables'][0];
+    }else{
+        return 'ERROR:csv2post_get_project_maintable could not determine main project table';
+    }
+} 
 ?>

@@ -41,6 +41,8 @@ function csv2post_jquery_graphiccheckboxes(){?>
 *                <div class="portlet-header"> <?php echo $fileitem['name'].$pointer.$fileitem['extension'];?> </div>
 *                <div class="portlet-content"><?php echo $viewedpath; ?></div>
 *            </div> 
+* 
+* ### TODO:HIGHPRIORITY, this function still includes wtgcsv within it, it should be removed
 */
 function csv2post_jquery_status_list_portlets(){?>
      <style>

@@ -337,7 +337,7 @@ $jsform_set['noticebox_content'] = 'Are you sure you want to delete the selected
         }else{?>
             
             <br />
-            <div id="wtgcsv-multiselect-createnewproject-div-id">
+            <div id="csv2post-multiselect-createnewproject-div-id">
                 <select multiple='multiple' id="csv2post_project_listid" class='csv2post_multiselect_projects_deleteprojects' name="csv2post_projectcodes_array[]">
                     <?php csv2post_option_items_postcreationprojects();?> 
                 </select>

@@ -25,7 +25,10 @@ if($cont){
     $cont = csv2post_form_upload_csv_file(); 
     
     // Delete one or more database tables
-    $cont = csv2post_form_drop_database_tables();   
+    $cont = csv2post_form_drop_database_tables(); 
+    
+    // Manual data import
+    $cont = csv2post_form_importdata();  
 }
 
 // Project Screen Form Submissions (project creation and configuration)
@@ -186,6 +189,61 @@ if($cont){
     $cont = csv2post_form_uninstallplugin();
     $cont = csv2post_form_createcontentfolder();
     $cont = csv2post_form_deletecontentfolder();    
+}
+
+/**
+* Manual data import
+*/
+function csv2post_form_importdata(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'data' && isset($_POST['csv2post_importdatarequest_postmethod']) && $_POST['csv2post_importdatarequest_postmethod'] == 'true'){
+
+        // if job code not in $_POST
+        if(!isset($_POST['csv2post_importdatarequest_jobcode']) || $_POST['csv2post_importdatarequest_jobcode'] == NULL || !is_string($_POST['csv2post_importdatarequest_jobcode'])){
+            csv2post_notice('A data import job code was not found in the submitted form data, no import could be started.','error','Large','No Job Code Submitted','','echo');
+            return false;
+        }
+        
+        $job_code = $_POST['csv2post_importdatarequest_jobcode'];
+        
+        // if no csv file value in $_POST
+        if(!isset($_POST['csv2post_dataimport_selectcsvfile_'.$job_code]) || !is_string($_POST['csv2post_dataimport_selectcsvfile_'.$job_code])){
+            csv2post_notice('No CSV file name could be found in the submitted post data, no import could be carried out.','error','Large','No CSV Filename Found','','echo');    
+            return false;
+        }
+        
+        $file_name = $_POST['csv2post_dataimport_selectcsvfile_'.$job_code];
+        
+        // if no row number submitted
+        $row_number = 1;
+        if(!isset($_POST['csv2post_dataimport_rownumber_'.$job_code]) || !is_numeric($_POST['csv2post_dataimport_rownumber_'.$job_code])){
+            csv2post_notice('No row number for import was submitted so only 1 record will be imported from '.$file_name.'.csv.','warning','Large','No Rows Number Submitted','','echo');    
+        }elseif(isset($_POST['csv2post_dataimport_rownumber_'.$job_code]) && is_numeric($_POST['csv2post_dataimport_rownumber_'.$job_code])){
+            $row_number = $_POST['csv2post_dataimport_rownumber_'.$job_code];        
+        }
+ 
+        // perform data import
+        $overall_result = 'success';
+        $dataimportjob_array = csv2post_data_import_from_csvfile($file_name.'.csv','csv2post_'.$job_code,$row_number,$job_code);
+        
+        // determine new $overall_result and apply styling to the main notice to suit it
+        if($dataimportjob_array == false){
+            $overall_result = 'error';
+        }
+        
+        // display result    
+        csv2post_notice('<h4>Data Import Result<h4>
+        <p>You requested '.$row_number.' row/s to be imported from '.$file_name.'.csv.</p>
+        '.csv2post_notice('New Records: '.$dataimportjob_array["stats"]["lastevent"]['inserted'],'success','Small',false,'','return').'
+        '.csv2post_notice('Void Records: '.$dataimportjob_array["stats"]["lastevent"]['void'],'info','Small',false,'','return').'
+        '.csv2post_notice('Dropped Rows: '.$dataimportjob_array["stats"]["lastevent"]['dropped'],'warning','Small',false,'','return').'
+        '.csv2post_notice('Rows Processed: '.$dataimportjob_array["stats"]["lastevent"]['processed'],'info','Small',false,'','return').'     
+        '.csv2post_notice('Job Progress: '.$dataimportjob_array["stats"]["allevents"]['progress'],'info','Small',false,'','return').'    
+        ',$overall_result,'Extra','','','echo'); 
+
+        return false;
+    }else{
+        return true;
+    }     
 }
 
 /**
@@ -413,14 +471,14 @@ function csv2post_form_save_eventtypes(){
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'creation' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'eventtypes'){
         global $csv2post_schedule_array;   
 
-        $csv2post_schedule_array['eventtypes']["postcreation"] = $_POST["postcreation"];
-        $csv2post_schedule_array['eventtypes']["postupdate"] = $_POST["postupdate"];
-        $csv2post_schedule_array['eventtypes']["dataimport"] = $_POST["dataimport"];
-        $csv2post_schedule_array['eventtypes']["dataupdate"] = $_POST["dataupdate"];
-        $csv2post_schedule_array['eventtypes']["twittersend"] = $_POST["twittersend"];
-        $csv2post_schedule_array['eventtypes']["twitterupdate"] = $_POST["twitterupdate"];
-        $csv2post_schedule_array['eventtypes']["twitterget"] = $_POST["twitterget"];
-      
+        $csv2post_schedule_array['eventtypes']["postcreation"] = $_POST["csv2post_eventtype_postcreation"];
+        $csv2post_schedule_array['eventtypes']["postupdate"] = $_POST["csv2post_eventtype_postupdate"];
+        $csv2post_schedule_array['eventtypes']["dataimport"] = $_POST["csv2post_eventtype_dataimport"];
+        $csv2post_schedule_array['eventtypes']["dataupdate"] = $_POST["csv2post_eventtype_dataupdate"];
+        $csv2post_schedule_array['eventtypes']["twittersend"] = $_POST["csv2post_eventtype_twittersend"];
+        $csv2post_schedule_array['eventtypes']["twitterupdate"] = $_POST["csv2post_eventtype_twitterupdate"];
+        $csv2post_schedule_array['eventtypes']["twitterget"] = $_POST["csv2post_eventtypes_twitterget"];
+        
         csv2post_update_option_schedule_array($csv2post_schedule_array);
         
         csv2post_notice('Schedule event types have been saved, the changes will have an effect on the types of events run, straight away.','success','Large','Schedule Event Types Saved','','echo');
@@ -1104,7 +1162,6 @@ function csv2post_form_save_dripfeedprojects_switch(){
     }    
 }   
    
-
 /**
 * Save project update settings
 */
@@ -1642,32 +1699,7 @@ function csv2post_form_save_contenttemplate(){
                     add_post_meta($wpinsertpost_result, '_csv2post_templatetypes', 'dynamicwidgetcontent', false);                    
                     add_post_meta($wpinsertpost_result, '_csv2post_templatetypes', 'seovalue', false);
                 }
-                
-                /* OLD METHOD
-                $design_types = '';
-                if(isset($_POST["csv2post_designtype"])){
-                    if(is_array($_POST["csv2post_designtype"])){
-                        $first = true;
-                        foreach($_POST["csv2post_designtype"] as $key => $type){
-                            if($first == false){
-                                $design_types .= ',';    
-                            }
-                            $design_types .= $type;
-                            $first = false;    
-                        }
-                    }else{
-                        $design_types = $_POST["csv2post_designtype"];    
-                    }
-                }else{
-                    // by default we will apply all types
-                    $design_types = 'postcontent,customfieldvalue,categorydescription,postexcerpt,keywordstring,dynamicwidgetcontent,seovalue';
-                }
-
-                $result = add_metadata('post', $wpinsertpost_result, '_csv2post_templatetypes', $design_types);
-                */
-                
-                
-                
+           
                 // if current project does not yet have a default content template
                 $setasdefault = '';
                 $template_id = csv2post_get_default_contenttemplate_id($csv2post_currentproject_code);

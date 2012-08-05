@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: CSV 2 POST
-Version: 6.5.2
+Version: 6.5.4
 Plugin URI: http://www.csv2post.com
 Description: CSV 2 POST released 2012 by Zara Walsh and Ryan Bayne
 Author: Zara Walsh
@@ -35,9 +35,9 @@ if(!is_admin() || defined('DOING_AJAX') && DOING_AJAX){
 ### TODO:HIGHPRIORITY, detect paid edition folder automatically, if not found set as free edition
 $csv2post_is_free = true;// changing this in free copy does not activate a paid edition, it may break the plugin
 $csv2post_is_dev = false;// boolean, true displays more panels with even more data i.e. array dumps
-$csv2post_currentversion = '6.5.2';// this value should not be relied on but only used for guidance
+$csv2post_currentversion = '6.5.4';// this value should not be relied on but only used for guidance
 $csv2post_php_version_tested = '5.3.1';// current version the plugin is being developed on
-$csv2post_php_version_minimum = '5.2.17';// minimum version required for plugin to operate
+$csv2post_php_version_minimum = '5.3.1';// minimum version required for plugin to operate
 $csv2post_pluginname = 'csv2post';// should not be used to make up paths
 $csv2post_homeslug = $csv2post_pluginname;// @todo page slug for plugin main page used in building menus
 $csv2post_isbeingactivated = false;
@@ -70,11 +70,6 @@ require_once(WTG_C2P_DIR.'templatesystem/include/csv2post_file_functions.php');/
 require_once(WTG_C2P_DIR.'templatesystem/include/csv2post_post_functions.php');// post creation,update related functions              
 require_once(WTG_C2P_DIR.'pages/csv2post_variables_tabmenu_array.php');
 if(!$csv2post_is_free){require_once(WTG_C2P_DIR.'fulledition/csv2post_advanced_functions.php');}
-
-// run auto post and data updating events if any are due
-if(!$csv2post_is_free){add_action('init', 'csv2post_event_check');}
-
-//add_action('the_posts', 'eci_updatethepost' );// this will be used for updating posts being queried
 
 ####################################################
 ####                                            ####
@@ -157,6 +152,12 @@ $csv2post_textspin_array = csv2post_get_option_textspin_array();
 $csv2post_was_installed = csv2post_was_installed();// boolean - indicates if a trace of previous installation found       
 $csv2post_schedule_array = csv2post_get_option_schedule_array();
 $csv2post_panels_closed = true;// boolean true forces all panels closed, false opens them all
+
+// add public actions
+if(!$csv2post_is_free){
+    // run auto post and data updating events if any are due
+    add_action('init', 'csv2post_event_check');
+}
 
 ####################################################
 ####                                            ####

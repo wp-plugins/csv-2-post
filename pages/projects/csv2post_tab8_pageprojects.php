@@ -51,8 +51,8 @@ $jsform_set['noticebox_content'] = 'Do you want to change your projects content 
 
     <div id="csv2post_updatesettings_postupdating_public_objectid">
         <?php
-        $switch_value_on = '';
-        $switch_value_off = '';
+        $public_value_on = '';
+        $public_value_off = '';
         if(isset($csv2post_project_array['updating']['content']['settings']['public']) && $csv2post_project_array['updating']['content']['settings']['public'] == 'on'){
             $public_value_on = 'checked'; 
         }else{
@@ -73,8 +73,8 @@ $jsform_set['noticebox_content'] = 'Do you want to change your projects content 
 
     <div id="csv2post_updatesettings_postupdating_speed_objectid">
         <?php
-        $switch_value_on = '';
-        $switch_value_off = '';
+        $speed_value_on = '';
+        $speed_value_off = '';
         if(isset($csv2post_project_array['updating']['content']['settings']['speed']) && $csv2post_project_array['updating']['content']['settings']['speed'] == 'on'){
             $speed_value_on = 'checked'; 
         }else{
@@ -94,8 +94,8 @@ $jsform_set['noticebox_content'] = 'Do you want to change your projects content 
 
     <div id="csv2post_updatesettings_postupdating_old_objectid">
         <?php
-        $switch_value_on = '';
-        $switch_value_off = '';
+        $old_value_on = '';
+        $old_value_off = '';
         if(isset($csv2post_project_array['updating']['content']['settings']['old']) && $csv2post_project_array['updating']['content']['settings']['old'] == 'on'){
             $old_value_on = 'checked'; 
         }else{
@@ -115,8 +115,8 @@ $jsform_set['noticebox_content'] = 'Do you want to change your projects content 
 
     <div id="csv2post_updatesettings_postupdating_oldmethod_objectid">
         <?php
-        $switch_value_on = '';
-        $switch_value_off = '';
+        $oldmethod_value_on = '';
+        $oldmethod_value_off = '';
         if(isset($csv2post_project_array['updating']['content']['settings']['oldmethod']) && $csv2post_project_array['updating']['content']['settings']['oldmethod'] == 'on'){
             $oldmethod_value_on = 'checked'; 
         }else{
@@ -174,3 +174,24 @@ $jsform_set['noticebox_content'] = 'Do you want to change your projects custom f
 <?php csv2post_panel_footer();?>  
 
 <?php ### TODO: MEDIUMPRIORITY, panel for updating other (titles,publish date) ?>
+
+<?php
+if(!$csv2post_is_free){
+    ++$panel_number;// increase panel counter so this panel has unique ID
+    $panel_array = array();
+    $panel_array['panel_name'] = 'postupdatingarraydump';// slug to act as a name and part of the panel ID 
+    $panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
+    $panel_array['panel_title'] = __('Post Updating Array Dump');// user seen panel header text 
+    $panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
+    $panel_array['tabnumber'] = $csv2post_tab_number; 
+    $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
+    $panel_array['panel_intro'] = __('Dump of arrays related to post updating (including meta data)');
+    $panel_array['panel_help'] = __('This array dump shows the stored settings for things like public post updating and the ability to update specific custom fields.');
+    $panel_array['help_button'] = csv2post_helpbutton_text(false,true);?>
+    <?php csv2post_panel_header( $panel_array );?>
+        
+        <h4>Entire Array</h4>
+        <pre><?php if(isset($csv2post_project_array)){var_dump($csv2post_project_array);}else{echo 'No array stored';} ?></pre>
+                
+    <?php csv2post_panel_footer();
+}?> 

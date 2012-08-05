@@ -148,6 +148,21 @@ function csv2post_get_current_project_name(){
 }
 
 /**
+* Find if a current project is set or not.
+* Works using the project list, if a project is removed from project list then we consider it not available.
+* 
+* @return boolean 
+*/
+function csv2post_is_projectset(){
+    global $csv2post_currentproject_code,$csv2post_projectslist_array;
+    if(!isset($csv2post_projectslist_array[$csv2post_currentproject_code]['name'])){
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+/**
 *  Returns current job name or string indicating no current job if none 
 */
 function csv2post_get_current_job_name(){
@@ -2263,11 +2278,6 @@ function csv2post_option_items_postcreationprojects($existing_values = false){
     }    
 }
 
-###########################################################################################
-#                                                                                         #
-#                           OTHER FORM OBJECTS (other than menus)                         #
-#                                                                                         #
-###########################################################################################
 /**
 * Displays post types as radio buttons on form with jQuery styling of a button.
 */
@@ -2316,12 +2326,6 @@ function csv2post_display_defaultposttype_radiobuttons(){
     </div><?php 
 }
 
-
-###########################################################################################
-#                                                                                         #
-#                                       TABLES                                            #
-#                                                                                         #
-###########################################################################################
 /**
 * Displays a table of basic custom field rules with checkbox for deleting rules
 * @todo LOWPRIORITY, add Example Value column and pull data if available from project table 
@@ -2498,40 +2502,43 @@ function csv2post_display_jobtables($checkbox_column = false){
     </tr>'; 
     
     $table_count = 0;
+    
+    if(isset($csv2post_jobtable_array) && $csv2post_jobtable_array != false){
                
-    foreach( $csv2post_jobtable_array as $key => $table_name ){
-        
-        $jobcode = str_replace('csv2post_','',$table_name);
-        
-        // set project value
-        if(!isset($csv2post_dataimportjobs_array[$jobcode]['name'])){
-            $project = 'Project Deleted';
-        }else{
-            $project = $csv2post_dataimportjobs_array[$jobcode]['name'];            
-        }
-        
-        $table_exists_result = csv2post_does_table_exist( $table_name );
-        
-        if($table_exists_result){
-            $table_row_count = csv2post_sql_counttablerecords($table_name);    
-        }else{
-            $table_row_count = 'Table Deleted';            
-        }
-
-        echo '
-        <tr>';
-
-        if($checkbox_column){
-            echo '<td><input type="checkbox" name="csv2post_table_array[]" value="'.$table_name.'" /></td>';        
-        }
+        foreach( $csv2post_jobtable_array as $key => $table_name ){
             
-        echo '
-            <td>'.$table_name.'</td>
-            <td>'.$project.'</td>
-            <td>'.$table_row_count.'</td>
-        </tr>';
-        ++$table_count;
-    }   
+            $jobcode = str_replace('csv2post_','',$table_name);
+            
+            // set project value
+            if(!isset($csv2post_dataimportjobs_array[$jobcode]['name'])){
+                $project = 'Project Deleted';
+            }else{
+                $project = $csv2post_dataimportjobs_array[$jobcode]['name'];            
+            }
+            
+            $table_exists_result = csv2post_does_table_exist( $table_name );
+            
+            if($table_exists_result){
+                $table_row_count = csv2post_sql_counttablerecords($table_name);    
+            }else{
+                $table_row_count = 'Table Deleted';            
+            }
+
+            echo '
+            <tr>';
+
+            if($checkbox_column){
+                echo '<td><input type="checkbox" name="csv2post_table_array[]" value="'.$table_name.'" /></td>';        
+            }
+                
+            echo '
+                <td>'.$table_name.'</td>
+                <td>'.$project.'</td>
+                <td>'.$table_row_count.'</td>
+            </tr>';
+            ++$table_count;
+        }   
+    }
                  
     echo '</table>';
     
@@ -2783,11 +2790,11 @@ function csv2post_helpbutton_text($under_construction = false,$paid_only = false
     global $csv2post_is_free;
     
     if($csv2post_is_free && $paid_only){
-        return 'Paid Edition Only';
+        return 'Feature Not Released';// full edition only but possibly coming too the free edition
     }    
     
     if($under_construction){
-        return 'Feature Under Construction';    
+        return 'New Feature For Testing Only';// used to say "Under Construction"    
     }
 
     return 'Help';
@@ -2964,22 +2971,24 @@ function csv2post_schedulescreen_notices(){
     }
 
     // if current 24 hour period limit reached display this
-    if(isset($csv2post_schedule_array['history']['daycounter']) && $csv2post_schedule_array['history']['daycounter'] >= $csv2post_schedule_array['limits']['day']){
+    if(isset($csv2post_schedule_array['history']['daycounter']) && isset($csv2post_schedule_array['limits']['day']) && $csv2post_schedule_array['history']['daycounter'] >= $csv2post_schedule_array['limits']['day']){
         echo csv2post_notice('The maximum events number for the current 24 hour period has been reached','info','Tiny','','','return');        
     }
     
     // if current 60 minute period limit reached display this
-    if(isset($csv2post_schedule_array['history']['hourcounter']) && $csv2post_schedule_array['history']['hourcounter'] >= $csv2post_schedule_array['limits']['hour']){
+    if(isset($csv2post_schedule_array['history']['hourcounter']) && isset($csv2post_schedule_array['limits']['hour']) && $csv2post_schedule_array['history']['hourcounter'] >= $csv2post_schedule_array['limits']['hour']){
         echo csv2post_notice('The maximum events number for the current 60 minute period has been reached','info','Tiny','','','return');        
     }
 
     // if no projects are on drip feeding display
     $project_dripfeeding = false;
-    foreach($csv2post_projectslist_array as $project_code => $project_array){
-        if(isset($project_array['dripfeeding']) && $project_array['dripfeeding'] == 'on'){
-            $project_dripfeeding = true;
-            break;
-        }        
+    if(isset($csv2post_projectslist_array) && is_array($csv2post_projectslist_array)){
+        foreach($csv2post_projectslist_array as $project_code => $project_array){
+            if(isset($project_array['dripfeeding']) && $project_array['dripfeeding'] == 'on'){
+                $project_dripfeeding = true;
+                break;
+            }        
+        }
     }
     
     if(!$project_dripfeeding){
@@ -3338,7 +3347,7 @@ function csv2post_ago( $datetime,$use_year = true,$use_month = true,$use_day = t
             $ago_string = $ago_string_with_comma_hour . csv2post_pluralize( $interval->h, 'hour' );        
         } 
     }       
-
+ 
     // minute
     if($use_hour){
         if ( $interval->m >= 1 ){
@@ -3357,4 +3366,24 @@ function csv2post_ago( $datetime,$use_year = true,$use_month = true,$use_day = t
     
     return $ago_string;
 }
+
+/**
+* Echoes the data import jobs csv files in options for form menu
+* 
+* @param string $jobcode
+*/
+function csv2post_menu_options_job_csvfiles($jobcode){
+    $job_array = csv2post_get_dataimportjob($jobcode);
+    if(!$job_array || !is_array($job_array)){
+        echo '<option value="error">Error:job array could not be found</option>';
+        return;
+    }
+
+    // get job array
+    foreach($job_array['files'] as $key => $csv_filename){ 
+        // we need to remove ".csv" but do not change filename too lowercase (due to case sensitive file functions)
+        $csv_filename_cleaned = str_replace('.csv','',$csv_filename); 
+        echo '<option value="'.$csv_filename_cleaned.'">'.$csv_filename.'</option>';
+    }   
+}                                                                                                                                
 ?>

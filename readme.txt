@@ -21,7 +21,7 @@ The flexability of this approach offers endless potential and is usually safer t
 database table or instant post creation straight from a CSV file.
 
 = Getting Started =
-I have  written a start guide and tips on the plugin main page. Please browse the guide there. The main thing 
+We have  written a start guide and tips on the plugin main page. Please browse the guide there. The main thing 
 to know is that any problems encountered are not always due to a bug. The plugin may require further development 
 depending on your needs or your project configuration is not compatible with values in your data.
 
@@ -33,18 +33,14 @@ website at [www.csv2post.com](http://www.csv2post.com/). The interface offers a 
 is giving and users can click another button to open a page on www.csv2post.com specific to the feature
 the user needs help for. Some pages will have video tutorials and screenshots. The online support content is free.
 
-= Paid Services =
-A very advanced paid edition and services are available if needed. However I urge everyone to try the free edition first.
-For a donation I can add requests for new features to the top of the to do list. If there is something you would like the
-plugin to do but want to avoid paying for the full edition, there are always options.
-
-= Free v Paid =
-It is very important to me that I deliver a useful free plugin for the Wordpress community to use. I must also support
+= Our Mission =
+It is very important to us that we deliver a useful free plugin for the Wordpress community to use. We must also support
 the plugin and take responsibility for it. Priority development and focus in the free edition goes to the actual data 
-import side of the plugin. It must do what it says in its name and I would like to deliver a tool for uncommon projects
+import side of the plugin. It must do what it says in its name and we would like to deliver a tool for uncommon projects
 i.e. importing product data to shopping cart plugin tables and manipulating data as it is being imported based on various
-conditions. I have a very long term plan for CSV 2 POST, both free and paid. If you budget is tight, keep
-checking the free edition and there is no harm in letting me know what you think the free plugin should offer users.
+conditions. We have a very long term plan for CSV 2 POST, both free and paid. If you budget is tight, keep
+checking the free edition and there is no harm in letting me know what you think the free plugin should offer users. If
+you need support that knows the plugin well, you may seek to purchase the premium edition and services
 
 == Installation ==
 
@@ -96,10 +92,47 @@ not push users through a linear step by step process.
 6. You can use up to 3 columns of data to create 3 levels of categories.
  
 == Changelog ==
+= 6.5.4 =
+* Public Messages
+    * Please give us feedback on any aspect of the plugin, we will respond to it
+* Bug Fixes
+    * (critical) Column token replacement in templates was not always happening due to function missing a parameter
+    * (minor) csv2post_record_id is now populated with database table record id and not project code
+* General Improvements
+    * Change the help button text for beta features and features currently not released in free edition
+* Technical Improvements
+    * maybe_unserialize() added too csv2post_get_dataimportjob()
+* Known Issues
+    * Nothing has been reported
+* Web Services, Support and Websites changes
+    * None
+    
+= 6.5.3 =
+* Public Messages
+    * CSV 2 POST requires PHP 5.3 (5.4 is being tested), 5.2 has deprecated functions and PEAR CSV only works on 5.3
+* Bug Fixes
+    * (minor) Warning: Invalid argument supplied for foreach() - Data Page, Created Tables tab
+    * (minor) Undefined variable notices on Update Options screen 
+    * (minor) Undefined variable notices on Schedule screen
+* General Improvements
+    * Changed data import panels: they no longer have many buttons, user can enter number of rows to be imported
+    * Notice will be displayed on Projects page telling user that a project is required to be created if none have been set as current project or none created
+    * Multiple Table Project panel now updates on first submission of a new project being created (refresh no longer required)
+* Technical Improvements
+    * $csv2post_project_array will now be used by csv2post_create_post_creation_project()
+    * New function csv2post_notice_step() for displaying a clickable div with next step styling
+    * New function csv2post_get_project_maintable() will be used to determine/retrieve a projects main table
+    * Data import panels have two methods set in code: Ajax approach can be used and by default we will use a new form submission approach
+    * New function csv2post_form_importdata() will handle $_POST method data import
+* Known Issues
+    * None
+* Web Services, Support and Websites changes
+    * On 31st July 2012 the plugins website was updated with the CSV 2 POST brand and Wordpress CSV Importer removed.
+    
 = 6.5.2 =
 * Public Messages
     * CSV 2 POST was previously known as Wordpress CSV Importer but due to conflicts with the Wordpress trademark it had to be renamed
-	* Version has been advanced to 5.0.0 to force update on all users of the old CSV 2 POST, a fresh new beginning, thank you for your patience
+    * Version has been advanced to 6.5.2 to force update on all users of the old CSV 2 POST, a fresh new beginning, thank you for your patience
 * Bug Fixes
     * Removed 4th parameter (count) from all uses of csv2post_parse_columnreplacement_advanced() and str_replace()
     * Invalid argument supplied for foreach() on Tags screen  

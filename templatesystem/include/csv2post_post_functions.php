@@ -203,7 +203,7 @@ function csv2post_create_postdraft_basic( $r,$category_array,$project_code,$cont
     }
 
     // add custom fields
-    csv2post_post_default_projectmeta($my_post['ID'],$project_code);
+    csv2post_post_default_projectmeta($my_post['ID'],$project_codem,$r['csv2post_id']);
 
     return $my_post;  
 }     
@@ -214,9 +214,12 @@ function csv2post_create_postdraft_basic( $r,$category_array,$project_code,$cont
 * @param mixed $post_ID
 * @param mixed $project_code
 */
-function csv2post_post_default_projectmeta($post_ID,$project_code){
+function csv2post_post_default_projectmeta($post_ID,$project_code,$record_id){
     add_post_meta($post_ID, 'csv2post_project_code', $project_code, true);
-    add_post_meta($post_ID, 'csv2post_last_update', date("Y-m-d H:i:s", time()), true);                    
+    add_post_meta($post_ID, 'csv2post_record_id', $record_id, true);
+    add_post_meta($post_ID, 'csv2post_last_update', date("Y-m-d H:i:s", time()), true); 
+
+    ### TODO:CRITICAL, requires record id                    
 }                                                                           
 
 /**
@@ -342,21 +345,21 @@ function csv2post_categorysetup_basicscript_normalcategories($r,$project_array){
 * @returns string, $project_array['code'] if success
 */
 function csv2post_create_post_creation_project($project_name,$projecttables_array,$mapping_method){
-    global $csv2post_is_free;
+    global $csv2post_is_free,$csv2post_project_array;
     
     // initialize a new post creation project array
-    $project_array = csv2post_initialize_postcreationproject_array($project_name);
+    $csv2post_project_array = csv2post_initialize_postcreationproject_array($project_name);
 
     // generate a unique project code
     if($csv2post_is_free){
-        $project_array['code'] = 'freeproject';    
+        $csv2post_project_array['code'] = 'freeproject';    
     }else{
-        $project_array['code'] = 'pro' . csv2post_create_code(6);
+        $csv2post_project_array['code'] = 'pro' . csv2post_create_code(6);
         ### TODO:HIGHPRIORITY, ensure code is unique else generation another, loop until we have a unique code, this code will be used to create main project table name
     }
 
     // set the csv column to database table mapping method (required for advanced updating)
-    $project_array['mappingmethod'] = $mapping_method;
+    $csv2post_project_array['mappingmethod'] = $mapping_method;
 
     // add tables to project array (in this loop we also determine if an appropriate project table has been selected)
     $tablecounter = 0;
@@ -364,15 +367,15 @@ function csv2post_create_post_creation_project($project_name,$projecttables_arra
     foreach( $projecttables_array as $key => $table_name ){
         
         // all tables are added to the "tables" node of the $project_array
-        $project_array['tables'][$tablecounter] = $table_name;
+        $csv2post_project_array['tables'][$tablecounter] = $table_name;
 
         // establish if a suitable project table has been selected - we set a table as the main table
         if($csv2post_projecttable_included == false){
             $is_csv2post_table = csv2post_is_csv2post_postprojecttable($table_name);
             if($is_csv2post_table){
                 $csv2post_projecttable_included = true;// ensures the check is not done again, first found table is project table
-                $project_array['tables'][$tablecounter] = $table_name;
-                $project_array['maintable'] = $table_name;
+                $csv2post_project_array['tables'][$tablecounter] = $table_name;
+                $csv2post_project_array['maintable'] = $table_name;
             } 
         }
          
@@ -382,22 +385,22 @@ function csv2post_create_post_creation_project($project_name,$projecttables_arra
     // if no project table found, create one (set the $maintableonly parameter to false for this)
     if(!$csv2post_projecttable_included){
 
-        csv2post_create_dataimportjob_table($project_array['code'],false,true);
+        csv2post_create_dataimportjob_table($csv2post_project_array['code'],false,true);
 
         // set main table as the one just created
-        $project_array['maintable'] = $table_name;
+        $csv2post_project_array['maintable'] = $table_name;
     }
         
     // create option record for project
-    $createoptionrecord_result = csv2post_update_option_postcreationproject($project_array['code'],$project_array);
+    $createoptionrecord_result = csv2post_update_option_postcreationproject($csv2post_project_array['code'],$csv2post_project_array);
     if($createoptionrecord_result === false){
         return false;
     }else{
-        $save_result = csv2post_update_option_postcreationproject_list_newproject($project_array['code'],$project_name);
+        $save_result = csv2post_update_option_postcreationproject_list_newproject($csv2post_project_array['code'],$project_name);
         if($save_result === false){
             return false;    
         }else{
-            return $project_array['code'];
+            return $csv2post_project_array['code'];
         }    
     }
     return false;            
