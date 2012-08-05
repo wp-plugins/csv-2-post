@@ -22,7 +22,7 @@ function csv2post_sql_query_records_last_update($project_code,$post_id){
     if(!$record_array){
         return false;
     }else{          
-        return $record_array  
+        return $record_array;  
     }
 }   
 
