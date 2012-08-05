@@ -765,8 +765,8 @@ function csv2post_is_csv2post_postprojecttable($table_name){
 
     // ensure the table exists before running tests
     $table_exists = csv2post_does_table_exist($table_name);
-    if(!$table_exists){return;} 
-        
+    if(!$table_exists){return false;} 
+                  
     // list of all the post project columns required
     $required_columns = array('csv2post_id',
                     'csv2post_postid',
@@ -784,19 +784,19 @@ function csv2post_is_csv2post_postprojecttable($table_name){
     }
 
     // get the tables array of column names
-    $table_columns_array = csv2post_sql_get_tablecolumns($table_name,true);
-    if(!$table_columns_array){return;}
+    $table_columns_array = csv2post_sql_get_tablecolumns($table_name,true,true);
+    if(!$table_columns_array){return false;}
     
     // change $all_required_columns_found to false if one of the $required_columns are not found
     $all_required_columns_found = true;
     
     $column_counter = 0;
     $config_counter = 0;// reset per column
-    
-    foreach( $required_columns as $key => $column_name){
 
+    foreach( $required_columns as $key => $column_name){
+                        
         $is_in_array = in_array($column_name,$table_columns_array);
-        if(!$is_in_array){ echo $column_name .'<br />'; 
+        if(!$is_in_array){ 
             return false;    
         }
         

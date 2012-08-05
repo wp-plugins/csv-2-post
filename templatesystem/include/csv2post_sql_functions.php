@@ -1,10 +1,10 @@
 <?php                  
 /**
-* Queries a projects database table for records that have not been used to create posts yet.
+* Queries a projects database table for last update value
 * 1. Always queries the main project table, if main table not set in project array then defaults to the first in tables array 
 * 2. Only returns record date record was last update
 * 
-* @returns the date value from csv2post_updated, if it is a valid date value only else returns false
+* @returns the date value from csv2post_updated else returns false on table not existing or record not found
 */
 function csv2post_sql_query_records_last_update($project_code,$post_id){
     // establish main project table
@@ -14,11 +14,12 @@ function csv2post_sql_query_records_last_update($project_code,$post_id){
     if(!$table_exist){return false;}
 
     // csv2post_updated is not changed in a multiple table project until all tables are updated so we dont need to 
-    // be concerned with that here   
+    // be concerned with that here.
+    // 5th Aug 2012 Ryan Bayne: added LIMIT 1 to help ensure the result only has 1 record, should somehow post id end up in 2 records   
     global $wpdb; 
     $record_array = $wpdb->get_results( 'SELECT csv2post_updated 
     FROM '. $main_table .' 
-    WHERE csv2post_postid = ' . $post_id . '',ARRAY_A ); 
+    WHERE csv2post_postid = ' . $post_id . ' LIMIT 1',ARRAY_A ); 
     if(!$record_array){
         return false;
     }else{          

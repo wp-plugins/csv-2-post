@@ -92,6 +92,21 @@ not push users through a linear step by step process.
 6. You can use up to 3 columns of data to create 3 levels of categories.
  
 == Changelog ==
+= 6.5.5 =
+* Public Messages
+    * This version has been released urgently due to a newly introduced bug that will effect around half of the plugins users
+    * Reminder: CSV 2 POST requires PHP 5.3 and is being tested on 5.4
+* Bug Fixes
+    *  (critical) project creation was creating a project table even if the user selected a suitable project table already
+* General Improvements
+    * None
+* Technical Improvements
+    * None
+* Known Issues
+    * Lightbox type overlay applied by jQuery UI dialogue, on 2. Your Projects page, appears to have two overlays (there is a light gap between two of them)
+* Web Services, Support and Websites changes
+    * None
+    
 = 6.5.4 =
 * Public Messages
     * Please give us feedback on any aspect of the plugin, we will respond to it

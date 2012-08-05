@@ -1816,7 +1816,7 @@ function csv2post_form_create_post_creation_project(){
             $createproject_result_code = csv2post_create_post_creation_project($_POST['csv2post_projectname_name'],$tables_array,$mapping_method);
             if($createproject_result_code){
                 
-                // now set the new project as the Current Project                
+                // now set the new project as the Current Project ($csv2post_currentproject_code)               
                 $csv2post_currentproject_code = $createproject_result_code;
                 csv2post_update_currentproject($createproject_result_code);
                 

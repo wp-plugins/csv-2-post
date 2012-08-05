@@ -385,10 +385,11 @@ function csv2post_create_post_creation_project($project_name,$projecttables_arra
     // if no project table found, create one (set the $maintableonly parameter to false for this)
     if(!$csv2post_projecttable_included){
 
+        // table name will be csv2post_(project code)
         csv2post_create_dataimportjob_table($csv2post_project_array['code'],false,true);
 
         // set main table as the one just created
-        $csv2post_project_array['maintable'] = $table_name;
+        $csv2post_project_array['maintable'] = 'csv2post_'.$csv2post_project_array['code'];
     }
         
     // create option record for project
