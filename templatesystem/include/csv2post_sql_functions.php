@@ -94,12 +94,11 @@ function csv2post_sql_build_columnstring($table_name){
 * @returns result of wp_update_post(), could be WP_Error or post ID or false
 */
 function csv2post_update_project_databasetable_basic($record_id,$post_id,$table_name){
-                      
-    $wpdb->query('UPDATE '. $table_name .'                       
+    global $wpdb;                  
+    $result = $wpdb->query('UPDATE '. $table_name .'                       
     SET csv2post_postid = '.$post_id.',csv2post_applied = NOW()                            
-    WHERE csv2post_id = '.$record->eciid.'');
-        
-    return wp_update_post( $my_post );
+    WHERE csv2post_id = '.$record_id.'');   
+    return $result;
 }    
     
 /**

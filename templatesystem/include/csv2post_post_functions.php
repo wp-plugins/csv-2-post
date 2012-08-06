@@ -108,8 +108,8 @@ function csv2post_create_posts_basic($project_code,$request_method){
             } 
         }else{
             // update project table
-            csv2post_update_project_databasetable_basic($record_id,$post_id,$table_name);
-        }
+            csv2post_update_project_databasetable_basic($record_array['csv2post_id'],$my_post['ID'],$project_array['tables'][0]); 
+        }                                                                                              
            
         // set tags
         if(isset($project_array['tags']['default']['table']) && isset($project_array['tags']['default']['column'])){

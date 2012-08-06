@@ -92,6 +92,20 @@ not push users through a linear step by step process.
 6. You can use up to 3 columns of data to create 3 levels of categories.
  
 == Changelog ==
+= 6.5.6 =
+* Public Messages
+    * A big thanks to Wordpress for all their hard work and effort done for us recently 
+* Bug Fixes
+    * (critical) post creation done in multiple events was not tracking records already used
+* General Improvements
+    * Plugin now updates project database table with post ID
+* Technical Improvements
+    * csv2post_create_posts_advanced() now avoids doing anything further when $my_post is not an array after attempting to create draft
+* Known Issues
+    * (minor) Lightbox type overlay applied by jQuery UI dialogue, on 2. Your Projects page, appears to have two overlays (there is a light gap between two of them)
+* Web Services, Support and Websites changes
+    * None
+    
 = 6.5.5 =
 * Public Messages
     * This version has been released urgently due to a newly introduced bug that will effect around half of the plugins users
