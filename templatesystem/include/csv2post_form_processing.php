@@ -145,7 +145,13 @@ if($cont){
     $cont = csv2post_form_start_post_creation();
     
     // Save event types
-    $cont = csv2post_form_save_eventtypes();        
+    $cont = csv2post_form_save_eventtypes();
+    
+    // Creates categories
+    $cont = csv2post_form_create_categories(); 
+    
+    // Updates a single giving post using post ID                         
+    $cont = csv2post_form_update_post();           
 }
 
 if($cont){
@@ -190,7 +196,111 @@ if($cont){
     $cont = csv2post_form_createcontentfolder();
     $cont = csv2post_form_deletecontentfolder();    
 }
+ 
+/**
+* Updates a single giving post using post ID                         
+*/
+function csv2post_form_update_post(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'creation' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'updatespecificpost'){
 
+        // if post id not set
+        if(!isset($_POST['csv2post_update_post_with_id'])){
+            csv2post_notice('You did not enter a post ID. You must enter the ID for the post you want to apply updating too.','error','Large','No Post ID','','echo');
+            return false;
+        }
+        
+        // if post id value is not numeric
+        if(!is_numeric($_POST['csv2post_update_post_with_id'])){
+            csv2post_notice('You appear to have submitted an invalid post ID value. It must be a number/numeric value only.','error','Large','Not A Numberic Value','','echo');
+            return false;    
+        }
+        
+        // if post does not exist
+        $the_post = get_post( $_POST['csv2post_update_post_with_id'], ARRAY_A );
+        if(!$the_post){
+            csv2post_notice('There is no post with the ID you submitted.','warning','Large','No Matching Post','','echo');
+            return false;
+        }
+        
+        // get project code
+        $project_code = get_post_meta($_POST['csv2post_update_post_with_id'], 'csv2post_project_code',true);
+        
+        // if not a csv2post created post
+        if(!$project_code){
+            csv2post_notice('The post ID you submitted does not belong too a post created using CSV 2 POST. 
+            There are advanced functions to adopt none CSV 2 POST created posts that this plugin can manage them,
+            please search the plugins website for more information.','info','Large','Not A CSV 2 POST Post','','echo');
+            return false;    
+        }
+        
+        // get project data
+        $project_array = csv2post_get_project_array($project_code);
+        
+        // if no project data
+        if(!$project_array){
+            csv2post_notice('It appears that the project data for the post you have submitted no longer exists. A
+            user of CSV 2 POST must have deleted the project that created the post. Updating cannot be done by
+            CSV 2 POST in this way. You may be able to use another project to adopt the post if the posts
+            data is still stored in the original project database table.','info','Large','No Project Data','','echo');
+            return false;
+        }
+        
+        // get the posts project record for further validation only
+        $post_record = csv2post_sql_get_posts_record($project_array,$_POST['csv2post_update_post_with_id']);
+        
+        if(!$post_record){
+            csv2post_notice('The record that was used to create your post no longer exists in the project database table.','error','Large','Record No Longer Exists','','echo');
+            return false;
+        }
+        
+        // if record id held in post does not retrieve a record (this confirms both record id in post is right and exists)
+        $record_id = get_post_meta($_POST['csv2post_update_post_with_id'], 'csv2post_record_id', true); 
+        if($record_id == false){
+            csv2post_notice('The giving post does not have its record ID stored in meta. CSV 2 POST stores the
+            record ID in meta to aid validation of the correct data record to be used for updating.'
+            ,'error','Large','No Record ID','','echo');
+            return false;
+        }
+
+        // now update post
+        csv2post_post_updatepost($_POST['csv2post_update_post_with_id'],$record_id,$project_code);
+        
+        csv2post_notice('Your post with ID:'.$_POST['csv2post_update_post_with_id'].' has been updated.','success','Large','Post '.$_POST['csv2post_update_post_with_id'].' Updated','','echo');
+                
+        return false;
+    }else{
+        return true;
+    }       
+}   
+ 
+/**
+* Creates categories 
+*/
+function csv2post_form_create_categories(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'creation' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'createcategories'){
+        global $csv2post_is_free;
+        
+        // if is premium/paid edition 
+        if(!$csv2post_is_free){
+            
+            csv2post_create_categories_advanced();
+            
+        }else{
+            
+            csv2post_create_categories_basic();
+            
+        }
+        
+        csv2post_notice('Category creation has finished. This notification does not take the 
+        result into account, it is only to let you know that processing categories has ended.',
+        'info','Large','Category Creation Ended','','echo');
+                
+        return false;
+    }else{
+        return true;
+    }       
+}      
+  
 /**
 * Manual data import
 */
@@ -1678,6 +1788,9 @@ function csv2post_form_save_contenttemplate(){
                 csv2post_notice('Could not create new content template design. It requires the insertion of a new post record but Wordpress returned an error. Please try again then report further problems.','error','Large','Could Not Save Template');
             }elseif(is_numeric($wpinsertpost_result)){
                 
+                // link the template to the project by adding csv2post_project_id custom meta field 
+                add_post_meta($wpinsertpost_result, 'csv2post_project_id', $csv2post_currentproject_code, false);
+                                
                 // add design type to meta
                 if(isset($_POST["csv2post_designtype"])){
                     if(is_array($_POST["csv2post_designtype"])){
@@ -1707,10 +1820,7 @@ function csv2post_form_save_contenttemplate(){
                      
                     // current project has no default content template so we will save the new one as it
                     csv2post_update_default_contenttemplate($csv2post_currentproject_code,$wpinsertpost_result);
-                    
-                    // link the template to the project by adding csv2post_project_id custom meta field 
-                    add_post_meta($wpinsertpost_result, 'csv2post_project_id', $csv2post_currentproject_code, false); 
-                    
+                                       
                     // extend output message to confirm default also set                    
                     $setasdefault = ' and it has been set as your current projects default content template.';
                 }

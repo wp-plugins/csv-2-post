@@ -99,7 +99,22 @@ function csv2post_update_project_databasetable_basic($record_id,$post_id,$table_
     SET csv2post_postid = '.$post_id.',csv2post_applied = NOW()                            
     WHERE csv2post_id = '.$record_id.'');   
     return $result;
-}    
+}  
+
+/**
+* Update records applied time to indicate that it has just been updated
+* 
+* @param mixed $post_id
+* @param mixed $table_name
+* @return int|false
+*/
+function csv2post_update_project_databasetable_applied($post_id,$table_name){
+    global $wpdb;                  
+    $result = $wpdb->query('UPDATE '. $table_name .'                       
+    SET csv2post_applied = NOW()                            
+    WHERE csv2post_id = '.$post_id.'');   
+    return $result;
+}  
     
 /**
 * Query a single project table records which have not been used.
@@ -486,5 +501,28 @@ function csv2post_sql_is_categorywithparent( $category_term,$parent_id ){
 */
 function csv2post_sql_formatter($sql_query){
     return $sql_query;    
+}
+
+
+/**
+* Query post creation project database table for used records (those with csv2post_postid populated)
+* 
+* @param mixed $table_name
+* @param mixed $number_of_records
+* @return array
+*/
+function csv2post_sql_used_records($table_name,$number_of_records = 1){
+    global $wpdb;
+    
+    // ensure user has not manually deleted table 
+    $table_exist = csv2post_does_table_exist($table_name);
+    if(!$table_exist){return false;}
+         
+    return $wpdb->get_results( 'SELECT * 
+    FROM '. $table_name .' 
+    WHERE csv2post_postid 
+    IS NOT NULL 
+    LIMIT '. $number_of_records,ARRAY_A ); 
+
 }
 ?>

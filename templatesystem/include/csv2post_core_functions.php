@@ -1445,7 +1445,7 @@ function csv2post_get_default_titletemplate_id( $csv2post_currentproject_code ){
 * 
 * @uses unserialize before return 
 * @param mixed $project_code
-* @return mixed
+* @return mixed, false on fail or no option record exists
 * 
 * @link http://www.csv2post.com/hacking/project-array-csv2post_project_array
 */

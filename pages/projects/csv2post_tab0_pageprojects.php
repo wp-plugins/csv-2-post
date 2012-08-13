@@ -156,7 +156,7 @@ $nonce = wp_create_nonce( "csv2post_referer_createproject_checkprojectname" );
     <div id='<?php echo $jsform_set['form_id'];?>formstatus'></div>  
     <!-- jquery and ajax output end --> 
                
-    <h4>Select CSV File</h4>
+    <h4>Select Database Tables</h4>
     <?php if(!$csv2post_is_free){?>
     <p>Selecting more than one file will create a more complex project and require the plugin to perform more
     advanced management of your data. Some data and configurations may not work as expected. Please seek advice if issues arise with your project.</p>

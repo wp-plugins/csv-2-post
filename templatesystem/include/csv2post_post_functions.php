@@ -167,6 +167,31 @@ function csv2post_post_add_metadata_basic_seo($project_code,$record_array,$post_
 }
 
 /**
+* Updates post meta
+* 
+* @uses add_update_meta()
+* @param mixed $project_code
+* @param mixed $record_array
+* @param mixed $post_ID
+* @param mixed $post_type
+*/
+function csv2post_post_update_metadata_basic_seo($project_code,$record_array,$post_ID,$post_type = 'post'){
+
+    if( isset($csv2post_project_array['seo']['basic']['title_key']) && isset($csv2post_project_array['seo']['basic']['title_table']) && isset($csv2post_project_array['seo']['basic']['title_column']) ){    
+        add_update_meta($post_ID,$csv2post_project_array['seo']['basic']['title_key'],$record_array[$csv2post_project_array['seo']['basic']['title_column']],true);
+    }
+ 
+    if( isset($csv2post_project_array['seo']['basic']['description_key']) && isset($csv2post_project_array['seo']['basic']['description_table']) && isset($csv2post_project_array['seo']['basic']['description_column']) ){   
+        add_update_meta($post_ID,$csv2post_project_array['seo']['basic']['description_key'],$record_array[$csv2post_project_array['seo']['basic']['description_column']],true);
+    }
+    
+    if( isset($csv2post_project_array['seo']['basic']['keywords_key']) && isset($csv2post_project_array['seo']['basic']['keywords_table']) && isset($csv2post_project_array['seo']['basic']['keywords_column']) ){        
+        add_update_meta($post_ID,$csv2post_project_array['seo']['basic']['keywords_key'],$record_array[$csv2post_project_array['seo']['basic']['keywords_column']],true);
+    }     
+ 
+} 
+
+/**
 * Replaces column strings within giving value. Does not take project table into consideration.
 * Is only to be used within _basic functions
 * 

@@ -55,8 +55,10 @@ Initial upload and activation as guided by Wordpress.org standard plugin install
 
 == Frequently Asked Questions ==
 
-= When was CSV 2 POST Beta released? =
-This plugins development begun at the end of 2011 and the Beta was released June 2012.
+= Does this plugin work with SEO by Yoast plugin? =
+Yes it does, actually in a technical way all SEO plugins work with CSV 2 POST however
+the most popular get some extra support to make it easier for users. That includes All In One SEO 
+and we will add the extra support for any other plugins on request.
 
 = Is CSV 2 POST well supported? =
 Yes, the plugin will be supported for many years and has a dedicated website.
@@ -82,6 +84,10 @@ sandbox approach, especially for those who know a little PHP and can customise i
 further. The sandbox approach assumes nothing and is expressed on an interface that does
 not push users through a linear step by step process.
 
+= When was CSV 2 POST Beta released? =
+This plugins re-development begun at the end of 2011 and the Beta was released June 2012. However the
+first plugin was created in 2009 and was halted pending re-development.
+
 == Screenshots ==
 
 1. Start by creating a Data Import Job and import your CSV files data to a new database table created by CSV 2 POST. We have the potential here to import to existing tables and more.
@@ -91,7 +97,35 @@ not push users through a linear step by step process.
 5. This screenshot shows "Basic Custom Field Rules", paid edition has advanced features but most users require the basic form which allows you to create post meta with any data.
 6. You can use up to 3 columns of data to create 3 levels of categories.
  
-== Changelog ==
+== Changelog == 
+   
+= 6.5.7 =
+* Public Messages
+    * The plugins first tutorial has been published on the plugins website
+    * Features displayed as new are for testing only, if you use them in a final project please backup your database 
+* Bug Fixes
+    * (critical) custom fields fix
+* General Improvements
+    * Manual post updating tool for updating a specific post added on the Your Creations page
+    * Category creator (without the need to create posts) added too the Your Creation page
+    * Feedburner email subscription form changed too CSV 2 POST feed
+    * Twitter button updated to the CSV2POST twitter account
+    * Adding tutorial RSS feed banner too the Updates screen
+    * Improved content design panels to be easier to understand
+    * Advanced Categories panel only displays category templates in the menus and not all template designs
+    * Changed "Select CSV File" too "Select Database Tables" on the Create Post Creation Project panel
+    * List of database tables in the Create Post Creation Project panel now indicates if a csv2post table has been used or not
+* Technical Improvements
+    * Project ID is stored in meta for all template designs not just in certain circumstances
+    * csv2post_display_template_options() now displays specific template types when parameter is passed
+    * csv2post_sql_used_records() added for querying used records in a project database table
+    * csv2post_is_table_used() added for deciding if a database table has been used or not
+    * csv2post_sql_query_unusedrecords_singletable() is now giving the main table and not first table a the maintable always holds the main status/history
+* Known Issues
+    * (minor) Lightbox type overlay applied by jQuery UI dialogue, on 2. Your Projects page, appears to have two overlays (there is a light gap between two of them)
+* Web Services, Support and Websites changes
+    * Tutorials are not being typed up with the first already published, videos will eventually be added too them also
+    
 = 6.5.6 =
 * Public Messages
     * A big thanks to Wordpress for all their hard work and effort done for us recently 

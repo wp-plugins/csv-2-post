@@ -552,6 +552,22 @@ function csv2post_update_option_postcreationproject_list($csv2post_projectslist_
 }
 
 /**
+* Checks giving job table to decide if it has been used in a project.
+* 1. Should only pass a table created by CSV 2 POST (with project columns)
+* 2. Currently used for post creation projects only
+*/
+function csv2post_is_table_used($table_name){
+    // for post creation projects we will check the csv2post_postid column for a value
+    // if even one record has a value then the table has been used
+    $result = csv2post_sql_used_records($table_name,1);
+    if(!$result){
+        return false;
+    }else{
+        return true;
+    }  
+}
+
+/**
 * Delete data import job using giving job code. Does not delete files or table.
 * Deletes option record holding history and csv file configuration.
 * Deletes entry in import job array

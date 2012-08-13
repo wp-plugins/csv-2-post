@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: CSV 2 POST
-Version: 6.5.6
+Version: 6.5.7
 Plugin URI: http://www.csv2post.com
 Description: CSV 2 POST released 2012 by Zara Walsh and Ryan Bayne
 Author: Zara Walsh
@@ -35,7 +35,7 @@ if(!is_admin() || defined('DOING_AJAX') && DOING_AJAX){
 ### TODO:HIGHPRIORITY, detect paid edition folder automatically, if not found set as free edition
 $csv2post_is_free = true;// changing this in free copy does not activate a paid edition, it may break the plugin
 $csv2post_is_dev = false;// boolean, true displays more panels with even more data i.e. array dumps
-$csv2post_currentversion = '6.5.6';// this value should not be relied on but only used for guidance
+$csv2post_currentversion = '6.5.7';// this value should not be relied on but only used for guidance
 $csv2post_php_version_tested = '5.3.1';// current version the plugin is being developed on
 $csv2post_php_version_minimum = '5.3.1';// minimum version required for plugin to operate
 $csv2post_pluginname = 'csv2post';// should not be used to make up paths
@@ -100,8 +100,8 @@ if(is_admin()){
     $csv2post_is_emailauthorised = false;
     $csv2post_log_maindir = 'unknown';
     $csv2post_callcode = '000000000000';
-    $csv2post_twitter = 'WPCSVImporter';
-    $csv2post_feedburner = 'CSV2POST';
+    $csv2post_twitter = 'CSV2POST';
+    $csv2post_feedburner = 'csv2post';
     $csv2post_currentproject = 'No Project Set'; 
 
     //$csv2post_activationcode = csv2post_get_activationcode(); ### TODO:MEDIUMPRIORITY, part of activation code system 

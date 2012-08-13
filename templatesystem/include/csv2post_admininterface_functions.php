@@ -1309,6 +1309,32 @@ function csv2post_display_projectstables_commaseparated($project_code){
 * @todo CRITICAL, improve the id to be more unique per use
 * @todo HIGHPRIORITY, filter out other design types, only show content templates
 */
+function csv2post_display_all_post_contentdesigns_buttonlist(){
+   
+    $args = array(
+        'post_type' => 'wtgcsvcontent',
+        'meta_query' => array(
+            array(
+                'key' => '_csv2post_templatetypes',
+                'value' => 'postcontent',
+            )        
+        )
+    );
+ 
+    global $post;
+    $myposts = get_posts( $args );
+    
+    if(count($myposts) == 0){
+        echo 'You do not have any content templates linked in your current project';
+    }
+        
+    foreach( $myposts as $post ){?>
+        <div class="jquerybutton">
+            <input type='submit' value='<?php echo $post->post_title;?> (<?php echo $post->ID;?>)' name="csv2post_templatename_and_id" />
+        </div><?php 
+    }; 
+}
+
 function csv2post_display_all_contentdesigns_buttonlist(){
    
     $args = array(
@@ -1370,13 +1396,17 @@ function csv2post_displayproject_contenttemplates_buttonlist($form_id){
             array(
                 'key' => 'csv2post_project_id',
                 'value' => $csv2post_currentproject_code,
-            )
+            ), 
+            array(
+                'key' => '_csv2post_templatetypes',
+                'value' => 'postcontent',
+            )        
         )
     );
 
     $myposts = get_posts( $args );
     if(count($myposts) == 0){
-        echo 'You do not have any content templates linked in your current project';
+        echo 'You do not have any post content templates linked in your current project';
     }
 
     foreach( $myposts as $post ){
@@ -2646,7 +2676,8 @@ function csv2post_display_databasetables_withjobnames($checkbox_column = false,$
         
         echo '<td width="200"><strong>Table Names</strong></td>
             <td width="150"><strong>Data Import Job</strong></td>
-            <td width="100"><strong>Records</strong></td>                                                              
+            <td width="100"><strong>Records</strong></td>
+            <td width="100"><strong>Used</strong></td>                                                                               
         </tr>'; 
         
         $table_count = 0;
@@ -2690,8 +2721,23 @@ function csv2post_display_databasetables_withjobnames($checkbox_column = false,$
                     
                 echo '<td>'.$table_name[0].'</td>
                     <td>'.$tables_jobname.'</td>
-                    <td>'.$table_row_count.'</td></tr>';
+                    <td>'.$table_row_count.'</td>';
+               
+                // display if a project table has been used or not
+                if(strstr($table_name[0],'csv2post_')){
+                    if(csv2post_is_table_used($table_name[0])){
+                        $used = 'Yes';
+                    }else{
+                        $used = 'No';
+                    }
+                }else{
+                    $used = '';
+                }
+                echo '<td>'.$used.'</td>';                                  
+                
+                echo '</tr>';
                     
+                        
                 ++$table_count;
             }
         }   
@@ -2736,27 +2782,37 @@ function csv2post_display_template_options($current_value,$template_type = false
 
     global $csv2post_project_array;
 
+    $args = array();
+    $args['post_type'] =  'wtgcsvcontent';
+
     // set type singular name
-    if($template_type = 'postcontent'){
-        $type_singular = 'Post Content';        
-    }elseif($template_type = 'customfieldvalue'){
-        $type_singular = 'Custom Field Value';        
-    }elseif($template_type = 'categorydescription'){
-        $type_singular = 'Category Description';        
-    }elseif($template_type = 'postexcerpt'){
-        $type_singular = 'Post Excerpt';        
-    }elseif($template_type = 'keywordstring'){
-        $type_singular = 'Keyword String';        
-    }elseif($template_type = 'dynamicwidgetcontent'){
-        $type_singular = 'Dynamic Widget Content';        
+    if($template_type == 'postcontent'){
+        $type_singular = 'Post Content';
+        $args['meta_query'][0]['key'] = '_csv2post_templatetypes';
+        $args['meta_query'][0]['value'] = 'postcontent';     
+    }elseif($template_type == 'customfieldvalue'){
+        $type_singular = 'Custom Field Value';
+        $args['meta_query'][0]['key'] = '_csv2post_templatetypes';
+        $args['meta_query'][0]['value'] = 'customfieldvalue';                
+    }elseif($template_type == 'categorydescription'){  
+        $type_singular = 'Category Description';
+        $args['meta_query'][0]['key'] = '_csv2post_templatetypes';
+        $args['meta_query'][0]['value'] = 'categorydescription';                
+    }elseif($template_type == 'postexcerpt'){
+        $type_singular = 'Post Excerpt';
+        $args['meta_query'][0]['key'] = '_csv2post_templatetypes';
+        $args['meta_query'][0]['value'] = 'postexcerpt';                
+    }elseif($template_type == 'keywordstring'){
+        $type_singular = 'Keyword String';
+        $args['meta_query'][0]['key'] = '_csv2post_templatetypes';
+        $args['meta_query'][0]['value'] = 'keywordstring';                
+    }elseif($template_type == 'dynamicwidgetcontent'){
+        $type_singular = 'Dynamic Widget Content';
+        $args['meta_query'][0]['key'] = '_csv2post_templatetypes';
+        $args['meta_query'][0]['value'] = 'dynamicwidgetcontent';                
     }else{
         $type_singular = 'Content';        
     }
- 
-    // post query argument for get_posts function
-    $args = array(
-        'post_type' => 'wtgcsvcontent'
-    );
 
     global $post;
     $myposts = get_posts( $args );

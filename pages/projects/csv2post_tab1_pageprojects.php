@@ -11,7 +11,7 @@ if(!isset($csv2post_project_array['default_contenttemplate_id'])){
 $panel_array = array();
 $panel_array['panel_name'] = 'defaultcontenttemplate';// slug to act as a name and part of the panel ID 
 $panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
-$panel_array['panel_title'] = __('Set Default Content Template (Currently: '.csv2post_get_default_contenttemplate_name().')');// user seen panel header text 
+$panel_array['panel_title'] = __('Default Post Content Template (Currently: '.csv2post_get_default_contenttemplate_name().')');// user seen panel header text 
 $panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
 $panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
@@ -30,11 +30,11 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
         <h4>Current Projects Default Content Template</h4> 
         <?php echo csv2post_get_default_contenttemplate_name();?>
             
-        <h4>Current Project Content Templates</h4>
+        <h4>Current Projects Post Content Templates</h4>
         <?php csv2post_displayproject_contenttemplates_buttonlist('csv2post_selecttemplate_fromproject_id');?>          
     
-        <h4>All Content Designs</h4>
-        <?php csv2post_display_all_contentdesigns_buttonlist();?>            
+        <h4>All Post Content Designs</h4>
+        <?php csv2post_display_all_post_contentdesigns_buttonlist();?>            
 
     </form>
 
