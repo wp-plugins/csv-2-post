@@ -210,4 +210,4 @@ $jsform_set['noticebox_content'] = 'You are about to setup a new condition for a
     <?php csv2post_jquery_form_prompt($jsform_set);?>
 
 <?php csv2post_panel_footer();
-}?> 
+}?>

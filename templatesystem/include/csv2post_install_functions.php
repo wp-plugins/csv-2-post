@@ -250,8 +250,8 @@ function csv2post_install(){
     }
         
     // update switches
-    update_option(WTG_C2P_ABB.'is_installed',true);
-    update_option(WTG_C2P_ABB.'was_installed',true); 
+    update_option(WTG_C2P_ABB . 'is_installed',true);
+    update_option(WTG_C2P_ABB . 'was_installed',true); 
     update_option(WTG_C2P_ABB . 'installeddate',time());
     update_option(WTG_C2P_ABB . 'installedversion',$csv2post_currentversion);
            
@@ -264,10 +264,10 @@ function csv2post_install(){
     }
 
     if($overall_install_result == false){
-        csv2post_notice('You are attempting to run a First-Time Install but there was a problem. If you have installed the plugin previously, it
+        csv2post_notice( 'You are attempting to run a First-Time Install but there was a problem. If you have installed the plugin previously, it
             could be because there is a trace of that installation still in your blog. Please use the Un-Install feature then try again. First-Time
             Installation is designed only for first time use on a blog unless you have used the Un-Install feature to remove any trace of a previous
-            installation.','error','Large',false);
+            installation.','error','Large','Installation Problems','');
     }
 
     return $overall_install_result;

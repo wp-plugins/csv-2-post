@@ -158,12 +158,21 @@ $jsform_set['noticebox_content'] = 'You are saving a column of data to be used a
 
     <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);?>
 
-
-     
     <p>        
         Data Column: 
         <select name="csv2post_titlecolumn_menu" id="csv2post_titlecolumn_menu" class="csv2post_multiselect_menu">
-            <?php csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code);?>                                                                                                                     
+            <?php 
+            $current_table = '';
+            if(isset($csv2post_project_array['posttitles']['table'])){
+                $current_table = $csv2post_project_array['posttitles']['table'];
+            }
+
+            $current_column = '';
+            if(isset($csv2post_project_array['posttitles']['column'])){
+                $current_column = $csv2post_project_array['posttitles']['column'];
+            }
+                        
+            csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code,$current_table,$current_column);?>                                                                                                                     
         </select>
     </p>
     <script>

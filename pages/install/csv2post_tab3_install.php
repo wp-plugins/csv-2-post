@@ -26,14 +26,16 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);?>
             
             <hr>
             
-            <h4>Common PHP Functions (returned value)</h4>
+            <h4>Common Functions (returned value)</h4>
             <ul>
                 <li><strong>time():</strong> <?php echo time();?></li>
                 <li><strong>date('Y-m-d H:i:s'):</strong> <?php echo date('Y-m-d H:i:s');?></li>
                 <li><strong>date('e'):</strong> <?php echo date('e');?> (timezone identifier)</li>
-                <li><strong>date('G'):</strong> <?php echo date('G');?> (24-hour format)</li>                   
+                <li><strong>date('G'):</strong> <?php echo date('G');?> (24-hour format)</li>
+                <li><strong>get_admin_url():</strong> <?php echo get_admin_url();?></li>
+                <li><strong>csv2post_link_toadmin():</strong> <?php echo csv2post_link_toadmin('examplepage');?></li>                   
             </ul>
-            
+
 <?php csv2post_panel_footer();?> 
 
 <?php

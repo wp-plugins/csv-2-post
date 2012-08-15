@@ -129,6 +129,9 @@ if($cont){
     
     // Save easy configuration questions
     $cont = csv2post_form_save_easyconfigurationquestions();
+    
+    // Save post titles data column
+    $cont = csv2post_form_save_title_data_column();
 }
 
 // Creation Screen
@@ -196,6 +199,30 @@ if($cont){
     $cont = csv2post_form_createcontentfolder();
     $cont = csv2post_form_deletecontentfolder();    
 }
+
+/**
+* Save title data column
+*/
+function csv2post_form_save_title_data_column(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'titlecolumn'){
+        global $csv2post_project_array,$csv2post_currentproject_code;
+
+        $table_name = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_titlecolumn_menu']);
+        $column_name = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_titlecolumn_menu']);            
+
+        $csv2post_project_array['posttitles']['table'] = $table_name;            
+        $csv2post_project_array['posttitles']['column'] = $column_name;       
+
+        csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
+        
+        csv2post_notice('The column holding post titles data has been saved. The plugin will only use this
+        column and will not use any title templates you may have setup.','success','Large','Post Titles Column Saved','','echo');
+                
+        return false;
+    }else{
+        return true;
+    }       
+}      
  
 /**
 * Updates a single giving post using post ID                         
@@ -282,13 +309,9 @@ function csv2post_form_create_categories(){
         
         // if is premium/paid edition 
         if(!$csv2post_is_free){
-            
             csv2post_create_categories_advanced();
-            
         }else{
-            
             csv2post_create_categories_basic();
-            
         }
         
         csv2post_notice('Category creation has finished. This notification does not take the 
@@ -341,13 +364,13 @@ function csv2post_form_importdata(){
         }
         
         // display result    
-        csv2post_notice('<h4>Data Import Result<h4>
+        csv2post_notice( '<h4>Data Import Result<h4>
         <p>You requested '.$row_number.' row/s to be imported from '.$file_name.'.csv.</p>
-        '.csv2post_notice('New Records: '.$dataimportjob_array["stats"]["lastevent"]['inserted'],'success','Small',false,'','return').'
-        '.csv2post_notice('Void Records: '.$dataimportjob_array["stats"]["lastevent"]['void'],'info','Small',false,'','return').'
-        '.csv2post_notice('Dropped Rows: '.$dataimportjob_array["stats"]["lastevent"]['dropped'],'warning','Small',false,'','return').'
-        '.csv2post_notice('Rows Processed: '.$dataimportjob_array["stats"]["lastevent"]['processed'],'info','Small',false,'','return').'     
-        '.csv2post_notice('Job Progress: '.$dataimportjob_array["stats"]["allevents"]['progress'],'info','Small',false,'','return').'    
+        '.csv2post_notice( 'New Records: '.$dataimportjob_array["stats"]["lastevent"]['inserted'],'success','Small',false,'www.csv2post.com/notifications/new-records-count','return').'
+        '.csv2post_notice( 'Void Records: '.$dataimportjob_array["stats"]["lastevent"]['void'],'info','Small',false,'www.csv2post.com/notifications/void-records-counter','return').'
+        '.csv2post_notice( 'Dropped Rows: '.$dataimportjob_array["stats"]["lastevent"]['dropped'],'warning','Small',false,'www.csv2post.com/notifications/dropped-rows-counter','return').'
+        '.csv2post_notice( 'Rows Processed: '.$dataimportjob_array["stats"]["lastevent"]['processed'],'info','Small',false,'www.csv2post.com/notifications/rows-processed-counter','return').'     
+        '.csv2post_notice( 'Job Progress: '.$dataimportjob_array["stats"]["allevents"]['progress'],'info','Small',false,'www.csv2post.com/notifications/job-progress-counter','return').'    
         ',$overall_result,'Extra','','','echo'); 
 
         return false;
@@ -897,13 +920,12 @@ function csv2post_form_save_category_mapping(){
         return true;
     }      
 }     
-    
-    
+     
 /**
 * Saves advanced category submission 
 */
 function csv2post_form_save_categories_advanced(){
-    global $csv2post_currentproject_code,$csv2post_project_array;
+    global $csv2post_currentproject_code,$csv2post_project_array,$csv2post_is_free;
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'advancedcategories'){
         
         // ensure the previous column has been selected for every column user submits
@@ -1901,11 +1923,15 @@ function csv2post_form_create_post_creation_project(){
         
         global $csv2post_currentproject_code,$csv2post_is_free;
         
+        // if no project name
+        if(!isset($_POST['csv2post_projectname_name']) || $_POST['csv2post_projectname_name'] == NULL || $_POST['csv2post_projectname_name'] == '' || $_POST['csv2post_projectname_name'] == ' '){
+            csv2post_notice('No project name was entered, please try again','error','Large','Project Name Required','','echo');    
+        }
+        
+        // if no database table selected
         if(!isset($_POST['csv2post_databasetables_array'])){
-            
             csv2post_notice('You did not appear to select any database tables for taking data from and putting into posts. Project was not created.','info','Large','Database Table Selection Required','','echo');    
             return false;
-            
         }else{
             
             // free edition does not allow mapping method selection on form

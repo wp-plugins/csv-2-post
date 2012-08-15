@@ -10,6 +10,7 @@ $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a
 $panel_array['panel_intro'] = __('Upload a new .csv file to the plugins own content folder.');
 $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 $panel_array['panel_help'] = __('Upload a new .csv file to the plugins own content folder. This file uploader allows .csv files to be uploaded to the plugins own content folder which you will find in the wp-content directory.');
+$panel_array['panel_url'] = 'http://www.csv2post.com/feature-guides/csv-file-uploader';
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
@@ -44,6 +45,7 @@ $panel_array['tabnumber'] = $csv2post_tab_number;
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Create a data import job using one or more CSV files');
 $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
+$panel_array['panel_url'] = 'http://www.csv2post.com/feature-guides/create-data-import-jobs-using-csv-files ';
 $panel_array['panel_help'] = __('Select the files you want to import, each files separator, quote and enter
 the number of fields/columns each file has. The plugin will try to establish all of these automatically however
 for accurate results you should enter the values manually.');
@@ -165,7 +167,8 @@ $panel_array['tabnumber'] = $csv2post_tab_number;
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Information about all available CSV files, used or not');
 $panel_array['panel_help'] = __('This panel shows all the .csv files available to import data. Some basic information about the files is displayed.');
-$panel_array['help_button'] = csv2post_helpbutton_text(false,false);?>
+$panel_array['help_button'] = csv2post_helpbutton_text(false,false);
+$panel_array['panel_url'] = 'http://www.csv2post.com/feature-guides/csv-file-profiles-panel';?>
 <?php csv2post_panel_header( $panel_array );?>
     
     <h4>File Information</h4>

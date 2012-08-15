@@ -233,15 +233,13 @@ if($side == 'admin'){
             
             $("#csv2post_helpbutton-<?php echo $panel_number;?>" ).dialog({
                 autoOpen: false,
-                resizable: true,
-                //TODO: height:<?php echo $csv2post_adm_set['ui_helpdialogue_height'];?>,
-                //TODO: width:<?php echo $csv2post_adm_set['ui_helpdialogue_width'];?>,                
+                resizable: true,                
                 height:<?php echo '300';?>,
                 width:<?php echo '800';?>,
                 modal: true,
                 buttons: {                    
                     "View More Help": function() {
-                        document.location = '<?php echo $panel_url;?>';       
+                        window.open("<?php echo $panel_url;?>", '_blank', '');       
                         $(this).dialog("close");
                     },                                        
                     "Close": function() {

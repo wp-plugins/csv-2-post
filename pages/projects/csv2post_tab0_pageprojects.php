@@ -1,4 +1,4 @@
-<?php  
+<?php             
 if(count($csv2post_projectslist_array) == 0){
     echo csv2post_notice('Start here on this screen if you want to create posts. You need to create a project, then continue by clicking on the other tabs above.','warning','Tiny','','','return');
 }
@@ -54,7 +54,7 @@ $jsform_set['noticebox_content'] = 'You are about to change your current project
         
     </div>           
 
-    <?php
+    <?php                
     // add the javascript that will handle our form action, prevent submission and display dialogue box
     csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
 

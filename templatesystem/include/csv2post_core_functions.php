@@ -992,14 +992,19 @@ function csv2post_notice_display($type,$helpurl,$size,$title,$message,$clickable
     // begin building output
     $output = '';
 
-    // if clickable (only allowed when no other links being used)
+    // if clickable (only allowed when no other links being used) - $helpurl will actually be a local url too another plugin or Wordpress page
     if($clickable && !$persistent){
         $output .= '<div class="stepLargeTest"><a href="'.$helpurl.'">';
     }
 
     // start div
     $output .= '<div class="'.$type.$size.'">';
-
+        
+        // if is not clickable (entire div) and help url is not null
+        if($helpurl != '' && $helpurl != false){
+            $output .= '<a href="http://'.$helpurl.'" target="_blank"><img class="infoHelpLink" src="'.WTG_C2P_IMAGEFOLDER_URL.'link-icon.png" /></a>';
+        }
+       
         // set h4 when required
         if($size == 'Large' || $size == 'Extra'){$output .= '<h4>'.$title.'</h4>';}
         elseif($size == 'Small'){$output .= $title;}

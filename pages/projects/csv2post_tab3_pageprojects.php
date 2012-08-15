@@ -172,9 +172,15 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
     Select Meta Title Template:
     <select name="csv2post_seo_title_advanced" id="csv2post_seo_title_advanced_id" class="csv2post_multiselect_menu">
         <option value="notrequired">Not Required</option>
-        <?php 
+        <?php    
         foreach($posts_array as $key => $template){
-            echo '<option value="'.$template->ID.'">'.$template->post_title.'</option>';   
+            
+            $selected = '';
+            if(isset($csv2post_project_array['seo']['advanced']['title_template']) && $csv2post_project_array['seo']['advanced']['title_template'] == $template->ID){
+                $selected = 'selected="selected"';    
+            }  
+                      
+            echo '<option value="'.$template->ID.'" '.$selected.'>'.$template->post_title.'</option>';   
         }?>
     </select>
     <script>
@@ -193,7 +199,13 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
         <option value="notrequired">Not Required</option>
         <?php 
         foreach($posts_array as $key => $template){
-            echo '<option value="'.$template->ID.'">'.$template->post_title.'</option>';   
+            
+            $selected = '';
+            if(isset($csv2post_project_array['seo']['advanced']['description_template']) && $csv2post_project_array['seo']['advanced']['description_template'] == $template->ID){
+                $selected = 'selected="selected"';    
+            }
+                        
+            echo '<option value="'.$template->ID.'" '.$selected.'>'.$template->post_title.'</option>';   
         }?>
     </select>
     <script>
@@ -212,7 +224,13 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
         <option value="notrequired">Not Required</option>
         <?php 
         foreach($posts_array as $key => $template){
-            echo '<option value="'.$template->ID.'">'.$template->post_title.'</option>';   
+            
+            $selected = '';
+            if(isset($csv2post_project_array['seo']['advanced']['keywords_template']) && $csv2post_project_array['seo']['advanced']['keywords_template'] == $template->ID){
+                $selected = 'selected="selected"';    
+            }
+                        
+            echo '<option value="'.$template->ID.'" '.$selected.'>'.$template->post_title.'</option>';   
         }?>
     </select>
     <script>
@@ -226,13 +244,17 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
 
     <h4>Select SEO Plugin Custom Field/Meta Keys</h4> 
     <p>Selecting your SEO plugin here will ensure the correct meta key is used for each SEO value.</p>
-    
+
     Select Meta Title Plugin:
     <select name="csv2post_seo_titlekey_advanced" id="csv2post_seo_titlekey_advanced_id" class="csv2post_multiselect_menu">
         <option value="notrequired">Not Required</option>
         <?php 
         foreach($seo_plugins_array as $key => $seo_plugin){
-            echo '<option value="'.$seo_plugin['seotitle'].'">'.$seo_plugin['name'].'</option>';   
+            $selected = '';
+            if(isset($csv2post_project_array['seo']['advanced']['title_key']) && $csv2post_project_array['seo']['advanced']['title_key'] == $seo_plugin['seotitle']){
+                $selected = 'selected="selected"';
+            }
+            echo '<option value="'.$seo_plugin['seotitle'].'" '.$selected.'>'.$seo_plugin['name'].'</option>';   
         }?>
     </select>
     <script>
@@ -251,7 +273,11 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
         <option value="notrequired">Not Required</option>
         <?php 
         foreach($seo_plugins_array as $key => $seo_plugin){
-            echo '<option value="'.$seo_plugin['seodescription'].'">'.$seo_plugin['name'].'</option>';   
+            $selected = '';
+            if(isset($csv2post_project_array['seo']['advanced']['description_key']) && $csv2post_project_array['seo']['advanced']['description_key'] == $seo_plugin['seodescription']){
+                $selected = 'selected="selected"';
+            }            
+            echo '<option value="'.$seo_plugin['seodescription'].'" '.$selected.'>'.$seo_plugin['name'].'</option>';   
         }?>
     </select>
     <script>
@@ -270,9 +296,13 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
         <option value="notrequired">Not Required</option>
         <?php 
         foreach($seo_plugins_array as $key => $seo_plugin){
-            echo '<option value="'.$seo_plugin['seokeywords'].'">'.$seo_plugin['name'].'</option>';   
+            $selected = '';
+            if(isset($csv2post_project_array['seo']['advanced']['keywords_key']) && $csv2post_project_array['seo']['advanced']['keywords_key'] == $seo_plugin['seokeywords']){
+                $selected = 'selected="selected"';
+            }            
+            echo '<option value="'.$seo_plugin['seokeywords'].'" '.$selected.'>'.$seo_plugin['name'].'</option>';   
         }?>
-    </select>
+    </select>                             
     <script>
     $("#csv2post_seo_keywordskey_advanced_id").multiselect({
        multiple: false,

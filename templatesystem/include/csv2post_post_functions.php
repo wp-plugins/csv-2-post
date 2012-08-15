@@ -88,9 +88,20 @@ function csv2post_create_posts_basic($project_code,$request_method){
             $category_array = csv2post_categorysetup_basicscript_normalcategories($record_array,$project_array);          
         }
 
-        // parse default post title 
-        $title_template = csv2post_parse_columnreplacement_basic($record_array,$title_template);        
-         
+        // if post title column set, use that
+        if(isset($project_array['posttitles']['column'])){
+            if(isset($record_array[$project_array['posttitles']['column']])){
+                $title_template = $record_array[$project_array['posttitles']['column']];    
+            }else{
+                $title_template = 'Title Data Value Not Found';
+            }             
+        }else{
+            // if we have a title template parse default post title 
+            if($title_template != 'No Default Title Template Selected'){ 
+                $title_template = csv2post_parse_columnreplacement_basic($record_array,$title_template);        
+            }    
+        }
+                     
         // parse default post content
         $content_template = csv2post_parse_columnreplacement_basic($record_array,$content_template);
                 

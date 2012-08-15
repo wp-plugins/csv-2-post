@@ -861,17 +861,7 @@ function csv2post_link($text,$url,$htmlentities = '',$target = '_blank',$class =
     }else{
         return $link;
     }     
-} 
-
-/**
-* Creates url to an admin page
-*  
-* @param mixed $page, registered page slug i.e. csv2post_install which results in wp-admin/admin.php?page=csv2post_install   
-* @param mixed $values, pass a string beginning with & followed by url values
-*/
-function csv2post_link_toadmin($page,$values = ''){
-    return get_admin_url() . 'admin.php?page=' . $page . $values;
-}  
+}   
 
 /**
 * Builds link to google search or WTG AdSense search - Used in help content
@@ -1313,6 +1303,7 @@ function csv2post_display_all_post_contentdesigns_buttonlist(){
    
     $args = array(
         'post_type' => 'wtgcsvcontent',
+        'numberposts' => 999,
         'meta_query' => array(
             array(
                 'key' => '_csv2post_templatetypes',
@@ -1338,7 +1329,8 @@ function csv2post_display_all_post_contentdesigns_buttonlist(){
 function csv2post_display_all_contentdesigns_buttonlist(){
    
     $args = array(
-        'post_type' => 'wtgcsvcontent'
+        'post_type' => 'wtgcsvcontent',
+        'numberposts' => 999
     );
 
     global $post;
@@ -1363,7 +1355,8 @@ function csv2post_display_all_contentdesigns_buttonlist(){
 function csv2post_display_all_titledesigns_buttonlist(){
    
     $args = array(
-        'post_type' => 'wtgcsvtitle'
+        'post_type' => 'wtgcsvtitle',
+        'numberposts' => 999
     );
 
     global $post;
@@ -1392,6 +1385,7 @@ function csv2post_displayproject_contenttemplates_buttonlist($form_id){
       
     $args = array(
         'post_type' => 'wtgcsvcontent',
+        'numberposts' => 999,
         'meta_query' => array(
             array(
                 'key' => 'csv2post_project_id',
@@ -1451,6 +1445,7 @@ function csv2post_displayproject_titletemplates_buttonlist($form_id){
       
     $args = array(
         'post_type' => 'wtgcsvtitle',
+        'numberposts' => 999,
         'meta_query' => array(
             array(
                 'key' => 'csv2post_project_id',
@@ -3182,7 +3177,7 @@ function csv2post_display_menu_keycolumnselection($table_name,$current_table = f
 
 /**
 * Displays a checkbox menu for selecting design type.
-* User can select from mulitple uses per content design,one design can have many uses.
+* User can select from multiple uses per content design,one design can have many uses.
 * @todo LOWPRIORITY, remove lines not required for free edition, the loop and array
 */
 function csv2post_display_designtype_menu($post_id){
@@ -3194,7 +3189,8 @@ function csv2post_display_designtype_menu($post_id){
     $templatetypes_array[0]['label'] = 'Post/Page Content';      
     
     // get posts custom field holding template type string
-    $customfield_types_array =  get_post_meta($post_id, '_csv2post_templatetypes', false);?>
+    $customfield_types_array = get_post_meta($post_id, '_csv2post_templatetypes', false);
+    if(!$customfield_types_array){array();}?>
 
     <p>        
         Design Type: 
@@ -3441,5 +3437,15 @@ function csv2post_menu_options_job_csvfiles($jobcode){
         $csv_filename_cleaned = str_replace('.csv','',$csv_filename); 
         echo '<option value="'.$csv_filename_cleaned.'">'.$csv_filename.'</option>';
     }   
-}                                                                                                                                
+}  
+
+/**
+* Creates url to an admin page
+*  
+* @param mixed $page, registered page slug i.e. csv2post_install which results in wp-admin/admin.php?page=csv2post_install   
+* @param mixed $values, pass a string beginning with & followed by url values
+*/
+function csv2post_link_toadmin($page,$values = ''){
+    return get_admin_url() . 'admin.php?page=' . $page . $values;
+}                                                                                                                              
 ?>

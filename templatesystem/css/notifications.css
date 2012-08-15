@@ -1,7 +1,7 @@
 /* CSS Document for WTG Friendly Messenger 
 WTG MESSAGE BOXES VERSION 1.1 
 Created: 14th January 2009
-Author: Zara Walsh
+Author: Ryan Bayne
 Site: www.csv2post.com
 Email: info@csv2post.com
 */
@@ -163,6 +163,16 @@ Email: info@csv2post.com
 	background-image: url(../images/info_large.png);  
 	border: 5px solid #86CFF2;
 }  
+
+.infoHelpLink{  
+    display: block;
+    float:right;
+    position:relative;
+    top:2px;
+    right: -10px;
+    height: 30px;
+    width:30px;
+} 
 
 .successLarge{  
 	color: #4F8A10;  

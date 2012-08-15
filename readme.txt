@@ -12,13 +12,12 @@ CSV 2 POST
 
 == Description ==
 
-CSV 2 POST, data import and post creation plugin new for 2012.
+CSV 2 POST, best Wordpress data import and post creation plugin since 2009 (re-developed in 2012)
 
 = Versus Other Imports =
-CSV 2 POST offers a stand-alone solution for data importing with or without post creation. It is
-easily customised to import data to existing database tables and can create posts using any tables in your database.
-The flexability of this approach offers endless potential and is usually safer than a direct import to the wp_posts
-database table or instant post creation straight from a CSV file.
+CSV 2 POST mass creates posts, categories, meta data, custom fields and more. The design of the plugins
+interface and php functions offers a sandbox approach. That approach will become more clear as we enter 2013.
+The plugin is well supported with a dedicated website and services.
 
 = Getting Started =
 We have  written a start guide and tips on the plugin main page. Please browse the guide there. The main thing 
@@ -99,6 +98,29 @@ first plugin was created in 2009 and was halted pending re-development.
  
 == Changelog == 
    
+= 6.5.8 =
+* Public Messages
+    * There are always many hidden abilities being added too CSV 2 POST, contact us if you seek something 
+* Bug Fixes
+    * (minor) Undefined variabled $csv2post_is_free when submitting category settings
+    * (minor) functions that use get_posts() now have the "numberposts" argument and will query up to 999, not 5 which must be the default
+* General Improvements
+    * Clicking on the View More Help buttons displayed on help dialogue will now open a new tab
+    * Many notifications will display an arrow which takes user too a help page explaining the notification further
+    * Can no longer make a post creation project with no name
+    * Ability to apply pre-made post title data has been added (panel already existed on interface but was not complete)
+    * Advanced SEO panel now displays what settings have been saved (it was already saving properly)
+    * Content template lists will now show more than 5 designs in any one list
+* Key Technical Improvements
+    * csv2post_jquery_opendialog_helpbutton() now opens help page in new tab and does not open in current window
+    * csv2post_display_designtype_menu() sets $customfield_types_array as an array if get_post_meta returns false
+* Known Issues
+    * (minor) Lightbox type overlay applied by jQuery UI dialogue, on 2. Your Projects page, appears to have two overlays (there is a light gap between two of them)
+* Web Services, Support and Websites changes
+    * More support pages have been blogged...
+    * http://www.csv2post.com/feature-guides/create-data-import-jobs-using-csv-files
+    * http://www.csv2post.com/feature-guides/csv-file-profiles-panel
+       
 = 6.5.7 =
 * Public Messages
     * The plugins first tutorial has been published on the plugins website
@@ -106,7 +128,6 @@ first plugin was created in 2009 and was halted pending re-development.
 * Bug Fixes
     * (critical) custom fields fix
 * General Improvements
-    * Manual post updating tool for updating a specific post added on the Your Creations page
     * Category creator (without the need to create posts) added too the Your Creation page
     * Feedburner email subscription form changed too CSV 2 POST feed
     * Twitter button updated to the CSV2POST twitter account
@@ -220,141 +241,3 @@ first plugin was created in 2009 and was halted pending re-development.
     * Text spinning panel for deleting text spin shortcodes displays a dump of an array, this was left as is in the rush to get a new version out for PHP 5.2, it is not a fault
 * Web Services, Support and Websites changes
     * None
-    
-= 0.2.3 =
-* Public Messages
-    * This update includes changes for both paid and free editions
-    * Good luck to all countries in the Olympics, but being British I especially want to see us getting more golds this time around 
-* General Improvements
-    * Plugin now supports PHP 5.2 
-    * New random value shortcode panel added as part of text spinning (text spinning ability test and working well)
-    * New advanced shortcode called "csv2post_random_advanced"
-    * New basic shortcode called "csv2post_random_basic"
-* Bug Fixes
-    * Error regarding ksort() in function csv2post_get_array_nextkey()
-    * Undefined function csv2post_exit_forbidden_request() (function and function called was removed)
-    * PHP 5.2 related bugs have been fixed
-    * csv2post_get_template_bypostrequest() was not handling post ID properly (breaking content template design type menu)  
-* Technical Improvements
-    * Panel added for displaying $csv2post_textspin_array dump on the Text Spinning screen
-    * add_shortcode function is now being used in CSV2POST.php
-    * Error regarding ksort() in function csv2post_get_array_nextkey(), returning from function if no array passed now (will also log the event)
-    * Function csv2post_exit_forbidden_request() removed
-    * Content template design types are now stored as individual meta values (not a comma seperated string)
-* Known Issues
-    * Lightbox type overlay applied by jQuery UI dialogue, on 2. Your Projects page, appears to have two overlays (there is a light gap between two of them)
-* Web Services, Support and Websites changes
-    * Updated specifications page
-
-= 0.2.2 =
-* Public Messages
-    * Our heart goes to the victims in Colorado especially the 4 month old baby and 6 year old girl.
-* Bug Fixes
-    * Undefined variable $csv2post_is_free when creating post creation project
-    * Undefined variable $csv2post_is_free on More page
-* General Improvements
-    * Google Ads removed from free edition
-    * New notification boxes called "Next Step" boxes introduced to free and paid edition to help guide user (they will slowly be added throughout the plugin)
-    * Corrected html header mistake causing h4 to be applied to entire paragraph on About screen
-    * csv2post_check_requirements no longer calls fsockopen() to check for an internet connection (not needed yet)
-    * Reduced number of variables loaded in main file for development purposes in the aim of less memory usage
-    * Files and variables for the automated system now load during public visits to the blog (not just admin side)
-    * Panel added to show scheduled eventa history times and counters
-    * Panel added to Schedule tab on Your Creation screen: Event Types (used to control what types of event are run during automated scheduled processing)
-    * Schedule screen will display various notices indicating if the schedule cannot run and why so that users may take action
-    * Spelling mistake on Create Project panel "Immport"
-    * Event Types panels help url added: http://www.csv2post.com/hacking/event-types
-    * Default page for all View More Help buttons is now the main support page on plugin website: http://www.csv2post.com/support
-    * Button with "Multiple Key Columns" on the Create Post Creation Project has been removed, it will not be supported until later due to the complexity of the feature
-    * Added new column with menu to the Create Post Creation Project panel, inside the tables list, for selecting a key (creates relationship between multiple tables)
-    * New html table column on Create Post Creation Project panel was removed, decided a new panel required to handle multiple file configuration
-    * New panel called Multiple Table Project for configuring the relationship between selected project tables
-    * New images for "Next Step" notification boxes, CSS styling and csv2post_notifications function updated
-    * Removed panel named "Database Tables Mapping" from Project Data screen, it is now on main Projects screen and called "Multiple Table Projects" 
-* Technical Improvements
-    * csv2post_event_decide() now allows event types to be excluded totally (interfacing coming for user configuration)
-    * Critical change when using multiple database tables in a project, plugin now determines if a project table was selected with required columns else it creates one
-    * csv2post_notifications function now stores the $csv2post_notice_array in wp_options table (used for persistent messages)
-    * jQuery UI tab script updated to display the hash and tab number in url
-* Known Issues
-    * Adding tables to a project that were not created by this plugin are not handled properly, this will be worked on soon
-* Web Services, Support and Websites changes
-    * Support page updated: http://www.csv2post.com/support
-    * New page explaining Multiple Table Project panel: http://www.csv2post.com/feature-guides/multiple-table-project-panel
-
-= 0.2.1 =
-* Public Messages
-    * Donations help to continue this project, even $5.00 makes a difference, send to paypal@csv2post.com
-* Bug Fixes
-    * Field count was not being submitted for some selected CSV files
-* General Improvements
-    * None
-* Web Services, Support and Websites changes
-    * None
-
-= 0.2.0 =
-* Bug Fixes
-    * A data import update query was fixed
-* General Improvements
-    * Database names are no longer kept in the list of created tables after being deleted
-    * Users must delete Data Import Job before deleting a jobs database table
-* Web Services, Support and Websites changes
-    * None
-* Public Messages
-    * None
-    
-= 0.1.9 =
-* Public Messages
-    * Happy Bastille Day, just make it a weekend
-* Bug Fixes
-    * Missing file warning for a file no longer included in package
-* Interface Improvements
-    * Message regarding missing files now includes the expected path
-* Web Services, Support and Websites changes
-    * Plugin no longer checks web service status, not required until web services are complete
-
-= 0.1.8 =
-* Public Messages
-    * Thanks to Eric from Quebec for days of good feedback
-* Bug Fixes
-    * Error related to csv2post_sql_query_unusedrecords_singletable() missing parameter
-* Interface Improvements
-    * None
-* Web Services, Support and Websites changes
-    * New YouTube video, a lot more to come: http://www.youtube.com/watch?v=uGA8R0PVR8M
-       
-= 0.1.7 = 
-* Added support to read CSV files using 2 different methods: PEAR CSV and fget/fgetcsv (each method often suits different files or purposes)
-* Can select files separator on the Test CSV File panel
-* CSV file test now uses PEAR CSV and php fget function to count columns
-* CSV file test compares user submitted separator (if any) with PEAR CSV and fget method separators
-    
-= 0.1.6 = 
-* Bug fix in reading CSV file columns for none comma files
-    
-= 0.1.5 = 
-* Further improvements made for manually applying separator and quote
-    
-= 0.1.4 = 
-* BETA Edition
-    * Interfaces for paid edition were being hidden in the paid edition, but should only be hidden in free edition
-    * jQuery UI tabs now hold their state when submitting forms
-    * jquery.cookie.js added to bundle
-    * Done some work on how the plugin handles separators and establishing the correct one, plus warning users of any issues
-
-= 0.1.3 = 
-* BETA Edition
-    * Plugin no longer uses wp_die when PHP 5.2 in use, a notification is displayed instead
-    * Improved the use of deactivate_plugins( 'csv-2-post' ) when PHP 5.2 detected (plugin requires 5.3)
-
-= 0.1.2 = 
-* BETA Edition
-    
-= 0.1.1 = 
-* BETA Edition
-    * Reduced the number of files, including the removal of some jQuery UI themes. The plugin size was too large, mainly caused by png images.
-    * Complete readme.txt including screen-shots being added to the package
-
-= 0.1.0 =
-* BETA Edition
-    * Activation errors detected when blog is not using PHP 5.3, error is fixed and now a clear message is displayed
