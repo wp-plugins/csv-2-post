@@ -57,7 +57,10 @@ $jsform_set['noticebox_content'] = 'Do you want to continue creating a new Data 
 action will not import data. You must begin data importing on the Import tab.</p>';
 // create nonce - done in csv2post_ajax_is_dataimportjobname_used
 $nonce = wp_create_nonce( "csv2post_referer_" . $panel_array['panel_name'] );
-// TODO: HIGHPRIORITY, when existing table is selected, display another form option to select the existing table?>
+// TODO: HIGHPRIORITY, when existing table is selected, display another form option to select the existing table
+// TODO: MEDIUMPRIORITY, setting to automatically enter and select options (use the best method per file i.e. if PEAR returns 1 field try fgetcsv)
+// TODO: HIGHPRIORITY, display warning if user selects and submits file without entering information, but still auto detect plus save profile
+?>
 
 <?php csv2post_panel_header( $panel_array );?>
     
@@ -171,7 +174,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 $panel_array['panel_url'] = 'http://www.csv2post.com/feature-guides/csv-file-profiles-panel';?>
 <?php csv2post_panel_header( $panel_array );?>
     
-    <h4>File Information</h4>
+    <h4>File Profile Information</h4>
     <?php csv2post_available_csv_file_list();?>
     
     <h4>File Status</h4>

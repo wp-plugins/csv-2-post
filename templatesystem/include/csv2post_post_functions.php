@@ -451,7 +451,7 @@ function csv2post_create_post_creation_project($project_name,$projecttables_arra
 function csv2post_initialize_postcreationproject_array($project_name){
     $project_array = array();
     $project_array['name'] = $project_name;
-    $project_array['type'] = 'post';// post, user, comment, media, custom i.e. ticket,question    
+    $project_array['type'] = 'post';// post, users, comments, media, custom i.e. ticket,question    
     $project_array['tables'] = array();
     
     // statistics

@@ -1,11 +1,11 @@
 <?php
-if(!isset($csv2post_project_array['type'])){
+if(!isset($csv2post_project_array['defaultposttype'])){
     echo csv2post_notice('Current posts type is "post"','warning','Tiny','','','return');    
 }else{
-    echo csv2post_notice('Current posts type is "'.$csv2post_project_array['type'].'"','info','Tiny','','','return');    
+    echo csv2post_notice('Current posts type is "'.$csv2post_project_array['defaultposttype'].'"','info','Tiny','','','return');    
 }
-?>
-
+?>                                                                            
+                                                            
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
 $panel_array = array();

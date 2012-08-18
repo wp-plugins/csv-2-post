@@ -1573,14 +1573,15 @@ function csv2post_form_save_posttype_condition_byvalue(){
 * Updates title template designs (post type wtgcsvtitle is updated)
 */
 function csv2post_form_update_defaultposttype(){
-    global $csv2post_currentproject_code;
+    global $csv2post_currentproject_code,$csv2post_project_array;
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'defaultposttype'){
    
         if( $_POST['csv2post_defaultpostype_original'] == $_POST['csv2post_radio_defaultpostype']){
             csv2post_notice('You appear to have selected the post type that is already set as your projects default, no changes were required.','info','Large','No Changes Required');    
         }else{
-            csv2post_update_project_defaultposttype($csv2post_currentproject_code,$_POST['csv2post_radio_defaultpostype']);
-            csv2post_notice('Your projects default post type is now '.$_POST['csv2post_radio_defaultpostype'].' and all posts created from here on will be this type.','success','Large','Default Post Type Changed');    
+            $csv2post_project_array['defaultposttype'] = $_POST['csv2post_radio_defaultpostype'];
+            csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array); 
+            csv2post_notice('Your projects default post type is now '.$csv2post_project_array['defaultposttype'].' and all posts created from here on will be this type.','success','Large','Default Post Type Changed');    
         }
 
         return false;
@@ -2329,9 +2330,19 @@ function csv2post_form_reinstallplugin(){
 function csv2post_form_uninstallplugin(){
     if(isset($_POST[WTG_C2P_ABB.'hidden_pageid']) && $_POST[WTG_C2P_ABB.'hidden_pageid'] == 'install' && isset($_POST[WTG_C2P_ABB.'hidden_panel_name']) && $_POST[WTG_C2P_ABB.'hidden_panel_name'] == 'uninstall'){  
         if(current_user_can('delete_plugins')){
-           csv2post_uninstall();
+           
+           $uninstall_outcome = csv2post_uninstall();
+           if($uninstall_outcome){
+                csv2post_notice('CSV 2 POST has been uninstalled. Please be aware at this time the plugin does not
+                remove every element created i.e. some database tables may be left in your database for future use.',
+                'success','Large','CSV 2 POST Uninstalled','','echo');    
+           }else{
+                csv2post_notice('There was a problem running the uninstallation, please try again then seek support.',
+                'error','Large','CSV 2 POST Not Uninstalled','','echo');    
+           }
+           
         }else{
-            csv2post_notice(__('You do not have the required permissions to un-install '.WTG_C2P_PLUGINTITLE.'. The Wordpress role required is delete_plugins, usually granted to Administrators.'), 'warning', 'Large', false);
+            csv2post_notice(__('You do not have the required permissions to un-install '.WTG_C2P_PLUGINTITLE.'. The Wordpress role required is delete_plugins, usually granted to Administrators.'), 'warning', 'Large','No Permission To Uninstall CSV 2 POST','','echo');
         }
         
         // return false to stop all further post validation function calls
@@ -2793,19 +2804,6 @@ function csv2post_form_createfolder($path,$chmod = WTG_C2P_CHMOD){
 }
 
 /**
- * Processes FULL installation request
- *
- * @uses csv2post_jquerydialogue_results(), adds jquery dialogue script for result output
- * @uses csv2post_install(), this is the actual installation process
- */
-function csv2post_process_full_install(){?>
-    <div id="csv2post_dialogueoutcome" title="Outcome For <?php echo $_POST['csv2post_hidden_panel_title'];?>">
-      <?php csv2post_install();?>     
-    </div><?php
-   csv2post_jquerydialogue_results(csv2post_link_toadmin('csv2post_settings','#tabs-2'),'Continue');
-}
-
-/**
  * Processes FREE Reinstalls of the plugin, does output (submitted form has optional checkbox inputs to include or exclude specific parts)
  */
 function csv2post_process_free_reinstall(){
@@ -2903,5 +2901,22 @@ function csv2post_process_full_uninstall(){
     <div id="csv2post_dialogueoutcome" title="Outcome For <?php echo $_POST[WTG_C2P_ABB.'hidden_panel_title'];?>">
         <?php csv2post_uninstall();?>
     </div><?php
+}
+
+/**
+ * Processes FULL installation request
+ *
+ * @uses csv2post_jquerydialogue_results(), adds jquery dialogue script for result output
+ * @uses csv2post_install(), this is the actual installation process
+ */
+function csv2post_process_full_install(){?>
+    <div id="csv2post_dialogueoutcome" title="Outcome For <?php echo $_POST['csv2post_hidden_panel_title'];?>">
+        <p>Welcome to the CSV 2 POST import plugin for Wordpress. Installation results are below, please
+        report any notifications that are not green (green notifications equal 100% success). Please click
+        Continue. You will be taking to the Easy Configuration Questions screen. The questions act like settings,
+        allowing CSV 2 POST to adapt to your needs by hiding or displaying features.</p>
+      <?php csv2post_install();?>     
+    </div><?php
+   csv2post_jquerydialogue_results(csv2post_link_toadmin('csv2post_settings','#tabs-2'),'Continue');
 }
 ?>

@@ -194,6 +194,19 @@ function csv2post_establish_csvfile_quote_PEARCSVmethod( $csv_filename,$output =
 } 
 
 /**
+* Uses pear to establish the number of fields/columns in giving CSV file
+* 
+* @param mixed $csv_filename
+* @return numeric on success or false on fail, possibly zero if PEAR fails
+*/
+function csv2post_establish_csvfile_fieldcount_PEAR($csv_filename){
+    csv2post_pearcsv_include();
+    $csv_file_conf = File_CSV::discoverFormat( WTG_C2P_CONTENTFOLDER_DIR . '/' . $csv_filename );             
+    return $csv_file_conf['fields'];   
+} 
+
+
+/**
 * Returns array holding the headers of the giving filename
 * It also prepares the array to hold other formats of the column headers in prepartion for the plugins various uses
 */

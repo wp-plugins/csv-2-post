@@ -17,9 +17,10 @@ function csv2post_print_admin_scripts() {
         wp_deregister_script( 'jquery' );
             //wp_register_script( 'jquery');                
             wp_register_script( 'jquery','http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js');
+            //wp_register_script( 'jquery','http://ajax.googleapis.com/ajax/libs/jquery/1.8.23/jquery.min.js');
             //wp_register_script( 'jquery',WTG_C2P_URL.'templatesystem/script/jquery-1.7.1.js');
         wp_enqueue_script( 'jquery' );
-     
+                                                                                                
         ########################################
         #                                      #
         #                jquery-ui             #
@@ -56,6 +57,93 @@ function csv2post_print_admin_scripts() {
         wp_register_script('jquery-cookie',WTG_C2P_URL.'templatesystem/script/jquery.cookie.js');
         wp_enqueue_script('jquery-cookie');        
      }
+}
+               
+/**
+ * Checks existing plugins and displays notices with advice or informaton
+ * This is not only for code conflicts but operational conflicts also especially automated processes
+ *
+ * $return $critical_conflict_result true or false (true indicatesd a critical conflict found, prevents installation, this should be very rare)
+ * 
+ * @todo make this function available to process manually so user can check notices again
+ * @todo re-enable warnings for none activated plugins is_plugin_inactive, do so when Notice Boxes have closure button
+ */
+function csv2post_plugin_conflict_prevention(){
+    // track critical conflicts, return the result and use to prevent installation
+    // only change $conflict_found to true if the conflict is critical, if it only effects partial use
+    // then allow installation but warn user
+    $conflict_found = false;
+    
+    // we create an array of profiles for plugins we want to check
+    $plugin_profiles = array();
+
+    // Tweet My Post (javascript conflict and a critical one that breaks entire interface)
+    $plugin_profiles[0]['switch'] = 1;//used to use or not use this profile, 0 is no and 1 is use
+    $plugin_profiles[0]['title'] = 'Tweet My Post';
+    $plugin_profiles[0]['slug'] = 'tweet-my-post/tweet-my-post.php';
+    $plugin_profiles[0]['author'] = 'ksg91';
+    $plugin_profiles[0]['title_active'] = 'Tweet My Post Conflict';
+    $plugin_profiles[0]['message_active'] = __('On 16th August 2012 a critical and persistent conflict was found 
+    between Tweet My Post 
+    and CSV 2 POST. It breaks the plugins dialogue boxes (jQuery UI Dialogue) while the plugin is active,
+    you may not be able to install CSV 2 POST due to this. After some searching we found many others to be having
+    JavaScript related conflicts with this plugin, which the author responded too. Please ensure you have the latest
+    version installed.
+    The closest cause I found in terms of code was line 40 where a .js file (jquery-latest) is registered. This
+    file is not used in CSV 2 POST so at this time we are not sure why the conflict happens. Please let us know
+    if your urgently need this conflict fixed. We will investigate but due to the type of plugin, it is not urgent.
+    Auto-tweeting is not recommended during auto blogging due to the risk of spamming Twitter. If you know the plugin
+    well you can avoid spamming however and so let us know if this conflict is a problem for you.');
+    $plugin_profiles[0]['title_inactive'] = 'title inactive';
+    $plugin_profiles[0]['message_inactive'] = __('message inactive');
+    $plugin_profiles[0]['type'] = 'info';//passed to the message function to apply styling and set type of notice displayed
+    $plugin_profiles[0]['criticalconflict'] = true;// true indicates that the conflict will happen if plugin active i.e. not specific settings only, simply being active has an effect
+    
+    // Wordpress HTTPS
+    $plugin_profiles[1]['switch'] = 1;//used to use or not use this profile, 0 is no and 1 is use
+    $plugin_profiles[1]['title'] = 'Wordpress HTTPS';
+    $plugin_profiles[1]['slug'] = 'wordpress-https/wordpress-https.php';
+    $plugin_profiles[1]['author'] = 'Mvied';
+    $plugin_profiles[1]['title_active'] = 'Wordpress HTTPS Conflict';
+    $plugin_profiles[1]['message_active'] = __('On 15th August 2012 a critical and persistent conflict was found 
+    between Wordpress HTTPS and CSV 2 POST. It breaks the jQuery UI tabs by making all panels/features show on
+    one screen rather than on individual tabbed screens. A search on Google found many posts regarding the
+    plugin causing JavaScript related conflicts, responded too my the plugins author. So please ensure you
+    have the latest version. One of the posts suggested the fault, was exactly as we found to be causing our
+    broken interface in CSV 2 POST. URL were being re-written, specifically those passed through jQuery UI functions
+    were having a slash removed. It would not just break the interface but submitting some forms would fail
+    because the action location URL would be wrong. This sounds like the fault described by a Wordpress HTTPS user,
+    before the author responded to it. So not sure what is going on but right now we do not feel we can provide the
+    fix. Please still let us know if you are seeing this message, we need to know how popular the conflicting plugin
+    is while using CSV 2 POST for auto-blogging.');
+    $plugin_profiles[1]['title_inactive'] = 'title inactive';
+    $plugin_profiles[1]['message_inactive'] = __('message inactive');
+    $plugin_profiles[1]['type'] = 'info';//passed to the message function to apply styling and set type of notice displayed
+    $plugin_profiles[1]['criticalconflict'] = true;// true indicates that the conflict will happen if plugin active i.e. not specific settings only, simply being active has an effect
+
+    /*******  type values =  success,warning,error,question,processing,stop    *****/
+                                  
+    // loop through the profiles now
+    if(isset($plugin_profiles) && $plugin_profiles != false){
+        foreach($plugin_profiles as $key=>$plugin){   
+            if( is_plugin_active( $plugin['slug']) ){ 
+               
+                // recommend that the user does not use the plugin
+                csv2post_notice($plugin['message_active'],'warning','Large',$plugin['title_active'],'','echo');
+
+                // if the conflict is critical, we will prevent installation
+                if($plugin['criticalconflict'] == true){
+                    $conflict_found = true;// indicates critical conflict found
+                }
+                
+            }elseif(is_plugin_inactive($plugin['slug'])){
+                // warn user about potential problems if they active the plugin
+                // csv2post_notice($plugin['message_inactive'],'info','Tiny',false);
+            }
+        }
+    }
+
+    return $conflict_found;
 }
     
 /**
@@ -798,58 +886,6 @@ function csv2post_form_submission_processing(){
         }
 
     } 
-}
-
-/**
- * Checks existing plugins and displays notices with advice or informaton
- * This is not only for code conflicts but operational conflicts also especially automated processes
- *
- * $return $critical_conflict_result true or false (true indicatesd a critical conflict found, prevents installation, this should be very rare)
- * 
- * @todo make this function available to process manually so user can check notices again
- * @todo re-enable warnings for none activated plugins is_plugin_inactive, do so when Notice Boxes have closure button
- */
-function csv2post_plugin_conflict_prevention(){
-    // track critical conflicts, return the result and use to prevent installation
-    // only change $conflict_found to true if the conflict is critical, if it only effects partial use
-    // then allow installation but warn user
-    $conflict_found = false;
-    
-    // we create an array of profiles for plugins we want to check
-    $plugin_profiles = array();
-
-    // WTG Notice Boxes (example only)
-    $plugin_profiles[0]['switch'] = 1;//used to use or not use this profile, 0 is no and 1 is use
-    $plugin_profiles[0]['title'] = 'WTG Notice Boxes';
-    $plugin_profiles[0]['slug'] = 'wtg-notice-boxes';
-    $plugin_profiles[0]['author'] = 'WebTechGlobal';
-    $plugin_profiles[0]['title_active'] = 'WTG Notice Boxes In Use, Thank You';
-    $plugin_profiles[0]['message_active'] = __('WebTechGlobal would like to thank you for also using WTG Notice Boxes, we hope you find it useful. Please let us know if there is anything you would like us to improve for your needs.');
-    $plugin_profiles[0]['title_inactive'] = 'WTG Notice Boxes In Installed, Thank You';
-    $plugin_profiles[0]['message_inactive'] = __('We have noticed you are also using WTG Notice Boxes, we hope you are satisfied with it.');
-    $plugin_profiles[0]['type'] = 'info';//passed to the message function to apply styling and set type of notice displayed
-    $plugin_profiles[0]['criticalconflict'] = true;// true indicates that the conflict will happen if plugin active i.e. not specific settings only, simply being active has an effect
-    /*******  type values =  success,warning,error,question,processing,stop    *****/
-
-    // loop through the profiles now
-    if(isset($plugin_profiles) && $plugin_profiles != false){
-        foreach($plugin_profiles as $key=>$plugin){
-            if(is_plugin_active($plugin['slug'])){
-                // recommend that the user does not use the plugin
-                csv2post_notice($plugin['message_active'],'warning','Tiny',false);
-
-                // if the conflict is critical, we will prevent installation
-                if($plugin['criticalconflict'] == true){
-                    $conflict_found = true;// indicates critical conflict found
-                }
-            }elseif(is_plugin_inactive($plugin['slug'])){
-                // warn user about potential problems if they active the plugin
-                // csv2post_notice($plugin['message_inactive'],'info','Tiny',false);
-            }
-        }
-    }
-
-    return $conflict_found;
 }
 
 /**

@@ -29,6 +29,7 @@ $panel_array['panel_intro'] = __('The current activation controls are basic but 
 $panel_array['panel_help'] = __('A key aspect of CSV 2 POST is the remote support provided using web services. The controls will eventually allow users to register their domain on their members account. The plugin will send the domain too the plugins website and it will be stored. This allows the use of remote support features and priority responses for any matters concerning a specific domain. To register a domain from the plugin itself, email authorisation will be required. This simple means the current user of the plugin must have the same email address in their blog as registered on the plugins website. A simple security step to reduce the number of none paying users getting priority support.'); 
 $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 $panel_array['panel_state'] = 1;// 0=closed 1=open
+$panel_array['panel_url'] = 'http://www.csv2post.com/how-to-articles/installing-csv-2-post';
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);               

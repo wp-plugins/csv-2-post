@@ -126,7 +126,7 @@ function csv2post_install(){
     if(!add_option(WTG_C2P_ABB.'adminset',serialize($csv2post_adm_set))){
         
         // should never happen - csv2post_uninstall() used at the beginning of csv2post_install()
-        csv2post_notice('Adding option '.WTG_C2P_ABB.'adminset returned false, this is usually because it already exists.','error','Tiny',false);
+        echo csv2post_notice('Adding option '.WTG_C2P_ABB.'adminset returned false, this is usually because it already exists.','error','Tiny',false,'','return');
         
         $overall_install_result = false;          
         
@@ -142,7 +142,7 @@ function csv2post_install(){
 
     }else{
         
-        csv2post_notice('Installed option record called '.WTG_C2P_ABB.'adminset','success','Tiny',false);
+        echo csv2post_notice('Installed option record called '.WTG_C2P_ABB.'adminset','success','Tiny',false,'','return');
         
         $csv2post_log = array();
         $csv2post_log['line'] = __LINE__;
@@ -159,7 +159,7 @@ function csv2post_install(){
     if(!add_option(WTG_C2P_ABB.'publicset',serialize($csv2post_pub_set))){
         
         // should never happen - csv2post_uninstall() used at the beginning of csv2post_install()
-        csv2post_notice('Adding option '.WTG_C2P_ABB.'publicset returned false, this is usually because it already exists.','error','Tiny',false);
+        echo csv2post_notice('Adding option '.WTG_C2P_ABB.'publicset returned false, this is usually because it already exists.','error','Tiny',false,'','return');
         
         $overall_install_result = false;
         
@@ -173,7 +173,8 @@ function csv2post_install(){
         $csv2post_log['category'] = 'install';
         csv2post_log($csv2post_log);
     }else{
-        csv2post_notice('Installed option record called '.WTG_C2P_ABB.'publicset','success','Tiny',false);
+        
+        echo csv2post_notice('Installed option record called '.WTG_C2P_ABB.'publicset','success','Tiny',false,'','return');
         
         $csv2post_log = array();
         $csv2post_log['line'] = __LINE__;
@@ -190,7 +191,7 @@ function csv2post_install(){
     if(!add_option(WTG_C2P_ABB.'easyset',serialize($csv2post_eas_set))){
         
         // should never happen - csv2post_uninstall() used at the beginning of csv2post_install()
-        csv2post_notice('Adding option '.WTG_C2P_ABB.'easyset returned false, this is usually because it already exists.','error','Tiny',false);
+        echo csv2post_notice('Adding option '.WTG_C2P_ABB.'easyset returned false, this is usually because it already exists.','error','Tiny',false,'','return');
         
         $overall_install_result = false;          
         
@@ -205,7 +206,7 @@ function csv2post_install(){
         csv2post_log($csv2post_log);
 
     }else{
-        csv2post_notice('Installed option record called '.WTG_C2P_ABB.'easyset','success','Tiny',false);
+        echo csv2post_notice('Installed option record called '.WTG_C2P_ABB.'easyset','success','Tiny',false,'','return');
         
         $csv2post_log = array();
         $csv2post_log['line'] = __LINE__;
@@ -222,7 +223,7 @@ function csv2post_install(){
     if(!add_option(WTG_C2P_ABB.'tabmenu',serialize($csv2post_mpt_arr))){
         
         // should never happen - csv2post_uninstall() used at the beginning of csv2post_install()
-        csv2post_notice('Adding option '.WTG_C2P_ABB.'tabmenu returned false, this is usually because it already exists.','error','Tiny',false);
+        echo csv2post_notice('Adding option '.WTG_C2P_ABB.'tabmenu returned false, this is usually because it already exists.','error','Tiny',false,'','return');
         
         $overall_install_result = false;          
         
@@ -237,7 +238,9 @@ function csv2post_install(){
         csv2post_log($csv2post_log);
 
     }else{
-        csv2post_notice('Installed option record called '.WTG_C2P_ABB.'tabmenu','success','Tiny',false);
+        
+        echo csv2post_notice('Installed option record called '.WTG_C2P_ABB.'tabmenu','success','Tiny',false,'','return');
+        
         $csv2post_log = array();
         $csv2post_log['line'] = __LINE__;
         $csv2post_log['file'] = __FILE__;
@@ -264,10 +267,10 @@ function csv2post_install(){
     }
 
     if($overall_install_result == false){
-        csv2post_notice( 'You are attempting to run a First-Time Install but there was a problem. If you have installed the plugin previously, it
+        echo csv2post_notice( 'You are attempting to run a First-Time Install but there was a problem. If you have installed the plugin previously, it
             could be because there is a trace of that installation still in your blog. Please use the Un-Install feature then try again. First-Time
             Installation is designed only for first time use on a blog unless you have used the Un-Install feature to remove any trace of a previous
-            installation.','error','Large','Installation Problems','');
+            installation.','error','Large','Installation Problems','','return');
     }
 
     return $overall_install_result;
@@ -287,6 +290,8 @@ function csv2post_remove_contentfolder(){
  * may be critical to future use of the plugin on the same blog
  * 
  * Leaves the single value options to control installation status for re-install actions or temporary un-install
+ * 
+ * @todo LOWPRIORITY, uninstallation needs to be revised totally, provide more options to uninstall more elements
  */
 function csv2post_uninstall(){
     $uninstall_outcome = true;

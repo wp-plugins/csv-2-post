@@ -123,6 +123,9 @@ function csv2post_header_page($pagetitle,$layout){
         <h2><?php echo $pagetitle;?></h2>
 
         <?php 
+        // check existing plugins and give advice or warnings
+        csv2post_plugin_conflict_prevention();
+                 
         // display all notifications (both new ones as a result of form submission and persistent messages)
         csv2post_notice_output();?>
         
@@ -981,7 +984,8 @@ function csv2post_notice_filesizetotal($mb){
 * 2. displays the age of files for knowing when a file was last updated
 * 
 * @todo MEDIUMPRIOTITY, use DataTables with ability to click and view more information plus delete files.
-* @todo MEDIUMPRIORITY, a file is caused a blank age result, investigate why it happened when the file was edited then uploaded again         
+* @todo MEDIUMPRIORITY, a file is caused a blank age result, investigate why it happened when the file was edited then uploaded again 
+* @todo HIGHPRIORITY, add column for field count using fgetcsv method (currently only has pear method) this will greatly help determine which method is best         
 */
 function csv2post_available_csv_file_list(){
     $available = 0;
@@ -1004,11 +1008,11 @@ function csv2post_available_csv_file_list(){
             <table class="widefat post fixed">
                 <tr class="first">
                     <td width="175"><strong>Name</strong></td>
-                    <td width="85"><strong>Separator (plugin)</strong></td>                    
-                    <td width="85"><strong>Separator (pear)</strong></td>                    
+                    <td width="80"><strong>Separator (plugin)</strong></td>                    
+                    <td width="80"><strong>Separator (pear)</strong></td>
+                    <td width="75"><strong>Columns (pear)</strong></td>                    
                     <td width="75"><strong>Rows</strong></td>
-                    <td width="75"><strong>Size</strong></td>                   
-                    <td><strong>Files Age</strong></td>                                    
+                    <td><strong>Size</strong></td>                                                       
                 </tr>';  
             
             $filesize_total = 0;
@@ -1024,28 +1028,18 @@ function csv2post_available_csv_file_list(){
                         $file_path = WTG_C2P_CONTENTFOLDER_DIR . '/' . $filename;
                         $thefilesize = filesize($file_path);
                         $filesize_total = $thefilesize;
-                        
-                        $filemtime = filemtime(WTG_C2P_CONTENTFOLDER_DIR . '/' .$filename);
-                        
+
                         $sep_fget = csv2post_establish_csvfile_separator_fgetmethod($filename,false );                           
                         $sep_PEARCSV = csv2post_establish_csvfile_separator_PEARCSVmethod($filename,false); 
                         
-                        
-                        if(phpversion() < '5.3'){
-                            $fileage = '';### TODO:MEDIUMPRIORITY,add a PHP 5.2 function for determing file age
-                        }else{
-                            // this line is only suitable for PHP 5.3
-                            $fileage =  csv2post_ago( date_create(date(WTG_C2P_DATEFORMAT,$filemtime)),true,true,true,true,true,false);
-                        }    
-                                                      
                         echo '
                         <tr>
                             <td>'.$filename.'</td>
                             <td>'.$sep_fget.'</td>                            
-                            <td>'.$sep_PEARCSV.'</td>                            
+                            <td>'.$sep_PEARCSV.'</td>
+                            <td>'.csv2post_establish_csvfile_fieldcount_PEAR($filename).'</td>                            
                             <td>'.count(file(WTG_C2P_CONTENTFOLDER_DIR . '/' .$filename)).'</td>
-                            <td>'.csv2post_format_file_size($thefilesize).'</td>                                                        
-                            <td>'.$fileage.'</td>                            
+                            <td>'.csv2post_format_file_size($thefilesize).'</td>                                                                                    
                         </tr>';                    
                         
                     }// end if csv
@@ -1089,7 +1083,8 @@ function csv2post_csv_files_status_list(){
             <table class="widefat post fixed">
                 <tr class="first">
                     <td width="175"><strong>Name</strong></td>
-                    <td><strong>Status</strong></td>                                                       
+                    <td><strong>Status</strong></td>
+                    <td><strong>Files Age</strong></td>                                                       
                 </tr>';  
             
             $filesize_total = 0;
@@ -1115,11 +1110,20 @@ function csv2post_csv_files_status_list(){
                         if($sep_fget != $sep_PEARCSV){
                             $status = 'This files separator needs to be set manually to avoid problems, do this on the Import Jobs screen once you use this file to create a Data Import Job.';    
                         }
-                                   
+                        
+                        // determine files age in a human readable way
+                        if(phpversion() < '5.3'){
+                            $fileage = '';### TODO:MEDIUMPRIORITY,add a PHP 5.2 function for determing file age
+                        }else{
+                            $filemtime = filemtime(WTG_C2P_CONTENTFOLDER_DIR . '/' .$filename);
+                            $fileage =  csv2post_ago( date_create(date(WTG_C2P_DATEFORMAT,$filemtime)),true,true,true,true,true,false);
+                        }
+                                                           
                         echo '
                         <tr>
                             <td>'.$filename.'</td>
-                            <td>'.$status.'</td>                                                       
+                            <td>'.$status.'</td>
+                            <td>'.$fileage.'</td>                                                       
                         </tr>';                    
                         
                     }// end if csv
@@ -1223,20 +1227,20 @@ function csv2post_list_dataimportjobs(){
 function csv2post_panel_header( $panel_array, $boxintro_div = true ){
     global $csv2post_panels_closed;
     
-    // establish global panel state
-    $global_panel_state = ''; 
+    // establish panel state
+    $panel_state = ''; 
     if($csv2post_panels_closed){
-        $global_panel_state = 'closed';    
+        $panel_state = 'closed';    
     }
     
     // override panel state if $panel_array includes specific state
     if(isset($panel_array['panel_state']) && $panel_array['panel_state'] == 1){
-        $global_panel_state = 'closed';    
+        $panel_state = 'open';    
     }elseif(isset($panel_array['panel_state']) && $panel_array['panel_state'] == 0){
-        $global_panel_state = '';
+        $panel_state = 'closed';
     }?>
 
-    <div id="titles" class="postbox <?php echo $global_panel_state;?>">
+    <div id="titles" class="postbox <?php echo $panel_state;?>">
         <div class="handlediv" title="Click to toggle"><br /></div>
 
         <h3 class="hndle"><span><?php echo $panel_array['panel_title'];?></span></h3>
@@ -2657,6 +2661,12 @@ function csv2post_display_project_database_tables_and_columns(){
 */
 function csv2post_display_databasetables_withjobnames($checkbox_column = false,$ignore_free = false){
     global $csv2post_dataimportjobs_array,$csv2post_jobtable_array,$csv2post_is_free;
+    
+    // count number of job tables we have registered
+    $table_count = 0;
+    if(is_array($csv2post_jobtable_array)){
+        $table_count = count($csv2post_jobtable_array);
+    }
     
     // if no applicable database tables would be displayed, display message
     if($csv2post_is_free && $table_count == 0){

@@ -98,6 +98,32 @@ first plugin was created in 2009 and was halted pending re-development.
  
 == Changelog == 
    
+= 6.5.9 =
+* Public Messages
+    * Free users please use the CSV 2 POST forum on Wordpress.org for support, unless your communication contains sensitive information or attachments
+    * http://wordpress.org/support/plugin/csv-2-post
+* Bug Fixes
+    * (minor) Installation dialogue result now has content confirming the installation outcome
+    * (minor) Function for displaying panels was not using the panel state value properly
+    * (minor) Post Types page was display the project type value i.e. post, instead of the default post type value
+    * (critical) Post types are now applied properly in the full edition (free users can hack the plugin to create different post types)
+    * (critical) Free edition wont display message saying there are no database tables created by CSV 2 POST
+* General Improvements
+    * Known conflicting plugins will now be entered into the plugin in a way that triggers warnigns to be displayed when conflicting plugin in use
+    * Moved files age in CSV File Profiles too the second table to make room in the first table for fields/column count
+    * File Profile Information table in the CSV Files Profile panel now displays the number of fields/columns
+    * Uninstall is now confirmed with a notice
+    * Activation panel will now be open by default
+* Key Technical Improvements
+    * $conflict_found variable no longer used in arugments in csv2post_tab0_install.php (plugin conflict check not part of the script anymore)
+    * csv2post_plugin_conflict_prevention() improved and put into use
+* Known Issues
+    * Tweet My Post plugin conflicting on line 40 where a .js file is registered called jquery-latest, causes jQuery UI dialogue not to display
+    * Wordpress HTTPS is reported to also conflict and causes jQuery UI tabs to break, all content displayed at once
+* Web Services, Support and Websites changes
+    * Installation guide published http://www.csv2post.com/how-to-articles/installing-csv-2-post   
+    * Blog option in websites main menu now has sub-categories to make it easier to find tutorials, hacking support, new version updates etc 
+          
 = 6.5.8 =
 * Public Messages
     * There are always many hidden abilities being added too CSV 2 POST, contact us if you seek something 

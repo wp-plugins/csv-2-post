@@ -30,16 +30,13 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
                 <?php csv2post_helpbutton_closebox($panel_array);?>
             </div>
             <div class="<?php echo WTG_C2P_ABB;?>boxcontent_div">
-                <?php
-                // check existing plugins and give advice or warnings
-                $conflict_found = csv2post_plugin_conflict_prevention();
-                
-                if($csv2post_requirements_missing == true && $conflict_found == false){
+                <?php                
+                if($csv2post_requirements_missing == true ){
                     
                    // important requirement not met
-                    csv2post_notice(__('Re-Install options have been hidden as your Wordpress installation does not meet requirements for this plugin to operate properly. The reason should be displayed in another message above.'),'info','Large',false);
+                   csv2post_notice(__('Re-Install options have been hidden as your Wordpress installation does not meet requirements for this plugin to operate properly. The reason should be displayed in another message above.'),'info','Large',false);
                 
-               }elseif($csv2post_requirements_missing == false && $conflict_found == true){
+               }elseif($csv2post_requirements_missing == false ){
                     
                     // a critical conflict has been found
                     csv2post_notice(__('A known and potentially problematic conflict is preventing this plugin being re-installed. This is to protect your blog, please seek support. The conflict should be displayed in another message above.'),'info','Large',false);

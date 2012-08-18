@@ -2,7 +2,7 @@
 if(!isset($csv2post_project_array['default_titletemplate_id'])){
     echo csv2post_notice('You have not selected a title template yet, this is a requirement for all projects.','warning','Tiny','','','return');
 }else{
-    echo csv2post_notice('Your project has a title template setup.','info','Tiny','','','return');
+    echo csv2post_notice('Your project has a title template setup.','success','Tiny','','','return');
 }
 ?>
 
