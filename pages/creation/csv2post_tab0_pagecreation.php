@@ -102,7 +102,70 @@ if(!isset($csv2post_projectslist_array) || $csv2post_projectslist_array == false
                     <br />
                      
                 <?php }?>
+   
+                <script>
+                $(function() {
+                    $( "#csv2post_poststatus_radios_objectid" ).buttonset();
+                });
+                </script>
 
+                <div id="csv2post_poststatus_radios_objectid">
+                    
+                    <?php
+                    // establish current status check
+                    $statuschecked_draft = 'checked="checked"';
+                    if(isset($csv2post_project_array['poststatus'])){
+                        
+                        // publish
+                        if($csv2post_project_array['poststatus'] == 'publish'){
+                            $statuschecked_publish = 'checked="checked"';
+                            $statuschecked_draft = '';
+                        }else{
+                            $statuschecked_publish = '';
+                        }
+                        
+                        // pending
+                        if($csv2post_project_array['poststatus'] == 'pending'){
+                            $statuschecked_pending = 'checked="checked"';
+                            $statuschecked_draft = '';
+                        }else{
+                            $statuschecked_pending = '';
+                        }
+                        
+                        // draft
+                        if($csv2post_project_array['poststatus'] == 'draft'){
+                            $statuschecked_draft = 'checked="checked"';
+                            $statuschecked_draft = '';
+                        }else{
+                            $statuschecked_draft = '';
+                        }
+                        
+                        // private
+                        if($csv2post_project_array['poststatus'] == 'private'){
+                            $statuschecked_private = 'checked="checked"';
+                            $statuschecked_draft = '';
+                        }else{
+                            $statuschecked_private = '';
+                        }   
+                                                                                             
+                    }
+                    
+                    echo '<input type="radio" id="csv2post_radiopublish_poststatus_objectid" name="csv2post_radio_poststatus" value="publish" '.$statuschecked_publish.' />
+                    <label for="csv2post_radiopublish_poststatus_objectid">publish</label>';
+                    
+                    echo '<input type="radio" id="csv2post_radiopending_poststatus_objectid" name="csv2post_radio_poststatus" value="pending" '.$statuschecked_pending.' />
+                    <label for="csv2post_radiopending_poststatus_objectid">pending</label>';                    
+                    
+                    echo '<input type="radio" id="csv2post_radiodraft_poststatus_objectid" name="csv2post_radio_poststatus" value="draft" '.$statuschecked_draft.' />
+                    <label for="csv2post_radiodraft_poststatus_objectid">draft</label>';   
+                    
+                    echo '<input type="radio" id="csv2post_radioprivate_poststatus_objectid" name="csv2post_radio_poststatus" value="private" '.$statuschecked_private.' />
+                    <label for="csv2post_radioprivate_poststatus_objectid">private</label>';                                     
+                    ?>
+                    
+                </div>                
+
+                
                 <input type="hidden" name="csv2post_project_code" value="<?php echo $project_code; ?>">
 
                 <?php

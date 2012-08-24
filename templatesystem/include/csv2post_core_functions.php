@@ -1403,6 +1403,19 @@ function csv2post_get_default_contenttemplate_name(){
     }
 }
 
+function csv2post_get_default_excerpttemplate_name(){
+    global $csv2post_currentproject_code;
+    $default_template_id = csv2post_get_default_excerpttemplate_id( $csv2post_currentproject_code );
+
+    if(!$default_template_id || $default_template_id == '0'){
+        return 'No Default Excerpt Template';
+    }else{
+        // get wtgcsvtemplate post title
+        $template_post = get_post($default_template_id); 
+        return $template_post->post_title;        
+    }
+}
+
 function csv2post_get_default_titletemplate_name(){
     global $csv2post_currentproject_code;
     $default_template_id = csv2post_get_default_titletemplate_id( $csv2post_currentproject_code );
@@ -1435,10 +1448,10 @@ function csv2post_get_titletemplate_design($title_template_id){
 * 
 * @param mixed $title_template_id
 */
-function csv2post_get_contenttemplate_design($content_template_id){
+function csv2post_get_template_design($content_template_id){
     $template_post = get_post($content_template_id);
     if(!$template_post){
-        return 'Fault:content template post not found with ID ' . $content_template_id .', you have possibly deleted it by mistake?';
+        return 'Fault:template post not found with ID ' . $content_template_id .', you have possibly deleted it by mistake?';
     } 
     return $template_post->post_content;    
 }
@@ -1454,9 +1467,20 @@ function csv2post_get_default_contenttemplate_id( $project_code ){
         return false;
     }else{
         $project_array = csv2post_get_project_array($project_code);
-
         if(isset($project_array['default_contenttemplate_id'])){
             return $project_array['default_contenttemplate_id'];            
+        }
+    }  
+    return false;  
+}
+
+function csv2post_get_default_excerpttemplate_id( $project_code ){
+    if(!isset($project_code)){
+        return false;
+    }else{
+        $project_array = csv2post_get_project_array($project_code);
+        if(isset($project_array['default_excerpttemplate_id'])){
+            return $project_array['default_excerpttemplate_id'];            
         }
     }  
     return false;  

@@ -66,7 +66,7 @@ function csv2post_create_posts_basic($project_code,$request_method){
     if(!isset($project_array['default_contenttemplate_id'])){
         $content_template = 'No Default Content Template Selected! Please create and select a content design so the plugin knows where to put your data within post content.';
     }else{
-        $content_template = csv2post_get_contenttemplate_design($project_array['default_contenttemplate_id']);    
+        $content_template = csv2post_get_template_design($project_array['default_contenttemplate_id']);    
     }   
         
     // increase events counter for campaign
@@ -104,9 +104,18 @@ function csv2post_create_posts_basic($project_code,$request_method){
                      
         // parse default post content
         $content_template = csv2post_parse_columnreplacement_basic($record_array,$content_template);
-                
+
+        // parse excerpt template
+        if(isset($project_array['default_excerpttemplate_id'])){
+            $excerpt_template = csv2post_get_template_design($project_array['default_excerpttemplate_id']);
+            if($excerpt_template){
+                $my_post['post_excerpt'] = csv2post_parse_columnreplacement_basic($record_array,$excerpt_template);
+            }             
+        }
+                            
         // create a draft post, csv2post_create_posts_basic uses a basic version of draft post creation with none of the most advanced features
         $my_post = csv2post_create_postdraft_basic($record_array,$category_array,$project_code,$content_template,$title_template );                                                                        
+        
         if( !$my_post ){
             ++$fault_occured;
             
@@ -224,8 +233,17 @@ function csv2post_parse_columnreplacement_basic($record_array,$value){
 * than trying to reverse engineer the advanced functions. 
 */
 function csv2post_create_postdraft_basic( $r,$category_array,$project_code,$content,$title ){
+    
+    
     $my_post = array();
-    $my_post['post_author'] = 1;    
+
+    // apply post author
+    if(isset($project_array['defaultauthor']) && is_numeric($project_array['defaultauthor'])){
+        $my_post['post_author'] = $project_array['defaultauthor'];
+    }else{
+        $my_post['post_author'] = 1;    
+    }
+            
     $my_post['post_date'] = date("Y-m-d H:i:s", time());    
     $my_post['post_date_gmt'] = gmdate("Y-m-d H:i:s", time());
     $my_post['post_title'] = $title;
@@ -474,21 +492,29 @@ function csv2post_initialize_postcreationproject_array($project_name){
  * @return $my_post (wordpress post object)
  * @link http://www.webtechglobal.co.uk/blog/php-mysql/strange-problem-with-date-function
  */
-function csv2post_post_poststatus_calculate( $csv,$my_post ){
+function csv2post_post_poststatus_calculate( $project_array,$my_post ){
+    
     $timenow = strtotime( date("Y-m-d H:i:s") );
     $timeset = strtotime( $my_post['post_date'] );
-
-    if( $timeset > $timenow )// if posts time is greater than current
-    {
+    
+    // add 10 seconds too $timenow, no point in setting a post for future if its only to be publish moments later
+    $timenow = $timenow + 10;
+    
+    // if posts time is greater than current
+    if( $timeset > $timenow ) {
         $my_post['post_status'] = 'future';
-    }
-    elseif( $timeset < $timenow )// if posts time is less than current
-    {
-        $my_post['post_status'] = $csv['poststatus'];
-    }
-    elseif( $timeset == $timenow )// if matching times
-    {
-        $my_post['post_status'] = $csv['poststatus'];
+    }elseif( $timeset < $timenow ){
+        if(isset($project_array['poststatus'])){
+            $my_post['post_status'] = $project_array['poststatus'];
+        }else{
+            $my_post['post_status'] = 'draft';
+        }
+    }elseif( $timeset == $timenow ){
+        if(isset($project_array['poststatus'])){
+            $my_post['post_status'] = $project_array['poststatus'];
+        }else{
+            $my_post['post_status'] = 'draft';
+        }
     }
 
     return $my_post;

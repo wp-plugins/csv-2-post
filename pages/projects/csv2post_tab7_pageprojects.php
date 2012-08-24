@@ -2,7 +2,7 @@
 if(!isset($csv2post_project_array['categories'])){ 
     echo csv2post_notice('No categories setup, all posts will be assigned to your blogs default','warning','Tiny','','','return');
 }else{
-    echo csv2post_notice('Category settings have been saved for your project.','info','Tiny','','','return');
+    echo csv2post_notice('Category settings have been saved for your project.','success','Tiny','','','return');
 }    
 ?>
 
@@ -38,7 +38,7 @@ $jsform_set['noticebox_content'] = 'Do you want to save a default category now?'
         
         <option value="notselected" <?php echo $selected;?>>ID - Category Name (None Selected)</option> 
                 
-        <?php csv2post_display_categories_options($current_value);?>
+        <?php csv2post_display_categories_options($csv2post_project_array['categories']['default']);?>
                                                                                                                              
     </select>  
       
@@ -85,7 +85,7 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
 <?php csv2post_panel_header( $panel_array );?>
 
     <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');?>
-
+    
     <h4>Setup Category Data Columns</h4>
 
     <select name="csv2post_categorylevel1_select_columnandtable" id="csv2post_categorylevel1_select_columnandtable_objectid" class="csv2post_multiselect_menu">
@@ -239,247 +239,350 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
 
     <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');?>
 
-    <h4>Setup Category Data Columns</h4>
-
-    <table>
-    
-        <tr><td>
-        Level One:</td><td><select name="csv2post_categorylevel1_advanced" id="csv2post_categorylevel1_advanced" class="csv2post_multiselect_menu">
-            <option value="notselected">Exclude</option>
-            <?php 
-            if(isset($csv2post_project_array['categories']['level1']['table']) && isset($csv2post_project_array['categories']['level1']['column'])){
-                csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code,$csv2post_project_array['categories']['level1']['table'],$csv2post_project_array['categories']['level1']['column']);    
-            }else{
-                csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code);            
-            }?>                                                                                                                            
-        </select>
-        
-        <script>
-        $("#csv2post_categorylevel1_advanced").multiselect({
-           multiple: false,
-           header: "Select Level One Categories",
-           noneSelectedText: "Select Level One Categories",
-           selectedList: 1
-        });
-        </script>
-        </td></tr>
-        <tr><td>    
-        Level Two:</td><td><select name="csv2post_categorylevel2_advanced" id="csv2post_categorylevel2_advanced" class="csv2post_multiselect_menu">
-            <option value="notselected">Exclude</option>
-            <?php 
-            if(isset($csv2post_project_array['categories']['level2']['table']) && isset($csv2post_project_array['categories']['level2']['column'])){
-                csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code,$csv2post_project_array['categories']['level2']['table'],$csv2post_project_array['categories']['level2']['column']);    
-            }else{
-                csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code);            
-            }?>                                                                                                                     
-        </select>
-            
-        <script>
-        $("#csv2post_categorylevel2_advanced").multiselect({
-           multiple: false,
-           header: "Select Level Two Categories",
-           noneSelectedText: "Select Level Two Categories",
-           selectedList: 1
-        });
-        </script>
-        </td></tr>
-        <tr><td>    
-        Level Three:</td><td><select name="csv2post_categorylevel3_advanced" id="csv2post_categorylevel3_advanced" class="csv2post_multiselect_menu">
-            <option value="notselected">Exclude</option>
-            <?php 
-            if(isset($csv2post_project_array['categories']['level3']['table']) && isset($csv2post_project_array['categories']['level3']['column'])){
-                csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code,$csv2post_project_array['categories']['level3']['table'],$csv2post_project_array['categories']['level3']['column']);    
-            }else{
-                csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code);            
-            }?>                                                                                                                     
-        </select>  
-          
-        <script>
-        $("#csv2post_categorylevel3_advanced").multiselect({
-           multiple: false,
-           header: "Select Level Three Categories",
-           noneSelectedText: "Select Level Three Categories",
-           selectedList: 1
-        });
-        </script>
-        </td></tr>
-        <tr><td>
-        Level Four:</td><td><select name="csv2post_categorylevel4_advanced" id="csv2post_categorylevel4_advanced" class="csv2post_multiselect_menu">
-            <option value="notselected">Exclude</option>
-            <?php 
-            if(isset($csv2post_project_array['categories']['level4']['table']) && isset($csv2post_project_array['categories']['level4']['column'])){
-                csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code,$csv2post_project_array['categories']['level4']['table'],$csv2post_project_array['categories']['level4']['column']);    
-            }else{
-                csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code);            
-            }?>                                                                                                                     
-        </select>  
-          
-        <script>
-        $("#csv2post_categorylevel4_advanced").multiselect({
-           multiple: false,
-           header: "Select Level Four Categories",
-           noneSelectedText: "Select Level Four Categories",
-           selectedList: 1
-        });
-        </script>
-        </td></tr>
-        <tr><td>
-        Level Five:</td><td><select name="csv2post_categorylevel5_advanced" id="csv2post_categorylevel5_advanced" class="csv2post_multiselect_menu">
-            <option value="notselected">Exclude</option>
-            <?php 
-            if(isset($csv2post_project_array['categories']['level5']['table']) && isset($csv2post_project_array['categories']['level5']['column'])){
-                csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code,$csv2post_project_array['categories']['level5']['table'],$csv2post_project_array['categories']['level5']['column']);    
-            }else{
-                csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code);            
-            }?>                                                                                                                     
-        </select>  
-          
-        <script>
-        $("#csv2post_categorylevel5_advanced ").multiselect({
-           multiple: false,
-           header: "Select Level Five Categories",
-           noneSelectedText: "Select Level Five Categories",
-           selectedList: 1
-        });
-        </script>
-        </td></tr>
-    
-    </table>
-    
-    <br />
-
-    <h4>Category Description Templates</h4>
-    <?php 
-    if(csv2post_count_contenttemplates('categorydescription') == 0){
-        echo '<p><strong>You do not have any category description templates. Please create one or more on the Content screen.</strong></p>';
-    }else{?>
+    <div class="csv2post_forms_div">
+        <h4>Setup Category Data Columns</h4>
 
         <table>
         
-            <tr><td>Level One:</td><td>
-            <select name="csv2post_categorylevel1_description" id="csv2post_categorylevel1_description" class="csv2post_multiselect_menu">
-                <option value="notselected">No Description Required</option>
-                
+            <tr><td>
+            Level 1:</td><td><select name="csv2post_categorylevel1_advanced" id="csv2post_categorylevel1_advanced" class="csv2post_multiselect_menu">
+                <option value="notselected">Exclude</option>
                 <?php 
-                $current_value = '';
-                if(isset($csv2post_project_array['categories']['level1']['description'])){$current_value = $csv2post_project_array['categories']['level1']['description'];}
-                ?>
-                 
-                <?php csv2post_display_template_options($current_value,'categorydescription');?>
-                                                                                                                            
-            </select>  
-              
-            <script>
-            $("#csv2post_categorylevel1_description ").multiselect({
-               multiple: false,
-               header: "Select Level One Template",
-               noneSelectedText: "Select Level One Template",
-               selectedList: 1
-            });
-            </script>    
-            </td></tr>
-
-            <tr><td>Level Two:</td><td>
-            <select name="csv2post_categorylevel2_description" id="csv2post_categorylevel2_description" class="csv2post_multiselect_menu">
-                <option value="notselected">No Description Required</option>
-                
-                <?php 
-                $current_value = '';
-                if(isset($csv2post_project_array['categories']['level2']['description'])){$current_value = $csv2post_project_array['categories']['level2']['description'];}
-                ?>
-                 
-                <?php csv2post_display_template_options($current_value,'categorydescription');?>
-                                                                                                                            
-            </select>  
-              
-            <script>
-            $("#csv2post_categorylevel2_description ").multiselect({
-               multiple: false,
-               header: "Select Level Two Template",
-               noneSelectedText: "Select Level Two Template",
-               selectedList: 1
-            });
-            </script>    
-            </td></tr>
-
-            <tr><td>Level Three:</td><td>
-            <select name="csv2post_categorylevel3_description" id="csv2post_categorylevel3_description" class="csv2post_multiselect_menu">
-                <option value="notselected">No Description Required</option>
-                
-                <?php 
-                $current_value = '';
-                if(isset($csv2post_project_array['categories']['level3']['description'])){$current_value = $csv2post_project_array['categories']['level3']['description'];}
-                ?>
-                
-                <?php csv2post_display_template_options($current_value,'categorydescription');?>
-                                                                                                                            
-            </select>  
-              
-            <script>
-            $("#csv2post_categorylevel3_description ").multiselect({
-               multiple: false,
-               header: "Select Level Three Template",
-               noneSelectedText: "Select Level Three Template",
-               selectedList: 1
-            });
-            </script>    
-            </td></tr>
+                if(isset($csv2post_project_array['categories']['level1']['table']) && isset($csv2post_project_array['categories']['level1']['column'])){
+                    csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code,$csv2post_project_array['categories']['level1']['table'],$csv2post_project_array['categories']['level1']['column']);    
+                }else{
+                    csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code);            
+                }?>                                                                                                                            
+            </select>
             
-            <tr><td>Level Four:</td><td>
-            <select name="csv2post_categorylevel4_description" id="csv2post_categorylevel4_description" class="csv2post_multiselect_menu">
-                <option value="notselected">No Description Required</option>
-                
+            <script>
+            $("#csv2post_categorylevel1_advanced").multiselect({
+               multiple: false,
+               header: "Select Level One Categories",
+               noneSelectedText: "Select Level One Categories",
+               selectedList: 1
+            });
+            </script>
+            </td></tr>
+            <tr><td>    
+            Level 2:</td><td><select name="csv2post_categorylevel2_advanced" id="csv2post_categorylevel2_advanced" class="csv2post_multiselect_menu">
+                <option value="notselected">Exclude</option>
                 <?php 
-                $current_value = '';
-                if(isset($csv2post_project_array['categories']['level4']['description'])){$current_value = $csv2post_project_array['categories']['level4']['description'];}
-                ?>
-                 
-                <?php csv2post_display_template_options($current_value,'categorydescription');?>
-                                                                                                                            
+                if(isset($csv2post_project_array['categories']['level2']['table']) && isset($csv2post_project_array['categories']['level2']['column'])){
+                    csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code,$csv2post_project_array['categories']['level2']['table'],$csv2post_project_array['categories']['level2']['column']);    
+                }else{
+                    csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code);            
+                }?>                                                                                                                     
+            </select>
+                
+            <script>
+            $("#csv2post_categorylevel2_advanced").multiselect({
+               multiple: false,
+               header: "Select Level Two Categories",
+               noneSelectedText: "Select Level Two Categories",
+               selectedList: 1
+            });
+            </script>
+            </td></tr>
+            <tr><td>    
+            Level 3:</td><td><select name="csv2post_categorylevel3_advanced" id="csv2post_categorylevel3_advanced" class="csv2post_multiselect_menu">
+                <option value="notselected">Exclude</option>
+                <?php 
+                if(isset($csv2post_project_array['categories']['level3']['table']) && isset($csv2post_project_array['categories']['level3']['column'])){
+                    csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code,$csv2post_project_array['categories']['level3']['table'],$csv2post_project_array['categories']['level3']['column']);    
+                }else{
+                    csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code);            
+                }?>                                                                                                                     
             </select>  
               
             <script>
-            $("#csv2post_categorylevel4_description ").multiselect({
+            $("#csv2post_categorylevel3_advanced").multiselect({
                multiple: false,
-               header: "Select Level Four Template",
-               noneSelectedText: "Select Level Four Template",
+               header: "Select Level Three Categories",
+               noneSelectedText: "Select Level Three Categories",
                selectedList: 1
             });
-            </script>    
+            </script>
             </td></tr>
-            
-            <tr><td>Level Five:</td><td>
-            <select name="csv2post_categorylevel5_description" id="csv2post_categorylevel5_description" class="csv2post_multiselect_menu">
-
+            <?php ### TODO:LOWPRIORITY remove the 4th and 5th category level from free edition ?>
+            <tr><td>
+            Level 4:</td><td><select name="csv2post_categorylevel4_advanced" id="csv2post_categorylevel4_advanced" class="csv2post_multiselect_menu">
+                <option value="notselected">Exclude</option>
                 <?php 
-                $current_value = '';
-                $default_selected = '';
-                if(isset($csv2post_project_array['categories']['level5']['description'])){$current_value = $csv2post_project_array['categories']['level5']['description'];}
-                else{$default_selected = 'selected="selected"';}
-                ?>
-                
-                <option value="notselected" <?php echo $default_selected;?>>No Description Required</option>
-                                 
-                <?php csv2post_display_template_options($current_value,'categorydescription');?>
-                                                                                                                            
+                if(isset($csv2post_project_array['categories']['level4']['table']) && isset($csv2post_project_array['categories']['level4']['column'])){
+                    csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code,$csv2post_project_array['categories']['level4']['table'],$csv2post_project_array['categories']['level4']['column']);    
+                }else{
+                    csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code);            
+                }?>                                                                                                                     
             </select>  
               
             <script>
-            $("#csv2post_categorylevel5_description ").multiselect({
+            $("#csv2post_categorylevel4_advanced").multiselect({
                multiple: false,
-               header: "Select Level Five Template",
-               noneSelectedText: "Select Level Five Template",
+               header: "Select Level Four Categories",
+               noneSelectedText: "Select Level Four Categories",
                selectedList: 1
             });
-            </script>    
+            </script>
             </td></tr>
-                                        
+            <tr><td>
+            Level 5:</td><td><select name="csv2post_categorylevel5_advanced" id="csv2post_categorylevel5_advanced" class="csv2post_multiselect_menu">
+                <option value="notselected">Exclude</option>
+                <?php 
+                if(isset($csv2post_project_array['categories']['level5']['table']) && isset($csv2post_project_array['categories']['level5']['column'])){
+                    csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code,$csv2post_project_array['categories']['level5']['table'],$csv2post_project_array['categories']['level5']['column']);    
+                }else{
+                    csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code);            
+                }?>                                                                                                                     
+            </select>  
+              
+            <script>
+            $("#csv2post_categorylevel5_advanced ").multiselect({
+               multiple: false,
+               header: "Select Level Five Categories",
+               noneSelectedText: "Select Level Five Categories",
+               selectedList: 1
+            });
+            </script>
+            </td></tr>
+        
         </table>
-    
-    <?php }?>
         
     <br />
+    </div>
+    <div class="csv2post_forms_div">
+        <h4>Category Description Templates</h4>
+        <?php 
+        if(csv2post_count_contenttemplates('categorydescription') == 0){
+            echo '<p><strong>You do not have any category description templates. Please create one or more on the Content screen.</strong></p>';
+        }else{?>
+
+            <table>
+            
+                <tr><td>Level 1:</td><td>
+                <select name="csv2post_categorylevel1_description" id="csv2post_categorylevel1_description" class="csv2post_multiselect_menu">
+                    <option value="notselected">No Description Required</option>
+                    
+                    <?php 
+                    $current_value = '';
+                    if(isset($csv2post_project_array['categories']['level1']['description'])){$current_value = $csv2post_project_array['categories']['level1']['description'];}
+                    ?>
+                     
+                    <?php csv2post_display_template_options($current_value,'categorydescription');?>
+                                                                                                                                
+                </select>  
+                  
+                <script>
+                $("#csv2post_categorylevel1_description ").multiselect({
+                   multiple: false,
+                   header: "Select Level One Template",
+                   noneSelectedText: "Select Level One Template",
+                   selectedList: 1
+                });
+                </script>    
+                </td></tr>
+
+                <tr><td>Level 2:</td><td>
+                <select name="csv2post_categorylevel2_description" id="csv2post_categorylevel2_description" class="csv2post_multiselect_menu">
+                    <option value="notselected">No Description Required</option>
+                    
+                    <?php 
+                    $current_value = '';
+                    if(isset($csv2post_project_array['categories']['level2']['description'])){$current_value = $csv2post_project_array['categories']['level2']['description'];}
+                    ?>
+                     
+                    <?php csv2post_display_template_options($current_value,'categorydescription');?>
+                                                                                                                                
+                </select>  
+                  
+                <script>
+                $("#csv2post_categorylevel2_description ").multiselect({
+                   multiple: false,
+                   header: "Select Level Two Template",
+                   noneSelectedText: "Select Level Two Template",
+                   selectedList: 1
+                });
+                </script>    
+                </td></tr>
+
+                <tr><td>Level 3:</td><td>
+                <select name="csv2post_categorylevel3_description" id="csv2post_categorylevel3_description" class="csv2post_multiselect_menu">
+                    <option value="notselected">No Description Required</option>
+                    
+                    <?php 
+                    $current_value = '';
+                    if(isset($csv2post_project_array['categories']['level3']['description'])){$current_value = $csv2post_project_array['categories']['level3']['description'];}
+                    ?>
+                    
+                    <?php csv2post_display_template_options($current_value,'categorydescription');?>
+                                                                                                                                
+                </select>  
+                  
+                <script>
+                $("#csv2post_categorylevel3_description ").multiselect({
+                   multiple: false,
+                   header: "Select Level Three Template",
+                   noneSelectedText: "Select Level Three Template",
+                   selectedList: 1
+                });
+                </script>    
+                </td></tr>
+                
+                <tr><td>Level 4:</td><td>
+                <select name="csv2post_categorylevel4_description" id="csv2post_categorylevel4_description" class="csv2post_multiselect_menu">
+                    <option value="notselected">No Description Required</option>
+                    
+                    <?php 
+                    $current_value = '';
+                    if(isset($csv2post_project_array['categories']['level4']['description'])){$current_value = $csv2post_project_array['categories']['level4']['description'];}
+                    ?>
+                     
+                    <?php csv2post_display_template_options($current_value,'categorydescription');?>
+                                                                                                                                
+                </select>  
+                  
+                <script>
+                $("#csv2post_categorylevel4_description ").multiselect({
+                   multiple: false,
+                   header: "Select Level Four Template",
+                   noneSelectedText: "Select Level Four Template",
+                   selectedList: 1
+                });
+                </script>    
+                </td></tr>
+                
+                <tr><td>Level 5:</td><td>
+                <select name="csv2post_categorylevel5_description" id="csv2post_categorylevel5_description" class="csv2post_multiselect_menu">
+
+                    <?php 
+                    $current_value = '';
+                    $default_selected = '';
+                    if(isset($csv2post_project_array['categories']['level5']['description'])){$current_value = $csv2post_project_array['categories']['level5']['description'];}
+                    else{$default_selected = 'selected="selected"';}
+                    ?>
+                    
+                    <option value="notselected" <?php echo $default_selected;?>>No Description Required</option>
+                                     
+                    <?php csv2post_display_template_options($current_value,'categorydescription');?>
+                                                                                                                                
+                </select>  
+                  
+                <script>
+                $("#csv2post_categorylevel5_description ").multiselect({
+                   multiple: false,
+                   header: "Select Level Five Template",
+                   noneSelectedText: "Select Level Five Template",
+                   selectedList: 1
+                });
+                </script>    
+                </td></tr>
+                                            
+            </table>
+        
+        <?php }?>
+    </div>
+    <div style="clear:both;"></div>    
+
     
+    <?php
+    // add the javascript that will handle our form action, prevent submission and display dialogue box
+    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+
+    // add end of form - dialogue box does not need to be within the <form>
+    csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
+
+    <?php csv2post_jquery_form_prompt($jsform_set);?>
+
+<?php csv2post_panel_footer();
+}?> 
+
+<?php
+if(!$csv2post_is_free && is_plugin_active('ultimate-taxonomy-manager' . '/'. 'ultimate-taxonomy-manager.php' )){
+++$panel_number;// increase panel counter so this panel has unique ID
+$panel_array = array();
+$panel_array['panel_name'] = 'ultimatetaxonomymanagercategories';// slug to act as a name and part of the panel ID 
+$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
+$panel_array['panel_title'] = __('Category Custom Taxonomy Fields (Ultimate Taxonomy Manager)');// user seen panel header text 
+$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
+$panel_array['tabnumber'] = $csv2post_tab_number; 
+$panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
+$panel_array['panel_intro'] = __('Setup taxonomies for the Ultimate Taxonomy Manager plugin');
+$panel_array['panel_help'] = __('If you are seeing this panel you must have the Ultimate Taxonomy Manager plugin
+activated in your Wordpress blog. This panel allows you to fulfill the requirements of this plugin by selecting
+a column of data for each custom taxonomy. It is specifically designed for custom fields created for categories
+in relation too the categories you have setup in this plugin. If you do not setup categories using this plugin,
+do not use this feature. Let us know if you require the need to use content templates for populating values with.');
+$panel_array['help_button'] = csv2post_helpbutton_text(true,true);
+// Form Settings - create the array that is passed to jQuery form functions
+$jsform_set_override = array();
+$jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);               
+$jsform_set['dialoguebox_title'] = 'Saving Ultimate Taxonomy Manager Category Custom Fields';
+$jsform_set['noticebox_content'] = 'Do you want to continue saving?';
+### TODO:HIGHPRIORITY, add default category option ?>
+<?php csv2post_panel_header( $panel_array );?>
+
+    <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');?>
+
+        <?php
+        // get ultimate taxonomy manager custom taxonomies
+        $catfields = csv2post_sql_ultimatetaxonomymanager_taxonomyfield();### TODO:LOWPRIORITY, change this too a function that gets category related custom fields only
+        if(!$catfields){
+            
+            echo csv2post_notice('You do not appear to have used Ultimate Taxonomy Manager to create any custom taxonomy fields yet.','info','Large','No Custom Taxonomy Fields','','return');
+           
+        }else{?>
+           
+            <?php 
+            for($i = 1; $i < 6; $i++){?>
+            
+                <div class="csv2post_forms_div">
+
+                    <h4>Category Custom Fields - Level <?php echo $i;?></h4>
+                    <table>
+                    <?php 
+                        foreach ($catfields as $catfield){?>
+                        
+                            <tr><td><?php echo $catfield->field_label; ?></td><td>
+                            <select name="csv2post_utm_categorylevel<?php echo $i;?>_<?php echo $catfield->field_name;?>" id="csv2post_utm_categorylevel<?php echo $i;?>_<?php echo $catfield->field_name;?>" class="csv2post_multiselect_menu">
+                                <option value="notselected">Exclude</option>
+                                
+                                <?php 
+                                $current_table = '';
+                                if(isset($csv2post_project_array['categories']['level'.$i]['utm'][$catfield->field_name]['table'])){
+                                    $current_table = $csv2post_project_array['categories']['level'.$i]['utm'][$catfield->field_name]['table'];
+                                }
+                                
+                                $current_column = '';
+                                if(isset($csv2post_project_array['categories']['level'.$i]['utm'][$catfield->field_name]['column'])){
+                                    $current_column = $csv2post_project_array['categories']['level'.$i]['utm'][$catfield->field_name]['column'];
+                                }?>
+                                 
+                                <?php csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code,$current_table,$current_column); ?>
+                                                                                                                                            
+                            </select>  
+                              
+                            <script>
+                            $("#csv2post_utm_categorylevel<?php echo $i;?>_<?php echo $catfield->field_name;?>").multiselect({
+                               multiple: false,
+                               header: "Select Level <?php echo $i;?> Template",
+                               noneSelectedText: "Select Level <?php echo $i;?> Template",
+                               selectedList: 1
+                            });
+                            </script>    
+                            </td></tr>
+                    <?php } ?>
+                    </table>
+
+                </div>
+            
+            <?php 
+            }?>
+                                
+            <div style="clear:both;"></div>    
+        <?php 
+        }// end if $catfields
+        ?>
+        
     <?php
     // add the javascript that will handle our form action, prevent submission and display dialogue box
     csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
@@ -639,3 +742,30 @@ $jsform_set['noticebox_content'] = 'Do you want to save category mapping rules n
 <?php ### TODO:LOWPRIORITY,add panel that shows columns created with heirarchy ?> 
 
 <?php ### TODO:LOWPRIORITY, add category tools panel (undo categories,categories data test for any possible issues based on settings)?> 
+
+<?php
+if($csv2post_is_dev && isset($csv2post_project_array)){
+    ++$panel_number;// increase panel counter so this panel has unique ID
+    $panel_array = array();
+    $panel_array['panel_name'] = 'categoriesarraydump';// slug to act as a name and part of the panel ID 
+    $panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
+    $panel_array['panel_title'] = __('Categories Array Dump');// user seen panel header text 
+    $panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
+    $panel_array['tabnumber'] = $csv2post_tab_number; 
+    $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
+    $panel_array['panel_intro'] = __('A dump of your Current Project category settings');
+    $panel_array['panel_help'] = __('The array dump shows the values that CSV 2 POST works with and is intended for advanced users. This panel only shows when Developer Mode is active, with the idea that only developers would really have use for what is then displayed. The more data in this array, the higher chance there is of post creation being slower. Not because there are more values in this array, but because the values trigger more functions to be used. If you see values in the array for settings and features you realise you do not need. It is recommended that you remove them by visiting the applicable screens and panels.');
+    $panel_array['help_button'] = csv2post_helpbutton_text(false,true);?>
+    <?php csv2post_panel_header( $panel_array );?>
+
+        <?php
+        if(!isset($csv2post_project_array['categories'])){
+            echo '<p>No categories or category rules setup for this project, category with ID one will be the default.</p>';    
+        }else{ 
+            echo '<pre>';
+            var_dump($csv2post_project_array['categories']);
+            echo '</pre>';    
+        }?>        
+ 
+    <?php csv2post_panel_footer();
+}?>

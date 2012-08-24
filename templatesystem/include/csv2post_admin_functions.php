@@ -586,11 +586,15 @@ function csv2post_delete_dataimportjob_postrequest($jobcode,$output = true){
     $deleteoption_result = csv2post_delete_dataimportjob_optionrecord($jobcode);
     if($deleteoption_result != false){
         if($output){
-            csv2post_notice('Data import job named '.$csv2post_dataimportjobs_array[$jobcode]['name'].' has been deleted.','success','Extra'); 
+            csv2post_notice('Data import job named '.$csv2post_dataimportjobs_array[$jobcode]['name'].' has been 
+            deleted.','success','Extra'); 
         }    
     }else{
         if($output){
-            csv2post_notice('Data import job named '.$csv2post_dataimportjobs_array[$jobcode]['name'].' could not be deleted. The Wordpress option record for this job may still be in the options table and require manual removal. Please report this issue. If however you already removed the option record manually being this action then that may cause this error and it can be ignored.','error','Extra'); 
+            csv2post_notice('Data import job named '.$csv2post_dataimportjobs_array[$jobcode]['name'].' could not be 
+            deleted. The Wordpress option record for this job may still be in the options table and require manual 
+            removal. Please report this issue. If however you already removed the option record manually being this 
+            action then that may cause this error and it can be ignored.','error','Extra'); 
         }
         $function_outcome = false;
     }
@@ -729,15 +733,19 @@ function csv2post_extract_value_from_string_between_two_values($start_limiter,$e
 */
 function csv2post_update_default_contenttemplate($project_code,$template_id){
     global $csv2post_project_array;  
-    // add template id (post id) to project default_contenttemplate_id value
     $csv2post_project_array['default_contenttemplate_id'] = $template_id;
     return csv2post_update_option_postcreationproject($project_code,$csv2post_project_array);        
 }
 
 function csv2post_update_default_titletemplate($project_code,$template_id){
     global $csv2post_project_array;  
-    // add template id (post id) to project default_titletemplate_id value
     $csv2post_project_array['default_titletemplate_id'] = $template_id;
+    return csv2post_update_option_postcreationproject($project_code,$csv2post_project_array);        
+}
+
+function csv2post_update_default_excerpttemplate($project_code,$template_id){
+    global $csv2post_project_array;  
+    $csv2post_project_array['default_excerpttemplate_id'] = $template_id;
     return csv2post_update_option_postcreationproject($project_code,$csv2post_project_array);        
 }
 

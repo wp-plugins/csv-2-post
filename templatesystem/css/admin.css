@@ -6,6 +6,10 @@ Site: www.csv2post.com
 Email: zara@wordpresscsvimpoter.com
 */
 
+.csv2post_forms_div{  
+    padding: 10px 10px 10px 10px;
+}
+
 .csv2post_boxintro_div{
     padding-top: 20px;
     padding-right: 10px;
@@ -129,7 +133,6 @@ a.checkbox-deselect {
     width: 350px; 
     display: none;
 }
-
 /**
 * Multiselect Menu End
 */

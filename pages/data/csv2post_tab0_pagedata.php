@@ -238,6 +238,39 @@ $jsform_set['noticebox_content'] = 'Do you want to run the full series of tests 
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
 $panel_array = array();
+$panel_array['panel_name'] = 'deletecsvfiles';// slug to act as a name and part of the panel ID 
+$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
+$panel_array['panel_title'] = __('Delete CSV File');// user seen panel header text 
+$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
+$panel_array['tabnumber'] = $csv2post_tab_number; 
+$panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
+$panel_array['panel_intro'] = __('A list of used files, scroll further down to view import jobs');
+$panel_array['panel_help'] = __('Refreshing the browser will show the latest statistics in this table if you have imported data on this page. This list of files are those used in data import jobs. If a file shows twice it is because you are using it in more than one job. This panel is not for importing data. Scroll further down the Import screen to view individual job panels to begin manual data importing and view their progress.');
+$panel_array['help_button'] = csv2post_helpbutton_text(false,false);
+$jsform_set_override = array();
+$jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
+$jsform_set['dialoguebox_title'] = 'Delete CSV File';
+$jsform_set['noticebox_content'] = 'You are about to delete the selected CSV file. If it is in use by a Data Import Job or a project, CSV 2 POST will prevent the deletion. Do you wish to continue?';?>
+<?php csv2post_panel_header( $panel_array );?>
+ 
+    <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form');?>
+     
+    <?php csv2post_csv_files_list();?>
+
+    <?php
+    // add the javascript that will handle our form action, prevent submission and display dialogue box
+    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+
+    // add end of form - dialogue box does not need to be within the <form>
+    csv2post_formend_standard('Run Test',$jsform_set['form_id']);?>
+
+    <?php csv2post_jquery_form_prompt($jsform_set);?>
+        
+<?php csv2post_panel_footer();?> 
+
+<?php
+++$panel_number;// increase panel counter so this panel has unique ID
+$panel_array = array();
 $panel_array['panel_name'] = 'usedcsvfilelist';// slug to act as a name and part of the panel ID 
 $panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('Used CSV File List');// user seen panel header text 
@@ -248,16 +281,16 @@ $panel_array['panel_intro'] = __('A list of used files, scroll further down to v
 $panel_array['panel_help'] = __('Refreshing the browser will show the latest statistics in this table if you have imported data on this page. This list of files are those used in data import jobs. If a file shows twice it is because you are using it in more than one job. This panel is not for importing data. Scroll further down the Import screen to view individual job panels to begin manual data importing and view their progress.');
 $panel_array['help_button'] = csv2post_helpbutton_text(false,false);?>
 <?php csv2post_panel_header( $panel_array );?>
- 
+    
     <?php $usedcsvfile_count = csv2post_used_csv_file_list();?>
     
     <?php
     if($usedcsvfile_count == 0){
-        csv2post_notice('You do not have any data import jobs and so no CSV files are in use either.','info','Small');
+        echo csv2post_notice('You do not have any data import jobs and so no CSV files are in use either.','info','Small',false,'','return');
     }?>
-
+     
 <?php csv2post_panel_footer();?> 
-
+          
 <?php
 if($csv2post_is_dev){
     

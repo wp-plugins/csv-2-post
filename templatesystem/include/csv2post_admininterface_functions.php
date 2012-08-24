@@ -123,6 +123,9 @@ function csv2post_header_page($pagetitle,$layout){
         <h2><?php echo $pagetitle;?></h2>
 
         <?php 
+        ### TODO:LOWPRIORITY, add an information ticker, occasionally displaying a notification with helpful info
+        # 1.Recommend 
+        
         // check existing plugins and give advice or warnings
         csv2post_plugin_conflict_prevention();
                  
@@ -536,14 +539,14 @@ function csv2post_viewhistory($filter_array){
     // if file exists continue
     if(!$logfileexists_result){
         
-        csv2post_notice('The log file for recording installation entries does not appear to exist. This may be because log recording is not active or
+        echo csv2post_notice('The log file for recording installation entries does not appear to exist. This may be because log recording is not active or
         permissions are preventing the history file being created. This is not an error. 
         <br /><br />
         '.csv2post_formstart_standard('csv2post_createlogfile','none','post','').'
             <button class="button" name="csv2post_createlogfile">Create Log File Now</button>
             <input type="hidden" name="csv2post_createlogfile_1" value="true">
             <input type="hidden" name="csv2post_logtype" value="'.$logtype.'">
-        </form>', 'warning', 'Extra', __(ucfirst($filter_array['logfile']) . ' Log File Not Located'));
+        </form>', 'warning', 'Extra', __(ucfirst($filter_array['logfile']) . ' Log File Not Located'),'','return');
         
     }else{
         // include PEAR CSV
@@ -612,15 +615,15 @@ function csv2post_log_table($logrow){
 function csv2post_install_optionstatus_list(){
 
     if(get_option('csv2post_adminset')){
-        csv2post_notice('csv2post_adminset is installed', 'success', 'Small', false);
+        echo csv2post_notice('csv2post_adminset is installed', 'success', 'Small', false,'','return');
     }else{
-        csv2post_notice('csv2post_adminset not installed <a class="button" href="'.csv2post_currenturl().'&test=test">Install Now</a>', 'error', 'Small', false);
+        echo csv2post_notice('csv2post_adminset not installed <a class="button" href="'.csv2post_currenturl().'&test=test">Install Now</a>', 'error', 'Small', false,'','return');
     }
 
     if(get_option('csv2post_publicset')){
-        csv2post_notice('csv2post_publicset is installed', 'success', 'Small', false);
+        echo csv2post_notice('csv2post_publicset is installed', 'success', 'Small', false,'','return');
     }else{
-        csv2post_notice('csv2post_publicset not installed <a class="button" href="'.csv2post_currenturl().'&test=test">Install Now</a>', 'error', 'Small', false);
+        echo csv2post_notice('csv2post_publicset not installed <a class="button" href="'.csv2post_currenturl().'&test=test">Install Now</a>', 'error', 'Small', false,'','return');
     } 
 }
 
@@ -973,8 +976,8 @@ function csv2post_get_mysqlversion() {
 */
 function csv2post_notice_filesizetotal($mb){
     if($mb > 104857600){
-        csv2post_notice('Your CSV files combined size is larger than 100MB, it is recommended that you delete any files
-        not in use to reduce memory usage and increase plugin interface performance','notice','Tiny','','');
+        echo csv2post_notice('Your CSV files combined size is larger than 100MB, it is recommended that you delete any files
+        not in use to reduce memory usage and increase plugin interface performance','notice','Tiny','','','return');
     }      
 }
 
@@ -992,7 +995,7 @@ function csv2post_available_csv_file_list(){
  
     if (!is_dir(WTG_C2P_CONTENTFOLDER_DIR)) {
     
-        csv2post_notice('The content folder does not exist, has it been deleted or move?','error','Small','','');
+        echo csv2post_notice('The content folder does not exist, has it been deleted or move?','error','Small','','','return');
                    
     }else{    
         
@@ -1000,7 +1003,7 @@ function csv2post_available_csv_file_list(){
         
         if(!$opendir_result){
             
-            csv2post_notice(WTG_C2P_PLUGINTITLE . ' does not have permission to open the plugins content folder','error','Small','','');
+            echo csv2post_notice(WTG_C2P_PLUGINTITLE . ' does not have permission to open the plugins content folder','error','Small','','','return');
 
         }else{
 
@@ -1320,7 +1323,34 @@ function csv2post_display_all_post_contentdesigns_buttonlist(){
     $myposts = get_posts( $args );
     
     if(count($myposts) == 0){
-        echo 'You do not have any content templates linked in your current project';
+        echo 'You do not have any content templates';
+    }
+        
+    foreach( $myposts as $post ){?>
+        <div class="jquerybutton">
+            <input type='submit' value='<?php echo $post->post_title;?> (<?php echo $post->ID;?>)' name="csv2post_templatename_and_id" />
+        </div><?php 
+    }; 
+}
+
+function csv2post_display_all_post_excerptdesigns_buttonlist(){
+   
+    $args = array(
+        'post_type' => 'wtgcsvcontent',
+        'numberposts' => 999,
+        'meta_query' => array(
+            array(
+                'key' => '_csv2post_templatetypes',
+                'value' => 'postexcerpt',
+            )        
+        )
+    );
+ 
+    global $post;
+    $myposts = get_posts( $args );
+    
+    if(count($myposts) == 0){
+        echo 'You do not have any excerpt templates';
     }
         
     foreach( $myposts as $post ){?>
@@ -1378,33 +1408,47 @@ function csv2post_display_all_titledesigns_buttonlist(){
 }
 
 /**
-* Displays checkbox menu holding all the designs for the giving project
-* @todo CRITICAL, improve the id to make it more unique as this menu will be used many times 
+* Displays checkbox buttons for project content templates 
 */
-function csv2post_displayproject_contenttemplates_buttonlist($form_id){
+function csv2post_displayproject_templates_buttonlist($form_id,$template_type = 'postcontent'){
     global $csv2post_currentproject_code;
     
     $default_template_id = csv2post_get_default_contenttemplate_id( $csv2post_currentproject_code );
     $current_default_template_text = '';
-      
-    $args = array(
-        'post_type' => 'wtgcsvcontent',
-        'numberposts' => 999,
-        'meta_query' => array(
-            array(
-                'key' => 'csv2post_project_id',
-                'value' => $csv2post_currentproject_code,
-            ), 
-            array(
-                'key' => '_csv2post_templatetypes',
-                'value' => 'postcontent',
-            )        
-        )
-    );
+    
+    if($template_type == 'all'){
+        // this query does not include template type
+        $args = array(
+            'post_type' => 'wtgcsvcontent',
+            'numberposts' => 999,
+            'meta_query' => array(
+                array(
+                    'key' => 'csv2post_project_id',
+                    'value' => $csv2post_currentproject_code,
+                )     
+            )
+        );        
+    }else{  
+        // this query includes template type
+        $args = array(
+            'post_type' => 'wtgcsvcontent',
+            'numberposts' => 999,
+            'meta_query' => array(
+                array(
+                    'key' => 'csv2post_project_id',
+                    'value' => $csv2post_currentproject_code,
+                ), 
+                array(
+                    'key' => '_csv2post_templatetypes',
+                    'value' => $template_type,
+                )        
+            )
+        );
+    }
 
     $myposts = get_posts( $args );
     if(count($myposts) == 0){
-        echo 'You do not have any post content templates linked in your current project';
+        echo 'You do not have any of these templates linked in your current project';
     }
 
     foreach( $myposts as $post ){
@@ -2761,18 +2805,34 @@ function csv2post_display_databasetables_withjobnames($checkbox_column = false,$
 */
 function csv2post_display_categories_options($current_value){
 
-    global $csv2post_project_array;
-    
     $cats = get_categories('hide_empty=0&echo=0&show_option_none=&style=none&title_li=');
 
     foreach( $cats as $c ){ 
         
         // apply selected value to current save
+        $selected = '';
         if( $current_value == $c->term_id ) {
             $selected = 'selected="selected"';
         }
         
         echo '<option value="'.$c->term_id.'" '.$selected.'>'. $c->term_id . ' - ' . $c->name .'</option>'; 
+    }            
+    
+}
+
+function csv2post_display_users_options($current_value){
+
+    $blogusers = get_users('blog_id=1&orderby=nicename');
+
+    foreach ($blogusers as $user){ 
+        
+        // apply selected value to current save
+        $selected = '';
+        if( $current_value == $user->user_ID ) {
+            $selected = 'selected="selected"';
+        }
+        
+        echo '<option value="'.$user->ID.'" '.$selected.'>'. $user->ID . ' - ' . $user->display_name .'</option>'; 
     }            
     
 }
@@ -3252,7 +3312,7 @@ function csv2post_display_designtype_menu($post_id){
 * 2. displays the age of files for knowing when a file was last updated
 * 3. Check for each files stored profile
 * 4. Goes through data import projects, adds multiple entries of one file if the file exists in more than one project
-* 
+*                      
 * @todo HIGHPRIORITY, each file may exist in more than one data import project, so we must check this then add the file too table
 * @todo MEDIUMPRIORITY, if more than 20 files are listed, create a message recommending cleanup for interface speed improvement
 * @todo LOWPRIORITY, use DataTables with ability to click and view more information plus delete files.
@@ -3260,7 +3320,7 @@ function csv2post_display_designtype_menu($post_id){
 * @todo LOWPRIORITY, check CSV files in plugin header and establish a CSV file array
 */
 function csv2post_used_csv_file_list(){
-    global $csv2post_dataimportjobs_array          ;
+    global $csv2post_dataimportjobs_array;
     
     if(!$csv2post_dataimportjobs_array){echo '<strong>You do not have any data import jobs</strong>';return 0;}
     
@@ -3457,5 +3517,96 @@ function csv2post_menu_options_job_csvfiles($jobcode){
 */
 function csv2post_link_toadmin($page,$values = ''){
     return get_admin_url() . 'admin.php?page=' . $page . $values;
-}                                                                                                                              
+}   
+
+/**
+* put your comment there...
+* 
+*/
+function csv2post_csv_files_list(){
+    $available = 0;
+ 
+    if (!is_dir(WTG_C2P_CONTENTFOLDER_DIR)) {
+    
+        echo csv2post_notice('The content folder does not exist, has it been deleted or move?','error','Small','','','return');
+                   
+    }else{    
+        
+        @$opendir_result = opendir( WTG_C2P_CONTENTFOLDER_DIR );
+        
+        if(!$opendir_result){
+            
+            echo csv2post_notice(WTG_C2P_PLUGINTITLE . ' does not have permission to open the plugins content folder','error','Small','','','return');
+
+        }else{
+
+            echo '
+            <table class="widefat post fixed">
+                <tr class="first">
+                    <td width="50"><strong>Delete</strong></td>
+                    <td width="175"><strong>Name</strong></td>
+                    <td width="80"><strong>Separator (plugin)</strong></td>                    
+                    <td width="80"><strong>Separator (pear)</strong></td>
+                    <td width="75"><strong>Columns (pear)</strong></td>                    
+                    <td width="75"><strong>Rows</strong></td>
+                    <td><strong>Size</strong></td>                                                       
+                </tr>';  
+            
+            $filesize_total = 0;
+                
+            while( false != ( $filename = readdir( $opendir_result ) ) ){
+                if( ($filename != ".") and ($filename != "..") ){
+                    
+                    $fileChunks = explode(".", $filename);
+                                      
+                    // ensure file extension is csv
+                    if( isset( $fileChunks[1] ) && $fileChunks[1] == 'csv'){
+                        
+                        $file_path = WTG_C2P_CONTENTFOLDER_DIR . '/' . $filename;
+                        $thefilesize = filesize($file_path);
+                        $filesize_total = $thefilesize;
+
+                        $sep_fget = csv2post_establish_csvfile_separator_fgetmethod($filename,false );                           
+                        $sep_PEARCSV = csv2post_establish_csvfile_separator_PEARCSVmethod($filename,false); 
+                        
+                        echo '
+                        <tr>
+                            <td>';?>
+                            
+                            <script>
+                            $(function() {
+                                $( "#csv2post_deletecsvfile_radio_<?php echo $fileChunks[0];?>" ).buttonset();
+                            });
+                            </script>
+
+                            <div id="csv2post_deletecsvfile_radio_<?php echo $fileChunks[0];?>">                    
+                                <input type="radio" name="csv2post_delete_csvfiles[]" id="csv2post_delete_csvfiles_<?php echo $fileChunks[0];?>" value="<?php echo $filename;?>" />
+                                <label for="csv2post_delete_csvfiles_<?php echo $fileChunks[0];?>">*</label>                     
+                            </div>                         
+                         
+                        <?php     
+                        echo '</td>
+                            <td>'.$filename.'</td>
+                            <td>'.$sep_fget.'</td>                            
+                            <td>'.$sep_PEARCSV.'</td>
+                            <td>'.csv2post_establish_csvfile_fieldcount_PEAR($filename).'</td>                            
+                            <td>'.count(file(WTG_C2P_CONTENTFOLDER_DIR . '/' .$filename)).'</td>
+                            <td>'.csv2post_format_file_size($thefilesize).'</td>                                                                                    
+                        </tr>';                    
+                        
+                    }// end if csv
+                    
+                }// end if $filename = .  
+            }// end while    
+                 
+            echo '</table>';
+            
+            csv2post_notice_filesizetotal($filesize_total);
+
+            // clear stored values
+            clearstatcache();
+
+        }// end $opendir_result
+    }     
+}                                                                                                                           
 ?>

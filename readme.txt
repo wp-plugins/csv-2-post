@@ -97,6 +97,27 @@ first plugin was created in 2009 and was halted pending re-development.
 6. You can use up to 3 columns of data to create 3 levels of categories.
  
 == Changelog == 
+= 6.6.0 =
+* Public Messages
+    * Big thanks to everyone for feedbacking, Tyler Smith for his patience and Al for offering complete code to add to the plugin
+    * I have decided to design panel content wider than I have until now, wider tables and more horizontal fluidic forms so that we can make better use of larger screens (please give feedback on this)
+* Bug Fixes
+    * (minor) Default category selection is now displayed in menu (was always saving, just not being shown as so in menu)
+    * (critical) $cat_term variable in category function loop was not being unset (causing levels 4 and 5 category creation with the level 3 term even if 4 and 5 not set)
+* General Improvements
+    * New tab added to Your Projects page named Authors
+    * Default author selection now possible (advanced author import and assignment coming soon)
+    * Can setup post excerpt by creating a template and selecting Post Excerpt in types menu
+    * Post status can now be selected on a projects Creation panel (Your Creation page)
+    * New panel named Delete CSV Files on the Your Data page, Start screen
+    * Added a panel on Categories for the Ultimate Taxonomy Manager plugin as requested from Albert (more testing required)
+* Key Technical Improvements
+    * Advanced post creation now makes use of csv2post_post_poststatus_calculate()
+    * csv2post_get_contenttemplate_design() renamed to csv2post_get_template_design()
+* Known Issues
+    * (minor) Lightbox type overlay applied by jQuery UI dialogue, on 2. Your Projects page, appears to have two overlays (there is a light gap between two of them)
+* Web Services, Support and Websites changes
+    * None
    
 = 6.5.9 =
 * Public Messages

@@ -524,5 +524,5 @@ function csv2post_sql_used_records($table_name,$number_of_records = 1){
     IS NOT NULL 
     LIMIT '. $number_of_records,ARRAY_A ); 
 
-}
+}          
 ?>

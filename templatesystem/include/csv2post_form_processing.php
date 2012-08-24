@@ -48,7 +48,7 @@ if($cont){
     
     // Save template
     $cont = csv2post_form_save_contenttemplate();
-    
+
     // Dynamic content rule (by value)
     $cont = csv2post_form_save_contenttemplatedesign_condition_byvalue();
     
@@ -132,6 +132,12 @@ if($cont){
     
     // Save post titles data column
     $cont = csv2post_form_save_title_data_column();
+    
+    // Save Ultimate Taxonomy Manager category custom field settings
+    $cont = csv2post_form_save_ultimatetaxonomymanager_categories();
+    
+    // Save default author
+    $cont = csv2post_form_save_default_author();
 }
 
 // Creation Screen
@@ -199,6 +205,77 @@ if($cont){
     $cont = csv2post_form_createcontentfolder();
     $cont = csv2post_form_deletecontentfolder();    
 }
+  
+/**
+* Saves default author 
+*/
+function csv2post_form_save_default_author(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'defaultauthor'){
+        global $csv2post_project_array,$csv2post_currentproject_code;
+
+        if($_POST['notselected'] == 'notselected' || !is_numeric($_POST['notselected'])){
+            csv2post_notice('You did not select an author, please try again.','error','Large','No Author Selected','','echo');
+            return false;
+        }
+        
+        $csv2post_project_array['defaultauthor'] = $_POST['notselected'];
+        
+        csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array); 
+
+        csv2post_notice('Your default author has been saved.','success','Large','Default Author Saved','','echo');
+         
+        return false;
+    }else{
+        return true;
+    }       
+} 
+  
+/**
+* Save Ultimate Taxonomy Manager category settings
+*/
+function csv2post_form_save_ultimatetaxonomymanager_categories(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ultimatetaxonomymanagercategories'){
+        global $csv2post_project_array,$csv2post_currentproject_code;
+        
+        // get and loop through ultimate taxonomy manager taxonomy fields 
+        ### TODO:LOWPRIORITY, change this to only cycle through category related custom fields and do the same with the interface in categories screen        
+        $catfields = csv2post_sql_ultimatetaxonomymanager_taxonomyfield();### TODO:LOWPRIORITY, change this too a function that gets category related custom fields only
+        if(!$catfields){
+            
+            echo csv2post_notice('You do not appear to have used Ultimate Taxonomy Manager to create any custom taxonomy fields yet.','info','Large','No Custom Taxonomy Fields','','return');
+            return false;
+            
+        }else{    
+          
+            // loop 5 times for five levels of categories
+            for($i = 1; $i < 6; $i++){
+                
+                // now loop through category fields
+                foreach ($catfields as $catfield){
+                    
+                    // did user make selection for current field and current category level
+                    if(isset($_POST['csv2post_utm_categorylevel'.$i.'_myfieldone'])){
+                    
+                        $csv2post_project_array['categories']['level'.$i]['utm'][$catfield->field_name]['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_utm_categorylevel'.$i.'_'.$catfield->field_name]);
+                        $csv2post_project_array['categories']['level'.$i]['utm'][$catfield->field_name]['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_utm_categorylevel'.$i.'_'.$catfield->field_name]);            
+   
+                    }
+                }
+            } 
+        
+        }  
+
+        csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array); 
+
+        csv2post_notice('You have saved category taxonomy settings for using with Ultimate Taxonomy Manager plugin.',
+        'success','Large','Ultimate Taxonomy Manager Category Settings Saved','','echo');
+        
+        return false;
+    }else{
+        return true;
+    }       
+}       
+  
 
 /**
 * Save title data column
@@ -1074,9 +1151,16 @@ function csv2post_form_save_default_tags_column(){
 * Process post creation for giving project 
 */
 function csv2post_form_start_post_creation(){
-    global $csv2post_projectslist_array,$csv2post_schedule_array,$csv2post_is_free;
+    global $csv2post_projectslist_array,$csv2post_schedule_array,$csv2post_is_free,$csv2post_project_array,$csv2post_currentproject_code;
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'creation' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'createpostsproject'){
         
+        // store post type in project array
+        if(isset($_POST['csv2post_radio_poststatus'])){
+            $csv2post_project_array['poststatus'] = $_POST['csv2post_radio_poststatus'];
+        }
+        
+        csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
+          
         // free edition processes all records at once, $_POST['csv2post_postsamount'] will not be set
         $target_posts = 999999;
         if(!$csv2post_is_free){
@@ -1813,18 +1897,39 @@ function csv2post_form_save_contenttemplate(){
                 
                 // link the template to the project by adding csv2post_project_id custom meta field 
                 add_post_meta($wpinsertpost_result, 'csv2post_project_id', $csv2post_currentproject_code, false);
-                                
-                // add design type to meta
+        
+                // add design type/s to posts meta
                 if(isset($_POST["csv2post_designtype"])){
-                    if(is_array($_POST["csv2post_designtype"])){
+                    
+                    $count = count($_POST["csv2post_designtype"]);
+                    if($count > 1){
+                        
                         $first = true;
                         foreach($_POST["csv2post_designtype"] as $key => $type){
                             add_post_meta($wpinsertpost_result, '_csv2post_templatetypes', $type, false);   
                         }
     
-                    }else{    
+                    }else{   
+
                         add_post_meta($wpinsertpost_result, '_csv2post_templatetypes', $_POST["csv2post_designtype"], false);
+
+                        // if a single post type selected, set template as the default for the type selected
+                        // excerpt
+                        if($_POST["csv2post_designtype"][0] == 'postexcerpt'){
+                                                 
+                            $setasdefault = '';
+                            $template_id = csv2post_get_default_excerpttemplate_id($csv2post_currentproject_code);
+                            if(!$template_id){
+
+                                // current project has no default content template so we will save the new one as it
+                                csv2post_update_default_excerpttemplate($csv2post_currentproject_code,$wpinsertpost_result);
+                                                   
+                                // extend output message to confirm default also set                    
+                                $setasdefault = ' and it has been set as your current projects default excerpt template.';
+                            }                                
+                        }                
                     }
+             
                 }else{
                     
                     add_post_meta($wpinsertpost_result, '_csv2post_templatetypes', 'postcontent',false);                    
@@ -1836,7 +1941,7 @@ function csv2post_form_save_contenttemplate(){
                     add_post_meta($wpinsertpost_result, '_csv2post_templatetypes', 'seovalue', false);
                 }
            
-                // if current project does not yet have a default content template
+                // if current project does not yet have a default content template we will use this one
                 $setasdefault = '';
                 $template_id = csv2post_get_default_contenttemplate_id($csv2post_currentproject_code);
                 if(!$template_id){
@@ -1847,7 +1952,7 @@ function csv2post_form_save_contenttemplate(){
                     // extend output message to confirm default also set                    
                     $setasdefault = ' and it has been set as your current projects default content template.';
                 }
-                
+                                
                 csv2post_notice('Your new content template has been saved'.$setasdefault.'. You can select it in your projects settings and edit it using the same editor as you created it with.','success','Large','New Template Saved');
             }            
         }

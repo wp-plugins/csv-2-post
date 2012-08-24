@@ -14,7 +14,6 @@ $panel_array['panel_intro'] = 'View the status of option records and database ta
 $panel_array['panel_help'] = 'Wordpress allows us to store settings/options in the options table. Multiple option values can be held in a single record. This panel allows us to quickly view the status of individual option records and any database tables your current configuration requires.';
 $panel_array['help_button'] = csv2post_helpbutton_text(true,false);?>
 <?php csv2post_panel_header( $panel_array );?>
-    
     <?php csv2post_install_optionstatus_list();?>
 <?php csv2post_panel_footer();?> 
 
@@ -30,6 +29,8 @@ $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a
 $panel_array['panel_intro'] = 'Displays all records in the Wordpress options table created by CSV 2 POST';
 $panel_array['panel_help'] = 'This feature does a search for records that begin with "csv2post_". We can use it to fully cleanup the Wordpress option table.'; 
 $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
+### TODO:MEDIUMPRIORITY, merge the critical options record panel with this sort of, display option record 
+### notifications in a table, also add columns for displaying smaller notifications indicating important and status
 ?>
 <?php csv2post_panel_header( $panel_array );?>
     <?php csv2post_display_optionrecordtrace(); ?>       

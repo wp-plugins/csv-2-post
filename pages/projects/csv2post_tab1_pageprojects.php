@@ -21,7 +21,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 ?>
 <?php csv2post_panel_header( $panel_array );?>
                  
-    <form id="csv2post_form_opentemplate_id" action="<?php echo $csv2post_form_action;?>" method="post" name="csv2post_form_opentemplate_name">
+    <form id="csv2post_form_opencontenttemplate_id" action="<?php echo $csv2post_form_action;?>" method="post" name="csv2post_form_opencontenttemplate">
         <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">               
         
         <input type="hidden" name="csv2post_current_project_id" value="<?php echo $csv2post_currentproject_code;?>">
@@ -31,10 +31,44 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
         <?php echo csv2post_get_default_contenttemplate_name();?>
             
         <h4>Current Projects Post Content Templates</h4>
-        <?php csv2post_displayproject_contenttemplates_buttonlist('csv2post_selecttemplate_fromproject_id');?>          
+        <?php csv2post_displayproject_templates_buttonlist('csv2post_selecttemplate_fromproject_id','postcontent');?>          
     
         <h4>All Post Content Designs</h4>
         <?php csv2post_display_all_post_contentdesigns_buttonlist();?>            
+
+    </form>
+
+ <?php csv2post_panel_footer();?> 
+ 
+ <?php  
+++$panel_number;// increase panel counter so this panel has unique ID
+$panel_array = array();
+$panel_array['panel_name'] = 'defaultexcerpttemplate';// slug to act as a name and part of the panel ID 
+$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
+$panel_array['panel_title'] = __('Default Excerpt Template (Currently: '.csv2post_get_default_excerpttemplate_name().')');// user seen panel header text 
+$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
+$panel_array['tabnumber'] = $csv2post_tab_number; 
+$panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
+$panel_array['panel_intro'] = __('Set the default excerpt template');
+$panel_array['panel_help'] = __('You do not need to setup an excerpt for your posts. To apply an excerpt, select Post Excerpt in the Design Type menu then create your template. The first template you create will automatically be set as your default if you only select "Post Excerpt" as the type. If you select more types, please remember to set your excerpt template because the default/main template is only applied when set properly. For advance excerpt rules you can create more but they will only be used when excerpt rules are setup.');
+$panel_array['help_button'] = csv2post_helpbutton_text(false,false);
+?>
+<?php csv2post_panel_header( $panel_array );?>
+                 
+    <form id="csv2post_form_openexcerpttemplate_id" action="<?php echo $csv2post_form_action;?>" method="post" name="csv2post_form_openexcerpttemplate">
+        <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">               
+        
+        <input type="hidden" name="csv2post_current_project_id" value="<?php echo $csv2post_currentproject_code;?>">
+        <input type="hidden" name="csv2post_change_default_excerpttemplate" value="true">        
+
+        <h4>Current Projects Default Excerpt Template</h4> 
+        <?php echo csv2post_get_default_excerpttemplate_name();?>
+            
+        <h4>Current Projects Excerpt Templates</h4>
+        <?php csv2post_displayproject_templates_buttonlist('csv2post_selecttemplate_fromproject_id','postexcerpt');?>          
+    
+        <h4>All Excerpt Designs</h4>
+        <?php csv2post_display_all_post_excerptdesigns_buttonlist();?>            
 
     </form>
 
@@ -55,14 +89,14 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 ?>
 <?php csv2post_panel_header( $panel_array );?>
 
-    <form id="csv2post_form_opentemplate_id" method="post" name="csv2post_form_opentemplate_name" action="<?php echo $csv2post_form_action;?>">
+    <form id="csv2post_form_opentemplate_id" method="post" name="csv2post_form_opentemplate" action="<?php echo $csv2post_form_action;?>">
         <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">               
         
         <input type="hidden" name="csv2post_current_project_id" value="<?php echo $csv2post_currentproject_code;?>">
         <input type="hidden" name="csv2post_opencontentdesign" value="true">        
     
         <h4>Current Project Designs</h4>
-        <?php csv2post_displayproject_contenttemplates_buttonlist('csv2post_selecttemplate_fromproject_id');?>          
+        <?php csv2post_displayproject_templates_buttonlist('csv2post_selecttemplate_fromproject_id','all');?>          
     
         <h4>All Designs</h4>
         <?php csv2post_display_all_contentdesigns_buttonlist();?>            

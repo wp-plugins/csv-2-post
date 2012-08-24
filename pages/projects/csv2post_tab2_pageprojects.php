@@ -20,7 +20,7 @@ $panel_array['panel_help'] = __('There is a token for each of your database colu
 $panel_array['help_button'] = csv2post_helpbutton_text(false,false);?>
 <?php csv2post_panel_header( $panel_array );?>
 
-    <form id="csv2post_form_opentemplate_id" action="<?php echo $csv2post_form_action;?>" method="post" name="csv2post_form_opentemplate_name">
+    <form id="csv2post_form_opentitletemplate_id" action="<?php echo $csv2post_form_action;?>" method="post" name="csv2post_form_opentitletemplate">
         <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">               
         
         <input type="hidden" name="csv2post_current_project_id" value="<?php echo $csv2post_currentproject_code;?>">

@@ -478,6 +478,14 @@ $csv2post_mpt_arr['projects']['tabs'][13]['name'] = 'projectdata';
 $csv2post_mpt_arr['projects']['tabs'][13]['helpurl'] = 'http://www.csv2post.com/';
 $csv2post_mpt_arr['projects']['tabs'][13]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
 $csv2post_mpt_arr['projects']['tabs'][13]['display'] = csv2post_page_show_hide();
+// 2. Project sub page 1 tab 14
+$csv2post_mpt_arr['projects']['tabs'][14]['active'] = true;
+$csv2post_mpt_arr['projects']['tabs'][14]['slug'] = 'tab14_pageprojects';
+$csv2post_mpt_arr['projects']['tabs'][14]['label'] = 'Authors';
+$csv2post_mpt_arr['projects']['tabs'][14]['name'] = 'authors';
+$csv2post_mpt_arr['projects']['tabs'][14]['helpurl'] = 'http://www.csv2post.com/';
+$csv2post_mpt_arr['projects']['tabs'][14]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['projects']['tabs'][14]['display'] = csv2post_page_show_hide();
 
 ######################################################
 #                                                    #

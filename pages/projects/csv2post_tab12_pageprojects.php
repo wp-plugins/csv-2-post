@@ -125,6 +125,15 @@ $jsform_set['noticebox_content'] = 'Deleting advanced text spinning rules that h
 
 <?php csv2post_panel_footer();?>
 
+
+<?php
+### TODO: MEDIUMPRIORITY, add multiple level shortcodes (requested by Tylar Smith tyler@loftopia.com) 
+//You can now use multiple levels of spinners, e.g. Your key is {1,2,3{4,5,6{7,8}}} 
+//The logic for the example there is to output either 1 2 or 3, and if it's 3 then 4, 5 or 6 will follow, 
+//and if it's 6 then 7 or 8 will follow that. Here's all the possibilities for that small example: 
+//Your key is 1 Your key is 2 Your key is 34 Your key is 35 Your key is 367 Your key is 368
+  ?>
+
 <?php
 if($csv2post_is_dev){
 ++$panel_number;// increase panel counter so this panel has unique ID
