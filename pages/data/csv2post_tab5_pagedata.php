@@ -12,6 +12,8 @@ $panel_array['panel_help'] = __('If you manually import records, the events deta
 $panel_array['help_button'] = csv2post_helpbutton_text(true,false);?>
 <?php csv2post_panel_header( $panel_array );?> 
 
+    <p>This feature has not yet been requested by a user and so is still in testing due to it being low priority.</p>
+    
     <?php echo csv2post_notice( '98 Rows Imported Successfully From filexample.csv','success','Tiny','','','return');?>
     <?php echo csv2post_notice( '1 Row Import Failure fileexample.csv','error','Tiny','','','return');?>
     <?php echo csv2post_notice( '1 Row Import Warning: your data import rules have blackmarked the row','warning','Tiny','','','return');?>

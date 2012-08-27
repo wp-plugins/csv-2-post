@@ -113,29 +113,27 @@ if(!isset($csv2post_projectslist_array) || $csv2post_projectslist_array == false
                     
                     <?php
                     // establish current status check
+                    $statuschecked_publish = '';
+                    $statuschecked_pending = '';
                     $statuschecked_draft = 'checked="checked"';
+                    $statuschecked_private = '';
                     if(isset($csv2post_project_array['poststatus'])){
                         
                         // publish
                         if($csv2post_project_array['poststatus'] == 'publish'){
                             $statuschecked_publish = 'checked="checked"';
                             $statuschecked_draft = '';
-                        }else{
-                            $statuschecked_publish = '';
                         }
                         
                         // pending
                         if($csv2post_project_array['poststatus'] == 'pending'){
                             $statuschecked_pending = 'checked="checked"';
                             $statuschecked_draft = '';
-                        }else{
-                            $statuschecked_pending = '';
                         }
                         
-                        // draft
+                        // draft - the default
                         if($csv2post_project_array['poststatus'] == 'draft'){
                             $statuschecked_draft = 'checked="checked"';
-                            $statuschecked_draft = '';
                         }else{
                             $statuschecked_draft = '';
                         }
@@ -144,11 +142,9 @@ if(!isset($csv2post_projectslist_array) || $csv2post_projectslist_array == false
                         if($csv2post_project_array['poststatus'] == 'private'){
                             $statuschecked_private = 'checked="checked"';
                             $statuschecked_draft = '';
-                        }else{
-                            $statuschecked_private = '';
-                        }   
+                        }
                                                                                              
-                    }
+                    }   
                     
                     echo '<input type="radio" id="csv2post_radiopublish_poststatus_objectid" name="csv2post_radio_poststatus" value="publish" '.$statuschecked_publish.' />
                     <label for="csv2post_radiopublish_poststatus_objectid">publish</label>';

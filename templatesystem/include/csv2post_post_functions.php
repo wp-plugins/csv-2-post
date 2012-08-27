@@ -152,7 +152,7 @@ function csv2post_create_posts_basic($project_code,$request_method){
         $post_id = $my_post['ID'];
         
         // keep $my_post for output at end if creating a single post, else destroy it to avoid its values being used in next post
-        if( $posts_target > 1 ){unset($my_post);}
+        unset($my_post);
 
     }// end for each record
         
@@ -233,8 +233,7 @@ function csv2post_parse_columnreplacement_basic($record_array,$value){
 * than trying to reverse engineer the advanced functions. 
 */
 function csv2post_create_postdraft_basic( $r,$category_array,$project_code,$content,$title ){
-    
-    
+             
     $my_post = array();
 
     // apply post author
@@ -257,7 +256,7 @@ function csv2post_create_postdraft_basic( $r,$category_array,$project_code,$cont
     }
 
     // add custom fields
-    csv2post_post_default_projectmeta($my_post['ID'],$project_codem,$r['csv2post_id']);
+    csv2post_post_default_projectmeta($my_post['ID'],$project_code,$r['csv2post_id']);
 
     return $my_post;  
 }     

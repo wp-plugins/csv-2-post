@@ -97,6 +97,29 @@ first plugin was created in 2009 and was halted pending re-development.
 6. You can use up to 3 columns of data to create 3 levels of categories.
  
 == Changelog == 
+= 6.6.1 =
+* Public Messages
+    * We have a new baby girl weighing 7lb, named Kiera, born 22nd August 2012 at 03:12.
+* Bug Fixes
+    * (minor) CSV file table column indicating if a table has been used now shows correct result
+    * (critical typo) variable in csv2post_create_postdraft_basic() spelled incorrectly ($project_codem should be $project_code)
+    * (minor) Removed the use of $posts_target from post creation function in free edition as there is no user set target
+    * (critical) further correction in the ability to apply custom post publish dates
+* General Improvements
+    * Settings page removed, settings tabs are now on the Main page (this is to make more use of Main page and encourage users to use settings first)
+    * RSS subscription box now subscribes to the Updates/News category on www.csv2post.com only, not the entire website
+    * Global setting added to schedule screen for activating Constant Post Content Updating
+    * Can now reset a used table (removes post ID's) by selecting it again for the creation of a Post Creation Project
+    * When table selected for reset, we can also opt to delete posts related to the selected table
+    * Plugin establishes number of columns in a file better when user does not enter a number on the Job Creation form
+* Key Technical Improvements
+    * Schedule function csv2post_event_action() does not add_action for updating opened posts if user activated the new Constant Updating ability
+    * add_action('the_posts', 'csv2post_posts_autoupdate' ); is also in main file so user can systematically and constantly update post content
+* Known Issues
+    * None
+* Web Services, Support and Websites changes
+    * None
+    
 = 6.6.0 =
 * Public Messages
     * Big thanks to everyone for feedbacking, Tyler Smith for his patience and Al for offering complete code to add to the plugin

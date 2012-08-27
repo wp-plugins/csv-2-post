@@ -1,5 +1,5 @@
 <?php 
-global $csv2post_mpt_arr,$wpdb,$wtgtp_pluginforum,$wtgtp_pluginblog,$csv2post_options_array,$csv2post_nav_type,$csv2post_is_free;
+global $csv2post_mpt_arr,$wpdb,$wtgtp_pluginforum,$wtgtp_pluginblog,$csv2post_options_array,$csv2post_nav_type,$csv2post_is_free,$csv2post_theme_array;
 $pageid = 'main';// used to access variable.php configuration
 $pagefolder = 'pagemain';
 

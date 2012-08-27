@@ -39,7 +39,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
     </form>
 
  <?php csv2post_panel_footer();?> 
- 
+     
  <?php  
 ++$panel_number;// increase panel counter so this panel has unique ID
 $panel_array = array();

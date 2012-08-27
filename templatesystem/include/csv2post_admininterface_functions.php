@@ -3,7 +3,6 @@ function csv2post_page_toppage(){csv2post_include_form_processing_php();require_
 function csv2post_page_data(){csv2post_include_form_processing_php();require_once(WTG_C2P_DIR.'pages/data/csv2post_main_data.php');}
 function csv2post_page_projects(){csv2post_include_form_processing_php();require_once(WTG_C2P_DIR.'pages/projects/csv2post_main_projects.php');}                
 function csv2post_page_creation(){csv2post_include_form_processing_php();require_once(WTG_C2P_DIR.'pages/creation/csv2post_main_creation.php');}
-function csv2post_page_settings(){csv2post_include_form_processing_php();require_once(WTG_C2P_DIR.'pages/settings/csv2post_main_settings.php');}
 function csv2post_page_install(){csv2post_include_form_processing_php();require_once(WTG_C2P_DIR.'pages/install/csv2post_main_install.php');}
 function csv2post_page_more(){csv2post_include_form_processing_php();require_once(WTG_C2P_DIR.'pages/more/csv2post_main_more.php');}
 
@@ -42,7 +41,6 @@ function csv2post_admin_menu(){
         add_submenu_page($n, __($csv2post_mpt_arr['data']['title'],$n.$csv2post_mpt_arr['data']['slug']), __($csv2post_mpt_arr['data']['menu'],$n.$csv2post_mpt_arr['data']['slug']), $csv2post_mpt_arr['data']['role'], $csv2post_mpt_arr['data']['slug'], WTG_C2P_ABB . 'page_data');
         add_submenu_page($n, __($csv2post_mpt_arr['projects']['title'],$n.$csv2post_mpt_arr['projects']['slug']), __($csv2post_mpt_arr['projects']['menu'],$n.$csv2post_mpt_arr['projects']['slug']), $csv2post_mpt_arr['projects']['role'], $csv2post_mpt_arr['projects']['slug'], WTG_C2P_ABB . 'page_projects');
         add_submenu_page($n, __($csv2post_mpt_arr['creation']['title'],$n.$csv2post_mpt_arr['creation']['slug']), __($csv2post_mpt_arr['creation']['menu'],$n.$csv2post_mpt_arr['creation']['slug']), $csv2post_mpt_arr['creation']['role'], $csv2post_mpt_arr['creation']['slug'], WTG_C2P_ABB . 'page_creation');        
-        add_submenu_page($n, __($csv2post_mpt_arr['settings']['title'],$n.$csv2post_mpt_arr['settings']['slug']), __($csv2post_mpt_arr['settings']['menu'],$n.$csv2post_mpt_arr['settings']['slug']), $csv2post_mpt_arr['settings']['role'], $csv2post_mpt_arr['settings']['slug'], WTG_C2P_ABB . 'page_settings');
         add_submenu_page($n, __($csv2post_mpt_arr['install']['title'],$n.$csv2post_mpt_arr['install']['slug']), __('Plugin Status',$n.$csv2post_mpt_arr['install']['slug']), $csv2post_mpt_arr['install']['role'], $csv2post_mpt_arr['install']['slug'], WTG_C2P_ABB . 'page_install');
         add_submenu_page($n, __($csv2post_mpt_arr['more']['title'],$n.$csv2post_mpt_arr['more']['slug']), __($csv2post_mpt_arr['more']['menu'],$n.$csv2post_mpt_arr['more']['slug']), $csv2post_mpt_arr['more']['role'], $csv2post_mpt_arr['more']['slug'], WTG_C2P_ABB . 'page_more');
     }
@@ -498,7 +496,7 @@ function csv2post_contentfolder_display_status(){
         </form>', 'success', 'Small', false,'','return');
 
     }elseif(!$contentfolder_exists){
-        echo csv2post_notice('Content folder does not exist'.
+        echo csv2post_notice('Content folder does not exist please create it'.
         csv2post_formstart_standard('csv2post_createcontentfolder_form','none','post','').'
             <button class="button" name="csv2post_contentfolder_create">Create</button>        
         </form>', 'error', 'Small', false,'','return');
@@ -2726,7 +2724,9 @@ function csv2post_display_databasetables_withjobnames($checkbox_column = false,$
         echo '<td width="200"><strong>Table Names</strong></td>
             <td width="150"><strong>Data Import Job</strong></td>
             <td width="100"><strong>Records</strong></td>
-            <td width="100"><strong>Used</strong></td>                                                                               
+            <td width="100"><strong>Used</strong></td>
+            <td width="100"><strong>Reset Table</strong></td>
+            <td width="100"><strong>Reset Posts</strong></td>                                                                              
         </tr>'; 
         
         $table_count = 0;
@@ -2769,8 +2769,8 @@ function csv2post_display_databasetables_withjobnames($checkbox_column = false,$
                 }
                     
                 echo '<td>'.$table_name[0].'</td>
-                    <td>'.$tables_jobname.'</td>
-                    <td>'.$table_row_count.'</td>';
+                <td>'.$tables_jobname.'</td>
+                <td>'.$table_row_count.'</td>';
                
                 // display if a project table has been used or not
                 if(strstr($table_name[0],'csv2post_')){
@@ -2784,9 +2784,21 @@ function csv2post_display_databasetables_withjobnames($checkbox_column = false,$
                 }
                 echo '<td>'.$used.'</td>';                                  
                 
+                // column for checkbox that resets a used table
+                if($used == 'Yes'){
+                    if($csv2post_is_free){
+                        echo '<td><input type="radio" name="csv2post_databasetables_resettable_array" value="'.$table_name[0].'" /></td>';        
+                        echo '<td><input type="radio" name="csv2post_databasetables_resetposts_array" value="'.$table_name[0].'" /></td>';
+                    }else{
+                        echo '<td><input type="checkbox" name="csv2post_databasetables_resettable_array[]" value="'.$table_name[0].'" /></td>';                
+                        echo '<td><input type="checkbox" name="csv2post_databasetables_resetposts_array[]" value="'.$table_name[0].'" /></td>';
+                    }
+                }else{
+                    echo '<td></td>';
+                    echo '<td></td>';
+                }
                 echo '</tr>';
-                    
-                        
+    
                 ++$table_count;
             }
         }   

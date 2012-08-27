@@ -76,7 +76,17 @@ $panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
 $panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Make a post creation project that makes use of one or more database tables');
-$panel_array['panel_help'] = __('Create a new project for creating posts. This should be done after you have imported your data too your Wordpress database or already have a suitable table holding your data. CSV 2 POST allows us to use multiple database tables in a single project. You can make use of columns from one table and some columns from a totally different table. More tables equals more work for Wordpress so please only added essential tables. If you do not select a table created by CSV 2 POST, one will be created for tracking project progress and acting as a link between all other tables. This is also where Mapping Type comes into play. This is a very advanced feature and will no doubt need more development over 2012 to suit everyones needs so please contact us if your unsure. If you use multiple tables, you have further configuration to do in the Multiple Table Project panel.');
+$panel_array['panel_help'] = __('Create a new project for creating posts. This should be done after you have 
+imported your data too your Wordpress database or already have a suitable table holding your data. 
+CSV 2 POST allows us to use multiple database tables in a single project. You can make use of columns from 
+one table and some columns from a totally different table. More tables equals more work for Wordpress so 
+please only added essential tables. If you do not select a table created by CSV 2 POST, one will be created 
+for tracking project progress and acting as a link between all other tables. This is also where Mapping Type 
+comes into play. This is a very advanced feature and will no doubt need more development over 2012 to suit 
+everyones needs so please contact us if your unsure. If you use multiple tables, you have further configuration 
+to do in the Multiple Table Project panel. This panel offers the ability to reset a used project table and to
+delete posts as part of the reset process. You can only reset posts related too a table if the table is also
+selected for reset, this is a safety measure and the alternative is not usually a requirement.');
 $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 $panel_array['panel_url'] = 'http://www.csv2post.com/feature-guides/create-post-creation-project';
 // Form Settings - create the array that is passed to jQuery form functions

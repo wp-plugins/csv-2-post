@@ -71,43 +71,30 @@ $csv2post_mpt_arr['main']['tabs'][3]['name'] = 'about';
 $csv2post_mpt_arr['main']['tabs'][3]['helpurl'] = 'http://www.csv2post.com/'; 
 $csv2post_mpt_arr['main']['tabs'][3]['allowhide'] = false;
 $csv2post_mpt_arr['main']['tabs'][3]['display'] = csv2post_page_show_hide();
-
-// settings page
-$csv2post_mpt_arr['settings']['active'] = true;
-$csv2post_mpt_arr['settings']['slug'] = WTG_C2P_ABB . "settings";
-$csv2post_mpt_arr['settings']['menu'] = "Plugin Settings";
-$csv2post_mpt_arr['settings']['role'] = 'activate_plugins';
-$csv2post_mpt_arr['settings']['title'] = WTG_C2P_PLUGINTITLE.' Settings';
-$csv2post_mpt_arr['settings']['name'] = 'settings'; 
-$csv2post_mpt_arr['settings']['icon'] = 'options-general';
-$csv2post_mpt_arr['settings']['pagehelp'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['settings']['headers'] = false;
-$csv2post_mpt_arr['settings']['vertical'] = false;
-$csv2post_mpt_arr['settings']['statusicons'] = false;    
 // settings sub page 1 tab 1
-$csv2post_mpt_arr['settings']['tabs'][0]['active'] = true;
-$csv2post_mpt_arr['settings']['tabs'][0]['slug'] = 'tab0_settings';
-$csv2post_mpt_arr['settings']['tabs'][0]['label'] = 'General Settings';
-$csv2post_mpt_arr['settings']['tabs'][0]['name'] = 'generalsettings';
-$csv2post_mpt_arr['settings']['tabs'][0]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['settings']['tabs'][0]['allowhide'] = false;
-$csv2post_mpt_arr['settings']['tabs'][0]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['main']['tabs'][4]['active'] = true;
+$csv2post_mpt_arr['main']['tabs'][4]['slug'] = 'tab4_main';
+$csv2post_mpt_arr['main']['tabs'][4]['label'] = 'General Settings';
+$csv2post_mpt_arr['main']['tabs'][4]['name'] = 'generalsettings';
+$csv2post_mpt_arr['main']['tabs'][4]['helpurl'] = 'http://www.csv2post.com/';
+$csv2post_mpt_arr['main']['tabs'][4]['allowhide'] = true;
+$csv2post_mpt_arr['main']['tabs'][4]['display'] = csv2post_page_show_hide(2);
 // settings sub page 1 tab 2
-$csv2post_mpt_arr['settings']['tabs'][1]['active'] = true;
-$csv2post_mpt_arr['settings']['tabs'][1]['slug'] = 'tab1_settings';
-$csv2post_mpt_arr['settings']['tabs'][1]['label'] = 'Interface Settings';
-$csv2post_mpt_arr['settings']['tabs'][1]['name'] = 'interfacesettings';
-$csv2post_mpt_arr['settings']['tabs'][1]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['settings']['tabs'][1]['allowhide'] = false;
-$csv2post_mpt_arr['settings']['tabs'][1]['display'] = csv2post_page_show_hide(); 
+$csv2post_mpt_arr['main']['tabs'][5]['active'] = true;
+$csv2post_mpt_arr['main']['tabs'][5]['slug'] = 'tab5_main';
+$csv2post_mpt_arr['main']['tabs'][5]['label'] = 'Interface Settings';
+$csv2post_mpt_arr['main']['tabs'][5]['name'] = 'interfacesettings';
+$csv2post_mpt_arr['main']['tabs'][5]['helpurl'] = 'http://www.csv2post.com/';
+$csv2post_mpt_arr['main']['tabs'][5]['allowhide'] = false;
+$csv2post_mpt_arr['main']['tabs'][5]['display'] = csv2post_page_show_hide(); 
 // settings sub page 1 tab 3
-$csv2post_mpt_arr['settings']['tabs'][2]['active'] = true;
-$csv2post_mpt_arr['settings']['tabs'][2]['slug'] = 'tab2_settings';
-$csv2post_mpt_arr['settings']['tabs'][2]['label'] = 'Easy Configuration Questions';
-$csv2post_mpt_arr['settings']['tabs'][2]['name'] = 'easyconfigurationquestions';
-$csv2post_mpt_arr['settings']['tabs'][2]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['settings']['tabs'][2]['allowhide'] = true; 
-$csv2post_mpt_arr['settings']['tabs'][2]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['main']['tabs'][6]['active'] = true;
+$csv2post_mpt_arr['main']['tabs'][6]['slug'] = 'tab6_main';
+$csv2post_mpt_arr['main']['tabs'][6]['label'] = 'Easy Configuration Questions';
+$csv2post_mpt_arr['main']['tabs'][6]['name'] = 'easyconfigurationquestions';
+$csv2post_mpt_arr['main']['tabs'][6]['helpurl'] = 'http://www.csv2post.com/';
+$csv2post_mpt_arr['main']['tabs'][6]['allowhide'] = true; 
+$csv2post_mpt_arr['main']['tabs'][6]['display'] = csv2post_page_show_hide();
 
 // install page
 $csv2post_mpt_arr['install']['active'] = true;

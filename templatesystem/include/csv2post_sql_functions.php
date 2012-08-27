@@ -398,8 +398,8 @@ function csv2post_create_dataimportjob_table($jobcode,$job_file_group,$maintable
         csv2post_add_jobtable('csv2post_' . $jobcode);  
         return true; 
     }else{
-        csv2post_notice('SQL Query failed. The query itself should be studied, please submit it to support if you
-        require assistance:<br /><br />' . csv2post_sql_formatter($table),'error','Large','','','echo','');
+        csv2post_notice('Database query failed. If you did not enter separator, quote or number of columns for your CSV file 
+        that may be the cause:<br /><br />' . csv2post_sql_formatter($table),'error','Large','Database Query Failure','http://www.csv2post.com/notifications/database-query-failure-on-creating-data-import-job','echo','');
         return false;
     }        
 }
@@ -522,7 +522,30 @@ function csv2post_sql_used_records($table_name,$number_of_records = 1){
     FROM '. $table_name .' 
     WHERE csv2post_postid 
     IS NOT NULL 
+    AND csv2post_postid != 0
     LIMIT '. $number_of_records,ARRAY_A ); 
+}  
 
-}          
+/**
+* Resets a project table so that it can be used again
+* 
+* @param string $table_name
+* @param boolean $reset_posts
+* 
+* @todo LOWPRIORITY, create a setting for user to force deletion (no trash) when deleting posts
+*/
+function csv2post_sql_reset_project($table_name,$reset_posts){
+    global $wpdb;    
+    
+    if($reset_posts){
+       $post_ids = $wpdb->get_results( 'SELECT csv2post_postid FROM '. $table_name .' WHERE csv2post_postid IS NOT NULL',ARRAY_A ); 
+       if($post_ids){
+           foreach($post_ids as $key => $id){
+               wp_delete_post($id,false);
+           }
+       }    
+    }
+    
+    $wpdb->query('UPDATE ' . $table_name .' SET csv2post_postid = 0');
+}        
 ?>

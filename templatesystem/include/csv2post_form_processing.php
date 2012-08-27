@@ -160,7 +160,10 @@ if($cont){
     $cont = csv2post_form_create_categories(); 
     
     // Updates a single giving post using post ID                         
-    $cont = csv2post_form_update_post();           
+    $cont = csv2post_form_update_post();
+    
+    // Save global updating settings
+    $cont = csv2post_form_save_globalupdatesettings();           
 }
 
 if($cont){
@@ -205,6 +208,41 @@ if($cont){
     $cont = csv2post_form_createcontentfolder();
     $cont = csv2post_form_deletecontentfolder();    
 }
+
+/**
+* Saves default author 
+*/
+function csv2post_form_save_globalupdatesettings(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'creation' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'globalpostupdatesettings'){
+        global $csv2post_schedule_array;
+        
+        // if is set constant updating for content
+        if(isset($_POST['csv2post_globalpostupdatesettings_constantupdating_content'])){
+            // if value is 1 then use is activing constant post content updating
+            if($_POST['csv2post_globalpostupdatesettings_constantupdating_content'] == 1){
+                csv2post_notice('Constant post content updating has been activated. CSV 2 POST will now do more
+                processing to ensure posts are updated quickly. Rather than following the schedule.',
+                'success','Large','Constant Content Updating Activated','','echo');
+                $csv2post_schedule_array['constantupdating']['content'] = true;    
+            }else{
+                // user wants constant updating off so we remove the setting to make the array as small as possible
+                if(isset($csv2post_schedule_array['constantupdating']['content'])){
+                    unset($csv2post_schedule_array['constantupdating']['content']);
+                    csv2post_notice('Constant post content updating has been disabled. CSV 2 POST will now
+                    update posts based on the schedule, if the schedule has been configured and project
+                    update settings saved. Otherwise no post content updating will be carried out.',
+                    'success','Large','Constant Content Updating Disabled','','echo');
+                }
+            }
+        }
+        
+        csv2post_update_option_schedule_array($csv2post_schedule_array);
+        
+        return false;
+    }else{
+        return true;
+    }       
+} 
   
 /**
 * Saves default author 
@@ -2040,6 +2078,41 @@ function csv2post_form_create_post_creation_project(){
             return false;
         }else{
             
+            // carry out project table resets
+            if(isset($_POST['csv2post_databasetables_resettable_array'])){
+
+                if($csv2post_is_free){
+                    
+                    // does user want posts deleted also? Requires the same table to be selected 
+                    if(isset($_POST['csv2post_databasetables_resetposts_array']) && $_POST['csv2post_databasetables_resetposts_array'] == $_POST['csv2post_databasetables_resettable_array']){
+                        $reset_posts = true;
+                        $reset_posts_notice = ' All posts related to the project table have been deleted also.';    
+                    }else{
+                        $reset_posts = false;
+                    }
+    
+                    csv2post_sql_reset_project($_POST['csv2post_databasetables_resettable_array'],$reset_posts);
+                    csv2post_notice('The table named '.$_POST['csv2post_databasetables_resettable_array'].' was reset as requested.'.$reset_posts_notice,'success','Large','Table Reset','','echo');                    
+                
+                }else{
+                    foreach($_POST['csv2post_databasetables_resettable_array'] as $key => $table_name){
+                        
+                        // does user also want this tables posts deleted
+                        if(isset($_POST['csv2post_databasetables_resetposts_array'])){
+                            $reset_posts = false;
+                            foreach($_POST['csv2post_databasetables_resetposts_array'] as $key => $t){
+                                if($t == $_POST['csv2post_databasetables_resettable_array']){
+                                    $reset_posts = true;    
+                                }    
+                            }
+                        }
+                        
+                        csv2post_sql_reset_project($table_name,$reset_posts);
+                        csv2post_notice('The table named '.$table_name.' was reset as requested.','success','Large','Table Reset','','echo');    
+                    }  
+                } 
+            }
+            
             // free edition does not allow mapping method selection on form
             if(isset($_POST['csv2post_projecttables_mappingmethod_inputname']) && !$csv2post_is_free){
                 $mapping_method = $_POST['csv2post_projecttables_mappingmethod_inputname'];    
@@ -2127,6 +2200,38 @@ function csv2post_form_createdataimportjob(){
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'data' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'createdataimportjobcsvfiles'){
         global $csv2post_is_free;
         
+        // warn user when they do not submit parts of the profile
+        if(!isset($_POST['csv2post_jobname_name'])){
+            csv2post_notice('You did not enter a Job Name, please try again.','error','Large','No Job Name Entered','','echo');
+            return false;    
+        }
+    
+        if(isset($_POST['csv2post_newjob_included_csvfiles'])){
+            foreach($_POST['csv2post_newjob_included_csvfiles'] as $key => $csvfile_name){ 
+            
+                // remove .csv from filename
+                $filename = str_replace('.csv','',$csvfile_name);
+                                       
+                // if user did not enter field count
+                if(!isset($_POST['csv2post_csvfile_fieldcount_' . $filename]) || $_POST['csv2post_csvfile_fieldcount_' . $filename] == ''){
+                    csv2post_notice('You did not enter your CSV file column/field number. CSV 2 POST will attempt to 
+                    count them but if you experience problems please enter the number manually.','warning','Large','Column Count Not Entered','','echo');    
+                }
+                
+                // if user did not select separator
+                if(!isset($_POST['csv2post_newjob_separators' . $filename])){
+                    csv2post_notice('You never selected a separator. The plugin will attempt to guess it but if you
+                    experience problems you should select it manually.','warning','Large','No Separator Selected','','echo');
+                }
+                
+                // if user did not select quote
+                if(!isset($_POST['csv2post_newjob_quote' . $filename])){
+                    csv2post_notice('You never selected a quote. The plugin will attempt to guess it but if you
+                    experience problems please select it manually.','warning','Large','No Quote Selected','','echo');
+                }            
+            }      
+        }
+
         // set variable for building output html
         $extendednotice = '';
         
@@ -2201,7 +2306,7 @@ function csv2post_form_createdataimportjob(){
                     if(isset($_POST['csv2post_csvfile_fieldcount_'.$fileChunks[0]]) && is_numeric($_POST['csv2post_csvfile_fieldcount_'.$fileChunks[0]])){
                         $jobarray[$csvfile_name]['fields'] = $_POST['csv2post_csvfile_fieldcount_'.$fileChunks[0]];    
                     }else{
-                        $jobarray[$csvfile_name]['fields'] = csv2post_establish_csvfile_fieldnumber($csvfile_name,$separator);
+                        $jobarray[$csvfile_name]['fields'] = csv2post_establish_csvfile_fieldnumber($csvfile_name,$jobarray[$csvfile_name]['separator']);
                     }   
                     
                     // add job stats for the file, required for multiple file jobs
