@@ -20,15 +20,18 @@ if($cont){
         
     // Delete Data Import Jobs
     $cont = csv2post_form_delete_dataimportjobs();
-    
+         
     // Process CSV file upload    
     $cont = csv2post_form_upload_csv_file(); 
-    
+        
     // Delete one or more database tables
     $cont = csv2post_form_drop_database_tables(); 
-    
+         
     // Manual data import
-    $cont = csv2post_form_importdata();  
+    $cont = csv2post_form_importdata();
+                    
+    // Delete CSV file
+    $cont = csv2post_form_delete_csvfile();  
 }
 
 // Project Screen Form Submissions (project creation and configuration)
@@ -36,16 +39,16 @@ if($cont){
 
     // Create post creation project
     $cont = csv2post_form_create_post_creation_project();
-    
+                    
     // Multiple file project relationship settings panel
     $cont = csv2post_form_save_multiplefilesproject();
-    
+                              
     // Delete one or more post creation projects
     $cont = csv2post_form_delete_post_creation_projects();
-    
+                             
     // Change current project
     $cont = csv2post_form_change_current_project();
-    
+                           
     // Save template
     $cont = csv2post_form_save_contenttemplate();
 
@@ -127,9 +130,6 @@ if($cont){
     // Save basic SEO options
     $cont = csv2post_form_save_basic_seo_options();
     
-    // Save easy configuration questions
-    $cont = csv2post_form_save_easyconfigurationquestions();
-    
     // Save post titles data column
     $cont = csv2post_form_save_title_data_column();
     
@@ -138,6 +138,9 @@ if($cont){
     
     // Save default author
     $cont = csv2post_form_save_default_author();
+    
+    // Save featured image table and column
+    $cont = csv2post_form_featuredimage();
 }
 
 // Creation Screen
@@ -163,11 +166,22 @@ if($cont){
     $cont = csv2post_form_update_post();
     
     // Save global updating settings
-    $cont = csv2post_form_save_globalupdatesettings();           
+    $cont = csv2post_form_save_globalupdatesettings();  
+    
+    // Undo posts
+    $cont = csv2post_form_undo_posts();
+    
+    // Delete flags
+    $cont = csv2post_form_delete_flags();         
 }
 
+
+// Install and Settings
 if($cont){
-    
+
+    // Save easy configuration questions
+    $cont = csv2post_form_save_easyconfigurationquestions();
+        
     // Log File Installation Post Validation
     $cont = csv2post_form_logfileinstallation();
 
@@ -208,6 +222,183 @@ if($cont){
     $cont = csv2post_form_createcontentfolder();
     $cont = csv2post_form_deletecontentfolder();    
 }
+
+/**
+* Saves easy configuration questions
+*/
+function csv2post_form_save_easyconfigurationquestions(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'easyconfigurationquestions'){
+
+        
+        
+        
+        ### TODO:HIGHPRIORITY
+         
+                /*
+                         
+                $csv2post_adm_set_result = get_option('csv2post_adminset');
+                if($csv2post_adm_set_result){
+                    $csv2post_adm_set = unserialize(get_option('csv2post_adminset'));    
+                }         
+         
+               $csv2post_eas_set = array();
+                $csv2post_eas_set[0] = 'answer1';
+                $csv2post_eas_set[1] = 'answer2';
+                $csv2post_eas_set[3] = 'answer3';
+                $csv2post_eas_set[4] = 'answer4';
+
+                #################################################################
+                ####                                                         ####
+                ####            ADMIN ONLY SETTINGS ($csv2post_adm_set)      ####
+                ####                                                         ####
+                ################################################################# 
+
+                // install main admin settings option record
+                $csv2post_adm_set = array();
+                $csv2post_adm_set['easyconfigurationquestions'] = $csv2post_eas_set;
+                 */
+                
+        return false;
+    }else{
+        return true;
+    }       
+}
+
+/**
+* Deletes flags (post meta for flagged posts)   
+*/
+function csv2post_form_delete_flags(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'creation' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'latestten'){
+
+        // if no flags selected
+        if(!isset($_POST['csv2post_delete_flag'])){
+            csv2post_notice('No flags were selected, please select the flags you would like to delete.','error','Large','No Flags Selected','','echo');    
+            return false;
+        }
+        
+        // loop through selected flags
+        foreach($_POST['csv2post_delete_flag'] as $key => $metaid){
+            delete_meta($metaid);        
+        }
+
+        csv2post_notice('All selected flags deleted','success','Large','Flags Deleted','','echo');#
+        
+        return false;
+    }else{
+        return true;
+    }       
+}         
+
+/**
+* Deletes one or more CSV files 
+*/
+function csv2post_form_delete_csvfile(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'data' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'deletecsvfiles'){
+        
+        // if no csv file selected
+        if(!isset($_POST['csv2post_delete_csvfiles']) || count($_POST['csv2post_delete_csvfiles']) == 0){
+            csv2post_notice('No CSV files were selected, please try again.','error','Large','No CSV File Selected','','echo');
+            return false;
+        }
+
+        $file_is_in_use = false;
+        
+        // loop through selected CSV files
+        foreach($_POST['csv2post_delete_csvfiles'] as $key => $csv_file_name){
+            $file_is_in_use = csv2post_is_csvfile_in_use($csv_file_name);
+            
+            // if file is in use
+            if($file_is_in_use){
+                csv2post_notice('The file named ' . $csv_file_name .' is in use. Please delete any data import job or project using the file before attempting to delete it.','warning','Small','File In Use','','echo');
+            }else{
+                unlink(WTG_C2P_CONTENTFOLDER_DIR . '/' . $csv_file_name); 
+                csv2post_notice( $csv_file_name .' Deleted','success','Small','','','echo');
+            }
+        }
+
+        return false;
+    }else{
+        return true;
+    }       
+}      
+
+
+/**
+* Saves featured image table and column
+*/
+function csv2post_form_featuredimage(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'featuredimages'){
+
+        global $csv2post_project_array,$csv2post_currentproject_code;
+
+        $table_name = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_featuredimage_columnandtable']);
+        $column_name = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_featuredimage_columnandtable']);            
+
+        $csv2post_project_array['images']['featuredimage']['table'] = $table_name;            
+        $csv2post_project_array['images']['featuredimage']['column'] = $column_name;
+        
+        csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array); 
+
+        csv2post_notice('Your featured image column has been saved.','success','Large','Featured Images','','echo');
+                 
+        return false;
+    }else{
+        return true;
+    }       
+}      
+  
+/**
+* Saves easy configuration questions
+*/
+function csv2post_form_undo_posts(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'creation' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'undoposts'){
+        global $csv2post_currentproject_code;
+        
+        $number_of_posts_deleted = 0;
+        
+        // if no range selected
+        if(!isset($_POST['csv2post_undo'])){
+            csv2post_notice('You did not select the range/group of posts you would like to undo.',
+            'error','Large','No Range Selected','','echo');
+            return false;
+        }
+        
+        // if current project options selected but no posts made with project
+        if($_POST['csv2post_undo'] == 'currentproject' 
+        || $_POST['csv2post_undo'] == 'last10minutes' 
+        || $_POST['csv2post_undo'] == 'last60minutes' 
+        || $_POST['csv2post_undo'] == 'last24hours'){
+            $postscreated = csv2post_does_project_have_posts($csv2post_currentproject_code);
+            if(!$postscreated){
+                csv2post_notice('The current project does not have any posts according to the projects main table',
+                'error','Large','No Posts','','echo');
+                return false;        
+            } 
+        }
+        
+        // delete posts
+        $number_of_posts_deleted = csv2post_delete_project_posts_byrange($csv2post_currentproject_code,$_POST['csv2post_undo']);
+        
+        if($number_of_posts_deleted > 0){
+            
+            $plural = "'s";
+            if($number_of_posts_deleted == 1){
+                $plural = '';    
+            }
+            
+            csv2post_notice('You deleted ' . $number_of_posts_deleted .' posts. The post ID have also been removed from their
+            project table so that the records are ready to use again.'
+            ,'success','Large',$number_of_posts_deleted . " Post".$plural." Deleted",'','echo'); 
+        }else{
+            csv2post_notice('No posts were deleted as there are no post ID in the project tables checked.',
+            'info','Large','No Posts Deleted','','echo');
+        }        
+           
+        return false;
+    }else{
+        return true;
+    }       
+}     
 
 /**
 * Saves default author 
@@ -493,21 +684,7 @@ function csv2post_form_importdata(){
         return true;
     }     
 }
-
-/**
-* Saves easy configuration questions
-*/
-function csv2post_form_save_easyconfigurationquestions(){
-    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'easyconfigurationquestions'){
-
-        ### TODO:HIGHPRIORITY
-                
-        return false;
-    }else{
-        return true;
-    }       
-}                    
-                
+                          
 /**
 * Saves basic seo options          
 */
@@ -1889,17 +2066,18 @@ function csv2post_form_save_contenttemplatedesign_condition_byvalue(){
 */
 function csv2post_form_save_contenttemplate(){  
     global $csv2post_currentproject_code;// TODO ADD THIS TOO POST IN CUSTOM FIELD
+    
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'templateeditor'){
         
         // if we change this variable it causes new wtgcsvtemplate post to be created
         $create_new_wtgcsvtemplate_post = false;
-        
+                              
         // has a template design id been submitted, if so then the user is editing an existing design after opening it                                                                                                                                                                                                                                                 
         if(isset($_POST['csv2post_templateid']) && is_numeric($_POST['csv2post_templateid'])){
-            
+          
             // the user may want a design to be created from the previous, this is done by changing the template design name
             if($_POST["csv2post_templatename"] == $_POST["csv2post_templatename_previous"]){
-
+             
                 // update existing design using design ID (post_id for wtgcsvcontent custom post type)
                 $my_post = array();
                 $my_post['ID'] = $_POST['csv2post_templateid'];
@@ -1915,21 +2093,21 @@ function csv2post_form_save_contenttemplate(){
                 return false;                
                 
             }else{
-            
+           
                 // the user has changed the template name, this is how the user forces new template to be created
                 $create_new_wtgcsvtemplate_post = true;                  
             }
             
-        }else{
+        }else{       
             // no existing id in the $_POST, create new template
             $create_new_wtgcsvtemplate_post = true;            
         }
-        
+              
         if($create_new_wtgcsvtemplate_post){   
-            
+                  
             $wpinsertpost_result = csv2post_insert_post_contenttemplate();// returns post ID
-            
-            if(csv2post_is_WP_Error($wpinsertpost_result)){
+              
+            if(!$wpinsertpost_result || csv2post_is_WP_Error($wpinsertpost_result) || $wpinsertpost_result == 0 ){
                 csv2post_notice('Could not create new content template design. It requires the insertion of a new post record but Wordpress returned an error. Please try again then report further problems.','error','Large','Could Not Save Template');
             }elseif(is_numeric($wpinsertpost_result)){
                 
@@ -1937,8 +2115,8 @@ function csv2post_form_save_contenttemplate(){
                 add_post_meta($wpinsertpost_result, 'csv2post_project_id', $csv2post_currentproject_code, false);
         
                 // add design type/s to posts meta
-                if(isset($_POST["csv2post_designtype"])){
-                    
+                if(isset($_POST["csv2post_designtype"]) && is_array($_POST["csv2post_designtype"])){
+
                     $count = count($_POST["csv2post_designtype"]);
                     if($count > 1){
                         
@@ -1948,8 +2126,8 @@ function csv2post_form_save_contenttemplate(){
                         }
     
                     }else{   
-
-                        add_post_meta($wpinsertpost_result, '_csv2post_templatetypes', $_POST["csv2post_designtype"], false);
+                      
+                        add_post_meta($wpinsertpost_result, '_csv2post_templatetypes', $_POST["csv2post_designtype"][0], false);
 
                         // if a single post type selected, set template as the default for the type selected
                         // excerpt

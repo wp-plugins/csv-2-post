@@ -16,7 +16,18 @@ Email: info@csv2post.com
 	display: block;
 	font-size:16px;
     background-size:20px 20px;
+    border-radius: 8px;
 }
+
+.TinyHelpLink{  
+    display: block;
+    float:right;
+    position:relative;
+    top:1px;
+    right:3px;
+    height:15px;
+    width:15px;
+} 
 
 .infoTiny{  
 	color: #00529B;  
@@ -85,6 +96,16 @@ Email: info@csv2post.com
 	display: block;
 	font-size:18px;
     background-size:44px 44px;
+    border-radius: 8px;
+}
+
+.SmallHelpLink{  
+    display: block;
+    float:right;
+    position:relative;
+    top:-5px;
+    height:25px;
+    width:25px;
 }
 
 .infoSmall{  
@@ -153,8 +174,19 @@ Email: info@csv2post.com
 	background-repeat: no-repeat;  
 	background-position: 10px center; 
 	display: block;
-	font-size:18p;
+	font-size:18px;
     background-size:80px 80px;
+    border-radius: 8px;
+}
+
+.LargeHelpLink{  
+    display: block;
+    float:right;
+    position:relative;
+    top:-3px;
+    right:-10px;
+    height:25px;
+    width:25px;
 }
 
 .infoLarge{  
@@ -163,16 +195,6 @@ Email: info@csv2post.com
 	background-image: url(../images/info_large.png);  
 	border: 5px solid #86CFF2;
 }  
-
-.infoHelpLink{  
-    display: block;
-    float:right;
-    position:relative;
-    top:2px;
-    right: -10px;
-    height: 30px;
-    width:30px;
-} 
 
 .successLarge{  
 	color: #4F8A10;  
@@ -236,11 +258,22 @@ Email: info@csv2post.com
 .infoExtra, .successExtra, .warningExtra, .errorExtra, .validationExtra, 
 .questionExtra, .processingExtra, .restrictedExtra, .stopExtra, .stepExtra {  
 	margin: 5px 0px; /* top and bottom */ 
-	padding:0px 20px 30px 20px;  
+	padding:0px 10px 30px 20px;  
 	background-repeat: no-repeat;  
 	background-position: 10px center; 
 	display: block;
 	font-size:18px;
+    border-radius: 8px;
+}
+
+.ExtraHelpLink{  
+    display: block;
+    float:right;
+    position:relative;
+    top:6px;
+    right:3px;
+    height:25px;
+    width:25px;
 }
 
 .infoExtra{  

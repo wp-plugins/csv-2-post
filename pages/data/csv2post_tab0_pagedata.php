@@ -262,7 +262,7 @@ $jsform_set['noticebox_content'] = 'You are about to delete the selected CSV fil
     csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
 
     // add end of form - dialogue box does not need to be within the <form>
-    csv2post_formend_standard('Run Test',$jsform_set['form_id']);?>
+    csv2post_formend_standard('Delete File',$jsform_set['form_id']);?>
 
     <?php csv2post_jquery_form_prompt($jsform_set);?>
         

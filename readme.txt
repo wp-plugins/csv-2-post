@@ -96,7 +96,34 @@ first plugin was created in 2009 and was halted pending re-development.
 5. This screenshot shows "Basic Custom Field Rules", paid edition has advanced features but most users require the basic form which allows you to create post meta with any data.
 6. You can use up to 3 columns of data to create 3 levels of categories.
  
-== Changelog == 
+== Changelog ==
+= 6.6.2 =
+* Public Messages
+    * We can make CSV 2 POST do anything you need, just let us know what that is
+* Bug Fixes
+    * (critical) post updating problem fixed
+    * (minor) links in notifications had http:// prepended twice
+    * (critical) problem saving post content templates with only one type/use selected
+    * (critical) post tags in free edition were not being applied
+    * (critical) same record being used many times during post creation
+* General Improvements
+    * More page is now hidden, we will display it when most web services and community features are 100% complete
+    * Improved CSS for notification links (the blue arrow)
+    * Notifications now have rounded corners
+    * Easy configuration question answers no longer stored in their own option record, reducing installation requirements and use of options table
+    * New screen named Undo on the Your Creations page (will allow the reversal of changes made by projects)
+    * New screen named Flagged Posts on the Your Creations page. It will show posts with issues and offer tools to correct them.
+* Key Technical Improvements
+    * csv2post_variables_easyset_array.php file removed, the $csv2post_easy_set array is now held in $csv2post_adm_set['easyconfigurationquestions']
+    * Removed folder named base and moved containing files into the panels folder
+    * New folder added to panels folder named themesupport, it will hold a file for each supported theme 
+    * Added parameter to csv2post_sql_used_records() for changing the selected columns, making it more effecient
+    * csv2post_sql_query_records_last_update() now returns a value instead of an array, was causing errors in csv2post_posts_autoupdate()
+* Known Issues
+    * URL http//www.csv2post.com/support is offered in help links, despite this url not being in the plugins code, the ":" is being removed somehow
+* Web Services, Support and Websites changes
+    * None
+     
 = 6.6.1 =
 * Public Messages
     * We have a new baby girl weighing 7lb, named Kiera, born 22nd August 2012 at 03:12.

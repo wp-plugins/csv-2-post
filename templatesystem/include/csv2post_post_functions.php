@@ -46,6 +46,7 @@ function csv2post_create_posts_basic($project_code,$request_method){
     
     // get data - if no data we return now
     $records = csv2post_sql_query_unusedrecords_singletable($project_array['tables'][0]);
+
     if(!$records){
         if($request_method == 'manual'){
             csv2post_notice('No posts were created as your project does not have any unused records. No project statistics were changed either.','info','Large','No Posts Created','','echo');    
@@ -81,7 +82,7 @@ function csv2post_create_posts_basic($project_code,$request_method){
                 
     // begin looping through all records
     foreach( $records as $record_array ){
-                    
+                      
         // set $category_array if $project_array['categories']['level1']['table'] is set (get existing, create or a mix of both)
         $category_array = array();
         if(isset($project_array['categories']['level1']['table'])){
@@ -103,7 +104,7 @@ function csv2post_create_posts_basic($project_code,$request_method){
         }
                      
         // parse default post content
-        $content_template = csv2post_parse_columnreplacement_basic($record_array,$content_template);
+        $content = csv2post_parse_columnreplacement_basic($record_array,$content_template);
 
         // parse excerpt template
         if(isset($project_array['default_excerpttemplate_id'])){
@@ -112,9 +113,14 @@ function csv2post_create_posts_basic($project_code,$request_method){
                 $my_post['post_excerpt'] = csv2post_parse_columnreplacement_basic($record_array,$excerpt_template);
             }             
         }
-                            
+
+        // set tags
+        if(isset($project_array['tags']['default']['table']) && isset($project_array['tags']['default']['column'])){
+            $my_post['tags_input'] = $record_array[$project_array['tags']['default']['column']];    
+        }
+                  
         // create a draft post, csv2post_create_posts_basic uses a basic version of draft post creation with none of the most advanced features
-        $my_post = csv2post_create_postdraft_basic($record_array,$category_array,$project_code,$content_template,$title_template );                                                                        
+        $my_post = csv2post_create_postdraft_basic($record_array,$category_array,$project_code,$content,$title_template );                                                                        
         
         if( !$my_post ){
             ++$fault_occured;
@@ -130,19 +136,14 @@ function csv2post_create_posts_basic($project_code,$request_method){
             // update project table
             csv2post_update_project_databasetable_basic($record_array['csv2post_id'],$my_post['ID'],$project_array['tables'][0]); 
         }                                                                                              
-           
-        // set tags
-        if(isset($project_array['tags']['default']['table']) && isset($project_array['tags']['default']['column'])){
-            $my_post['tags_input'] = $record_array[$project_array['tags']['default']['column']];    
-        }
-         
+                    
         // add custom field meta values (basic array only in this function)
         if(isset($project_array['custom_fields']['basic'])){ 
             foreach($project_array['custom_fields']['basic'] as $key => $cfrule){
                 add_post_meta($my_post['ID'], $cfrule['meta_key'], $record_array[$cfrule['column_name']], false);     
             }
         }
-        
+                    
         // add SEO meta values (free edition uses the ['basic'] node of the array only)
         if(isset($project_array['seo']['basic'])){
             csv2post_post_add_metadata_basic_seo($project_code,$record_array,$my_post['ID']);
@@ -220,10 +221,15 @@ function csv2post_post_update_metadata_basic_seo($project_code,$record_array,$po
 * @return mixed
 */
 function csv2post_parse_columnreplacement_basic($record_array,$value){
+
+    
     // loop through record array values
     foreach( $record_array as $column => $data ){
         $value = str_replace('#'. $column, $data, $value); 
     }
+    
+    //var_dump($value);
+    
     return $value;
 }
 
@@ -242,7 +248,7 @@ function csv2post_create_postdraft_basic( $r,$category_array,$project_code,$cont
     }else{
         $my_post['post_author'] = 1;    
     }
-            
+           
     $my_post['post_date'] = date("Y-m-d H:i:s", time());    
     $my_post['post_date_gmt'] = gmdate("Y-m-d H:i:s", time());
     $my_post['post_title'] = $title;

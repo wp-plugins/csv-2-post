@@ -1,10 +1,11 @@
 <?php                  
 /**
-* Queries a projects database table for last update value
+* Queries a projects database table for giving posts linked record, last update value
 * 1. Always queries the main project table, if main table not set in project array then defaults to the first in tables array 
 * 2. Only returns record date record was last update
 * 
 * @returns the date value from csv2post_updated else returns false on table not existing or record not found
+* @todo LOWPRIORITY, is this function not meant to be in paid edition folder only?
 */
 function csv2post_sql_query_records_last_update($project_code,$post_id){
     // establish main project table
@@ -16,8 +17,8 @@ function csv2post_sql_query_records_last_update($project_code,$post_id){
     // csv2post_updated is not changed in a multiple table project until all tables are updated so we dont need to 
     // be concerned with that here.
     // 5th Aug 2012 Ryan Bayne: added LIMIT 1 to help ensure the result only has 1 record, should somehow post id end up in 2 records   
-    global $wpdb; 
-    $record_array = $wpdb->get_results( 'SELECT csv2post_updated 
+    global $wpdb;                                                
+    $record_array = $wpdb->get_var( 'SELECT csv2post_updated 
     FROM '. $main_table .' 
     WHERE csv2post_postid = ' . $post_id . ' LIMIT 1',ARRAY_A ); 
     if(!$record_array){
@@ -94,7 +95,8 @@ function csv2post_sql_build_columnstring($table_name){
 * @returns result of wp_update_post(), could be WP_Error or post ID or false
 */
 function csv2post_update_project_databasetable_basic($record_id,$post_id,$table_name){
-    global $wpdb;                  
+    global $wpdb;
+            
     $result = $wpdb->query('UPDATE '. $table_name .'                       
     SET csv2post_postid = '.$post_id.',csv2post_applied = NOW()                            
     WHERE csv2post_id = '.$record_id.'');   
@@ -227,7 +229,6 @@ function csv2post_get_options_beginning_with($prependvalue){
     
     // loop through each option record and check their name value for csv2post_ at the beginning
     foreach( $optionrecords as $optkey => $option ){
-
         if(strpos( $option->option_name , $prependvalue ) === 0){
             $optionrecord_array[] = $option->option_name;
         }
@@ -264,8 +265,7 @@ function csv2post_sql_update_record( $row, $csvfile_name, $column_total, $jobcod
     }else{
         $file_id = csv2post_get_csvfile_id($csvfile_name,$jobcode);;
     }    
-    
-    
+
     // start SET data part of query
     $set = ' SET csv2post_imported = NOW(),csv2post_updated = NOW(),csv2post_filedone'.$file_id.' = 1';
     
@@ -344,8 +344,7 @@ function csv2post_create_dataimportjob_table($jobcode,$job_file_group,$maintable
     `csv2post_updated` datetime NOT NULL COMMENT '',
     `csv2post_changed` datetime NOT NULL COMMENT '',
     `csv2post_applied` datetime NOT NULL COMMENT '',";
-    
-    
+
     // if $maintableonly, request is to build a table with the above columns only for a multi file project
     if($maintableonly == false){                                         
         $column_int = 0;
@@ -507,18 +506,17 @@ function csv2post_sql_formatter($sql_query){
 /**
 * Query post creation project database table for used records (those with csv2post_postid populated)
 * 
-* @param mixed $table_name
-* @param mixed $number_of_records
-* @return array
+* @param string $table_name, must be a project table i.e. $project_array['maintable']
+* @param numeric $number_of_records, records requested (pass 9999999 for all records), set at 1 by default to avoid over processing by mistake
 */
-function csv2post_sql_used_records($table_name,$number_of_records = 1){
+function csv2post_sql_used_records($table_name,$number_of_records = 1,$select = '*'){
     global $wpdb;
     
     // ensure user has not manually deleted table 
     $table_exist = csv2post_does_table_exist($table_name);
     if(!$table_exist){return false;}
          
-    return $wpdb->get_results( 'SELECT * 
+    return $wpdb->get_results( 'SELECT '.$select.' 
     FROM '. $table_name .' 
     WHERE csv2post_postid 
     IS NOT NULL 
@@ -534,9 +532,8 @@ function csv2post_sql_used_records($table_name,$number_of_records = 1){
 * 
 * @todo LOWPRIORITY, create a setting for user to force deletion (no trash) when deleting posts
 */
-function csv2post_sql_reset_project($table_name,$reset_posts){
+function csv2post_sql_reset_project_table($table_name,$reset_posts){
     global $wpdb;    
-    
     if($reset_posts){
        $post_ids = $wpdb->get_results( 'SELECT csv2post_postid FROM '. $table_name .' WHERE csv2post_postid IS NOT NULL',ARRAY_A ); 
        if($post_ids){
@@ -548,4 +545,14 @@ function csv2post_sql_reset_project($table_name,$reset_posts){
     
     $wpdb->query('UPDATE ' . $table_name .' SET csv2post_postid = 0');
 }        
+
+/**
+* Resets the project record that has the giving post id in the csv2post_postid column
+*/
+function csv2post_sql_reset_project_record($post_ID,$table_name){
+    global $wpdb;
+    if(isset($post_ID) && isset($table_name)){
+        $wpdb->query('UPDATE ' . $table_name .' SET csv2post_postid = 0 WHERE csv2post_postid = '.$post_ID);
+    }        
+}
 ?>

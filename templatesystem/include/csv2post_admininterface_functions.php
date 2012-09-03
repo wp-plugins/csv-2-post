@@ -42,8 +42,12 @@ function csv2post_admin_menu(){
         add_submenu_page($n, __($csv2post_mpt_arr['projects']['title'],$n.$csv2post_mpt_arr['projects']['slug']), __($csv2post_mpt_arr['projects']['menu'],$n.$csv2post_mpt_arr['projects']['slug']), $csv2post_mpt_arr['projects']['role'], $csv2post_mpt_arr['projects']['slug'], WTG_C2P_ABB . 'page_projects');
         add_submenu_page($n, __($csv2post_mpt_arr['creation']['title'],$n.$csv2post_mpt_arr['creation']['slug']), __($csv2post_mpt_arr['creation']['menu'],$n.$csv2post_mpt_arr['creation']['slug']), $csv2post_mpt_arr['creation']['role'], $csv2post_mpt_arr['creation']['slug'], WTG_C2P_ABB . 'page_creation');        
         add_submenu_page($n, __($csv2post_mpt_arr['install']['title'],$n.$csv2post_mpt_arr['install']['slug']), __('Plugin Status',$n.$csv2post_mpt_arr['install']['slug']), $csv2post_mpt_arr['install']['role'], $csv2post_mpt_arr['install']['slug'], WTG_C2P_ABB . 'page_install');
-        add_submenu_page($n, __($csv2post_mpt_arr['more']['title'],$n.$csv2post_mpt_arr['more']['slug']), __($csv2post_mpt_arr['more']['menu'],$n.$csv2post_mpt_arr['more']['slug']), $csv2post_mpt_arr['more']['role'], $csv2post_mpt_arr['more']['slug'], WTG_C2P_ABB . 'page_more');
-    }
+        
+        // if More page active
+        if(isset($csv2post_mpt_arr['more']['active']) && $csv2post_mpt_arr['more']['active'] == true){
+            add_submenu_page($n, __($csv2post_mpt_arr['more']['title'],$n.$csv2post_mpt_arr['more']['slug']), __($csv2post_mpt_arr['more']['menu'],$n.$csv2post_mpt_arr['more']['slug']), $csv2post_mpt_arr['more']['role'], $csv2post_mpt_arr['more']['slug'], WTG_C2P_ABB . 'page_more');
+        }
+   }
 }
 
 /**
@@ -1319,7 +1323,7 @@ function csv2post_display_all_post_contentdesigns_buttonlist(){
  
     global $post;
     $myposts = get_posts( $args );
-    
+
     if(count($myposts) == 0){
         echo 'You do not have any content templates';
     }
@@ -1549,7 +1553,7 @@ function csv2post_custombox_contenttemplatetype( $post ) {
 
     // get template types - may return an array of values
     $meta_values = get_post_meta($_GET['post'], '_csv2post_templatetypes', false); 
-       
+
     if(!$meta_values){
         echo '<p>Error: could not establish the content designs purpose</p>';
         return;    
@@ -1558,8 +1562,8 @@ function csv2post_custombox_contenttemplatetype( $post ) {
     echo '<ol>';
     
     foreach($meta_values as $key => $type){
-        
-        switch ($type) {
+               
+        switch ($type[0]) {
             case 'postcontent':
                 echo '<li>Post/Page Content</li>';
                 break;
@@ -2739,7 +2743,8 @@ function csv2post_display_databasetables_withjobnames($checkbox_column = false,$
             // I would like to reduce such access at least until better documentation is released and more security added
             if($csv2post_is_free && !strstr($table_name[0],'csv2post_')){
             
-                // we do nothing - we do not add database tables to our table if csv2post_ is not within the name     
+                // we do nothing - we do not add database tables to our table if csv2post_ is not within the name
+                // or if user does not want them shown     
                 
             }else{
             
@@ -3286,8 +3291,10 @@ function csv2post_display_designtype_menu($post_id){
      
                 // set selected status by checking if current $type is in the custom field value for csv2post_templatetypes
                 $selected = '';
-                if(in_array($type['slug'],$customfield_types_array,false)){
-                    $selected = ' selected="selected"';
+                if(isset($post_id) && is_numeric($post_id) && $post_id != 0){
+                    if(in_array($type['slug'],$customfield_types_array,false)){
+                        $selected = ' selected="selected"';
+                    }
                 }
                 
                 $optionmenu .= '<option value="';
@@ -3532,10 +3539,11 @@ function csv2post_link_toadmin($page,$values = ''){
 }   
 
 /**
-* put your comment there...
-* 
+* List of CSV files for use on form as it has checkbox/radio for deleting files
 */
 function csv2post_csv_files_list(){
+    global $csv2post_is_free;
+    
     $available = 0;
  
     if (!is_dir(WTG_C2P_CONTENTFOLDER_DIR)) {
@@ -3585,14 +3593,22 @@ function csv2post_csv_files_list(){
                         <tr>
                             <td>';?>
                             
+                            <?php 
+                            // if free only allow a single file at a time
+                            $objects = 'checkbox';
+                            if($csv2post_is_free){
+                                $objects = 'radio';
+                            }
+                            ?>
+            
                             <script>
                             $(function() {
-                                $( "#csv2post_deletecsvfile_radio_<?php echo $fileChunks[0];?>" ).buttonset();
+                                $( "#csv2post_deletecsvfile_<?php echo $objects;?>_<?php echo $fileChunks[0];?>" ).buttonset();
                             });
                             </script>
 
-                            <div id="csv2post_deletecsvfile_radio_<?php echo $fileChunks[0];?>">                    
-                                <input type="radio" name="csv2post_delete_csvfiles[]" id="csv2post_delete_csvfiles_<?php echo $fileChunks[0];?>" value="<?php echo $filename;?>" />
+                            <div id="csv2post_deletecsvfile_<?php echo $objects;?>_<?php echo $fileChunks[0];?>">                    
+                                <input type="<?php echo $objects;?>" name="csv2post_delete_csvfiles[]" id="csv2post_delete_csvfiles_<?php echo $fileChunks[0];?>" value="<?php echo $filename;?>" />
                                 <label for="csv2post_delete_csvfiles_<?php echo $fileChunks[0];?>">*</label>                     
                             </div>                         
                          

@@ -1,5 +1,70 @@
 <?php
 /**
+* Deletes posts for one or more projects.
+* Updates project tables so that the data can easily be used again.
+* 
+* @param mixed $project_code
+* @param mixed $range (csv2post_undo_currentproject,csv2post_undo_last10minutes,csv2post_undo_last60minutes,csv2post_undo_last24hours,csv2post_undo_allprojects)
+* @returns false on failure or numeric (number of posts deleted) on success 
+*/
+function csv2post_delete_project_posts_byrange($project_code,$range){
+    global $csv2post_projectslist_array;
+    
+    // loop through all projects
+    $posts_deleted = 0;
+    
+    foreach($csv2post_projectslist_array as $the_project_code => $project){
+        
+        if($range != 'allprojects' && $project_code == $the_project_code){
+            
+            // get project array
+            $the_project_array = csv2post_get_project_array($the_project_code);
+            
+            // query post ID in project table
+            $record_result = csv2post_sql_used_records($the_project_array['maintable'],9999999,'csv2post_postid');
+            if($record_result){
+                foreach($record_result as $key => $rec){
+                   
+                   // delete the post
+                   ### TODO:LOWPRIORITY,create a general admin setting for forcing the delete and not putting posts in trash
+                   wp_delete_post($rec['csv2post_postid'],false);
+                   
+                   // update project table
+                   csv2post_sql_reset_project_record($rec['csv2post_postid'],$the_project_array['maintable']);
+                   
+                   ++$posts_deleted;  
+                }
+            }
+
+            return $posts_deleted;
+            
+        }else{
+            
+             // get project array
+            $the_project_array = csv2post_get_project_array($the_project_code);
+            
+            // query post ID in project table
+            $record_result = csv2post_sql_used_records($the_project_array['maintable'],9999999,'csv2post_postid');
+            if($record_result){
+                foreach($record_result as $key => $rec){
+                   
+                   // delete the post
+                   ### TODO:LOWPRIORITY,create a general admin setting for forcing the delete and not putting posts in trash
+                   wp_delete_post($rec['csv2post_postid'],false);
+                   
+                   // update project table
+                   csv2post_sql_reset_project_record($rec['csv2post_postid'],$the_project_array['maintable']);
+                   
+                   ++$posts_deleted;  
+                }
+            }              
+        }
+    }
+    
+    return $posts_deleted;  
+}
+        
+/**
 * Determines if domain owner is subscribing (currently effects premium support services, bonus downloads, extra credits etc)
 * Subscription is not required for activation of full edition, that requires membership (which does not need annual payments)
 * 

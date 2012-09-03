@@ -974,7 +974,7 @@ function csv2post_templatefunction(){
  * @todo LOWPRIORITY, add url to all notifications, this could take days!
  * @todo LOWPRIORITY, add a paragraphed section of the message for a second $message variable for extra information
  */
-function csv2post_notice($message,$type = 'success',$size = 'Extra',$title = false, $helpurl = 'http://www.csv2post.com/support', $output_type = 'echo',$persistent = false,$clickable = false){
+function csv2post_notice($message,$type = 'success',$size = 'Extra',$title = false, $helpurl = 'www.csv2post.com/support', $output_type = 'echo',$persistent = false,$clickable = false){
     if(is_admin()){
         
         // change unexpected values into expected values (for flexability and to help avoid fault)
@@ -983,7 +983,7 @@ function csv2post_notice($message,$type = 'success',$size = 'Extra',$title = fal
         if($type == 'next'){$type == 'step';}
         
         // prevent div being clickable if help url giving (we need to more than one link in the message)
-        if($helpurl != false && $helpurl != '' && $helpurl != 'http://www.csv2post.com/support'){$clickable = false;}
+        if($helpurl != false && $helpurl != '' && $helpurl != 'www.csv2post.com/support'){$clickable = false;}
             
         if($output_type == 'return'){
             return csv2post_notice_display($type,$helpurl,$size,$title,$message,$clickable,$persistent);
@@ -1037,9 +1037,12 @@ function csv2post_notice_display($type,$helpurl,$size,$title,$message,$clickable
     $output .= '<div class="'.$type.$size.'">';
         
         // if is not clickable (entire div) and help url is not null
+        ### TODO:LOWPRIORITY, add the $type to the class ($type.$size.'HelpLink) and create styles for each type plus images to suit the styles. This could be a job to give to someone else.
         if($helpurl != '' && $helpurl != false){
-            $output .= '<a href="http://'.$helpurl.'" target="_blank"><img class="infoHelpLink" src="'.WTG_C2P_IMAGEFOLDER_URL.'link-icon.png" /></a>';
-        }
+            $output .= '<a href="'.$helpurl.'" target="_blank">
+            <img class="'.$size.'HelpLink" src="'.WTG_C2P_IMAGEFOLDER_URL.'link-icon.png" />
+            </a>';
+        }   
        
         // set h4 when required
         if($size == 'Large' || $size == 'Extra'){$output .= '<h4>'.$title.'</h4>';}
@@ -1397,8 +1400,8 @@ function csv2post_get_default_contenttemplate_name(){
         return 'No Default Content Template';
     }else{
         // get wtgcsvtemplate post title
-
         $template_post = get_post($default_template_id); 
+
         return $template_post->post_title;        
     }
 }
@@ -1866,4 +1869,75 @@ function csv2post_get_project_maintable($project_code){
         return 'ERROR:csv2post_get_project_maintable could not determine main project table';
     }
 } 
+
+/**
+* Establishes if giving project has any posts.
+* Currently it only does this based on projects tables 
+* 
+* @param mixed $project_code
+*/
+function csv2post_does_project_have_posts($project_code){
+    
+    $project_array = csv2post_get_project_array($project_code);
+
+    $usedrecords = csv2post_sql_used_records($project_array['maintable'],1);
+    
+    if($usedrecords){
+        return true;
+    }else{
+        return false;
+    }   
+}
+
+/**
+* Determines if a giving CSV file name is in use (used to prevent delection of a file or using more than once)
+* 
+* @param mixed $file_is_in_use
+* @param mixed $output
+*/
+function csv2post_is_csvfile_in_use($csv_file_name,$output = true){
+    global $csv2post_job_array,$csv2post_dataimportjobs_array;
+    // if file is in a data import job (user can delete the data import job and database table stays)
+    foreach($csv2post_dataimportjobs_array as $jobid => $job){
+
+        // get the jobs own option record
+        $jobrecord = csv2post_get_dataimportjob($jobid);
+        if(!$jobrecord && $output == true){
+            csv2post_notice('Failed to locate the option table record for data import job named '.$job['name'].'. Is it possible the record was deleted manually?','error','Tiny','','','echo');
+        }else{
+
+            foreach($jobrecord['files'] as $key => $csvfile_name){
+                if($csv_file_name == $csvfile_name){
+                    return true;
+                } 
+            } 
+               
+        }
+    }
+    
+    return false;
+}
+
+/**
+* Flags the giving post by adding _csv2post_flagged meta value which is used in the flagging system.
+*     
+* @param integer $post_ID
+* @param integer $priority, 1 = low priority (info style notification), 2 = unsure of priority (warning style notification), 3 = high priority (error style notification)
+* @param integer $time, time() when possible problem was detected with post
+* @param string $reason, as much information as required for user to take the required action or know they can delete the flag
+* @param string $type, keyword to enhance search ability (USED:updatefailure )
+*/
+function csv2post_flag_post($post_ID,$priority,$time,$reason,$type){
+    // if a value is missing return
+    if(!isset($post_ID) || !isset($priority) || !isset($time) || !isset($reason) || !isset($type)){
+        ### LOG THIS
+        return false;
+    }
+    
+    $testarray['priority'] = $priority;
+    $testarray['time'] = $time;
+    $testarray['reason'] = $reason;
+    $testarray['type'] = 'updatefailure';
+    add_post_meta($post_ID,'_csv2post_flagged',$testarray,false);   
+}
 ?>

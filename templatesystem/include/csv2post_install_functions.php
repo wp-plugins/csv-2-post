@@ -107,7 +107,7 @@ function csv2post_is_installed(){
 function csv2post_install(){
     
     // settings arrays are includes by 
-    global $csv2post_adm_set,$csv2post_pub_set,$csv2post_eas_set,$csv2post_mpt_arr,$csv2post_currentversion;
+    global $csv2post_adm_set,$csv2post_pub_set,$csv2post_mpt_arr,$csv2post_currentversion;
 
     $minor_fails = 0;// count minor number of failures, if 3 or more then we'll call it a failed install
     $overall_install_result = true;// used to indicate overall result
@@ -187,38 +187,6 @@ function csv2post_install(){
         csv2post_log($csv2post_log);
     }
          
-    // install easy configuration question default answers - see csv2post_variables_easy.php     
-    if(!add_option(WTG_C2P_ABB.'easyset',serialize($csv2post_eas_set))){
-        
-        // should never happen - csv2post_uninstall() used at the beginning of csv2post_install()
-        echo csv2post_notice('Adding option '.WTG_C2P_ABB.'easyset returned false, this is usually because it already exists.','error','Tiny',false,'','return');
-        
-        $overall_install_result = false;          
-        
-        $csv2post_log = array();
-        $csv2post_log['line'] = __LINE__;
-        $csv2post_log['file'] = __FILE__;
-        $csv2post_log['function'] = __FUNCTION__;
-        $csv2post_log['type'] = 'general';// general,sql,admin,user,error
-        $csv2post_log['comment'] = 'Options record named '.WTG_C2P_ABB.'easyset could not be installed';
-        $csv2post_log['style'] = 'error';
-        $csv2post_log['category'] = 'install';
-        csv2post_log($csv2post_log);
-
-    }else{
-        echo csv2post_notice('Installed option record called '.WTG_C2P_ABB.'easyset','success','Tiny',false,'','return');
-        
-        $csv2post_log = array();
-        $csv2post_log['line'] = __LINE__;
-        $csv2post_log['file'] = __FILE__;
-        $csv2post_log['function'] = __FUNCTION__;
-        $csv2post_log['type'] = 'general';// general,sql,admin,user,error
-        $csv2post_log['comment'] = 'Options record named '.WTG_C2P_ABB.'easyset was installed';
-        $csv2post_log['style'] = 'success';
-        $csv2post_log['category'] = 'install';
-        csv2post_log($csv2post_log);
-    }
-
     // install admin menu array - see csv2post_variables_adminconfig.php
     if(!add_option(WTG_C2P_ABB.'tabmenu',serialize($csv2post_mpt_arr))){
         

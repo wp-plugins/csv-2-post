@@ -25,8 +25,4 @@ $csv2post_adm_set_result = get_option('csv2post_adminset');
 if($csv2post_adm_set_result){
     $csv2post_adm_set = unserialize(get_option('csv2post_adminset'));    
 }
-
-$csv2post_eas_set_result = get_option('csv2post_easyset');
-if($csv2post_eas_set_result){
-    $csv2post_eas_set = unserialize(get_option('csv2post_easyset'));    
-}?>
+?>

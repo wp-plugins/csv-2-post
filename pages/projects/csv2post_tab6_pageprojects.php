@@ -7,6 +7,7 @@ if(!isset($csv2post_project_array['custom_fields'])){
 ?>
 
 <?php
+### TODO:LOWPRIORITY, for premium edition, use suggestions in the text field for known themes
 ++$panel_number;// increase panel counter so this panel has unique ID
 $panel_array = array();
 $panel_array['panel_name'] = 'createbasiccustomfieldrules';// slug to act as a name and part of the panel ID 

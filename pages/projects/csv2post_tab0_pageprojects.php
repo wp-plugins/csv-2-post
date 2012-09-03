@@ -152,13 +152,9 @@ $nonce = wp_create_nonce( "csv2post_referer_createproject_checkprojectname" );
     
     <?php 
     if($csv2post_is_free){?>
-
         <input type='hidden' name='csv2post_projectname_name' value='Project' /><?php 
-
     }else{?>
-      
         <p>Enter Project Name: <input type='text' name='csv2post_projectname_name' id='<?php echo $projectname_id;?>' value='' /><span id="csv2post_status_<?php echo $jsform_set['form_id'];?>"></span></p><?php 
-    
     }?>
     
     <!-- jquery and ajax output start -->
