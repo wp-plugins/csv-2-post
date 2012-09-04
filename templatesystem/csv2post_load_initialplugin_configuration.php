@@ -16,13 +16,9 @@ csv2post_debugmode();
 ####              LOAD STORED SETTINGS DATA                ####
 ####                                                       ####
 ###############################################################
-$csv2post_pub_set_result = get_option('csv2post_publicset');
-if($csv2post_pub_set_result){
-    $csv2post_pub_set = unserialize(get_option('csv2post_publicset'));    
-}
+$csv2post_pub_set = get_option('csv2post_publicset');
+$csv2post_pub_set = maybe_unserialize($csv2post_pub_set);
 
-$csv2post_adm_set_result = get_option('csv2post_adminset');
-if($csv2post_adm_set_result){
-    $csv2post_adm_set = unserialize(get_option('csv2post_adminset'));    
-}
+$csv2post_adm_set = get_option('csv2post_adminset');
+$csv2post_adm_set = maybe_unserialize($csv2post_adm_set);
 ?>

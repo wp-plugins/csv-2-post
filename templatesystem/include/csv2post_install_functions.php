@@ -265,7 +265,7 @@ function csv2post_uninstall(){
     $uninstall_outcome = true;
 
     // delete administration only settings
-    if(!delete_option(WTG_C2P_ABB . 'adminset')){
+    if(!delete_option('csv2post_adminset')){
         $uninstall_outcome = false;
         $csv2post_log = array();
         $csv2post_log['line'] = __LINE__;
@@ -289,7 +289,7 @@ function csv2post_uninstall(){
     }
     
     # delete public related settings
-    if(!delete_option(WTG_C2P_ABB . 'publicset')){
+    if(!delete_option('csv2post_publicset')){
         $uninstall_outcome = false;
         $csv2post_log = array();
         $csv2post_log['line'] = __LINE__;
@@ -312,7 +312,7 @@ function csv2post_uninstall(){
         csv2post_log($csv2post_log);
     } 
     // delete tab navigation array settings
-    if(!delete_option(WTG_C2P_ABB . 'easyset')){
+    if(!delete_option('csv2post_easyset')){
         $uninstall_outcome = false;
         $csv2post_log = array();
         $csv2post_log['line'] = __LINE__;

@@ -342,10 +342,10 @@ function csv2post_delete_logfile($logtype){
 */
 function csv2post_disable_logfile($logtype){
     global $csv2post_adm_set;
-    $csv2post_adm_set = get_option( WTG_C2P_ABB.'adminset' );
+    $csv2post_adm_set = csv2post_get_option_adminsettings();
     if($csv2post_adm_set){
         $csv2post_adm_set['log_'.$logtype.'_active'] = false;
-        return update_option(WTG_C2P_ABB.'adminset',$csv2post_adm_set);
+        return csv2post_update_option_adminsettings($csv2post_adm_set);
     }
 }
 
@@ -358,13 +358,13 @@ function csv2post_disable_logfile($logtype){
 */
 function csv2post_activate_logfile($logtype){
     global $csv2post_adm_set;
-    $csv2post_adm_set = get_option( WTG_C2P_ABB.'adminset' );
+    $csv2post_adm_set = csv2post_get_option_adminsettings();
     if($csv2post_adm_set){
         $csv2post_adm_set['log_'.$logtype.'_active'] = true;
         return update_option( WTG_C2P_ABB.'adminset',$csv2post_adm_set);
     }
 }
-
+                          
 /**
  * Install main content folder in wp-content directory for holding uploaded items
  * Called from install function in install.php if constant is not equal to false WTG_C2P_CONTENTFOLDER_DIR

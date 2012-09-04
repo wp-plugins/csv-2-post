@@ -117,15 +117,7 @@ $nonce = wp_create_nonce( "csv2post_referer_" . $panel_array['panel_name'] );
     
     <h2>Enter Job Name</h2>        
     <p><input type='text' name='csv2post_jobname_name' id='<?php echo $jobname_id;?>' value='' size="30" /><span id="csv2post_status_<?php echo $jsform_set['form_id'];?>"></span></p>
-
-        <?php
-        // full edition allows multiple file selection (do not bypass this without writing the functions to handle multiple files) 
-        //if($csv2post_is_free){
-            //csv2post_menu_csvfiles();
-        //}else{
-            //csv2post_selectables_csvfiles('all',$panel_array['panel_name']);
-        //}?>
-    
+       
     <!-- jquery and ajax output start -->
     <div id='<?php echo $jsform_set['form_id'];?>loading_jobnamechange'>Checking Job Name Please Wait 10 Seconds</div>                 
     <div id='<?php echo $jsform_set['form_id'];?>formstatus'></div>  

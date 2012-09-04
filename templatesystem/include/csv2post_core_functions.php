@@ -1596,8 +1596,7 @@ function csv2post_get_array_lastkey($array){
 */
 function csv2post_get_option_schedule_array(){
     $getschedule_array = get_option( 'csv2post_schedule');
-    $getschedule_array_unserialized = maybe_unserialize($getschedule_array);
-    return $getschedule_array_unserialized;    
+    return maybe_unserialize($getschedule_array);    
 }
 
 /**
@@ -1607,8 +1606,7 @@ function csv2post_get_option_schedule_array(){
 */
 function csv2post_update_option_schedule_array($schedule_array){
     $schedule_array_serialized = maybe_serialize($schedule_array);
-    $update_result = update_option('csv2post_schedule',$schedule_array_serialized);
-    return $update_result;    
+    return update_option('csv2post_schedule',$schedule_array_serialized);    
 }
 
 /**
@@ -1619,8 +1617,17 @@ function csv2post_update_option_schedule_array($schedule_array){
 */
 function csv2post_update_option_notifications_array($notifications_array){
     $notifications_array_serialized = maybe_serialize($notifications_array);
-    $update_result = update_option('csv2post_notifications',$notifications_array_serialized);
-    return $update_result;    
+    return update_option('csv2post_notifications',$notifications_array_serialized);    
+}
+
+function csv2post_update_option_adminsettings($admin_settings_array){
+    $admin_settings_array_serialized = maybe_serialize($admin_settings_array);
+    return update_option('csv2post_adminset',$admin_settings_array_serialized);    
+}
+
+function csv2post_get_option_adminsettings(){
+    $admin_settings_array = get_option( 'csv2post_adminset');
+    return maybe_unserialize($admin_settings_array);    
 }
 
 /**

@@ -94,9 +94,9 @@ function csv2post_templatefiles_statuslist(){
 function csv2post_header_page($pagetitle,$layout){
     global $csv2post_mpt_arr,$csv2post_adm_set,$csv2post_pub_set,$csv2post_currentproject_code,$csv2post_is_free;
 
-    $csv2post_adm_set = get_option('csv2post_adminset');  
-    $csv2post_pub_set = get_option('csv2post_pubicset');
-
+    $csv2post_adm_set = csv2post_get_option_adminsettings();  
+    $csv2post_pub_set = csv2post_get_option_publicset();
+    
     csv2post_jquery_button();?> 
 
     <!-- Checkbox Hide Show Content Script -->
@@ -2951,10 +2951,10 @@ function csv2post_display_csvfiles_fornewdataimportjob(){
     echo '
     <tr>
         <td width="50">Select</td>
-        <td>CSV File Name</td>
-        <td width="80">Columns</td>        
+        <td width="200">CSV File Name</td>
+        <td width="70">Columns</td>        
         <td width="110">Separator</td>
-        <td>Quote</td>    
+        <td width="80">Quote</td> 
     </tr>';
     
     @$opendir_result = opendir( WTG_C2P_CONTENTFOLDER_DIR ); 

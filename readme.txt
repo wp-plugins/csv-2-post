@@ -97,6 +97,20 @@ first plugin was created in 2009 and was halted pending re-development.
 6. You can use up to 3 columns of data to create 3 levels of categories.
  
 == Changelog ==
+= 6.6.3 =
+* Public Messages
+    * Sorry for incorrect version number in previous release. I was playing around with it to trigger new version notifications. Forgot to change it back!  
+* Bug Fixes
+    * (minor) plugin was still attempting to include csv2post_variables_easyset_array.php which is no longer packaged
+* General Improvements
+    * Data import jobs panels now show a range of statistics (maybe a little too much but we can work on that)
+* Key Technical Improvements
+    * maybe_unserialize() now used in csv2post_load_initialplugin_configuration.php instead of if statements#
+* Known Issues
+    * None
+* Web Services, Support and Websites changes
+    * None
+    
 = 6.6.2 =
 * Public Messages
     * We can make CSV 2 POST do anything you need, just let us know what that is

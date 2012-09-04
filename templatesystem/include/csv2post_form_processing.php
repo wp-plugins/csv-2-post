@@ -227,37 +227,27 @@ if($cont){
 * Saves easy configuration questions
 */
 function csv2post_form_save_easyconfigurationquestions(){
-    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'easyconfigurationquestions'){
-
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'easyconfigurationquestions'){
+        global $csv2post_adm_set,$csv2post_easyquestions_array;
         
-        
-        
-        ### TODO:HIGHPRIORITY
-         
-                /*
-                         
-                $csv2post_adm_set_result = get_option('csv2post_adminset');
-                if($csv2post_adm_set_result){
-                    $csv2post_adm_set = unserialize(get_option('csv2post_adminset'));    
-                }         
-         
-               $csv2post_eas_set = array();
-                $csv2post_eas_set[0] = 'answer1';
-                $csv2post_eas_set[1] = 'answer2';
-                $csv2post_eas_set[3] = 'answer3';
-                $csv2post_eas_set[4] = 'answer4';
-
-                #################################################################
-                ####                                                         ####
-                ####            ADMIN ONLY SETTINGS ($csv2post_adm_set)      ####
-                ####                                                         ####
-                ################################################################# 
-
-                // install main admin settings option record
-                $csv2post_adm_set = array();
-                $csv2post_adm_set['easyconfigurationquestions'] = $csv2post_eas_set;
-                 */
+        // loop through questions, answers are in order of questions are in array and we need to know question type
+        foreach($csv2post_easyquestions_array as $key => $q){
+            
+            // if $_POST value for this question
+            if($_POST['csv2post_'.$key]){
                 
+                $csv2post_adm_set['easyconfigurationquestions'][$key] = $_POST['csv2post_'.$key];
+                    
+            }
+                
+        }
+        
+        csv2post_update_option_adminsettings($csv2post_adm_set);
+   
+        csv2post_notice('Your answers for the Easy Configuration Questions have been saved. Please remember
+        that this may hide features, display new features or change the way a feature operates.',
+        'success','Large','Answers Saved','','echo');
+           
         return false;
     }else{
         return true;
