@@ -278,7 +278,7 @@ $csv2post_mpt_arr['data']['tabs'][0]['display'] = csv2post_page_show_hide();
 // 1. Data sub page 1 tab 2
 $csv2post_mpt_arr['data']['tabs'][1]['active'] = true;
 $csv2post_mpt_arr['data']['tabs'][1]['slug'] = 'tab1_pagedata';
-$csv2post_mpt_arr['data']['tabs'][1]['label'] = 'Import Jobs';
+$csv2post_mpt_arr['data']['tabs'][1]['label'] = 'Basic Import';
 $csv2post_mpt_arr['data']['tabs'][1]['name'] = 'dataimport';
 $csv2post_mpt_arr['data']['tabs'][1]['helpurl'] = 'http://www.csv2post.com/';
 $csv2post_mpt_arr['data']['tabs'][1]['allowhide'] = true;
@@ -331,6 +331,14 @@ $csv2post_mpt_arr['data']['tabs'][7]['name'] = 'datasearch';
 $csv2post_mpt_arr['data']['tabs'][7]['helpurl'] = 'http://www.csv2post.com/';
 $csv2post_mpt_arr['data']['tabs'][7]['allowhide'] = true;
 $csv2post_mpt_arr['data']['tabs'][7]['display'] = csv2post_page_show_hide(2);
+// 1. Data sub page 1 tab 9
+$csv2post_mpt_arr['data']['tabs'][8]['active'] = true;
+$csv2post_mpt_arr['data']['tabs'][8]['slug'] = 'tab8_pagedata';
+$csv2post_mpt_arr['data']['tabs'][8]['label'] = 'Advanced Import';
+$csv2post_mpt_arr['data']['tabs'][8]['name'] = 'advanceddataimport';
+$csv2post_mpt_arr['data']['tabs'][8]['helpurl'] = 'http://www.csv2post.com/';
+$csv2post_mpt_arr['data']['tabs'][8]['allowhide'] = true;
+$csv2post_mpt_arr['data']['tabs'][8]['display'] = csv2post_page_show_hide(1);
 ### TODO:LOWPRIORITY, add a page that tests all CSV files and lists their status and profile 
 ### if however it effects loading, could do it with the files in use or latest files uploaded
 ### full edition only 

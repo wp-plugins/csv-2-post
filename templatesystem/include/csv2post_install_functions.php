@@ -55,7 +55,7 @@ function csv2post_is_activated(){
 function csv2post_is_installed(){
     
     global $csv2post_options_array;
-    
+       
     if(!isset($csv2post_options_array) || !is_array($csv2post_options_array)){
         ### TODO:HIGHPRIORITY, log this event
         return false;
@@ -69,17 +69,20 @@ function csv2post_is_installed(){
     $is_installed_result = array();
     $is_installed_result['finalresult'] = false;
     $is_installed_result['options'] = null;
-                 
+                
     foreach($csv2post_options_array as $id => $optionrecord){
-             
+            
         if($optionrecord['required'] == true){
                     
             $currentresult = get_option($id);    
             
             $is_installed_result['options'][$id]['result'] = $currentresult;
-            
+                        
             // change return switch too false if option not found
-            if($currentresult == false || $currentresult == null){
+            if($currentresult == false || $currentresult == null){   
+                
+               var_dump($id); 
+
                 $returnresult = false;
                 $failcause = 'Option RecordMissing:'.$id;    
             }
@@ -88,7 +91,7 @@ function csv2post_is_installed(){
 
     // check plugins required files but do not display message, we only want a true or false outcome
     $templatefiles_result = csv2post_templatefiles_missing(false);
-    if($templatefiles_result){
+    if($templatefiles_result){         
         // a template file is missing, user will find more info on status screen
         $returnresult = false;
         $failcause = 'Core File Missing';        

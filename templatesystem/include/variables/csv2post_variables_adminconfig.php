@@ -4,8 +4,9 @@
 ####          WP OPTIONS - Updated 22/11/2011 By RB1         ####
 ####                                                         ####
 ################################################################# 
-$csv2post_apisession_array = get_option('csv2post_apisession');// array, indicates if api web services are authorised or not                                   
-
+$csv2post_apisession_array = false;
+//$csv2post_apisession_array = get_option('csv2post_apisession');// array, indicates if api web services are authorised or not                                   
+                   
 ###########################################################################
 ####                                                                   ####
 ####        SET ADMIN THEME NAME   - Updated 27/01/2012 By RB1         ####

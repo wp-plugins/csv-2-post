@@ -7,7 +7,7 @@ function csv2post_ajax_dataimportjob_import_manual() {
     // create ajax referer - made up using panel name
     check_ajax_referer( "csv2post_referer_dataimportjob_csvfileimport" );// exampleajaxtwo is panel name
     $overall_result = 'success';
-    $dataimportjob_array = csv2post_data_import_from_csvfile($_POST[ 'csvfilename' ], 'csv2post_' . $_POST[ 'jobcode' ],$_POST['targetrows'],$_POST[ 'jobcode' ]);
+    $dataimportjob_array = csv2post_data_import_from_csvfile_basic($_POST[ 'csvfilename' ], 'csv2post_' . $_POST[ 'jobcode' ],$_POST['targetrows'],$_POST[ 'jobcode' ]);
     
     // determine new $overall_result and apply styling to the main notice to suit it
     if($dataimportjob_array == false){

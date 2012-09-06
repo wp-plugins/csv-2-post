@@ -2947,7 +2947,7 @@ function csv2post_display_csvfiles_fornewdataimportjob(){
     global $csv2post_is_free;  
 
     echo '<table class="widefat post fixed">';
-        
+            
     echo '
     <tr>
         <td width="50">Select</td>
@@ -3636,5 +3636,10 @@ function csv2post_csv_files_list(){
 
         }// end $opendir_result
     }     
+}
+
+
+function csv2post_menu_columns_by_csvfile(){
+    
 }                                                                                                                           
 ?>

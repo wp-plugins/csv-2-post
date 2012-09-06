@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: CSV 2 POST
-Version: 6.6.3
+Version: 6.6.4
 Plugin URI: http://www.csv2post.com
 Description: CSV 2 POST released 2012 by Zara Walsh and Ryan Bayne
 Author: Zara Walsh
@@ -33,9 +33,9 @@ if(!is_admin() || defined('DOING_AJAX') && DOING_AJAX){
 }
 
 ### TODO:HIGHPRIORITY, detect paid edition folder automatically, if not found set as free edition
-$csv2post_is_free = true;// changing this in free copy does not activate a paid edition, it may break the plugin
+$csv2post_is_free_override = false;// change to true for free edition setup when fulledition folder present 
 $csv2post_is_dev = false;// boolean, true displays more panels with even more data i.e. array dumps
-$csv2post_currentversion = '6.6.3';// this value should not be relied on but only used for guidance
+$csv2post_currentversion = '6.6.4';// this value should not be relied on but only used for guidance
 $csv2post_php_version_tested = '5.4.0';// current version the plugin is being developed on
 $csv2post_php_version_minimum = '5.3.1';// minimum version required for plugin to operate
 $csv2post_pluginname = 'csv2post';// should not be used to make up paths
@@ -69,6 +69,15 @@ require_once(WTG_C2P_DIR.'templatesystem/include/csv2post_sql_functions.php');
 require_once(WTG_C2P_DIR.'templatesystem/include/csv2post_file_functions.php');// file management related functions
 require_once(WTG_C2P_DIR.'templatesystem/include/csv2post_post_functions.php');// post creation,update related functions              
 require_once(WTG_C2P_DIR.'pages/csv2post_variables_tabmenu_array.php');
+
+// decide if package is free or full edition
+if(file_exists(WTG_C2P_DIR . '/fulledition') && $csv2post_is_free_override == false){
+    $csv2post_is_free = false;
+}else{
+    $csv2post_is_free = true;
+}
+
+// include full edition files
 if(!$csv2post_is_free){require_once(WTG_C2P_DIR.'fulledition/csv2post_advanced_functions.php');}
 
 ####################################################
@@ -105,6 +114,7 @@ if(is_admin()){
 
     //$csv2post_activationcode = csv2post_get_activationcode(); ### TODO:MEDIUMPRIORITY, part of activation code system 
     $csv2post_is_installed = csv2post_is_installed();// boolean - if false either plugin has never been installed or installation has been tampered with 
+    
     if(!$csv2post_is_free){
         //$csv2post_is_webserviceavailable = csv2post_is_webserviceavailable();
     }else{

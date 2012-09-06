@@ -139,11 +139,6 @@ $csv2post_templatesystem_files[27]['path'] = '/include/variables/';
 $csv2post_templatesystem_files[27]['name'] = WTG_C2P_ABB . 'variables_adminset_array';
 $csv2post_templatesystem_files[27]['extension'] = 'php';
 $csv2post_templatesystem_files[27]['level'] = 0;
-// wtg?_variables_easyset_array.php
-$csv2post_templatesystem_files[28]['path'] = '/include/variables/';
-$csv2post_templatesystem_files[28]['name'] = WTG_C2P_ABB . 'variables_easyset_array';
-$csv2post_templatesystem_files[28]['extension'] = 'php';
-$csv2post_templatesystem_files[28]['level'] = 0;
 // wtg?_variables_publicconfig.php
 $csv2post_templatesystem_files[29]['path'] = '/include/variables/';
 $csv2post_templatesystem_files[29]['name'] = WTG_C2P_ABB . 'variables_publicconfig';

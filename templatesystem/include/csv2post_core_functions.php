@@ -191,7 +191,7 @@ function csv2post_php_version_check_wp_die(){
     }
 }
 
-function csv2post_data_import_from_csvfile( $csvfile_name, $table_name, $rate, $jobcode ){
+function csv2post_data_import_from_csvfile_basic( $csvfile_name, $table_name, $target = 1, $jobcode ){
     
     global $wpdb;
     
@@ -200,22 +200,22 @@ function csv2post_data_import_from_csvfile( $csvfile_name, $table_name, $rate, $
     // get files modification time
     $csvfile_modtime = filemtime(WTG_C2P_CONTENTFOLDER_DIR .'/'. $csvfile_name);
     
-    // set loop counters
-    $loop_count = 0;// once $progress marker reached, $loop_count should continue to be the current row ID
-    $processed = 0;// new rows processed in the current event
+    // set job statistics
     $inserted = 0;// INSERT to table
     $updated = 0;// UPDATE on a record in table
     $deleted = 0;// DELETE record when CSV file does not appear to still include it
     $void = 0;// IMPORTED OR UPDATE, but then made void so it cannot be used
     $dropped = 0;// number or rows that have been skipped, possibly through failure or users configuration
     $duplicates = 0;
-    
+    // NEW VARIABLES
+    $continue = false;// when set to true it indicates that the loop has passed all rows already processed
+    $new_rows_processed = 0;// $new_rows_processed is the counter when a record is created in database ready to update row data to    
+    $while_start = 0;// counter increased at very beginning of while loop
+    $while_end = 0;// counter increased at very end of while loop
+        
     // get the data import job array
     $dataimportjob_array = csv2post_get_dataimportjob($jobcode); 
       
-    // get files past progress - this is used to skip CSV file rows until reaching a row not yet processed
-    $progress = $dataimportjob_array['stats']['allevents']['progress'];
-
     // TEMPORARY VARIABLES TODO: HIGHPRIORITY, set these variables using the job details
     $multiplefile_project = true;
     $duplicate_check = false;
@@ -225,93 +225,80 @@ function csv2post_data_import_from_csvfile( $csvfile_name, $table_name, $rate, $
     $conf = array();
     $conf['sep'] = $dataimportjob_array[$csvfile_name]['separator'];
     $conf['quote'] = $dataimportjob_array[$csvfile_name]['quote'];
-    $conf['fields'] = $dataimportjob_array[$csvfile_name]['fields'];    
+    $conf['fields'] = $dataimportjob_array[$csvfile_name]['fields']; 
+    
+    // get files past progress - this is used to skip CSV file rows until reaching a row not yet processed
+    $progress = 0;
+    if(isset($dataimportjob_array['stats']['allevents']['progress'])){
+        $progress = $dataimportjob_array['stats']['allevents']['progress'];
+    }
+       
+    // point where loop finished last - we loop until at the record after it (this includes the header row)
+    $lastrow = 0;
+    if(isset($dataimportjob_array['stats'][$csvfile_name]['lastrow'])){
+        $lastrow = $dataimportjob_array['stats'][$csvfile_name]['lastrow'];
+    }
 
     // loop through records using PEAR CSV File_CSV::read   
-    while ( ( $record = File_CSV::read( WTG_C2P_CONTENTFOLDER_DIR .'/'. $csvfile_name, $conf ) ) && $processed < $rate ) {        
-
-        // skip first row of csv file at all times
-        if( $loop_count == 0){
-            // do nothing - on header row (could possibly do some sort of check on the headers here, maybe use it as a chance to ensure everything is in order)              
-        }else{
-
-            ++$processed;// number of records process on this event (will be added too the files progress total)
+    while ( ( $record = File_CSV::read( WTG_C2P_CONTENTFOLDER_DIR .'/'. $csvfile_name, $conf ) ) ) {        
+        ++$while_start;// used to know where we should continue in new events 
             
-            // determine what the next row ID should be for validation
-            // combine $progress (for this file) + $processed rows + 1 
-            $expected_rowid = $dataimportjob_array['stats'][$csvfile_name]['progress'] + $processed;
+        // if 2nd row or after
+        if($while_start > 1){
+
+            if($while_start > $lastrow ){
                      
-            // is our $expectedrow_id equal too the current row which should also be equal to $loop_count
-            if($expected_rowid == $loop_count){
-            
                 // set $record_id too false, it will need to be an integer before row is updated too record (applies too single or multi file)
                 $record_id = false;
 
-                /**
-                * Determine Record ID
-                * 1. May require new record to be made
-                * 2. If multifile, any one of many files may be imported first, must check for existing record
-                * 3. Also check using default order $loop_count OR Primary Key between all 3 files
-                */
-                if( $multiplefile_project && $default_order ){
-
-                    $row_id_check_result = csv2post_sql_row_id_check($table_name,$loop_count);// returns boolean
-                    if($row_id_check_result){
-                        // record already exists for updating our row too - under default order, the ID should equal $loop_count
-                        $record_id = $loop_count;    
-                    }
-                                         
-                }elseif($record_id === false && $default_order === false){
-                    
-                    // user has setup Primary Key, we must do row_id_check using key values and not default row id
-                    ### TODO:MEDIUMPRIORITY, add function that takes in a key value (all files must have the same column and same values)
-                }    
-                
+                # This is where we could locate existing record id for updating events
+                                               
                 // if $record_id still false, default to creating a new record
-                if( $record_id === false ){
-                    $record_id = csv2post_query_insert_new_record( $table_name, $csvfile_modtime );    
+                if( $record_id === false ){ 
+                    $record_id = csv2post_query_insert_new_record( $table_name, $csvfile_modtime ); 
+                    ++$new_rows_processed;   
                 }
-       
+                           
                 /**
                 * UPDATE RATHER THAN INSERT
                 * 
                 * Statistics will be recorded as an INSERT because the CSV file row is being used for the first time.
                 * My approach of creating the record first is required for multiple file import. So although an SQL
                 * UPDATE query is used, we are in the eyes of users, inserting the data for the first time.
+                * 
+                * This makes this function suitable for user requested data updating
                 */
 
                 $updaterecord_result = csv2post_sql_update_record_dataimportjob( $record, $csvfile_name, $conf['fields'], $jobcode,$record_id, $dataimportjob_array[$csvfile_name]['headers'],$dataimportjob_array['filegrouping'] );
-                if($updaterecord_result){
+
+                if($updaterecord_result){  
                     ++$inserted;    
-                }else{
+                }else{             
                     ++$dropped;
-                }      
-                
-            }else{
-                // we do not nothing, loop will continue until $progress = $loop_count - 1
+                } 
             }
-            
-            // if total records processed hits event limit ( $import ) then exit while loop
-            if( $processed >= $rate ){
-                break;
-            }
-                     
-        }// end if first row or not
+        } 
         
-        // count number of times WHILE happens
-        ++$loop_count;
+        // if $new_rows_processed == $target break loop (we met users requested rows)
+        if($new_rows_processed == $target){
+            break;
+        }
+
+        // unset variables
+        unset($updaterecord_result);
+        unset($record_id);
         
-    }// end while $record
-    
+        ++$while_end;        
+    }
+ 
     #############################################################################
     #                                                                           #
     #             END OF DATA IMPORT JOB EVENT - STORE STATISTICS               #
     #                                                                           #
     #############################################################################
-    
     // update last event values
-    $dataimportjob_array['stats']['lastevent']['loop_count'] = $loop_count;
-    $dataimportjob_array['stats']['lastevent']['processed'] = $processed;
+    $dataimportjob_array['stats']['lastevent']['loop_count'] = $while_start;    
+    $dataimportjob_array['stats']['lastevent']['processed'] = $new_rows_processed;
     $dataimportjob_array['stats']['lastevent']['inserted'] = $inserted;    
     $dataimportjob_array['stats']['lastevent']['updated'] = $updated;    
     $dataimportjob_array['stats']['lastevent']['deleted'] = $deleted;        
@@ -319,7 +306,7 @@ function csv2post_data_import_from_csvfile( $csvfile_name, $table_name, $rate, $
     $dataimportjob_array['stats']['lastevent']['dropped'] = $dropped;        
     $dataimportjob_array['stats']['lastevent']['duplicates'] = $duplicates;
     // update all event values
-    $dataimportjob_array['stats']['allevents']['progress'] = $processed + $dataimportjob_array['stats']['allevents']['progress'];
+    $dataimportjob_array['stats']['allevents']['progress'] = $while_start + $dataimportjob_array['stats']['allevents']['progress'];
     $dataimportjob_array['stats']['allevents']['inserted'] = $inserted + $dataimportjob_array['stats']['allevents']['inserted'];    
     $dataimportjob_array['stats']['allevents']['updated'] = $updated + $dataimportjob_array['stats']['allevents']['updated'];
     $dataimportjob_array['stats']['allevents']['deleted'] = $deleted + $dataimportjob_array['stats']['allevents']['deleted'];
@@ -327,14 +314,15 @@ function csv2post_data_import_from_csvfile( $csvfile_name, $table_name, $rate, $
     $dataimportjob_array['stats']['allevents']['dropped'] = $dropped + $dataimportjob_array['stats']['allevents']['dropped'];    
     $dataimportjob_array['stats']['allevents']['duplicates'] = $duplicates + $dataimportjob_array['stats']['allevents']['duplicates'];    
     // update the current files statistics
-    $dataimportjob_array['stats'][$csvfile_name]['progress'] = $processed + $dataimportjob_array['stats'][$csvfile_name]['progress'];
+    $dataimportjob_array['stats'][$csvfile_name]['lastrow'] = $while_start; 
+    $dataimportjob_array['stats'][$csvfile_name]['progress'] = $while_start + $dataimportjob_array['stats'][$csvfile_name]['progress'];
     $dataimportjob_array['stats'][$csvfile_name]['inserted'] = $inserted + $dataimportjob_array['stats'][$csvfile_name]['inserted'];    
     $dataimportjob_array['stats'][$csvfile_name]['updated'] = $updated + $dataimportjob_array['stats'][$csvfile_name]['updated'];
     $dataimportjob_array['stats'][$csvfile_name]['deleted'] = $deleted + $dataimportjob_array['stats'][$csvfile_name]['deleted'];
     $dataimportjob_array['stats'][$csvfile_name]['void'] = $void + $dataimportjob_array['stats'][$csvfile_name]['void'];    
     $dataimportjob_array['stats'][$csvfile_name]['dropped'] = $dropped + $dataimportjob_array['stats'][$csvfile_name]['dropped'];    
     $dataimportjob_array['stats'][$csvfile_name]['duplicates'] = $duplicates + $dataimportjob_array['stats'][$csvfile_name]['duplicates'];
-                        
+                       
     // save the $function_result_array in the job array
     csv2post_save_dataimportjob($dataimportjob_array,$jobcode);
         

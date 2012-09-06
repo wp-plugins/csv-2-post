@@ -55,16 +55,6 @@ $csv2post_options_array[WTG_C2P_ABB.'tabmenu']['inputtype'] = 'hidden';
 $csv2post_options_array[WTG_C2P_ABB.'tabmenu']['defaultvalue'] = 'NA';// NA if not applicable i.e. the default value is generated in the script 
 $csv2post_options_array[WTG_C2P_ABB.'tabmenu']['public'] = 'true';// boolean, false indicates users are not to be made aware of this option because it is more for development use
 $csv2post_options_array[WTG_C2P_ABB.'tabmenu']['required'] = 'true';// some option arrays may be optional, if that is the case true will avoid installation status checks returning false
-# easy question answers arrays
-++$total_option_records;
-$csv2post_options_array[WTG_C2P_ABB.'easyset']['datatype'] = 'array';// array,boolean,string etc
-$csv2post_options_array[WTG_C2P_ABB.'easyset']['purpose'] = 'This array holds the answers for the Easy Questions.';
-$csv2post_options_array[WTG_C2P_ABB.'easyset']['label'] = 'Option Record '.$total_option_records;
-$csv2post_options_array[WTG_C2P_ABB.'easyset']['name'] = 'Easy Answers';
-$csv2post_options_array[WTG_C2P_ABB.'easyset']['inputtype'] = 'hidden';
-$csv2post_options_array[WTG_C2P_ABB.'easyset']['defaultvalue'] = 'NA';// NA if not applicable i.e. the default value is generated in the script 
-$csv2post_options_array[WTG_C2P_ABB.'easyset']['public'] = 'true';// boolean, false indicates users are not to be made aware of this option because it is more for development use
-$csv2post_options_array[WTG_C2P_ABB.'easyset']['required'] = 'true';// some option arrays may be optional, if that is the case true will avoid installation status checks returning false
 # last known installed version, used to track the gap between old and new versions ($csv2post_currentversion)
 ++$total_option_records;
 $csv2post_options_array[WTG_C2P_ABB.'installedversion']['datatype'] = 'string';

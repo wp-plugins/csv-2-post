@@ -11,7 +11,7 @@
 $method = 'post';// post or ajax
 ### TODO:MEDIUMPRIORITY, WARNING, the ajax method may be bugged, use post method until fully tested, pay attention too the filemtime function
 if($method == 'ajax'){
-    if($csv2post_dataimportjobs_array){
+    if(isset($csv2post_dataimportjobs_array)){
         foreach( $csv2post_dataimportjobs_array as $jobcode => $job ){
 
         $job_array = csv2post_get_dataimportjob($jobcode);
@@ -144,14 +144,15 @@ if($method == 'ajax'){
     }
     
 }else{
-
-    if($csv2post_dataimportjobs_array){
+    if(!isset($csv2post_dataimportjobs_array) || count($csv2post_dataimportjobs_array) == 0){
+        echo csv2post_notice('You do not have any Data Import jobs, please create one on the Start screen','info','Small','','','return');    
+    }else{
 
         // foreach job
         foreach( $csv2post_dataimportjobs_array as $jobcode => $job ){
 
             $job_array = csv2post_get_dataimportjob($jobcode);
-
+                 
             ++$panel_number;// increase panel counter so this panel has unique ID
             $panel_array = array();                       
             $panel_array['panel_name'] = 'dataimportjob' . $jobcode;// slug to act as a name and part of the panel ID 
@@ -174,28 +175,65 @@ if($method == 'ajax'){
             <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);?>
      
                 <input type="hidden" name="csv2post_importdatarequest_jobcode" value="<?php echo $jobcode;?>">
-                
                 <input type="hidden" name="csv2post_importdatarequest_postmethod" value="true">
-                <p>        
-                    Select CSV File: 
-                    <select name="csv2post_dataimport_selectcsvfile_<?php echo $jobcode;?>" id="csv2post_dataimport_selectcsvfile_id_<?php echo $jobcode;?>" class="csv2post_multiselect_menu">
-                        <?php csv2post_menu_options_job_csvfiles($jobcode); ?>                                                                                                                     
-                    </select>
-                </p>
-      
-                <script>
-                $("#csv2post_dataimport_selectcsvfile_id_<?php echo $jobcode;?>").multiselect({
-                   multiple: false,
-                   header: "Select CSV File",
-                   noneSelectedText: "Select CSV File",
-                   selectedList: 1
-                });
-                </script>
+                                              
+                <?php
+                if($csv2post_is_free){
+                    echo '<input type="hidden" name="csv2post_importselection_csvfiles[]" value="'.$job_array['files'][1].'">';    
+                }else{?>
                 
-                How many rows do you want to import?<br />
-                <input type="text" name="csv2post_dataimport_rownumber_<?php echo $jobcode;?>" value="">
-                
-                <br />
+                    How many rows do you want to import?<br />
+                    <input type="text" name="csv2post_dataimport_rownumber_<?php echo $jobcode;?>" value="">
+                                    
+                    <?php 
+                    echo '<br /><br />';
+                    
+                    foreach($job_array['files'] as $key => $csv_filename){ 
+                     
+                        $fileChunks = explode(".", $csv_filename);
+
+                        echo '<table class="widefat post fixed">';
+                            
+                        echo '
+                        <tr>
+                            <td width="50">Select</td>    
+                            <td width="150">File Names</td>
+                            <td>ID Column</td>
+                        </tr>';
+                        
+                        echo '
+                        <tr>
+                            <td>';
+                                
+                                // determine radio or checkboxes
+                                ### TODO:LOWPRIORITY, offer the option of importing from multiple files in one event
+                                $object_type = 'radio';
+                                if($csv2post_is_free){
+                                    $object_type = 'radio';
+                                }?>
+                                
+                                <script>
+                                $(function() {
+                                    $( "#csv2post_importselection_<?php echo $object_type;?>_<?php echo $fileChunks[0];?>" ).buttonset();
+                                });
+                                </script>
+
+                                <div id="csv2post_importselection_<?php echo $object_type;?>_<?php echo $fileChunks[0];?>">                    
+                                    <input type="<?php echo $object_type;?>" name="csv2post_importselection_csvfiles[]" id="csv2post_importselection_csvfiles<?php echo $fileChunks[0];?>" value="<?php echo $csv_filename;?>" checked />
+                                    <label for="csv2post_importselection_csvfiles<?php echo $fileChunks[0];?>">*</label>                     
+                                </div>
+                                
+                            <?php     
+                            ### TODO:HIGHPRIORITY, change the PEARCSVmethod for quote in the fget column
+                            echo '</td>
+                            <td>'.$csv_filename.'</td>
+                            <td>'.csv2post_menu_columns_by_csvfile().'</td>';?>
+
+                        </tr><?php                         
+
+                        echo '</table><br />';
+                    }
+                }?>
 
             <?php
             ### TODO:MEDIUMPRIORITY, these tables assume all stats exist. We should deal with this. I think
@@ -207,9 +245,6 @@ if($method == 'ajax'){
 
             // add end of form - dialogue box does not need to be within the <form>
             csv2post_formend_standard('Start Data Import',$jsform_set['form_id']); 
-
-            // get current jobs array
-            $job_array = csv2post_get_dataimportjob($jobcode);
 
             #####################################
             #         DISPLAY MAIN STATS        #
@@ -252,37 +287,7 @@ if($method == 'ajax'){
             <tr><td>Records Void: </td><td>'.$job_array['stats']['allevents']['void'].'</td></tr>
             <tr><td>Rows Dropped: </td><td>'.$job_array['stats']['allevents']['dropped'].'</td></tr>
             <tr><td>Duplicates Found: </td><td>'.$job_array['stats']['allevents']['duplicates'].'</td></tr>                                                                                    
-            </table>';
-            
-                             
- /*               
-array(8) {
-           ["name"]=> "Data1"
-            ["code"]=>"p6o47r"
-           ["totalrows"]=>
-
-    ["WTGTestB.csv"]=>
-    array(8) {
-      ["progress"]=>
-      int(0)
-      ["inserted"]=>
-      int(0)
-      ["updated"]=>
-      int(0)
-      ["deleted"]=>
-      int(0)
-      ["void"]=>
-      int(0)
-      ["dropped"]=>
-      int(0)
-      ["duplicates"]=>
-      int(0)
-      ["rows"]=>
-      int(9)
-    }
-  }                
-      */                    
-                 
+            </table>'; 
                       
             ###########################
             #   DISPLAY FILE STATUS   #
@@ -327,38 +332,3 @@ array(8) {
     }
 }
 ?> 
-
-<?php
-++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
-$panel_array['panel_name'] = 'deletedataimportjob';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
-$panel_array['panel_title'] = __('Delete Data Import Jobs');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
-$panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_intro'] = __('A list of all data import jobs that can be deleted');
-$panel_array['panel_help'] = __('As the plugin becomes more advanced, some Data Import Jobs may not allow deletion in certain circumstances. They will probably show in the list but not allow selection.');
-$panel_array['help_button'] = csv2post_helpbutton_text(false,false);
-// <form> values, seperate from panel value
-$jsform_set_override = array();
-$jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialoguebox_title'] = 'Delete Selected Jobs';
-$jsform_set['noticebox_content'] = 'You are about to delete select data import jobs, are you sure you want to continue?';
-// TODO: LOWPRIORITY, replace table using data table script
-// TODO: LOWPRIORITY, update dialogue content with a list of the selected jobs
-?>
-
-<?php csv2post_panel_header( $panel_array );?>
-
-    <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','','');?>
-
-    <?php csv2post_list_dataimportjobs();?>
-
-    <?php 
-    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-    csv2post_formend_standard('Delete',$jsform_set['form_id']);
-    csv2post_jquery_form_prompt($jsform_set);
-    ?>
-
-<?php csv2post_panel_footer();?>

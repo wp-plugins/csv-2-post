@@ -235,9 +235,7 @@ function csv2post_form_save_easyconfigurationquestions(){
             
             // if $_POST value for this question
             if($_POST['csv2post_'.$key]){
-                
-                $csv2post_adm_set['easyconfigurationquestions'][$key] = $_POST['csv2post_'.$key];
-                    
+                $csv2post_adm_set['easyconfigurationquestions'][$key] = $_POST['csv2post_'.$key];  
             }
                 
         }
@@ -625,7 +623,8 @@ function csv2post_form_create_categories(){
 */
 function csv2post_form_importdata(){
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'data' && isset($_POST['csv2post_importdatarequest_postmethod']) && $_POST['csv2post_importdatarequest_postmethod'] == 'true'){
-
+        global $csv2post_is_free;
+        
         // if job code not in $_POST
         if(!isset($_POST['csv2post_importdatarequest_jobcode']) || $_POST['csv2post_importdatarequest_jobcode'] == NULL || !is_string($_POST['csv2post_importdatarequest_jobcode'])){
             csv2post_notice('A data import job code was not found in the submitted form data, no import could be started.','error','Large','No Job Code Submitted','','echo');
@@ -635,16 +634,19 @@ function csv2post_form_importdata(){
         $job_code = $_POST['csv2post_importdatarequest_jobcode'];
         
         // if no csv file value in $_POST
-        if(!isset($_POST['csv2post_dataimport_selectcsvfile_'.$job_code]) || !is_string($_POST['csv2post_dataimport_selectcsvfile_'.$job_code])){
+        if(!isset($_POST['csv2post_importselection_csvfiles'])){
             csv2post_notice('No CSV file name could be found in the submitted post data, no import could be carried out.','error','Large','No CSV Filename Found','','echo');    
             return false;
         }
         
-        $file_name = $_POST['csv2post_dataimport_selectcsvfile_'.$job_code];
-        
-        // if no row number submitted
+        // get filename (currently preparing for multiple file import at once so we are submitting an array) 
+        $file_name = $_POST['csv2post_importselection_csvfiles'][0];
+
+        // set row number
         $row_number = 1;
-        if(!isset($_POST['csv2post_dataimport_rownumber_'.$job_code]) || !is_numeric($_POST['csv2post_dataimport_rownumber_'.$job_code])){
+        if($csv2post_is_free){
+            $row_number = 9999999;    
+        }elseif(!isset($_POST['csv2post_dataimport_rownumber_'.$job_code]) || !is_numeric($_POST['csv2post_dataimport_rownumber_'.$job_code])){
             csv2post_notice('No row number for import was submitted so only 1 record will be imported from '.$file_name.'.csv.','warning','Large','No Rows Number Submitted','','echo');    
         }elseif(isset($_POST['csv2post_dataimport_rownumber_'.$job_code]) && is_numeric($_POST['csv2post_dataimport_rownumber_'.$job_code])){
             $row_number = $_POST['csv2post_dataimport_rownumber_'.$job_code];        
@@ -652,16 +654,22 @@ function csv2post_form_importdata(){
  
         // perform data import
         $overall_result = 'success';
-        $dataimportjob_array = csv2post_data_import_from_csvfile($file_name.'.csv','csv2post_'.$job_code,$row_number,$job_code);
+        $dataimportjob_array = csv2post_data_import_from_csvfile_basic($file_name,'csv2post_'.$job_code,$row_number,$job_code);
         
         // determine new $overall_result and apply styling to the main notice to suit it
         if($dataimportjob_array == false){
             $overall_result = 'error';
         }
         
+        // decide message text
+        if($csv2post_is_free){
+            $intromes = '';
+        }else{
+            $intromes = '<p>You requested '.$row_number.' row/s to be imported from '.$file_name.'.</p>';    
+        }
+        
         // display result    
-        csv2post_notice( '<h4>Data Import Result<h4>
-        <p>You requested '.$row_number.' row/s to be imported from '.$file_name.'.csv.</p>
+        csv2post_notice( '<h4>Data Import Result<h4>'.$intromes.'
         '.csv2post_notice( 'New Records: '.$dataimportjob_array["stats"]["lastevent"]['inserted'],'success','Small',false,'www.csv2post.com/notifications/new-records-count','return').'
         '.csv2post_notice( 'Void Records: '.$dataimportjob_array["stats"]["lastevent"]['void'],'info','Small',false,'www.csv2post.com/notifications/void-records-counter','return').'
         '.csv2post_notice( 'Dropped Rows: '.$dataimportjob_array["stats"]["lastevent"]['dropped'],'warning','Small',false,'www.csv2post.com/notifications/dropped-rows-counter','return').'
@@ -1033,7 +1041,7 @@ function csv2post_form_drop_database_tables(){
         }else{
             
             global $wpdb,$csv2post_jobtable_array,$csv2post_dataimportjobs_array;
-            
+   
             foreach($_POST["csv2post_table_array"] as $key => $table_name){
                 
                 // if table is in use by a data import job we do not delete it, the job must be deleted first
@@ -1042,19 +1050,22 @@ function csv2post_form_drop_database_tables(){
                 if(isset($csv2post_dataimportjobs_array[$code])){
                     csv2post_notice('Table named '.$table_name.' is still used by Data Import Job named '.$csv2post_dataimportjobs_array[$code]['name'].'. Please delete the job first then delete the database table.','warning','Large','Cannot Delete ' . $table_name,'','echo');
                 }else{
+                    
                     // drop table
+                    ### TODO:LOWPRIORITY, put statement in here to handle failed DROP TABLE should user attempt to drop none existing tables
                     $wpdb->query( 'DROP TABLE '. $table_name );
                     
                     // remove table from $csv2post_jobtable_array
                     foreach($csv2post_jobtable_array as $key => $jobtable_name){
                         if($table_name == $jobtable_name){
+
                             unset($csv2post_jobtable_array[ $key ]);
                             csv2post_update_option_jobtables_array($csv2post_jobtable_array);
                             break;
                         }
                     } 
-                
-                    csv2post_notice('Selected database tables have been deleted (dropped) from your database. This change cannot be reversed.','success','Large','Database Tables Deleted','','echo');
+                                            
+                    csv2post_notice('','success','Small','Database Table Deleted: '.$table_name,'','echo');
                 }  
             }
         }
@@ -1064,7 +1075,6 @@ function csv2post_form_drop_database_tables(){
         return true;
     }          
 }
-
 
 /**
 * Deletes basic custom field rules
@@ -3171,10 +3181,8 @@ function csv2post_form_changetheme(){
  * @param numeric $per (chmod permissions)
  * @todo this needs to be improved to make a log and report errors for viewing in history
  */
-function csv2post_form_createfolder($path,$chmod = WTG_C2P_CHMOD){
-    
-    if(mkdir($path,$per,false)){
-        chmod($path, $chmod);
+function csv2post_form_createfolder($path,$chmod = 0755){
+    if(mkdir($path,0755,true)){ 
         return true;
     }else{
         return false;

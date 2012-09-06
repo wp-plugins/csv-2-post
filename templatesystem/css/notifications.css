@@ -1,9 +1,9 @@
 /* CSS Document for WTG Friendly Messenger 
 WTG MESSAGE BOXES VERSION 1.1 
 Created: 14th January 2009
-Author: Zara Walsh
-Site: www.importcsv.eu
-Email: info@importcsv.eu
+Author: Ryan Bayne
+Site: www.csv2post.com
+Email: info@csv2post.com
 */
 
 /*  TINY MESSAGE BOXES START */
@@ -16,7 +16,18 @@ Email: info@importcsv.eu
 	display: block;
 	font-size:16px;
     background-size:20px 20px;
+    border-radius: 8px;
 }
+
+.TinyHelpLink{  
+    display: block;
+    float:right;
+    position:relative;
+    top:1px;
+    right:3px;
+    height:15px;
+    width:15px;
+} 
 
 .infoTiny{  
 	color: #00529B;  
@@ -85,6 +96,16 @@ Email: info@importcsv.eu
 	display: block;
 	font-size:18px;
     background-size:44px 44px;
+    border-radius: 8px;
+}
+
+.SmallHelpLink{  
+    display: block;
+    float:right;
+    position:relative;
+    top:-5px;
+    height:25px;
+    width:25px;
 }
 
 .infoSmall{  
@@ -153,8 +174,19 @@ Email: info@importcsv.eu
 	background-repeat: no-repeat;  
 	background-position: 10px center; 
 	display: block;
-	font-size:18p;
+	font-size:18px;
     background-size:80px 80px;
+    border-radius: 8px;
+}
+
+.LargeHelpLink{  
+    display: block;
+    float:right;
+    position:relative;
+    top:-3px;
+    right:-10px;
+    height:25px;
+    width:25px;
 }
 
 .infoLarge{  
@@ -226,11 +258,22 @@ Email: info@importcsv.eu
 .infoExtra, .successExtra, .warningExtra, .errorExtra, .validationExtra, 
 .questionExtra, .processingExtra, .restrictedExtra, .stopExtra, .stepExtra {  
 	margin: 5px 0px; /* top and bottom */ 
-	padding:0px 20px 30px 20px;  
+	padding:0px 10px 30px 20px;  
 	background-repeat: no-repeat;  
 	background-position: 10px center; 
 	display: block;
 	font-size:18px;
+    border-radius: 8px;
+}
+
+.ExtraHelpLink{  
+    display: block;
+    float:right;
+    position:relative;
+    top:6px;
+    right:3px;
+    height:25px;
+    width:25px;
 }
 
 .infoExtra{  
