@@ -80,9 +80,6 @@ function csv2post_is_installed(){
                         
             // change return switch too false if option not found
             if($currentresult == false || $currentresult == null){   
-                
-               var_dump($id); 
-
                 $returnresult = false;
                 $failcause = 'Option RecordMissing:'.$id;    
             }

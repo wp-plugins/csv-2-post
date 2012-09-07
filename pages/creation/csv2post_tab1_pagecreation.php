@@ -170,10 +170,10 @@ $jsform_set['noticebox_content'] = 'You are about to stop or start drip feeding 
                 foreach($csv2post_projectslist_array as $project_code => $project){
                     
                     $selected = '';
-                    if($csv2post_projectslist_array[$project_code]['dripfeeding'] == 'on'){$selected = 'selected="selected"';}
+                    if(isset($csv2post_projectslist_array[$project_code]['dripfeeding']) && $csv2post_projectslist_array[$project_code]['dripfeeding'] == 'on'){$selected = 'selected="selected"';}
                     echo '<option value="'.$project_code.'" '.$selected.'>'.$project['name'].'</option>';
                         
-                }
+                }         
                 ?> 
             </select>
         </div>

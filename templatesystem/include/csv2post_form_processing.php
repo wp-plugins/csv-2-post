@@ -224,6 +224,51 @@ if($cont){
 }
 
 /**
+* Create users in post creation project
+*/
+function csv2post_form_save_createusers_postproject(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'createauthors'){
+
+        global $csv2post_project_array,$csv2post_currentproject_code;
+
+        // if email column not submitted
+        if(!isset($_POST['csv2post_createusers_emailcolumn'])){
+            csv2post_notice('Email address data is always required for creating Wordpress users. Please select your email address column.',
+            'error','Large','No Email Data Selected','','echo');
+            return false; 
+        }
+        
+        ### TODO:LOWPRIORITY, check the email address data and ensure it is valid email address. This is to avoid issues during post creation
+        
+        // store email column and table
+        $table_name = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_createusers_emailcolumn']);
+        $column_name = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_createusers_emailcolumn']);
+                    
+        $csv2post_project_array['authors']['createusers']['emails']['table'] = $table_name;            
+        $csv2post_project_array['authors']['createusers']['emails']['column'] = $column_name;
+                
+        // if username column submitted (optional)
+        if(isset($_POST['csv2post_createusers_usernamecolumn'])){
+            
+            $table_name = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_createusers_usernamecolumn']);
+            $column_name = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_createusers_usernamecolumn']);
+                        
+            $csv2post_project_array['authors']['createusers']['usernames']['table'] = $table_name;            
+            $csv2post_project_array['authors']['createusers']['usernames']['column'] = $column_name;
+        }        
+            
+        csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
+
+        csv2post_notice('Yourates.',
+        'success','Large','Answers Saved','','echo');
+           
+        return false;
+    }else{
+        return true;
+    }       
+}  
+
+/**
 * Saves easy configuration questions
 */
 function csv2post_form_save_easyconfigurationquestions(){
@@ -430,13 +475,13 @@ function csv2post_form_save_default_author(){
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'defaultauthor'){
         global $csv2post_project_array,$csv2post_currentproject_code;
 
-        if($_POST['notselected'] == 'notselected' || !is_numeric($_POST['notselected'])){
+        if($_POST['csv2post_defaultauthor_select'] == 'notselected' || !is_numeric($_POST['csv2post_defaultauthor_select'])){
             csv2post_notice('You did not select an author, please try again.','error','Large','No Author Selected','','echo');
             return false;
         }
         
-        $csv2post_project_array['defaultauthor'] = $_POST['notselected'];
-        
+        $csv2post_project_array['authors']['defaultauthor'] = $_POST['csv2post_defaultauthor_select'];
+                
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array); 
 
         csv2post_notice('Your default author has been saved.','success','Large','Default Author Saved','','echo');

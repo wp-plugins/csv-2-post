@@ -92,14 +92,14 @@ function csv2post_create_posts_basic($project_code,$request_method){
         // if post title column set, use that
         if(isset($project_array['posttitles']['column'])){
             if(isset($record_array[$project_array['posttitles']['column']])){
-                $title_template = $record_array[$project_array['posttitles']['column']];    
+                $my_post['post_title'] = $record_array[$project_array['posttitles']['column']];    
             }else{
-                $title_template = 'Title Data Value Not Found';
+                $my_post['post_title'] = 'Title Data Value Not Found';
             }             
         }else{
             // if we have a title template parse default post title 
             if($title_template != 'No Default Title Template Selected'){ 
-                $title_template = csv2post_parse_columnreplacement_basic($record_array,$title_template);        
+                $my_post['post_title'] = csv2post_parse_columnreplacement_basic($record_array,$title_template);        
             }    
         }
                      
@@ -120,7 +120,7 @@ function csv2post_create_posts_basic($project_code,$request_method){
         }
                   
         // create a draft post, csv2post_create_posts_basic uses a basic version of draft post creation with none of the most advanced features
-        $my_post = csv2post_create_postdraft_basic($record_array,$category_array,$project_code,$content,$title_template );                                                                        
+        $my_post = csv2post_create_postdraft_basic($record_array,$category_array,$project_code,$content );                                                                        
         
         if( !$my_post ){
             ++$fault_occured;
@@ -222,14 +222,11 @@ function csv2post_post_update_metadata_basic_seo($project_code,$record_array,$po
 */
 function csv2post_parse_columnreplacement_basic($record_array,$value){
 
-    
     // loop through record array values
     foreach( $record_array as $column => $data ){
         $value = str_replace('#'. $column, $data, $value); 
     }
-    
-    //var_dump($value);
-    
+
     return $value;
 }
 
@@ -238,20 +235,26 @@ function csv2post_parse_columnreplacement_basic($record_array,$value){
 * need maximum script speed possible. These functions are perfect for adapting to suit needs and build up, rather
 * than trying to reverse engineer the advanced functions. 
 */
-function csv2post_create_postdraft_basic( $r,$category_array,$project_code,$content,$title ){
+function csv2post_create_postdraft_basic( $r,$category_array,$project_code,$content ){
              
     $my_post = array();
 
     // apply post author
-    if(isset($project_array['defaultauthor']) && is_numeric($project_array['defaultauthor'])){
-        $my_post['post_author'] = $project_array['defaultauthor'];
+    if(isset($project_array['authors']['defaultauthor']) && is_numeric($project_array['authors']['defaultauthor'])){
+        $my_post['post_author'] = $project_array['authors']['defaultauthor'];
     }else{
         $my_post['post_author'] = 1;    
+    }
+    
+    // apply categories
+    $category_value_is_array = false;
+    if(is_array($category_array)){
+        $my_post['post_category'] = $category_array;
+        $category_value_is_array = true;
     }
            
     $my_post['post_date'] = date("Y-m-d H:i:s", time());    
     $my_post['post_date_gmt'] = gmdate("Y-m-d H:i:s", time());
-    $my_post['post_title'] = $title;
     $my_post['post_content'] = $content;
     $my_post['post_status'] = 'draft';// set to draft until end of post creation processing
     $my_post['post_type'] = 'post';// free edition offers no features to change this, users can change it manually here if they wish
@@ -259,6 +262,12 @@ function csv2post_create_postdraft_basic( $r,$category_array,$project_code,$cont
     if( !$my_post['ID'] ){
         return false;
         ### TODO:MEDIUMPRIORITY, log this    
+    }
+    
+    // flag post if any problems
+    if(!$category_value_is_array){
+        csv2post_flag_post($my_post['ID'],3,'Problem detected when adding the category value. It was not an array
+        with one or more categories. This is a technical fault that should be reported.');
     }
 
     // add custom fields

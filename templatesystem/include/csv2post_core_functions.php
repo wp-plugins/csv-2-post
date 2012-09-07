@@ -1918,11 +1918,10 @@ function csv2post_is_csvfile_in_use($csv_file_name,$output = true){
 *     
 * @param integer $post_ID
 * @param integer $priority, 1 = low priority (info style notification), 2 = unsure of priority (warning style notification), 3 = high priority (error style notification)
-* @param integer $time, time() when possible problem was detected with post
 * @param string $reason, as much information as required for user to take the required action or know they can delete the flag
 * @param string $type, keyword to enhance search ability (USED:updatefailure )
 */
-function csv2post_flag_post($post_ID,$priority,$time,$reason,$type){
+function csv2post_flag_post($post_ID,$priority,$type,$reason){
     // if a value is missing return
     if(!isset($post_ID) || !isset($priority) || !isset($time) || !isset($reason) || !isset($type)){
         ### LOG THIS
@@ -1930,7 +1929,7 @@ function csv2post_flag_post($post_ID,$priority,$time,$reason,$type){
     }
     
     $testarray['priority'] = $priority;
-    $testarray['time'] = $time;
+    $testarray['time'] = time();
     $testarray['reason'] = $reason;
     $testarray['type'] = 'updatefailure';
     add_post_meta($post_ID,'_csv2post_flagged',$testarray,false);   

@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: CSV 2 POST
-Version: 6.6.4
+Version: 6.6.5
 Plugin URI: http://www.csv2post.com
 Description: CSV 2 POST released 2012 by Zara Walsh and Ryan Bayne
 Author: Zara Walsh
@@ -26,16 +26,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 This license does not apply to the paid edition which is bundled with a seperate license file.
 */
-    
-$csv2post_debug_mode = false;// boolean true or false
-if(!is_admin() || defined('DOING_AJAX') && DOING_AJAX){
-    $csv2post_debug_mode = false;
-}
-
-### TODO:HIGHPRIORITY, detect paid edition folder automatically, if not found set as free edition
-$csv2post_is_free_override = false;// change to true for free edition setup when fulledition folder present 
+   
+// package variables 
+$csv2post_debug_mode = false;// boolean true or false 
 $csv2post_is_dev = false;// boolean, true displays more panels with even more data i.e. array dumps
-$csv2post_currentversion = '6.6.4';// this value should not be relied on but only used for guidance
+$csv2post_currentversion = '6.6.5';// this value should not be relied on but only used for guidance
+$csv2post_is_free_override = false;// change to true for free edition setup when fulledition folder present
+
+// other variables required on installation or loading
 $csv2post_php_version_tested = '5.4.0';// current version the plugin is being developed on
 $csv2post_php_version_minimum = '5.3.1';// minimum version required for plugin to operate
 $csv2post_pluginname = 'csv2post';// should not be used to make up paths
@@ -54,7 +52,13 @@ $csv2post_nav_type = 'jquery';// css,jquery,nonav (changes the navigation, we ca
 if(!defined("WTG_C2P_ABB")){define("WTG_C2P_ABB","csv2post_");}
 if(!defined("WTG_C2P_URL")){define("WTG_C2P_URL", plugin_dir_url(__FILE__) );}//http://localhost/wordpress-testing/wtgplugintemplate/wp-content/plugins/wtgplugintemplate/
 if(!defined("WTG_C2P_DIR")){define("WTG_C2P_DIR", plugin_dir_path(__FILE__) );}//C:\AppServ\www\wordpress-testing\wtgplugintemplate\wp-content\plugins\wtgplugintemplate/
-      
+   
+// disable debug mode during Ajax requests or on public side 
+if(!is_admin() || defined('DOING_AJAX') && DOING_AJAX){
+    $csv2post_debug_mode = false;
+}
+  
+// include function files
 require_once(WTG_C2P_DIR.'templatesystem/csv2post_load_templatesystem_constants.php'); 
 if(is_admin()){require_once(WTG_C2P_DIR.'templatesystem/include/variables/csv2post_variables_adminconfig.php');}
 require_once(WTG_C2P_DIR.'templatesystem/csv2post_load_admin_arrays_templatesystem.php');
@@ -69,7 +73,7 @@ require_once(WTG_C2P_DIR.'templatesystem/include/csv2post_sql_functions.php');
 require_once(WTG_C2P_DIR.'templatesystem/include/csv2post_file_functions.php');// file management related functions
 require_once(WTG_C2P_DIR.'templatesystem/include/csv2post_post_functions.php');// post creation,update related functions              
 require_once(WTG_C2P_DIR.'pages/csv2post_variables_tabmenu_array.php');
-
+  
 // decide if package is free or full edition
 if(file_exists(WTG_C2P_DIR . '/fulledition') && $csv2post_is_free_override == false){
     $csv2post_is_free = false;

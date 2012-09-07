@@ -12,7 +12,7 @@ CSV 2 POST
 
 == Description ==
 
-CSV 2 POST, best Wordpress data import and post creation plugin since 2009 (re-developed in 2012)
+CSV 2 POST, most advanced Wordpress data import and post creation plugin since 2009 (re-developed in 2012)
 
 = Versus Other Imports =
 CSV 2 POST mass creates posts, categories, meta data, custom fields and more. The design of the plugins
@@ -30,16 +30,17 @@ Please seek support by creating a ticket here on the [forum](http://wordpress.or
 The plugin is supported by a dedicated
 website at [www.csv2post.com](http://www.csv2post.com/). The interface offers a "Help" button beside every feature. A small hint 
 is giving and users can click another button to open a page on www.csv2post.com specific to the feature
-the user needs help for. Some pages will have video tutorials and screenshots. The online support content is free.
+the user needs help for. Some pages will have video tutorials and screenshots. The online support content is free. We
+also plan to create help content specifically for the free edition so that it is truly supported.
 
 = Our Mission =
 It is very important to us that we deliver a useful free plugin for the Wordpress community to use. We must also support
 the plugin and take responsibility for it. Priority development and focus in the free edition goes to the actual data 
 import side of the plugin. It must do what it says in its name and we would like to deliver a tool for uncommon projects
 i.e. importing product data to shopping cart plugin tables and manipulating data as it is being imported based on various
-conditions. We have a very long term plan for CSV 2 POST, both free and paid. If you budget is tight, keep
-checking the free edition and there is no harm in letting me know what you think the free plugin should offer users. If
-you need support that knows the plugin well, you may seek to purchase the premium edition and services
+conditions. We have a very long term plan for CSV 2 POST, both free and paid. If you budget is tight there is no harm in 
+letting me know what you think the free plugin should offer users. We are keen to provide the most common requirements
+for free in respect to the Wordpress community.
 
 == Installation ==
 
@@ -65,8 +66,8 @@ Yes, the plugin will be supported for many years and has a dedicated website.
 = Will you make changes to the plugin to suit my needs? =
 We note every request on a "To Do" list and we intend to keep working through the list
 every week. If your needs are more urgent we can be hired. It is mainly Ryan Bayne who 
-handles the more intense requests when clients have deadlines, something we take very 
-serious. 
+handles the more complex requests. However sometimes we can add a new feature to the free
+edition quickly so please push for the free option first.
 
 = Will development continue for this plugin? =
 Our To Do list for CSV 2 POST is already extensive. Ideas, requests and
@@ -97,6 +98,22 @@ first plugin was created in 2009 and was halted pending re-development.
 6. You can use up to 3 columns of data to create 3 levels of categories.
  
 == Changelog ==
+= 6.6.5 =
+* Public Messages
+    * Some very critical fixes in this version. I feel our new plugin is finally become very stable thanks to the help of all users over the last few weeks.
+* Bug Fixes
+    * (critical) default author setting fixed
+    * (critical) category issues
+    * (critical) made some changes to prevent the same record being used for all post titles
+* General Improvements
+    * None
+* Key Technical Improvements
+    * the ['defaultauthor'] project value is now in ['authors'] node of the project array
+* Known Issues
+    * None
+* Web Services, Support and Websites changes
+    * New troubleshooting tutorial http://www.csv2post.com/troubleshooting-tips/activate-error-display-and-debug-mode
+    
 = 6.6.4 =
 * Public Messages
     * None  

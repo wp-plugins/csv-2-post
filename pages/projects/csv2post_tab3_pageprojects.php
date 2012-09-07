@@ -56,7 +56,8 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
     <?php $title_key = '';
     if(isset($csv2post_project_array['seo']['basic']['title_key'])){$title_key = $csv2post_project_array['seo']['basic']['title_key'];}?>
     Title Meta Key:<input type="text" name="csv2post_seo_key_title" value="<?php echo $title_key;?>"><br /> 
-    Select Meta Title Column:<select name="csv2post_seo_title" id="csv2post_seo_title_id" class="csv2post_multiselect_menu">
+    Select Meta Title Column:
+    <select name="csv2post_seo_title" id="csv2post_seo_title_id" class="csv2post_multiselect_menu">
         <?php 
         if(isset($csv2post_project_array['seo']['basic']['title_table']) && isset($csv2post_project_array['seo']['basic']['title_column'])){
             csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code,$csv2post_project_array['seo']['basic']['title_table'],$csv2post_project_array['seo']['basic']['title_column']);        
