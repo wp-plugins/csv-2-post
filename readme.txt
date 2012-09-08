@@ -98,13 +98,29 @@ first plugin was created in 2009 and was halted pending re-development.
 6. You can use up to 3 columns of data to create 3 levels of categories.
  
 == Changelog ==
+= 6.6.6 =
+* Public Messages
+    * None
+* Bug Fixes
+    * (minor) Uninstall process was appearing to fail, but was actually uninstalling
+* General Improvements
+    * None
+* Key Technical Improvements
+    * None
+* Known Issues
+    * None
+* Web Services, Support and Websites changes
+    * None
+    
 = 6.6.5 =
 * Public Messages
     * Some very critical fixes in this version. I feel our new plugin is finally become very stable thanks to the help of all users over the last few weeks.
 * Bug Fixes
+    * (minor) on installation user would be sent to a screen that no longer exists, users now sent to the main screen
     * (critical) default author setting fixed
     * (critical) category issues
     * (critical) made some changes to prevent the same record being used for all post titles
+    * (minor) Uninstall process was appearing to fail, but was actually uninstalling    
 * General Improvements
     * None
 * Key Technical Improvements
