@@ -310,29 +310,6 @@ function csv2post_uninstall(){
         $csv2post_log['style'] = 'success';
         $csv2post_log['category'] = 'install';
         csv2post_log($csv2post_log);
-    } 
-    // delete tab navigation array settings
-    if(!delete_option('csv2post_easyset')){
-        $uninstall_outcome = false;
-        $csv2post_log = array();
-        $csv2post_log['line'] = __LINE__;
-        $csv2post_log['file'] = __FILE__;
-        $csv2post_log['function'] = __FUNCTION__;
-        $csv2post_log['type'] = 'general';// general,sql,admin,user,error
-        $csv2post_log['comment'] = 'Options record named '.WTG_C2P_ABB.'easyset could not be deleted';
-        $csv2post_log['style'] = 'error';
-        $csv2post_log['category'] = 'install';
-        csv2post_log($csv2post_log);
-    }else{
-        $csv2post_log = array();
-        $csv2post_log['line'] = __LINE__;
-        $csv2post_log['file'] = __FILE__;
-        $csv2post_log['function'] = __FUNCTION__;
-        $csv2post_log['type'] = 'general';// general,sql,admin,user,error
-        $csv2post_log['comment'] = 'Options record named '.WTG_C2P_ABB.'easyset was deleted';
-        $csv2post_log['style'] = 'success';
-        $csv2post_log['category'] = 'install';
-        csv2post_log($csv2post_log);
     }  
     // delete tab navigation array settings
     if(!delete_option(WTG_C2P_ABB . 'tabmenu')){

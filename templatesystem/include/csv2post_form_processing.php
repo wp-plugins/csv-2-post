@@ -3348,6 +3348,6 @@ function csv2post_process_full_install(){?>
         allowing CSV 2 POST to adapt to your needs by hiding or displaying features.</p>
       <?php csv2post_install();?>     
     </div><?php
-   csv2post_jquerydialogue_results(csv2post_link_toadmin('csv2post_settings','#tabs-2'),'Continue');
+   csv2post_jquerydialogue_results(csv2post_link_toadmin('csv2post','#tabs-0'),'Continue');
 }
 ?>
