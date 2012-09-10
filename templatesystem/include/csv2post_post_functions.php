@@ -17,6 +17,28 @@ function csv2post_create_posts($project_code,$posts_target,$request_method){
 }
 
 /**
+* Basic version of draft post creation for basic post creation, used in free edition or paying users who
+* need maximum script speed possible. These functions are perfect for adapting to suit needs and build up, rather
+* than trying to reverse engineer the advanced functions. 
+*/
+function csv2post_create_postdraft_basic( $my_post,$r,$project_code,$content ){
+
+    $my_post['post_date'] = date("Y-m-d H:i:s", time());    
+    $my_post['post_date_gmt'] = gmdate("Y-m-d H:i:s", time());
+    $my_post['post_content'] = $content;
+    $my_post['ID'] = wp_insert_post( $my_post );
+    if( !$my_post['ID'] ){
+        return false;
+        ### TODO:MEDIUMPRIORITY, log this    
+    }
+    
+    // add custom fields
+    csv2post_post_default_projectmeta($my_post['ID'],$project_code,$r['csv2post_id']);
+
+    return $my_post;  
+}     
+
+/**
 * Creates Posts (basic script that does not make use of advanced level settings)
 * 
 * List Of Functions Not In This Post Creation Script
@@ -82,11 +104,17 @@ function csv2post_create_posts_basic($project_code,$request_method){
                 
     // begin looping through all records
     foreach( $records as $record_array ){
-                      
+        
+        // begin $my_post array, we will udpate it with the draft post details
+        $my_post = array();
+                              
         // set $category_array if $project_array['categories']['level1']['table'] is set (get existing, create or a mix of both)
         $category_array = array();
-        if(isset($project_array['categories']['level1']['table'])){
-            $category_array = csv2post_categorysetup_basicscript_normalcategories($record_array,$project_array);          
+        
+        if(isset($project_array['categories']['default']) && is_numeric($project_array['categories']['default'])){
+            $my_post['post_category'] = array($project_array['categories']['default']);        
+        }elseif(isset($project_array['categories']['level1']['table'])){
+            $my_post['post_category'] = csv2post_categorysetup_basicscript_normalcategories($record_array,$project_array);          
         }
 
         // if post title column set, use that
@@ -118,9 +146,24 @@ function csv2post_create_posts_basic($project_code,$request_method){
         if(isset($project_array['tags']['default']['table']) && isset($project_array['tags']['default']['column'])){
             $my_post['tags_input'] = $record_array[$project_array['tags']['default']['column']];    
         }
-                  
+         
+        // set post type (function uses post type rules if any else defaults)
+        $my_post['post_type'] = csv2post_establish_posttype($project_array,$record_array);
+        
+        $my_post['post_date'] =  date("Y-m-d H:i:s", time());
+        $my_post['post_date_gmt'] = gmdate("Y-m-d H:i:s", time());
+                
+        $my_post = csv2post_post_poststatus_calculate( $project_array,$my_post );
+
+        // apply post author
+        if(isset($project_array['authors']['defaultauthor']) && is_numeric($project_array['authors']['defaultauthor'])){
+            $my_post['post_author'] = $project_array['authors']['defaultauthor'];
+        }else{
+            $my_post['post_author'] = 1;    
+        }
+
         // create a draft post, csv2post_create_posts_basic uses a basic version of draft post creation with none of the most advanced features
-        $my_post = csv2post_create_postdraft_basic($my_post,$record_array,$category_array,$project_code,$content );                                                                        
+        $my_post = csv2post_create_postdraft_basic($my_post,$record_array,$project_code,$content );                                                                        
         
         if( !$my_post ){
             ++$fault_occured;
@@ -162,6 +205,36 @@ function csv2post_create_posts_basic($project_code,$request_method){
                       
     // return last post ID - only really matters for testing or single post create requests
     return $post_id;
+} 
+
+/**
+* Processes project rules against a record to establish post type.
+* This function should only be called in argument checking post type rules exist in project array.
+* 
+* @param mixed $project_array
+* @param mixed $record_array
+* @returns post type, defaults to user selected default or post when no rules exist or rules are not applied
+*/
+function csv2post_establish_posttype($project_array,$record_array){
+    
+    // loop through "byvalue" rules
+    if(isset($project_array['posttyperules'])){
+        foreach($project_array['posttyperules']['byvalue'] as $key => $rule){
+            // ensure $record_array has expected column_name 
+            if(isset($record_array[ $rule['column_name'] ])){
+                if( $rule['trigger_value'] == $record_array[ $rule['column_name'] ]){
+                    return $rule['post_type'];                        
+                }       
+            }   
+        }
+    }
+
+    // on reaching here we must now use the user set default if any, else use post
+    if(isset($project_array['defaultposttype'])){
+        return $project_array['defaultposttype'];
+    }
+    
+    return 'post';          
 } 
 
 /**
@@ -229,50 +302,6 @@ function csv2post_parse_columnreplacement_basic($record_array,$value){
 
     return $value;
 }
-
-/**
-* Basic version of draft post creation for basic post creation, used in free edition or paying users who
-* need maximum script speed possible. These functions are perfect for adapting to suit needs and build up, rather
-* than trying to reverse engineer the advanced functions. 
-*/
-function csv2post_create_postdraft_basic( $my_post,$r,$category_array,$project_code,$content ){
-
-    // apply post author
-    if(isset($project_array['authors']['defaultauthor']) && is_numeric($project_array['authors']['defaultauthor'])){
-        $my_post['post_author'] = $project_array['authors']['defaultauthor'];
-    }else{
-        $my_post['post_author'] = 1;    
-    }
-    
-    // apply categories
-    $category_value_is_array = false;
-    if(is_array($category_array)){
-        $my_post['post_category'] = $category_array;
-        $category_value_is_array = true;
-    }
-           
-    $my_post['post_date'] = date("Y-m-d H:i:s", time());    
-    $my_post['post_date_gmt'] = gmdate("Y-m-d H:i:s", time());
-    $my_post['post_content'] = $content;
-    $my_post['post_status'] = 'draft';// set to draft until end of post creation processing
-    $my_post['post_type'] = 'post';// free edition offers no features to change this, users can change it manually here if they wish
-    $my_post['ID'] = wp_insert_post( $my_post );
-    if( !$my_post['ID'] ){
-        return false;
-        ### TODO:MEDIUMPRIORITY, log this    
-    }
-    
-    // flag post if any problems
-    if(!$category_value_is_array){
-        csv2post_flag_post($my_post['ID'],3,'Problem detected when adding the category value. It was not an array
-        with one or more categories. This is a technical fault that should be reported.');
-    }
-
-    // add custom fields
-    csv2post_post_default_projectmeta($my_post['ID'],$project_code,$r['csv2post_id']);
-
-    return $my_post;  
-}     
 
 /**
 * Adds default post meta (custom fields) used to manage posts per project or globally

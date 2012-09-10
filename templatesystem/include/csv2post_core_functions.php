@@ -961,6 +961,8 @@ function csv2post_templatefunction(){
  * @todo LOWPRIORITY, provide permanent closure button, will this be done with a dialogue ID to prevent it opening again 
  * @todo LOWPRIORITY, add a paragraphed section of the message for a second $message variable for extra information
  * @todo MEDIUMPRIORITY, allow shorter $size and $type values plus change $size to lowercase in code and in styling, just makes it a bit easier to avoid making mistake
+ * @todo MEDIUMPRIORITY, allow optional settings array, can we do this and have the existing parameters in place?
+ * @todo HIGHPRIORITY, change the arrow to a "Help" button and also add "Go To" button, also add local url parameter to display both Help and Go To buttons on a notification. Scrap the Next Step approach, it does not allow for highly custom html once link is applied
  */
 function csv2post_notice($message,$type = 'success',$size = 'Extra',$title = false, $helpurl = 'www.csv2post.com/support', $output_type = 'echo',$persistent = false,$clickable = false){
     if(is_admin()){

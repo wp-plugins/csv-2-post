@@ -98,6 +98,24 @@ first plugin was created in 2009 and was halted pending re-development.
 6. You can use up to 3 columns of data to create 3 levels of categories.
  
 == Changelog ==
+= 6.6.8 =
+* Public Messages
+    * Thanks to everyone for all their help testing our new plugin. The bugs found are critical so another swift update.
+* Bug Fixes
+    * Post status was not being applied to post object   
+    * Post type was not being applied to post object 
+    * Single default author was not being applied
+* General Improvements
+    * Users can no longer attempt to create posts when they have not selected a title or content template. Notifications are displayed in Create Posts panel regarding this.
+    * Can only use the file uploader to upload .csv files, notice confirms this on attempting to upload any other extension.
+    * Further improvement to categories including default category now applied
+* Key Technical Improvements
+    * None
+* Known Issues
+    * None
+* Web Services, Support and Websites changes
+    * None
+    
 = 6.6.7 =
 * Public Messages
     * Custom field keys with underscore at the beginning are hidden on the Edit Post screen i.e. _yoast_wpseo_title.

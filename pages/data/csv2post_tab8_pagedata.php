@@ -9,6 +9,8 @@ if(!isset($csv2post_dataimportjobs_array) || count($csv2post_dataimportjobs_arra
     echo csv2post_notice('You do not have any Data Import jobs, please create one on the Start screen','info','Small','','','return');    
 }else{
 
+    var_dump($csv2post_dataimportjobs_array);
+    
     // foreach job
     foreach( $csv2post_dataimportjobs_array as $jobcode => $job ){
 

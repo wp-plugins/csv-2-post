@@ -271,11 +271,17 @@ function csv2post_form_importdata_advanced(){
         // save the selected ID column so that we can apply it to the form
         $job_array = csv2post_get_dataimportjob($jobcode);
         
+        
+        
+        
               // save id column to the job array then improve form so it uses stored value
               // then go on to improving import so it can update manually
 ### TODO:CRITICAL    
                 
                 
+        
+        
+        
         // set row number
         $row_number = 1;
         if($csv2post_is_free){
@@ -1552,6 +1558,11 @@ function csv2post_form_upload_csv_file(){
 
         $upload = $_FILES['file'];  
 
+        if(!strstr($upload['name'],'.csv')){
+            csv2post_notice('Sorry but CSV 2 POST only accepts CSV files with .csv extension right now.','error','Large','File Extension Not Allowed','','echo');
+            return false;
+        }
+        
         // check error
         if($upload['error'] != 0){
             csv2post_notice('Could not upload file, error code: ' . $upload['error'],'error','Large','Upload Failed');
@@ -2428,8 +2439,8 @@ function csv2post_form_create_post_creation_project(){
                         $reset_posts = false;
                     }
     
-                    csv2post_sql_reset_project($_POST['csv2post_databasetables_resettable_array'],$reset_posts);
-                    csv2post_notice('The table named '.$_POST['csv2post_databasetables_resettable_array'].' was reset as requested.'.$reset_posts_notice,'success','Large','Table Reset','','echo');                    
+                    csv2post_sql_reset_project_table($_POST['csv2post_databasetables_resettable_array'],$reset_posts);
+                    csv2post_notice('The table named '.$_POST['csv2post_databasetables_resettable_array'].' was reset as requested.','success','Large','Table Reset','','echo');                    
                 
                 }else{
                     foreach($_POST['csv2post_databasetables_resettable_array'] as $key => $table_name){
@@ -2444,7 +2455,7 @@ function csv2post_form_create_post_creation_project(){
                             }
                         }
                         
-                        csv2post_sql_reset_project($table_name,$reset_posts);
+                        csv2post_sql_reset_project_record($table_name,$reset_posts);
                         csv2post_notice('The table named '.$table_name.' was reset as requested.','success','Large','Table Reset','','echo');    
                     }  
                 } 

@@ -157,7 +157,6 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
     // if free edition we do not allow use of 4th and 5th level categories
     // bypassing this will only cause faults later, level 4 and 5 is connected to advanced fetures which require more support so are not provided free
     if(!$csv2post_is_free){?>
-        
         <select name="csv2post_categorylevel4_select_columnandtable" id="csv2post_categorylevel4_select_columnandtable_objectid" class="csv2post_multiselect_menu">
             <option value="notselected">Exclude Level Four</option>
             <?php 
@@ -203,6 +202,9 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
         <br />
     <?php }?>
     
+    <?php 
+    // require functions for this to work are not provided in free edition
+    if(!$csv2post_is_free){?>
     <h4>Categorisation Level</h4>
     <script>
     $(function() {
@@ -211,7 +213,6 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
     </script>
 
     <div id="csv2post_categorisationlevel_basicpanel_radios">
-
         <?php
         $depth_single = 'checked';
         $depth_all = ''; 
@@ -224,6 +225,7 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
         <input type="radio" id="csv2post_categorisationlevel_basicpanel_all" name="csv2post_categorisationlevel_all" value="0" <?php echo $depth_all; ?> /><label for="csv2post_categorisationlevel_basicpanel_all">All</label>          
 
     </div>
+    <?php }?>
                    
     <?php
     // add the javascript that will handle our form action, prevent submission and display dialogue box

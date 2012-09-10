@@ -338,7 +338,7 @@ $csv2post_mpt_arr['data']['tabs'][8]['label'] = 'Advanced Import';
 $csv2post_mpt_arr['data']['tabs'][8]['name'] = 'advanceddataimport';
 $csv2post_mpt_arr['data']['tabs'][8]['helpurl'] = 'http://www.csv2post.com/';
 $csv2post_mpt_arr['data']['tabs'][8]['allowhide'] = true;
-$csv2post_mpt_arr['data']['tabs'][8]['display'] = csv2post_page_show_hide(1);
+$csv2post_mpt_arr['data']['tabs'][8]['display'] = csv2post_page_show_hide(2);
 ### TODO:LOWPRIORITY, add a page that tests all CSV files and lists their status and profile 
 ### if however it effects loading, could do it with the files in use or latest files uploaded
 ### full edition only 
