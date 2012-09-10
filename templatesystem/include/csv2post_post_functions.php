@@ -102,7 +102,6 @@ function csv2post_create_posts_basic($project_code,$request_method){
                 $my_post['post_title'] = csv2post_parse_columnreplacement_basic($record_array,$title_template);        
             }    
         }
-         var_dump($my_post['post_title']);
                      
         // parse default post content
         $content = csv2post_parse_columnreplacement_basic($record_array,$content_template);
