@@ -959,8 +959,8 @@ function csv2post_templatefunction(){
  * 
  * @todo MEDIUMPRIORITY, when a notification is to be returned AND is persistent, it needs to be persistent where ever it is displayed, need to check if user has already closed notification by storing its ID in notification array
  * @todo LOWPRIORITY, provide permanent closure button, will this be done with a dialogue ID to prevent it opening again 
- * @todo LOWPRIORITY, add url to all notifications, this could take days!
  * @todo LOWPRIORITY, add a paragraphed section of the message for a second $message variable for extra information
+ * @todo MEDIUMPRIORITY, allow shorter $size and $type values plus change $size to lowercase in code and in styling, just makes it a bit easier to avoid making mistake
  */
 function csv2post_notice($message,$type = 'success',$size = 'Extra',$title = false, $helpurl = 'www.csv2post.com/support', $output_type = 'echo',$persistent = false,$clickable = false){
     if(is_admin()){
@@ -1380,6 +1380,9 @@ function csv2post_error_log($m){
    error_log($m);
 }
 
+/**
+* Get the post title for the default content template. 
+*/
 function csv2post_get_default_contenttemplate_name(){
     global $csv2post_currentproject_code;
     $default_template_id = csv2post_get_default_contenttemplate_id( $csv2post_currentproject_code );
@@ -1389,7 +1392,9 @@ function csv2post_get_default_contenttemplate_name(){
     }else{
         // get wtgcsvtemplate post title
         $template_post = get_post($default_template_id); 
-
+        if(!$template_post){
+            return 'Default Template Missing';
+        }
         return $template_post->post_title;        
     }
 }
@@ -1402,7 +1407,10 @@ function csv2post_get_default_excerpttemplate_name(){
         return 'No Default Excerpt Template';
     }else{
         // get wtgcsvtemplate post title
-        $template_post = get_post($default_template_id); 
+        $template_post = get_post($default_template_id);
+        if(!$template_post){
+            return 'Default Template Missing';
+        }         
         return $template_post->post_title;        
     }
 }
@@ -1415,7 +1423,10 @@ function csv2post_get_default_titletemplate_name(){
         return 'No Default Title Template';
     }else{
         // get wtgcsvtemplate post title
-        $template_post = get_post($default_template_id); 
+        $template_post = get_post($default_template_id);
+        if(!$template_post){
+            return 'Default Template Missing';
+        }         
         return $template_post->post_title;        
     }
 }

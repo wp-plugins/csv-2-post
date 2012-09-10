@@ -17,17 +17,28 @@ $seo_plugins_array[1]['seokeywords'] = '_yoast_wpseo_metakeywords';
    
 // if no SEO plugin installed that we know, display persistent message asking user to request upgrade
 $seo_plugin_installed = false;
-foreach($seo_plugins_array as $key => $seo_plugin){
+foreach($seo_plugins_array as $seo_plugin_id => $seo_plugin){
     if(is_plugin_active($seo_plugin['folder'] . '/'. $seo_plugin['file'])){
-        $seo_plugin_installed = true;    
+        $seo_plugin_installed = true;
+        // break loop even if user has more seo plugins, we will focus on one for now. $key is used further down also.
+        break;    
     }    
 }
      
 if(!$seo_plugin_installed){
     echo csv2post_notice('No known SEO plugin was detected in your blog. To help us improve integration pease let us know what SEO
     plugin you are using. This does not mean CSV 2 POST does not work with your plugin. It means
-    there are no features to make it even easier.','info','Small','','','return',true);
+    there are no features to make it even easier.','info','Tiny','','','return',true);
+}else{
+    echo csv2post_notice('CSV 2 POST has detected '.$seo_plugins_array[$seo_plugin_id]['name'].' is installed and active.','info','Tiny','','','return');
 }
+
+if(!isset($csv2post_project_array['seo']['basic']['title_key'])
+&& !isset($csv2post_project_array['seo']['basic']['description_key'])
+&& !isset($csv2post_project_array['seo']['basic']['keywords_key'])){
+    echo csv2post_notice('Basic SEO settings have not been saved yet.','warning','Tiny','','','return');
+    $basic_seo_not_saved = true;    
+} 
 ?>
 
 <?php
@@ -51,11 +62,23 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
 <?php csv2post_panel_header( $panel_array );?>
 
     <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');?>
+
+    <?php 
+    // if basic seo has not been saved and we have a supported plugin active display a message letting user know we filled the form out for them
+    if(isset($basic_seo_not_saved) && $basic_seo_not_saved == true && $seo_plugin_installed){
+        echo csv2post_notice('How good are we! We have filled out the form form you, all you need to do is select
+        the data columns for each field and submit.','success','Tiny','','','return');
+    }
+    ?>
     
     <h4>Meta Title</h4>
     <?php $title_key = '';
-    if(isset($csv2post_project_array['seo']['basic']['title_key'])){$title_key = $csv2post_project_array['seo']['basic']['title_key'];}?>
-    Title Meta Key:<input type="text" name="csv2post_seo_key_title" value="<?php echo $title_key;?>"><br /> 
+    if(isset($csv2post_project_array['seo']['basic']['title_key'])){
+        $title_key = $csv2post_project_array['seo']['basic']['title_key'];
+    }elseif(isset($seo_plugin_installed) && isset($seo_plugin_id)){
+        $title_key = $seo_plugins_array[$seo_plugin_id]['seotitle'];    
+    }?>
+    Title Meta Key:<input type="text" name="csv2post_seo_key_title" value="<?php echo $title_key;?>" size="38"><br /> 
     Select Meta Title Column:
     <select name="csv2post_seo_title" id="csv2post_seo_title_id" class="csv2post_multiselect_menu">
         <?php 
@@ -74,11 +97,15 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
        selectedList: 1
     });
     </script>
-            
+                   
     <h4>Select Description Column</h4>
     <?php $description_key = '';
-    if(isset($csv2post_project_array['seo']['basic']['description_key'])){$description_key = $csv2post_project_array['seo']['basic']['description_key'];}?>    
-    Description Meta Key:<input type="text" name="csv2post_seo_key_description" value="<?php echo $description_key;?>"><br />    
+    if(isset($csv2post_project_array['seo']['basic']['description_key'])){
+        $description_key = $csv2post_project_array['seo']['basic']['description_key'];
+    }elseif(isset($seo_plugin_installed) && isset($seo_plugin_id)){
+        $description_key = $seo_plugins_array[$seo_plugin_id]['seodescription'];    
+    }?>    
+    Description Meta Key:<input type="text" name="csv2post_seo_key_description" value="<?php echo $description_key;?>" size="38"><br />    
     Select Meta Description Column:<select name="csv2post_seo_description" id="csv2post_seo_description_id" class="csv2post_multiselect_menu">
         <?php 
         if(isset($csv2post_project_array['seo']['basic']['description_table']) && isset($csv2post_project_array['seo']['basic']['description_column'])){
@@ -96,11 +123,15 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
        selectedList: 1
     });
     </script>
-        
+
     <h4>Select Keywords Column</h4>
     <?php $keyword_key = '';
-    if(isset($csv2post_project_array['seo']['basic']['keywords_key'])){$keyword_key = $csv2post_project_array['seo']['basic']['keywords_key'];}?>        
-    Keyword Meta Key:<input type="text" name="csv2post_seo_key_keywords" value="<?php echo $keyword_key;?>"><br />
+    if(isset($csv2post_project_array['seo']['basic']['keywords_key'])){
+        $keyword_key = $csv2post_project_array['seo']['basic']['keywords_key'];
+    }elseif(isset($seo_plugin_installed) && isset($seo_plugin_id)){
+        $keyword_key = $seo_plugins_array[$seo_plugin_id]['seokeywords'];    
+    }?>        
+    Keyword Meta Key:<input type="text" name="csv2post_seo_key_keywords" value="<?php echo $keyword_key;?>" size="38"><br />
     Select Meta Keyword Column:<select name="csv2post_seo_keywords" id="csv2post_seo_keywords_id" class="csv2post_multiselect_menu">
         <?php 
         if(isset($csv2post_project_array['seo']['basic']['keywords_table']) && isset($csv2post_project_array['seo']['basic']['keywords_column'])){

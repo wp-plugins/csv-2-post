@@ -32,11 +32,11 @@ if(!isset($csv2post_dataimportjobs_array) || count($csv2post_dataimportjobs_arra
         $jsform_set['noticebox_content'] = 'You are about to import data from your CSV file. Data updating will also be done if your CSV file has been updated. Do you wish to continue?';
         
         csv2post_panel_header( $panel_array );?>
-        
+
         <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);?>
  
             <input type="hidden" name="csv2post_importdatarequest_jobcode" value="<?php echo $jobcode;?>">
-            <input type="hidden" name="csv2post_importdatarequest_postmethod" value="true">
+            <input type="hidden" name="csv2post_importdatarequest_advanced_postmethod" value="true">
                                           
             <?php
             if($csv2post_is_free){
@@ -87,8 +87,11 @@ if(!isset($csv2post_dataimportjobs_array) || count($csv2post_dataimportjobs_arra
                         <?php     
                         ### TODO:HIGHPRIORITY, change the PEARCSVmethod for quote in the fget column
                         echo '</td>
-                        <td>'.$csv_filename.'</td>
-                        <td>'.csv2post_menu_columns_by_csvfile().'</td>';?>
+                        <td>'.$csv_filename.'</td><td>';
+                        
+                        echo csv2post_menu_csvfile_headers($panel_array['panel_name'],$jobcode,$csv_filename);
+                        
+                        echo '</td>';?>
 
                     </tr><?php                         
 

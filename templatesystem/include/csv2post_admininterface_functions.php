@@ -3638,8 +3638,31 @@ function csv2post_csv_files_list(){
     }     
 }
 
-
-function csv2post_menu_columns_by_csvfile(){
+function csv2post_menu_csvfile_headers($id,$jobcode,$f){
+    $job_array = csv2post_get_dataimportjob($jobcode);
     
-}                                                                                                                           
+    // clean filename for appending to object id
+    $fc = explode(".", $f);
+    
+    $menu = '
+    <select id="csv2post_csvfileheader_'.$id.'_'.$fc[0].'" name="csv2post_csvfileheader_'.$id.'_'.$fc[0].'" class="csv2post_multiselect_menu">
+        <option value="notselected">No Column Header Selected</option>';
+
+        foreach($job_array[$f]['headers'] as $key => $c){
+
+            $menu .= '<option value="'.$c['original'].'">'.$c['original'].'</option>';
+        }
+
+    $menu .= '</select>
+    <script>
+    $("#csv2post_csvfileheader_'.$id.'_'.$fc[0].'").multiselect({
+       multiple: false,
+       header: "Select CSV File Header/Column",
+       noneSelectedText: "Select CSV File Header/Column",
+       selectedList: 1
+    });
+    </script>';   
+    
+    return $menu;   
+}                                                                                                                        
 ?>

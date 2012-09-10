@@ -87,7 +87,6 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
     <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');?>
     
     <h4>Setup Category Data Columns</h4>
-
     <select name="csv2post_categorylevel1_select_columnandtable" id="csv2post_categorylevel1_select_columnandtable_objectid" class="csv2post_multiselect_menu">
         <option value="notselected">Exclude Level One</option>
         <?php 
@@ -203,7 +202,29 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
         
         <br />
     <?php }?>
-               
+    
+    <h4>Categorisation Level</h4>
+    <script>
+    $(function() {
+        $( "#csv2post_categorisationlevel_basicpanel_radios" ).buttonset();
+    });
+    </script>
+
+    <div id="csv2post_categorisationlevel_basicpanel_radios">
+
+        <?php
+        $depth_single = 'checked';
+        $depth_all = ''; 
+        if(isset($project_array['categories']['depth']) && $project_array['categories']['depth'] != 1){
+            $depth_single = '';
+            $depth_all = 'checked';    
+        }
+        ?>
+        <input type="radio" id="csv2post_categorisationlevel_basicpanel_single" name="csv2post_categorisationlevel_single" value="1" <?php echo $depth_single; ?>  /><label for="csv2post_categorisationlevel_basicpanel_single">Single</label>
+        <input type="radio" id="csv2post_categorisationlevel_basicpanel_all" name="csv2post_categorisationlevel_all" value="0" <?php echo $depth_all; ?> /><label for="csv2post_categorisationlevel_basicpanel_all">All</label>          
+
+    </div>
+                   
     <?php
     // add the javascript that will handle our form action, prevent submission and display dialogue box
     csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
@@ -483,7 +504,28 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
     </div>
     <div style="clear:both;"></div>    
 
-    
+    <h4>Categorisation Level</h4>
+    <script>
+    $(function() {
+        $( "#csv2post_categorisationlevel_advancedpanel_radios" ).buttonset();
+    });
+    </script>
+
+    <div id="csv2post_categorisationlevel_advancedpanel_radios">
+
+        <?php
+        $depth_single = 'checked';
+        $depth_all = ''; 
+        if(isset($project_array['categories']['depth']) && $project_array['categories']['depth'] != 1){
+            $depth_single = '';
+            $depth_all = 'checked';    
+        }
+        ?>
+        <input type="radio" id="csv2post_categorisationlevel_advancedpanel_single" name="csv2post_categorisationlevel_single" value="1" <?php echo $depth_single; ?>  /><label for="csv2post_categorisationlevel_advancedpanel_single">Single</label>
+        <input type="radio" id="csv2post_categorisationlevel_advancedpanel_all" name="csv2post_categorisationlevel_all" value="0" <?php echo $depth_all; ?> /><label for="csv2post_categorisationlevel_advancedpanel_all">All</label>          
+
+    </div>
+        
     <?php
     // add the javascript that will handle our form action, prevent submission and display dialogue box
     csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);

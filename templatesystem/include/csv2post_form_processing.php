@@ -23,15 +23,18 @@ if($cont){
          
     // Process CSV file upload    
     $cont = csv2post_form_upload_csv_file(); 
-        
+                              
     // Delete one or more database tables
     $cont = csv2post_form_drop_database_tables(); 
-         
+                            
     // Manual data import
     $cont = csv2post_form_importdata();
                     
     // Delete CSV file
-    $cont = csv2post_form_delete_csvfile();  
+    $cont = csv2post_form_delete_csvfile();
+                  
+    // Advanced manual data import
+    $cont = csv2post_form_importdata_advanced();  
 }
 
 // Project Screen Form Submissions (project creation and configuration)
@@ -58,9 +61,12 @@ if($cont){
     // Update the default content template design for current project
     $cont = csv2post_form_change_default_contenttemplate();
     
-    // Update the default 
+    // Update the default title template 
     $cont = csv2post_form_change_default_titletemplate();    
     
+    // Update the default excerpt template 
+    $cont = csv2post_form_change_default_excerpttemplate();
+        
     // Insert new wtgcsvtitle post as a title template
     $cont = csv2post_form_insert_title_template();
     
@@ -222,7 +228,95 @@ if($cont){
     $cont = csv2post_form_createcontentfolder();
     $cont = csv2post_form_deletecontentfolder();    
 }
+  
+/**
+* Advanced manual data import
+*/
+function csv2post_form_importdata_advanced(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'data' && isset($_POST['csv2post_importdatarequest_advanced_postmethod']) && $_POST['csv2post_importdatarequest_advanced_postmethod'] == 'true'){
+        global $csv2post_is_free;
+                   
+        // if job code not in $_POST
+        if(!isset($_POST['csv2post_importdatarequest_jobcode']) || $_POST['csv2post_importdatarequest_jobcode'] == NULL || !is_string($_POST['csv2post_importdatarequest_jobcode'])){
+            csv2post_notice('A data import job code was not found in the submitted form data, no import could be started.','error','Large','No Job Code Submitted','','echo');
+            return false;
+        }
+        
+        $job_code = $_POST['csv2post_importdatarequest_jobcode'];
+        
+        // if no csv file value in $_POST
+        if(!isset($_POST['csv2post_importselection_csvfiles'])){
+            csv2post_notice('No CSV file name could be found in the submitted post data, no import could be carried out.','error','Large','No CSV Filename Found','','echo');    
+            return false;
+        }
+        
+        // get filename (currently preparing for multiple file import at once so we are submitting an array) 
+        $file_name = $_POST['csv2post_importselection_csvfiles'][0];
 
+        // clean field name
+        $file_name_cleaned = explode(".", $_POST['csv2post_importselection_csvfiles'][0]);
+        
+        $menu_name = 'csv2post_csvfileheader_advanceddataimportjob'.$job_code.'_'.$file_name_cleaned[0];
+
+        // if ID column not set
+        if(!isset($_POST[$menu_name]) || $_POST[$menu_name] == 'notselected'){
+           csv2post_notice('You have not selected the ID column for your CSV file named '.$file_name.'.
+           The ID column should have unique ID data which is used to link CSV file rows with records you
+           have already imported. The only other method for updating is Default Order, which does not work
+           if even a single row has been added or removed from the CSV file. That methodi is not recommended.',
+           'error','Large','No CSV File Header Selected','','echo');
+           return false; 
+        }
+        
+        // save the selected ID column so that we can apply it to the form
+        $job_array = csv2post_get_dataimportjob($jobcode);
+        
+              // save id column to the job array then improve form so it uses stored value
+              // then go on to improving import so it can update manually
+### TODO:CRITICAL    
+                
+                
+        // set row number
+        $row_number = 1;
+        if($csv2post_is_free){
+            $row_number = 9999999;    
+        }elseif(!isset($_POST['csv2post_dataimport_rownumber_'.$job_code]) || !is_numeric($_POST['csv2post_dataimport_rownumber_'.$job_code])){
+            csv2post_notice('No row number for import was submitted so only 1 record will be imported from '.$file_name.'.csv.','warning','Large','No Rows Number Submitted','','echo');    
+        }elseif(isset($_POST['csv2post_dataimport_rownumber_'.$job_code]) && is_numeric($_POST['csv2post_dataimport_rownumber_'.$job_code])){
+            $row_number = $_POST['csv2post_dataimport_rownumber_'.$job_code];        
+        }
+ 
+        // perform data import
+        $overall_result = 'success';
+        $dataimportjob_array = csv2post_data_import_from_csvfile_basic($file_name,'csv2post_'.$job_code,$row_number,$job_code);
+        
+        // determine new $overall_result and apply styling to the main notice to suit it
+        if($dataimportjob_array == false){
+            $overall_result = 'error';
+        }
+        
+        // decide message text
+        if($csv2post_is_free){
+            $intromes = '';
+        }else{
+            $intromes = '<p>You requested '.$row_number.' row/s to be imported from '.$file_name.'.</p>';    
+        }
+        
+        // display result    
+        csv2post_notice( '<h4>Data Import Result<h4>'.$intromes.'
+        '.csv2post_notice( 'New Records: '.$dataimportjob_array["stats"]["lastevent"]['inserted'],'success','Small',false,'www.csv2post.com/notifications/new-records-count','return').'
+        '.csv2post_notice( 'Void Records: '.$dataimportjob_array["stats"]["lastevent"]['void'],'info','Small',false,'www.csv2post.com/notifications/void-records-counter','return').'
+        '.csv2post_notice( 'Dropped Rows: '.$dataimportjob_array["stats"]["lastevent"]['dropped'],'warning','Small',false,'www.csv2post.com/notifications/dropped-rows-counter','return').'
+        '.csv2post_notice( 'Rows Processed: '.$dataimportjob_array["stats"]["lastevent"]['processed'],'info','Small',false,'www.csv2post.com/notifications/rows-processed-counter','return').'     
+        '.csv2post_notice( 'Job Progress: '.$dataimportjob_array["stats"]["allevents"]['progress'],'info','Small',false,'www.csv2post.com/notifications/job-progress-counter','return').'    
+        ',$overall_result,'Extra','','','echo'); 
+
+        return false;
+    }else{
+        return true;
+    }     
+}  
+  
 /**
 * Create users in post creation project
 */
@@ -2057,6 +2151,26 @@ function csv2post_form_change_default_titletemplate(){
         }else{
             csv2post_update_default_titletemplate($csv2post_currentproject_code,$template_id);
             csv2post_notice('The title template you selected has been saved as your current projects default template design.','success','Large','Default Title Template Saved');
+        }
+        
+        return false;
+    }else{
+        return true;
+    }    
+} 
+
+function csv2post_form_change_default_excerpttemplate(){
+    global $csv2post_currentproject_code;
+    if(isset($_POST['csv2post_change_default_excerpttemplate']) && isset($_POST['csv2post_change_default_excerpttemplate'])){
+  
+        // extract template id from string
+        $template_id = csv2post_extract_value_from_string_between_two_values('(',')',$_POST['csv2post_templatename_and_id']);        
+
+        if(!is_numeric($template_id)){
+            csv2post_notice('The excerpt template ID could not be extracted from the submission, please try again then report this issue.','error','Large','Error Saving Default Excerpt Template');
+        }else{
+            csv2post_update_default_excerpttemplate($csv2post_currentproject_code,$template_id);
+            csv2post_notice('The excerpt template you selected has been saved as your current projects default excerpt template design.','success','Large','Default Excerpt Template Saved');
         }
         
         return false;

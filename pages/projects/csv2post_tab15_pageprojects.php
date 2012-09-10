@@ -54,7 +54,7 @@ $csv2post_supported_themes[$st]['keys']['cp_total_count']['required'] = false;
 
 // get then display current theme
 $blogtheme = get_current_theme();
-echo csv2post_notice($blogtheme,'success','Small','Theme Detected: ','','return');
+echo csv2post_notice($blogtheme,'success','Tiny','Theme Detected: ','','return');
 
 // does plugin provide extra/easier support for the active theme?
 $theme_support_extra = false;
@@ -71,7 +71,7 @@ if(!$theme_support_extra){
     themes i.e. it knows what custom field keys are required and the data requirement for each
     custom field value. Your Wordpress theme does not currently have extra support on this page. Let us know
     if you would like our plugin to support your theme even more so that it is a little easier to configure.',
-    'info','Large','Standard Theme Support','','return');
+    'info','Tiny','Standard Theme Support','','return');
     return;
 }?>
 

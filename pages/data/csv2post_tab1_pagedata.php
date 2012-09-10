@@ -198,7 +198,6 @@ if($method == 'ajax'){
                         <tr>
                             <td width="50">Select</td>    
                             <td width="150">File Names</td>
-                            <td>ID Column</td>
                         </tr>';
                         
                         echo '
@@ -226,8 +225,7 @@ if($method == 'ajax'){
                             <?php     
                             ### TODO:HIGHPRIORITY, change the PEARCSVmethod for quote in the fget column
                             echo '</td>
-                            <td>'.$csv_filename.'</td>
-                            <td>'.csv2post_menu_columns_by_csvfile().'</td>';?>
+                            <td>'.$csv_filename.'</td>';?>
 
                         </tr><?php                         
 

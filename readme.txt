@@ -5,7 +5,7 @@ License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: CSV 2 POST, CSV 2 POST Plugin, CSV 2 POST Software, CSV2POST, wordpress data import,wordpress data importer,auto blogging,auto blogger,autoblog,mass create posts,mass post creation,csv file importer,csv file data import,post injection,import spreadsheet,excel file import,excel import,www.csv2post.com,CSV2POST,wordpresscsv import,wordpress import plugin,wordpress data import tool,wordpress data import plugin,wordpress post creation plugin
 Requires at least: 3.3.1
-Tested up to: 3.4.1
+Tested up to: 3.4.2
 Stable tag: trunk
 
 CSV 2 POST
@@ -98,19 +98,34 @@ first plugin was created in 2009 and was halted pending re-development.
 6. You can use up to 3 columns of data to create 3 levels of categories.
  
 == Changelog ==
-= 6.6.6 =
+= 6.6.7 =
 * Public Messages
-    * None
+    * Custom field keys with underscore at the beginning are hidden on the Edit Post screen i.e. _yoast_wpseo_title.
+    * Posts are now assigned to a single category by default. If you want to apply all levels of categorie to a post, there is a new option for it.
 * Bug Fixes
-    * (minor) Uninstall process was appearing to fail, but was actually uninstalling
+    * Blank titles in all posts
+    * Default Post Excerpt template now saves when clicking on templates in the Default Excerpt Template panel
 * General Improvements
-    * None
+    * Can now apply a single category or all categories to our posts, new option on categories panels
+    * SEO screen now displays notification confirming SEO plugin detected
+    * Changed notification regarding post type being "post" from a warning to info box to appear more friendly
+    * Changed warning notification on Post Dates screen to an information box
+    * Basic SEO Options panel text fields are now automatically populated with required values for recognised SEO plugins
+    * SEO screen displays a warning notice if Basic SEO Options settings have not been saved yet
+    * Theme Support screen checklist notifications are now the same size as other checklist notifications on other screens
+    * Theme Support screen message regarding user not having setup required post type yet now makes more sense and does not have blank space where "post" should be
+    * Better handling of interface output when templates that are set as defaults are deleted by user
+    * Two image links remove from the Screens screen on the main page, they were for settings pages that no longer exist
+    * Advanced Import screen now has menu for selecting ID column, however further work required on this and coming 6.6.8
 * Key Technical Improvements
-    * None
+    * csv2post_categorysetup_advancedscript_normalcategories() changed to allow single or all categories applied to post
 * Known Issues
-    * None
+    * Categories created by CSV 2 POST are sometimes hidden on the Categories screen for a short period of time. However posts are still assigned to the categories and the categories display alright on the Edit Post screen.
 * Web Services, Support and Websites changes
-    * None
+    * Rewards now offered for providing key information on how to fix critical bugs on the troubleshooting page http://www.csv2post.com/support/troubleshooting-2
+    
+= 6.6.6 =
+* Was skipped accidently by updating the free plugin with 6.6.6 when it should have been 6.6.5
     
 = 6.6.5 =
 * Public Messages

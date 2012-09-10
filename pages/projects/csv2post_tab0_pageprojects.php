@@ -170,8 +170,9 @@ $nonce = wp_create_nonce( "csv2post_referer_createproject_checkprojectname" );
     
     <?php csv2post_display_databasetables_withjobnames(true);?>
 
-    <?php // TODO: LOWPRIORITY, only display mapping methods when user selects more than 1 table, only show the third method when user selects 3 or more ?>
-    <h4>Select Table Mapping Type <?php if($csv2post_is_free){echo '(not required in free edition)';}?></h4>
+    <?php // TODO: LOWPRIORITY, only display mapping methods when user selects more than 1 table, only show the third method when user selects 3 or more 
+    // also do not display this option at all in free edition, we dont want to have to mention paid edition, this is our policy?>
+    <h4>Select Table Mapping Type <?php if($csv2post_is_free){echo '(not required)';}?></h4>
     <script>
     $(function() {
         $( "#csv2post_projecttableselection_mapping_option" ).buttonset();

@@ -102,6 +102,7 @@ function csv2post_create_posts_basic($project_code,$request_method){
                 $my_post['post_title'] = csv2post_parse_columnreplacement_basic($record_array,$title_template);        
             }    
         }
+         var_dump($my_post['post_title']);
                      
         // parse default post content
         $content = csv2post_parse_columnreplacement_basic($record_array,$content_template);
@@ -120,7 +121,7 @@ function csv2post_create_posts_basic($project_code,$request_method){
         }
                   
         // create a draft post, csv2post_create_posts_basic uses a basic version of draft post creation with none of the most advanced features
-        $my_post = csv2post_create_postdraft_basic($record_array,$category_array,$project_code,$content );                                                                        
+        $my_post = csv2post_create_postdraft_basic($my_post,$record_array,$category_array,$project_code,$content );                                                                        
         
         if( !$my_post ){
             ++$fault_occured;
@@ -235,9 +236,7 @@ function csv2post_parse_columnreplacement_basic($record_array,$value){
 * need maximum script speed possible. These functions are perfect for adapting to suit needs and build up, rather
 * than trying to reverse engineer the advanced functions. 
 */
-function csv2post_create_postdraft_basic( $r,$category_array,$project_code,$content ){
-             
-    $my_post = array();
+function csv2post_create_postdraft_basic( $my_post,$r,$category_array,$project_code,$content ){
 
     // apply post author
     if(isset($project_array['authors']['defaultauthor']) && is_numeric($project_array['authors']['defaultauthor'])){

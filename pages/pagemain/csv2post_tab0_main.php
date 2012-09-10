@@ -22,18 +22,6 @@ $(function() {
 -->
     
 <ul id="sortablewtg"> 
-
-    <li class="ui-state-default">
-        <a href="<?php get_admin_url(); ?>admin.php?page=csv2post_settings#tabs-0">
-        <img src="<?php echo WTG_C2P_IMAGEFOLDER_URL;?>pageicons/generalsettings.png" width="90" height="70" />            
-        </a>General Settings
-    </li>
-        
-    <li class="ui-state-default">
-        <a href="<?php get_admin_url(); ?>admin.php?page=csv2post_settings#tabs-1">
-        <img src="<?php echo WTG_C2P_IMAGEFOLDER_URL;?>pageicons/interfacesettings.png" width="90" height="70" />            
-        </a>Interface Settings
-    </li>
     
     <li class="ui-state-default">
         <a href="<?php get_admin_url(); ?>admin.php?page=csv2post_install#tabs-0">

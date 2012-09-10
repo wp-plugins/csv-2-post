@@ -1,6 +1,6 @@
 <?php
 if(!isset($csv2post_project_array['dates'])){
-    echo csv2post_notice('Post publish dates will be the default decided by Wordpress.','warning','Tiny','','','return');
+    echo csv2post_notice('Post publish dates will be the default decided by Wordpress.','info','Tiny','','','return');
 }else{
     if(isset($csv2post_project_array['dates']['currentmethod'])){
         if($csv2post_project_array['dates']['currentmethod'] == 'random'){

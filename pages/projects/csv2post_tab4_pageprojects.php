@@ -1,6 +1,6 @@
 <?php
 if(!isset($csv2post_project_array['defaultposttype'])){
-    echo csv2post_notice('Current posts type is "post"','warning','Tiny','','','return');    
+    echo csv2post_notice('Current posts type is "post"','info','Tiny','','','return');    
 }else{
     echo csv2post_notice('Current posts type is "'.$csv2post_project_array['defaultposttype'].'"','info','Tiny','','','return');    
 }
