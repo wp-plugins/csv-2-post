@@ -13,7 +13,7 @@ categories based on your category settings, during post creation. However this t
 for category creation only or to test our category creation settings and data prior to making posts. Multiple
 levels of category creation can be very complex, occasionally the outcome is not perfect first time around. We 
 recommend that you run tests on test blog and also backup your database for the live blog.');
-$panel_array['help_button'] = csv2post_helpbutton_text(true,true);
+$panel_array['help_button'] = csv2post_helpbutton_text(false,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);     

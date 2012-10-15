@@ -10,7 +10,7 @@ if($csv2post_is_installed){
     csv2post_notice('Activation has already been done, this tab is displayed to 
     aid testing of the other activation choices only. Please do not use any of 
     the features on this tab if you are happy with your current installation of 
-    '.WTG_C2P_PLUGINTITLE.'.','info','Small','');
+    '.$csv2post_plugintitle.'.','info','Small','');
     
     // going to exit here, this tab should never be loaded if the plugin is installed or was installed (it is for first time install only)
     exit;### TODO:HIGHPRIORITY, how does this effect the blog when it happens? it may need to be removed

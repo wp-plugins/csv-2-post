@@ -1,5 +1,5 @@
 <?php      
-global $csv2post_mpt_arr,$wpdb,$csv2post_options_array,$csv2post_nav_type,$csv2post_is_free,$csv2post_job_array,$csv2post_is_dev,$csv2post_dataimportjobs_array,$csv2post_jobtable_array;
+global $csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$csv2post_options_array,$csv2post_nav_type,$csv2post_is_free,$csv2post_job_array,$csv2post_is_dev,$csv2post_dataimportjobs_array,$csv2post_jobtable_array;
 $pageid = 'data';// used to access variable.php configuration
 $pagefolder = 'data';// the folder in pages folder holding this pages files
 
@@ -35,15 +35,16 @@ if($csv2post_nav_type == 'css'){
     $counttabs = 0;// used as tab id also
     foreach($csv2post_mpt_arr[$pageid]['tabs'] as $tab=>$values){
         
-        // chekc if tab is to be displayed, if not, we do not add the div for it    
-        if($csv2post_mpt_arr[ $pageid ]['tabs'][ $counttabs ]['display'] == true){
-            
+        // check if tab is to be displayed, if not, we do not add the div for it    
+        if($csv2post_mpt_arr[ $pageid ]['tabs'][ $counttabs ]['display'] == true && $csv2post_mpt_arr[$pageid]['tabs'][$counttabs]['active'] == true){
+        ### TODO:LOWPRIORITY, apply the ['active'] value to all menu build methods and to all page files like this one
+      
             // build form action value, will be appended
             //$csv2post_form_action = csv2post_link_toadmin('csv2post_yourdata','#tabs-' . $counttabs);            
             $csv2post_form_action = '';
             
-            echo '<div id="tabs-'.$counttabs.'">';
-            include(WTG_C2P_DIR.'pages/data/csv2post_tab'.$counttabs.'_pagedata.php');
+            echo '<div id="tabs-'.$counttabs.'">';                                                                                            
+            include($csv2post_mpt_arr[$pageid]['tabs'][$counttabs]['path']);    
             echo '</div>';        
         }
         

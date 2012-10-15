@@ -19,15 +19,20 @@ $jsform_set['noticebox_content'] = 'You are about to upload a CSV file, it will 
 <?php csv2post_panel_header( $panel_array );?>
   
     <h4><?php _e('Upload CSV File')?> <?php echo ini_get( "upload_max_filesize").'B Limit';?></h4>
-       <form method="post" enctype="multipart/form-data" name="uploadform" class="form-table">                
-           <input type="file" name="file" size="70" /><br /><br />
+   <form method="post" enctype="multipart/form-data" name="uploadform" class="form-table">                
+       <input type="file" name="file" size="70" /><br /><br />
 
-            <div class="jquerybutton">
-                <input class="button-primary" type="submit" value="Upload CSV File" name="eci_csvupload_submit" />
-            </div>  
-    <?php
-    // add the javascript that will handle our form action, prevent submission and display dialogue box
-    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);?>
+        <div class="jquerybutton">
+            <input class="button-primary" type="submit" value="Upload CSV File" name="eci_csvupload_submit" />
+        </div>
+          
+        <?php
+        // add the javascript that will handle our form action, prevent submission and display dialogue box
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        ?>
+        
+        <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">
+        
     </form>
 
     <?php csv2post_jquery_form_prompt($jsform_set);?>
@@ -57,9 +62,10 @@ $jsform_set['noticebox_content'] = 'Do you want to continue creating a new Data 
 action will not import data. You must begin data importing on the Import tab.</p>';
 // create nonce - done in csv2post_ajax_is_dataimportjobname_used
 $nonce = wp_create_nonce( "csv2post_referer_" . $panel_array['panel_name'] );
-// TODO: HIGHPRIORITY, when existing table is selected, display another form option to select the existing table
+// TODO: CRITICAL, display a warning if a file has spaces in it, this is not permitted it breaks interface
 // TODO: MEDIUMPRIORITY, setting to automatically enter and select options (use the best method per file i.e. if PEAR returns 1 field try fgetcsv)
 // TODO: HIGHPRIORITY, display warning if user selects and submits file without entering information, but still auto detect plus save profile
+// TODO: HIGHPRIORITY, remove the Ajax its annoying right now
 ?>
 
 <?php csv2post_panel_header( $panel_array );?>
@@ -122,20 +128,6 @@ $nonce = wp_create_nonce( "csv2post_referer_" . $panel_array['panel_name'] );
     <div id='<?php echo $jsform_set['form_id'];?>loading_jobnamechange'>Checking Job Name Please Wait 10 Seconds</div>                 
     <div id='<?php echo $jsform_set['form_id'];?>formstatus'></div>  
     <!-- jquery and ajax output end -->
-    
-    <h2>Select Table Setup</h2>
-    <p>            
-        <script>
-        $(function() {
-            $( "#csv2post_tabletype<?php echo $panel_array['panel_name'];?>" ).buttonset();
-        });
-        </script>
-
-        <div id="csv2post_tabletype<?php echo $panel_array['panel_name'];?>">
-            <input type="radio" id="csv2post_radio1<?php echo $panel_array['panel_name'];?>" name="radio" checked="checked" /><label for="csv2post_radio1<?php echo $panel_array['panel_name'];?>">New Table</label>
-            <input type="radio" id="csv2post_radio2<?php echo $panel_array['panel_name'];?>" name="radio" disabled="disabled" /><label for="csv2post_radio2<?php echo $panel_array['panel_name'];?>">Existing Table</label>
-        </div>
-    </p>
     
     <h2>Select CSV File/s</h2>
     <p><?php csv2post_display_csvfiles_fornewdataimportjob(); ?></p>

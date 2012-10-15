@@ -3,7 +3,7 @@
 $pageid = 'install';
 $pagefolder = 'install';
 
-global $csv2post_options_array,$csv2post_is_installed,$csv2post_adm_set,$csv2post_mpt_arr,$wpdb,$csv2post_apiservicestatus,$csv2post_is_subscribed,$csv2post_requirements_missing,$csv2post_apisession_array,$csv2post_nav_type,$csv2post_is_free;
+global $csv2post_file_profiles,$csv2post_options_array,$csv2post_is_installed,$csv2post_adm_set,$csv2post_mpt_arr,$wpdb,$csv2post_apiservicestatus,$csv2post_is_subscribed,$csv2post_requirements_missing,$csv2post_apisession_array,$csv2post_nav_type,$csv2post_is_free,$csv2post_plugintitle;
 
 // count number of panels, variable used as in code ID to pass to functions, not the TAB number users can see in url
 $panel_number = 0;  
@@ -61,9 +61,9 @@ if( $csv2post_is_installed == false ){// change to do a check on $csv2post_is_ac
                     // build form action value, will be appended
                     //$csv2post_form_action = csv2post_link_toadmin($_GET['page'],'#tabs-' . $counttabs);            
                     $csv2post_form_action = '';
-                
-                    echo '<div id="tabs-'.$counttabs.'">';
-                    include(WTG_C2P_DIR.'pages/'.$pagefolder.'/csv2post_tab'.$counttabs.'_install.php');
+                        
+                    echo '<div id="tabs-'.$counttabs.'">';                                                                                            
+                    include($csv2post_mpt_arr[$pageid]['tabs'][$counttabs]['path']);    
                     echo '</div>';
                 }
                          

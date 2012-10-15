@@ -1,4 +1,4 @@
-<?php
+<?php  
 /**
 * Deletes posts for one or more projects.
 * Updates project tables so that the data can easily be used again.
@@ -418,7 +418,8 @@ function csv2post_createfolder($path,$chmod = 0700){
 */
 function csv2post_delete_contentfolder($pathdir,$output = false){
     if(!is_dir($pathdir)){
-        csv2post_notice(WTG_C2P_PLUGINTITLE . ' could not locate the main content folder, it appears it
+        global $csv2post_plugintitle;
+        csv2post_notice($csv2post_plugintitle . ' could not locate the main content folder, it appears it
         may have already been deleted or moved.', 'warning', 'Extra');
         return false;
     }else{
@@ -909,5 +910,144 @@ function csv2post_is_csv2post_postprojecttable($table_name){
   
     return $all_required_columns_found;     
 }       
+
+/**
+* Admin Triggered Automation
+* This calls various functions to peform data import job or post creation project tasks. Events will 
+* be execute.
+* 1.Changes during this operation or new information since the user last logged in will also be displayed.
+* 2. Setting values do not need to exist, if they do not exist they are on by default, this is to reduce the need for configuration in order to get the plugins full ability in motion
+* 
+* @todo LOWPRIORITY, add more Admin Triggered Automation on the General Settings screen
+* 1. 
+*/
+function csv2post_admin_triggered_automation(){
+    global $csv2post_adm_set,$csv2post_file_profiles;
     
+    // new csv file check - cycle through all CSV files in-use by Data Import Jobs
+    // this will also create a profile in $csv2post_file_profiles if one does not exist for file
+    if(!isset($csv2post_adm_set['admintriggers']['newcsvfiles']['status']) || isset($csv2post_adm_set['admintriggers']['newcsvfiles']['status']) && $csv2post_adm_set['admintriggers']['newcsvfiles']['status'] == 1){
+        csv2post_admin_triggered_newcsvfilescheck();            
+    } 
+} 
+
+/**
+* Checks if any of the CSV files in use have been overwritten with a newer copy and takes action to trigger updates.
+* Check the $csv2post_adm_set['admintriggers']['newcsvfiles']['status'] before calling function.
+* 1. This is the first admin trigger function
+* 2. This is the only admin trigger function intended for free edition, it is a starting point for developers hacking free edition so thats good enough for now
+* 
+* @return boolean true if 1 file has a newer version, false on fault or no newer files found
+*/
+function csv2post_admin_triggered_newcsvfilescheck(){
+
+    global $csv2post_adm_set,$csv2post_job_array,$csv2post_file_profiles,$csv2post_dataimportjobs_array;
+
+    // ensure we have an array else we do nothing at all
+    if(!is_array($csv2post_dataimportjobs_array)){
+        return false;
+    }
+
+    // loop through all jobs so we can determine which files are in use        
+    foreach($csv2post_dataimportjobs_array as $key => $job){
+        
+        // get current job array using job key
+        $job_array = csv2post_get_dataimportjob($key);
+        
+        // ensure file array exists (just extra measures to avoid failures but this situation should never happen)
+        if(!isset($job_array['files'])){
+            ### TODO:MEDIUMPRIORITY, log this event
+            return false;    
+        }
+        
+        // loop through files and carry out date check to determine if file has changed since last checked
+        foreach($job_array['files'] as $filekey => $csvfile_name){
+            $file_exist_result = csv2post_files_does_csvfile_exist($csvfile_name);// returns boolean
+            if($file_exist_result){
+                 
+                // get files modified time for comparing to the modified time we have stored in files profile
+                $csvfile_currentmodified_time = csv2post_files_get_csvfile_filemtime($csvfile_name);
+                  
+                // does this file already have a profile? (if yes we get it else we set it)
+                /* if we adapt plugin to handle files in many paths the profiles array will need to use paths as key */
+                if(isset($csv2post_file_profiles[$csvfile_name]['currentmodtime'])){
+                    
+                    // does the files current modified time equal our stored modified time?
+                    if($csv2post_file_profiles[$csvfile_name]['currentmodtime'] != $csvfile_currentmodified_time){
+                         
+                        // use time in profile and time in newer file to get formatted date
+                        $csvfile_currentmodified_date = csv2post_date(0,csv2post_files_get_csvfile_filemtime($csvfile_name));
+                        $csvfile_profilemodified_date = csv2post_date(0,$csv2post_file_profiles[$csvfile_name]['currentmodtime']);                         
+
+                        // update file profile
+                        csv2post_files_update_fileprofile($csvfile_name);
+                        
+                        // update data import job array - reset progress counters so that Advanced Data Import can run (includes updating ability)
+                        $job_array["stats"]["allevents"]['progress'] = 0;
+                        $job_array['stats'][$csvfile_name]['progress'] = 0;
+                        $job_array['stats'][$csvfile_name]['lastrow'] = 0;  
+
+                        // display notice about a newer csv file being detected
+                        if($csv2post_adm_set['admintriggers']['newcsvfiles']['display'] == 1){
+                            csv2post_notice('An updated CSV file has been detected. Your file named
+                            <strong>'.$csvfile_name.'</strong> had a modified date of <strong>'.$csvfile_profilemodified_date.'</strong> and it is now 
+                            <strong>'.$csvfile_currentmodified_date.'</strong>. 
+                            <p>Your data import job named <strong>'.$job_array['name'].'</strong> (code:'.$key.') has been
+                            reset in-order to perform updating by re-importing the data from the newer file.</p>','success','Large','Updated CSV File Detected','','echo');        
+                        }                               
+                        
+                        // we will only do one file to avoid over processing during this event
+                        return true;
+                    }    
+                       
+                }else{
+                    
+                    // create profile for this file - this function will add everything the plugin requires
+                    csv2post_files_update_fileprofile($csvfile_name);
+                    
+                }      
+            }
+        }    
+    }
+    return false;
+}
+
+/**
+* Checks the wtgcsvimportercontent folder for CSV file.
+* Very basic function because we only use CSV files in one directory. 
+* 
+* @param mixed $csvfile
+* @returns the result of is_file() which is boolean
+*/
+function csv2post_files_does_csvfile_exist($csvfile_name){
+    return is_file(WTG_C2P_CONTENTFOLDER_DIR . '/' . $csvfile_name);     
+}
+
+/**
+* Gets the modified time of a CSV file in the plugins content folder
+* 
+* @param mixed $csvfile
+* @return bool
+*/
+function csv2post_files_get_csvfile_filemtime($csvfile_name){
+    return filemtime(WTG_C2P_CONTENTFOLDER_DIR . '/' . $csvfile_name);     
+} 
+
+/**
+* Adds a file and its meta data to the $csv2post_file_profiles array
+* or overwrites the existing data essentially updating the profile
+* 
+* @param mixed $csvfile_name
+*/
+function csv2post_files_update_fileprofile($csvfile_name){
+        
+    global $csv2post_file_profiles;
+    $csv2post_file_profiles[$csvfile_name]['profileupdated'] = time();
+    
+    //store current modified time (latest detected)
+    // this is also stored with imported records and job array. We can comparing the two dates using those two methods.
+    // this is important for when we are dealing with a specific record and data import job array no longer exists. 
+    $csv2post_file_profiles[$csvfile_name]['currentmodtime'] = csv2post_files_get_csvfile_filemtime($csvfile_name);
+    csv2post_update_option_fileprofiles($csv2post_file_profiles);
+}                         
 ?>

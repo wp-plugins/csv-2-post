@@ -30,7 +30,7 @@ $jsform_set['noticebox_content'] = 'This rule will replace the specified value i
 
     Select Data Column: 
     <select name="csv2post_datarule_replacevalue_column" id="csv2post_datarule_replacevalue_column" class="csv2post_multiselect_menu">
-        <?php csv2post_display_job_column_menuoptions($csv2post_currentjob_code);?>                                                                                                                     
+        <?php csv2post_display_jobs_csvfile_headers_menuoptions($csv2post_currentjob_code);?>                                                                                                                     
     </select>
     
     

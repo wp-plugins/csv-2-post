@@ -49,11 +49,11 @@ if($csv2post_nav_type == 'css'){
         if($csv2post_mpt_arr[ $pageid ]['tabs'][ $counttabs ]['display'] == true){
             
             // build form action value, will be appended
-            $csv2post_form_action = csv2post_link_toadmin($_GET['page'],'#tabs-' . $counttabs);            
+            $csv2post_form_action = csv2post_link_toadmin($_GET['page'],'#tabs-' . $counttabs);### TODO:HIGHPRIORITY,is this variable still in use? if not remove it from entire plugin            
             //$csv2post_form_action = '';
                       
-            echo '<div id="tabs-'.$counttabs.'">';
-            include(WTG_C2P_DIR.'pages/'.$pagefolder.'/csv2post_tab'.$counttabs.'_page'.$pageid.'.php');
+            echo '<div id="tabs-'.$counttabs.'">';                                                                                            
+            include($csv2post_mpt_arr[$pageid]['tabs'][$counttabs]['path']);    
             echo '</div>';
                      
         }

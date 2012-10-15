@@ -1,4 +1,32 @@
-<?php 
+<?php
+/**
+* Loads scripts
+* 
+* @param string $side, admin, public
+* @param mixed $csv2post_script_side_override, makes use of admin lines in front-end of blog 
+* 
+* @todo LOWPRIORITY, do we really need to have the csv2post_script_parent.php file? I think we can put its contents in this function
+*/
+function csv2post_script($side = 'admin',$csv2post_script_side_override = false){
+    global $csv2post_mpt_arr;### TODO: LOWPRIORITY, is this variable used in this function/files included in function?
+    include_once(WTG_C2P_DIR.'templatesystem/script/csv2post_script_parent.php');
+}
+
+/**
+* Loads CSS
+* 
+* @param string $side, admin, public
+* @param mixed $csv2post_css_side_override, makes use of admin lines in front-end of blog
+* 
+* Do csv2post_css('admin',true); to run the admin lines but also trigger use of them on public side
+* Do csv2post_css('public',true); to use both public and admin lines, must ensure there is no double uses
+* 
+* @todo LOWPRIORITY, do we really need to have the csv2post_css_parent.php file? I think we can put its contents in this function
+*/
+function csv2post_css($side = 'admin',$csv2post_css_side_override = false){        
+    include_once(WTG_C2P_DIR.'templatesystem/css/csv2post_css_parent.php');
+}
+ 
 /**
 * Enqueues scripts using Wordpress functions.
 * This is where new .js files should be added. 
@@ -69,6 +97,7 @@ function csv2post_print_admin_scripts() {
  * @todo re-enable warnings for none activated plugins is_plugin_inactive, do so when Notice Boxes have closure button
  */
 function csv2post_plugin_conflict_prevention(){
+    global $csv2post_plugintitle;
     // track critical conflicts, return the result and use to prevent installation
     // only change $conflict_found to true if the conflict is critical, if it only effects partial use
     // then allow installation but warn user
@@ -85,12 +114,12 @@ function csv2post_plugin_conflict_prevention(){
     $plugin_profiles[0]['title_active'] = 'Tweet My Post Conflict';
     $plugin_profiles[0]['message_active'] = __('On 16th August 2012 a critical and persistent conflict was found 
     between Tweet My Post 
-    and CSV 2 POST. It breaks the plugins dialogue boxes (jQuery UI Dialogue) while the plugin is active,
-    you may not be able to install CSV 2 POST due to this. After some searching we found many others to be having
+    and '.$csv2post_plugintitle.'. It breaks the plugins dialogue boxes (jQuery UI Dialogue) while the plugin is active,
+    you may not be able to install '.$csv2post_plugintitle.' due to this. After some searching we found many others to be having
     JavaScript related conflicts with this plugin, which the author responded too. Please ensure you have the latest
     version installed.
     The closest cause I found in terms of code was line 40 where a .js file (jquery-latest) is registered. This
-    file is not used in CSV 2 POST so at this time we are not sure why the conflict happens. Please let us know
+    file is not used in '.$csv2post_plugintitle.' so at this time we are not sure why the conflict happens. Please let us know
     if your urgently need this conflict fixed. We will investigate but due to the type of plugin, it is not urgent.
     Auto-tweeting is not recommended during auto blogging due to the risk of spamming Twitter. If you know the plugin
     well you can avoid spamming however and so let us know if this conflict is a problem for you.');
@@ -100,6 +129,7 @@ function csv2post_plugin_conflict_prevention(){
     $plugin_profiles[0]['criticalconflict'] = true;// true indicates that the conflict will happen if plugin active i.e. not specific settings only, simply being active has an effect
     
     // Wordpress HTTPS
+    /*
     $plugin_profiles[1]['switch'] = 1;//used to use or not use this profile, 0 is no and 1 is use
     $plugin_profiles[1]['title'] = 'Wordpress HTTPS';
     $plugin_profiles[1]['slug'] = 'wordpress-https/wordpress-https.php';
@@ -120,7 +150,8 @@ function csv2post_plugin_conflict_prevention(){
     $plugin_profiles[1]['message_inactive'] = __('message inactive');
     $plugin_profiles[1]['type'] = 'info';//passed to the message function to apply styling and set type of notice displayed
     $plugin_profiles[1]['criticalconflict'] = true;// true indicates that the conflict will happen if plugin active i.e. not specific settings only, simply being active has an effect
-
+    */
+    
     /*******  type values =  success,warning,error,question,processing,stop    *****/
                                   
     // loop through the profiles now
@@ -174,23 +205,42 @@ function csv2post_debugmode(){
 }
 
 /**
+* Formats number into currency, default is en_GB and no GBP i.e. not GBP145.50 just 145.50 is returned
+* 
+* @param mixed $s
+*/
+function csv2post_format_money($s){
+    setlocale(LC_MONETARY, 'en_GB');
+    return money_format('%!2n',$s) . "\n";        
+}
+
+/**
 * Compares plugins required minimum php version too the servers. 
 * Uses wp_die if version does not match and displays message 
 */
 function csv2post_php_version_check_wp_die(){
-    global $csv2post_php_version_minimum,$csv2post_currentversion;
+    global $csv2post_php_version_minimum,$csv2post_currentversion,$csv2post_plugintitle;
     if ( version_compare(PHP_VERSION, $csv2post_php_version_minimum, '<') ) {
         if ( is_admin() && (!defined('DOING_AJAX') || !DOING_AJAX) ) {
             require_once ABSPATH.'/wp-admin/includes/plugin.php';
             deactivate_plugins( 'csv-2-post' );
-            csv2post_notice('Wordpress 3.2.1 (or a later version) and '.WTG_C2P_PLUGINTITLE.' '.$csv2post_currentversion.' requires PHP '.$csv2post_php_version_minimum.' 
+            csv2post_notice('Wordpress 3.2.1 (or a later version) and '.$csv2post_plugintitle.' '.$csv2post_currentversion.' requires PHP '.$csv2post_php_version_minimum.' 
             or later to operate fully. Your PHP version was detected as '.PHP_VERSION.', it is recommended that you upgrade your PHP
             on your hosting for security and reliability. You can get suitable hosting here at <a href="http://www.webtechglobal.co.uk">WebTechGlobal Hosting</a> for
-            free simply for trying the plugin.','error','Extra','CSV 2 POST Requires PHP 5.3 Above','','echo');
+            free simply for trying the plugin.','error','Extra',$csv2post_plugintitle . ' Requires PHP 5.3 Above','','echo');
         }
     }
 }
 
+/**
+* Imports data from CSV file. This is the basic version of this function that does not perform data updating.
+* 
+* @param mixed $csvfile_name
+* @param mixed $table_name
+* @param mixed $target
+* @param mixed $jobcode
+* @return false
+*/
 function csv2post_data_import_from_csvfile_basic( $csvfile_name, $table_name, $target = 1, $jobcode ){
     
     global $wpdb;
@@ -247,18 +297,10 @@ function csv2post_data_import_from_csvfile_basic( $csvfile_name, $table_name, $t
         if($while_start > 1){
 
             if($while_start > $lastrow ){
-                     
-                // set $record_id too false, it will need to be an integer before row is updated too record (applies too single or multi file)
-                $record_id = false;
 
-                # This is where we could locate existing record id for updating events
-                                               
-                // if $record_id still false, default to creating a new record
-                if( $record_id === false ){ 
-                    $record_id = csv2post_query_insert_new_record( $table_name, $csvfile_modtime ); 
-                    ++$new_rows_processed;   
-                }
-                           
+                $record_id = csv2post_query_insert_new_record( $table_name, $csvfile_modtime ); 
+                ++$new_rows_processed;   
+       
                 /**
                 * UPDATE RATHER THAN INSERT
                 * 
@@ -513,19 +555,41 @@ function csv2post_test_csvfile_countfields_pearcsvpriority( $csvfile_name, $sepa
 * @param mixed $headers_array
 */
 function csv2post_sql_update_record_dataimportjob( $record, $csvfile_name, $fields, $jobcode,$record_id, $headers_array,$filegrouping ){
+    global $csv2post_plugintitle;
     // using new record id - update the record
     $updaterecord_result = csv2post_sql_update_record( $record, $csvfile_name, $fields, $jobcode,$record_id, $headers_array, $filegrouping );
     // increase $inserted counter if the update was a success, the full process counts as a new inserted record            
     if($updaterecord_result === false){
         return false;
-        csv2post_error_log('CSV 2 POST: csv2post_sql_update_record() returned FALSE for JOB:'.$jobcode.' FILE:'.$csvfile_name.'. Please investigate.');                
+        csv2post_error_log($csv2post_plugintitle . ': csv2post_sql_update_record() returned FALSE for JOB:'.$jobcode.' FILE:'.$csvfile_name.'. Please investigate.');                
     }elseif($updaterecord_result === 1){ 
         return true;   
     }elseif($updaterecord_result === 0){
-        csv2post_error_log('CSV 2 POST: csv2post_sql_update_record() returned 0 for JOB:'.$jobcode.' FILE:'.$csvfile_name.'. Please investigate.');
+        csv2post_error_log($csv2post_plugintitle . ': csv2post_sql_update_record() returned 0 for JOB:'.$jobcode.' FILE:'.$csvfile_name.'. Please investigate.');
         return false;
     }  
-}   
+} 
+
+/**
+* Establishes the key value from ['headers'] array in job_array for giving job code and CSV filename
+* 
+* @returns array key for giving header within giving filenames ['header'] array else returns false
+* @param string $header_name the CSV file column name
+* @param string $file_name name of CSV file the header name is for
+* @param string $job_code data import job code
+*/
+function csv2post_get_headers_key($header_name,$csvfile_name,$job_code){
+    // get job array
+    $job_array = csv2post_get_dataimportjob($job_code);
+    // loop through giving files headers
+    foreach($job_array[$csvfile_name]['headers'] as $key => $header){
+        if($header['original'] == $header_name){
+            return $key;
+        }
+    }    
+    
+    return false;
+} 
                 
 /**
 * Establishes the giving files ID within the giving job
@@ -543,25 +607,6 @@ function csv2post_get_csvfile_id($csvfile_name,$jobcode){
         }
     }
     return false;
-}
-
-/**
-* Loads scripts
-* 
-* @param string $side, admin, public
-*/
-function csv2post_script($side = 'admin'){
-    global $csv2post_mpt_arr;
-    include_once(WTG_C2P_DIR.'templatesystem/script/csv2post_script_parent.php');
-}
-
-/**
-* Loads CSS
-* 
-* @param string $side, admin, public
-*/
-function csv2post_css($side = 'admin'){
-    include_once(WTG_C2P_DIR.'templatesystem/css/csv2post_css_parent.php');
 }
 
 /**
@@ -844,52 +889,12 @@ function csv2post_get_tabnumber(){
 }     
 
 /**
- * Intercepts and processes form subsmission, requiring user to be logged in, adding further security 
- * to the blog within this plugin.
- */
-function csv2post_form_submission_processing(){  
-    if(is_user_logged_in()){
-
-        if(isset($_POST['csv2post_post_processing_required'])){
-            
-            // if csv2post_post_processing_required true 
-            if($_POST['csv2post_post_processing_required']){
-                
-                // has $_POST dump been request?
-                global $csv2post_debug_mode;// set in main file for development use only
-                if($csv2post_debug_mode){
-                    echo '<h1>$_POST</h1>';
-                    echo '<pre>';
-                    var_dump($_POST);
-                    echo '</pre>';            
-                    echo '<h1>$_GET</h1>';
-                    echo '<pre>';
-                    var_dump($_GET);
-                    echo '</pre>';                  
-                }
-                
-                // include file that handles $_POST submission
-                require_once(WTG_C2P_DIR.'templatesystem/include/csv2post_form_processing.php');                  
-            }
-        }
-
-    } 
-}
-
-/**
-* Updates the current project , calls project array globally 
-*/
-function csv2post_update_currentproject_array(){
-    
-}
-
-/**
 * Called when plugin is being activated in Wordpress.
 * I am avoiding anything actually being installed during this process. * 
 */
 function csv2post_register_activation_hook(){
     global $csv2post_isbeingactivated;
-    $csv2post_isbeingactivated = true;// used to avoid loading files not required during activation
+    $csv2post_isbeingactivated = true;// used to avoid loading files not required during activation (minimise errors during activation related to none activation related)
 }
 
 /**
@@ -943,6 +948,31 @@ function csv2post_templatefunction(){
 }
 
 /**
+* Drops a database table created for using with data import job.
+* Also updates the data import job tables array $csv2post_jobtable_array
+* 1. A check should be done prior to calling this function to determine if table is in use
+* 
+* @param mixed $table_name
+*/
+function csv2post_drop_dataimportjob_table($table_name){
+    global $wpdb,$csv2post_jobtable_array,$csv2post_dataimportjobs_array;
+    
+    ### TODO:LOWPRIORITY, put statement in here to handle failed DROP TABLE should user attempt to drop none existing tables
+    $wpdb->query( 'DROP TABLE '. $table_name );
+    
+    // remove table from $csv2post_jobtable_array
+    foreach($csv2post_jobtable_array as $key => $jobtable_name){
+        if($table_name == $jobtable_name){
+
+            unset($csv2post_jobtable_array[ $key ]);
+            csv2post_update_option_jobtables_array($csv2post_jobtable_array);
+            break;
+        }
+    }  
+                              
+}
+
+/**
  * Creates a new notification with a long list of style options available.
  * Can return the message for echo or add it to an array, which can also be stored for persistent messages.
  * Requires visitor to be logged in and on an admin page, dont need to do prevalidation before calling function
@@ -954,18 +984,26 @@ function csv2post_templatefunction(){
  * @param mixed $size, determines box size (Tiny,Small,Large,Extra)
  * @param mixed $title, a simple header
  * @param mixed $helpurl, when required can offer link too help content (will be added closer to 2013)
- * @param mixed $output_type, how to handle message (echo will add notice too $csv2post_notice_array and passing return will return the entire html)
+ * @param mixed $output_type (echo,return,public) 
  * @param mixed $persistent, boolean (true will mean the message stays until user deletes it manually)
  * 
+ * Output Types
+ * 1. echo - admin side only, adds notification to an array which is output in one place, allowing many notifications to be printed in a list
+ * 2. return - returns the html for doing as we want, usually we use echo to display notification in specific place
+ * 3. public - returns the html for use on front-end, bypasses is_admin() which exists as a safety measure to prevent admin information being displayed on front-end in error
+ * 
+ * @todo LOWPRIORITY, change $output_type to array, echo, public (with echo replacing return and array replacing echo)
  * @todo MEDIUMPRIORITY, when a notification is to be returned AND is persistent, it needs to be persistent where ever it is displayed, need to check if user has already closed notification by storing its ID in notification array
  * @todo LOWPRIORITY, provide permanent closure button, will this be done with a dialogue ID to prevent it opening again 
  * @todo LOWPRIORITY, add a paragraphed section of the message for a second $message variable for extra information
  * @todo MEDIUMPRIORITY, allow shorter $size and $type values plus change $size to lowercase in code and in styling, just makes it a bit easier to avoid making mistake
  * @todo MEDIUMPRIORITY, allow optional settings array, can we do this and have the existing parameters in place?
  * @todo HIGHPRIORITY, change the arrow to a "Help" button and also add "Go To" button, also add local url parameter to display both Help and Go To buttons on a notification. Scrap the Next Step approach, it does not allow for highly custom html once link is applied
+ * @todo LOWPRIORITY, create options for creating lists of notifications with numbered icons or CSS styled numbers
  */
 function csv2post_notice($message,$type = 'success',$size = 'Extra',$title = false, $helpurl = 'www.csv2post.com/support', $output_type = 'echo',$persistent = false,$clickable = false){
-    if(is_admin()){
+    
+    if(is_admin() || $output_type == 'public'){
         
         // change unexpected values into expected values (for flexability and to help avoid fault)
         if($type == 'accepted'){$type == 'success';}
@@ -974,8 +1012,8 @@ function csv2post_notice($message,$type = 'success',$size = 'Extra',$title = fal
         
         // prevent div being clickable if help url giving (we need to more than one link in the message)
         if($helpurl != false && $helpurl != '' && $helpurl != 'www.csv2post.com/support'){$clickable = false;}
-            
-        if($output_type == 'return'){
+                                 
+        if($output_type == 'return' || $output_type == 'public'){   
             return csv2post_notice_display($type,$helpurl,$size,$title,$message,$clickable,$persistent);
         }else{
             global $csv2post_notice_array;
@@ -1017,7 +1055,7 @@ function csv2post_notice($message,$type = 'success',$size = 'Extra',$title = fal
 function csv2post_notice_display($type,$helpurl,$size,$title,$message,$clickable,$persistent = false){
     // begin building output
     $output = '';
-
+               
     // if clickable (only allowed when no other links being used) - $helpurl will actually be a local url too another plugin or Wordpress page
     if($clickable && !$persistent){
         $output .= '<div class="stepLargeTest"><a href="'.$helpurl.'">';
@@ -1181,6 +1219,19 @@ function csv2post_formstart_standard($name,$id = 'none', $method = 'post',$class
 }
 
 /**
+ * jQuery script for styling button with roll over effect
+ * @see function csv2post_header_page()
+ */
+function csv2post_jquery_button(){?>
+    <script>
+        $(function() {
+            $( "button, input:submit, a", ".jquerybutton" ).button();
+            $( "a", ".jquerybutton" ).click(function() { return false; });
+        });
+    </script><?php
+}
+
+/**
  * Adds <button> with jquerybutton class and </form>, for using after a function that outputs a form
  * Add all parameteres or add none for defaults
  * @param string $buttontitle
@@ -1322,15 +1373,19 @@ function csv2post_log($atts){
         }// if write to log or not
     }// is history file active
 }
-
+            
 /**
-* Returns the plugins standard date with common format used in code, not seen by user in most cases
+* Returns the plugins standard date with common format used in code, not seen by user in most cases.
+* Optional $time parameter, if false will return the current time().
 * 
 * @param integer $timeaddition, number of seconds to add to the current time to create a future date and time
+* @param integer $time optional parameter, by default causes current time() to be used
 * @todo adapt this to return various date formats to suit interface
 */
-function csv2post_date($timeaddition = 0){
-    return date('Y-m-d H:i:s',time()+$timeaddition);    
+function csv2post_date($timeaddition = 0,$time = false){
+    $thetime = time();
+    if($time != false){$thetime = $time;}
+    return date('Y-m-d H:i:s',$thetime + $timeaddition);    
 } 
 
 /**
@@ -1564,6 +1619,31 @@ function csv2post_update_option_postcreationproject_list_newproject($project_cod
 }
 
 /**
+* Gets the $csv2post_file_profiles array which holds details relating to any entered file. 
+* 2012 uses CSV files only, but at some stage we may use this array for other files. 
+* The data is used to track changes and apply behaviours using settings.
+* 1. Creates the option with a serialized array as value if it does not already exist 
+*/
+function csv2post_get_option_fileprofiles(){
+    $file_profiles_array = get_option('csv2post_file_profiles');
+    $val = maybe_unserialize($file_profiles_array);
+    if(!is_array($val)){
+        update_option('csv2post_file_profiles',maybe_serialize(array()));
+        return array();
+    }
+    return $val;            
+}
+
+/**
+* Update csv file profile array
+* 
+* @param mixed $file_profiles_array
+*/
+function csv2post_update_option_fileprofiles($file_profiles_array){
+    update_option('csv2post_file_profiles',maybe_serialize($file_profiles_array));           
+}
+
+/**
 * Returns array of all existing projects, used to create a list of projects
 * @returns false if no option for csv2post_projectslist exists else returns unserialized array 
 */
@@ -1589,6 +1669,20 @@ function csv2post_get_array_lastkey($array){
     end($array);
     return key($array);
 }
+
+/**
+* Get arrays next key (only works with numeric key)
+*/
+function csv2post_get_array_nextkey($array){
+    if(!is_array($array)){
+        ### TODO:CRITICAL,log this issue,a bug has been reported with it. 
+        return 1;   
+    }
+    
+    ksort($array);
+    end($array);
+    return key($array) + 1;
+} 
 
 /**
 * Gets the schedule array from wordpress option table.
@@ -1621,8 +1715,8 @@ function csv2post_update_option_notifications_array($notifications_array){
     return update_option('csv2post_notifications',$notifications_array_serialized);    
 }
 
-function csv2post_update_option_adminsettings($admin_settings_array){
-    $admin_settings_array_serialized = maybe_serialize($admin_settings_array);
+function csv2post_update_option_adminsettings($csv2post_adm_set){
+    $admin_settings_array_serialized = maybe_serialize($csv2post_adm_set);
     return update_option('csv2post_adminset',$admin_settings_array_serialized);    
 }
 
@@ -1757,6 +1851,7 @@ function csv2post_save_dataimportjob($jobarray,$code){
 * @param mixed $jobarray
 * @param mixed $code
 * @return boolean,
+* @todo rename function too csv2post_update_option_dataimportjob() and replace then remove csv2post_save_dataimportjob($jobarray,$code)
 */
 function csv2post_update_dataimportjob($jobarray,$code){
     return csv2post_save_dataimportjob($jobarray,$code);
@@ -1766,7 +1861,7 @@ function csv2post_update_dataimportjob($jobarray,$code){
 * Gets and unserializes public settings array (publicset) 
 */
 function csv2post_get_option_publicset(){
-    return unserialize(get_option('csv2post_publicset'));
+    return maybe_unserialize(get_option('csv2post_publicset'));
 }
 
 /**
@@ -1820,6 +1915,7 @@ function csv2post_truncatestring( $string, $max_length ){
 
 /**
 * Checks if DOING_AJAX is set, indicating header is loaded for ajax request only
+* @link http://www.csv2post.com/troubleshooting-tips/no-scheduled-events-during-ajax-requests
 * @return boolean true if Ajax request ongoing else false        
 */
 function csv2post_DOING_AJAX(){
@@ -1848,20 +1944,6 @@ function csv2post_establish_csvfile_fieldnumber($csvfile_name,$separator){
     $header_array = explode($separator,$header_row_string);// explode the header row 
     return count( $header_array );// count number of values in array    
 }     
-
-/**
-* Get arrays next key (only works with numeric key)
-*/
-function csv2post_get_array_nextkey($array){
-    if(!is_array($array)){
-        ### TODO:CRITICAL,log this issue,a bug has been reported with it. 
-        return 1;   
-    }
-    
-    ksort($array);
-    end($array);
-    return key($array) + 1;
-} 
 
 /**
 * Returns a project table, either the already set [main] table or the first one in the list as default 
@@ -1947,4 +2029,42 @@ function csv2post_flag_post($post_ID,$priority,$type,$reason){
     $testarray['type'] = 'updatefailure';
     add_post_meta($post_ID,'_csv2post_flagged',$testarray,false);   
 }
+
+/**
+* Checks if the giving value already exists in the giving CSV files ID column. This is really only
+* meant for using with the premium edition and in advanced data import functions.
+* 
+* @param mixed $csvfile_name
+* @param mixed $table_name
+* @param mixed $jobcode
+* @return false if no record found so that the using script knows to create a new record and not update existing one
+*/
+function csv2post_sql_query_rowid_exists($sql_adapted, $table_name, $row_id_value){
+    global $wpdb;
+    
+    $r = $wpdb->get_row("SELECT ".$sql_adapted." FROM ".$table_name." WHERE ".$sql_adapted." = '".$row_id_value."'");
+    
+    if ($r != null) {
+        return $r->productid;
+    } else {
+        return false;
+    }
+    
+    return false;  
+}
+
+/**
+* All data values read from CSV files goes through this function before being imported to database.
+* Use this function to apply any other functions 
+* 1. CSV file headers are not put through this function, if that is ever needed we should either create another function or add optional parameter on this one
+*/
+function csv2post_data_prep_fromcsvfile($value){
+    
+    // if utf8_encode() wanted
+    if(isset($csv2post_adm_set['encoding']['type']) && $csv2post_adm_set['encoding']['type'] == 'utf8'){
+        $value = utf8_encode($value);    
+    }     
+    
+    return $value;  
+} 
 ?>

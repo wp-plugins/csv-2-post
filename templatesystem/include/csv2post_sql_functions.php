@@ -270,13 +270,15 @@ function csv2post_sql_update_record( $row, $csvfile_name, $column_total, $jobcod
     $set = ' SET csv2post_imported = NOW(),csv2post_updated = NOW(),csv2post_filedone'.$file_id.' = 1';
     
     // start where part of query
-    $where = ' WHERE csv2post_id = ' . $record_id;
+    $where = ' WHERE csv2post_id = "' . $record_id .'"';
     
     // count how many keys are used
     $keysused = 0;      
                      
     foreach( $header_array as $header_key => $header ){
-      
+
+        $row[$col] = csv2post_data_prep_fromcsvfile($row[$col]);
+        
         $set .= ',';
         
         // use different sql column if multiple file (sql_adapted has an appended number to avoid columns with shared names conflicting)
@@ -386,6 +388,7 @@ function csv2post_create_dataimportjob_table($jobcode,$job_file_group,$maintable
     }
         
     // end of table
+    ### TODO:CRITICAL, create setting for user to configure CHARSET
     $table .= "PRIMARY KEY  (`csv2post_id`)
     ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Table created by CSV 2 POST';";
     
@@ -402,7 +405,6 @@ function csv2post_create_dataimportjob_table($jobcode,$job_file_group,$maintable
         return false;
     }        
 }
-
 
 /**
  * Returns a cleaned string so that it is suitable to be used as an SQL column name
@@ -437,11 +439,10 @@ function csv2post_sql_get_tables(){
 /**
 * Returns an array holding the column names for the giving table
 * 
-* @param mixed $t, table name
-* @param boolean $return_array, passing true causes array to be built and returned instead of mysql_query resource
-* @return false if query returns false, returns array of results if array requested, returns a resource directly from mysql_query by default
-* @param boolean
-*  $columns_only
+* @param mixed $t
+* @param mixed $return_array false returns mysql result and true returns an array of the result
+* @param mixed $columns_only for use when returning array only and true will return only column names not other information mysql returns in the query
+* @return array or mysql result or false on failure
 */
 function csv2post_sql_get_tablecolumns($t,$return_array = false,$columns_only = false){
     global $wpdb;
@@ -554,5 +555,63 @@ function csv2post_sql_reset_project_record($post_ID,$table_name){
     if(isset($post_ID) && isset($table_name)){
         $wpdb->query('UPDATE ' . $table_name .' SET csv2post_postid = 0 WHERE csv2post_postid = '.$post_ID);
     }        
+}
+
+/**
+* Create a string of data values extracted from a query result record, using a string of the columns queried.
+* This can be used when querying one table and putting the resulting data into another table using INSERT.
+* 
+* @param string $columns comma separated column names (must be in the $record object)
+* @param array $record
+*/
+function csv2post_sql_columnstring_to_valuestring($columns,$record){
+
+    // split column string into array
+    $column_array = explode(',',$columns);
+
+    $value_string = '';
+    
+    $comma = false;
+    
+    foreach($column_array as $key => $column){
+        
+        if($comma == true){
+            $value_string .= ',';
+        }
+
+        $value_string .= "'".$record->$column."'";    
+
+        $comma = true;
+    }
+    
+    return $value_string;
+}
+
+/**
+* Creates the string after SET in an UPDATE query.
+* 
+* @param array $rec
+* @param array $source_columns_array
+* @param array $dest_columns_array
+*/
+function csv2post_sql_create_updateset_string($record,$source_columns_array,$dest_columns_array){
+    
+    $set_string = '';
+    
+    $comma = false;
+
+    // loop through source columns
+    foreach($dest_columns_array as $key => $d_col){
+
+        if($comma == true){
+            $set_string .= ', ';
+        }
+
+        $set_string .= $d_col . "= '".$record->$source_columns_array[$key]."'";
+        
+        $comma = true;    
+    }
+
+    return $set_string;
 }
 ?>

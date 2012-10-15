@@ -98,6 +98,72 @@ first plugin was created in 2009 and was halted pending re-development.
 6. You can use up to 3 columns of data to create 3 levels of categories.
  
 == Changelog ==
+= 6.7.0 =
+* Public Messages
+    * Status page may temporary show as CSV 2 POST Install.
+    * This versions changes are very technical. A lot of new functions have been added for two new systems; Table to Table data transfer and Extension (like modules) system 
+* Fixes
+    * Warning on csv2post_tab1_pagedata.php on line 152 fixed
+    * Warning on csv2post_tab8_pagedata.php on line 13 fixed 
+    * Added missing echo in csv2post_menu_csvfiles() function
+    * Basic SEO panel was not saving (somehow the function handling the form submission had been deleted!)
+    * Updating a single post using the post ID would fail in some circumstances
+* General Changes
+    * Manual post update using post ID: improvements made which do more checks to ensure project is in ready state and csv2post_sql_get_posts_record() improved, fixing a bug.
+    * Encoding Settings panel added to the General Settings screen (testing only for now)
+    * General Settings tab is displayed again on the Main page
+    * New Schedule Settings tab on the Main page and panels moved from Schedule screen on Creation page to this new one (Main page focusing on initial setup as many users are missing these options)
+    * Extension panel added to the General Settings screen, one setting allowing us to disable/enable use extensions 
+    * Advanced Import Screen: options to continue initial import or reset progress counters to force manual updating
+    * New tab added to Your Data page named Table to Table, it is used to transfer data from one table to another. The interface allows us to pair columns between the two tables.
+    * Select Table Setup on the Create Data Import Jobs panel removed, this will be handled in another way. All data import jobs will begin with a new table and a transfer from that table to another table will take place. The tools to do that will come after the Data Import Job is setup.
+    * Help URL values removed from menu array in csv2post_variables_tabmenu_array.php to make the array smaller
+    * csv2post.php is more organised, planning to reduce number of variables in use slightly and number of core files
+    * Function for building menu is more dynamic, now loops through menu array, this is a required change for extension ability
+    * Extension system built into the plugin, a template extension will be provided later (extensions re-configure plugins menus and can display custom screens while hiding other CSV 2 POST screens)
+    * New screen on Main page named Configuration Settings, settings that change how the plugin operates i.e. allow extensions or not
+    * Server Status screen has new panel displaying Wordpress configuration values, the first shown are Blog and Database charset (first change towards preparing better encoding options)
+    * New panel on General Settings named Admin Triggered Automation: the ability to perform actions while working on the plugins pages. The first ability is checking CSV files for updates which will happen constantly when active and while logged in. The purpose of this is to force events while we are actually working with the plugin which makes it easier to test everything. The theory is, if it works while logged in, it will work while logged out and will be triggered by the schedule system.
+* Support Changes
+    * No website support changes (ticket system,download area and more planned) 
+* Technical Information
+    * Function csv2post_include_form_processing_php() now requires user to be logged in and $_POST['csv2post_post_processing_required'] to be set. It includes csv2post_form_processing.php which is admin side only. Public side $_POST processing is done using approaches specific to the form submitted.
+    * Variable used to skip form processing functions ($cont) moved out of csv2post_form_processing.php to the csv2post_core_functions.php file inside csv2post_include_form_processing_php() function.
+    * initialise core admin only variables moved outside of the is_admin() argument for ease of access by custom extensions
+    * WTG_C2P_PLUGINTITLE constant changed to a variable
+    * csv2post_load_templatesystem_constants.php is being removed from package, contents moved to csv2post.php
+    * Two different functions with the same purpose: csv2post_form_submission_processing() deleted, csv2post_include_form_processing_php() is the one in use
+    * Tab menu array option is no longer in the option record array, this avoids problems when user deletes menu array in order to reset it
+    * Removed $record_id variable and related argument from csv2post_data_import_from_csvfile_basic() as it is meant for the advanced version of this function
+    * csv2post_get_option_publicset(): function unserialize() changed to maybe_unserialize()
+    * csv2post_menu_tablecolumns(): new $id parameter added to facilitate use of the function in csv2post_tabletotable_list_column_menus() where a list of menus is created
+    * ['active'] value in $csv2post_mpt_arr for screens is now coming into use, use it to disable screens (hides the tab also)
+    * Removed csv2post_update_currentproject_array() function, it is empty and not in use
+    * New folder added named "wtgcore", we are starting a library of Wordpress suitable functions for all of our plugins (we have many planned for the next few years but focusing on building foundations right now)
+    * Removed ['name'] value from tab menu array, it was never used
+    * We can now name screen files something unique i.e. "csv2post_schedulesettings.php" rather than csv2post_tab4_creation.php
+    * Tab Menu Array: the ['active'] feature is now in use for all pages and csv2post_admin_menu() adapted for it
+    * csv2post_date() can now be used to return a giving time value as formatted date
+    * Tab Menu: a big change to the tab menu array $csv2post_mpt_arr. All tabs now have the ['path'] value and it is always used. We can use it to point to any file on the server. This approach initially came about in our first extension.
+    * csv2post_data_prep() function added to csv2post_sql_update_record(), all imported data will go through csv2post_data_prep()
+    
+= 6.6.9 =
+* Public Messages
+    * I work on the plugin daily but right now I'm so busy I cannot reply to every email straight away. I do read them and feedback is noted. 
+* Bug Fixes
+    * None
+* General Improvements
+    * Remove Re-Install panel, Un-install panel must be used then standard Install
+    * Graphics removed from Un-install panel, related functions and JavaScript also removed
+    * Un-install panel now allows every change made to be un-installed (database tables, option records, folders, CSV files)
+    * New Partial Un-Install panel lists all individual elements for removal
+* Key Technical Improvements
+    * csv2post_drop_dataimportjob_table() now in use for deleting tables on both Un-Install panel and Your Data page
+* Known Issues
+    * None
+* Web Services, Support and Websites changes
+    * None
+    
 = 6.6.8 =
 * Public Messages
     * Thanks to everyone for all their help testing our new plugin. The bugs found are critical so another swift update.

@@ -1,103 +1,5 @@
 <?php
 /**
- * Checks if plugin has been installed before (not security and not indication of full existing installation)
- */
-function csv2post_was_installed(){
-    global $csv2post_options_array,$csv2post_templatesystem_files;
-    
-    $result = false;
-    
-    if(isset($csv2post_options_array) && is_array($csv2post_options_array)){
-        // check possible option records
-        foreach($csv2post_options_array as $id => $optionrecord){
-     
-            // avoid checking tab menu as that is added to blow on Wordpress plugin activation, we do not want to use it as an indication of install
-            if($id != WTG_C2P_ABB.'tabmenu' 
-            && $id != WTG_C2P_ABB.'installedversion' 
-            && $id != WTG_C2P_ABB.'installeddate' 
-            && $id != WTG_C2P_ABB.'activationdate'){
-                                        
-                $currentresult = get_option($id);    
-
-                // change return switch too false if option not found
-                if(isset($currentresult) && $currentresult != null){
-
-                    // we return on first detection of previous installation to avoid going through entire loop
-                    return true;    
-                }
-            }
-        } 
-        
-        return $result; 
-    }
-     
-    return $result;
-}
-
-/**
-* NOT YET IN USE - WILL CHECK IF PLUGIN HAS BEEN ACTIVATED WITH SECURITY VIA SERVER
-* Determines if the plugin is activated and validates credentials to ensure ongoing use.
-* Once done, less SOAP calls will be required and the aim is to reduce traffic.
-*/
-function csv2post_is_activated(){ 
-   global $csv2post_activationcode;
-   return false;
-}
-
-/**
-* Checks if plugin IS FULLY INSTALLED (all required options arrays,folders,path files etc)
-* Another function and variable establishes if the plugin WAS installed in the past by finding a trace
-* 
-* @see csv2post_variables_admin.php
-* 
-* @todo HIGHPRIORITY, ensure this function only runs when admin logged in
-*/
-function csv2post_is_installed(){
-    
-    global $csv2post_options_array;
-       
-    if(!isset($csv2post_options_array) || !is_array($csv2post_options_array)){
-        ### TODO:HIGHPRIORITY, log this event
-        return false;
-    }
-    
-    // currently this value is returned, if changed too false
-    $returnresult = true;
-    $failcause = 'Not Known';// only used for debugging to determine what causes indication of not fully installed
-    
-    // function only returns boolean but if required we will add results array too the log
-    $is_installed_result = array();
-    $is_installed_result['finalresult'] = false;
-    $is_installed_result['options'] = null;
-                
-    foreach($csv2post_options_array as $id => $optionrecord){
-            
-        if($optionrecord['required'] == true){
-                    
-            $currentresult = get_option($id);    
-            
-            $is_installed_result['options'][$id]['result'] = $currentresult;
-                        
-            // change return switch too false if option not found
-            if($currentresult == false || $currentresult == null){   
-                $returnresult = false;
-                $failcause = 'Option RecordMissing:'.$id;    
-            }
-        } 
-    }
-
-    // check plugins required files but do not display message, we only want a true or false outcome
-    $templatefiles_result = csv2post_templatefiles_missing(false);
-    if($templatefiles_result){         
-        // a template file is missing, user will find more info on status screen
-        $returnresult = false;
-        $failcause = 'Core File Missing';        
-    }
-
-    return $returnresult;
-}      
-
-/**
  * Installs everything for the first time only (deletes any previous trace to ensure a first time install procedure)
  * 
  * @return array $install_result_array (holds option key or table name with outcome of the installation attempt for each
@@ -118,9 +20,9 @@ function csv2post_install(){
     // clean up existing installation to prevent conflict
     csv2post_uninstall();
 
-    update_option(WTG_C2P_ABB . 'installedversion',$csv2post_currentversion);
-    update_option(WTG_C2P_ABB . 'installeddate',time());
-    add_option(WTG_C2P_ABB . 'activationdate',time());// track original first use on current blog
+    update_option('csv2post_installedversion',$csv2post_currentversion);
+    update_option('csv2post_installeddate',time());
+    add_option('csv2post_activationdate',time());// track original first use on current blog
         
     // install admin only settings
     if(!add_option(WTG_C2P_ABB.'adminset',serialize($csv2post_adm_set))){
@@ -221,14 +123,19 @@ function csv2post_install(){
     }
         
     // update switches
-    update_option(WTG_C2P_ABB . 'is_installed',true);
-    update_option(WTG_C2P_ABB . 'was_installed',true); 
-    update_option(WTG_C2P_ABB . 'installeddate',time());
-    update_option(WTG_C2P_ABB . 'installedversion',$csv2post_currentversion);
+    update_option('csv2post_is_installed',true);
+    update_option('csv2post_was_installed',true); 
+    update_option('csv2post_installeddate',time());
+    update_option('csv2post_installedversion',$csv2post_currentversion);
            
     // create or confirm content folder for storing main uploads - false means no folder wanted, otherwise a valid path is expected
     if( defined("WTG_C2P_CONTENTFOLDER_DIR")){$overall_install_result = csv2post_install_contentfolder(WTG_C2P_CONTENTFOLDER_DIR);}
 
+    // if extension defined run extension installation functions    
+    if(defined("WTG_C2P_EXT")){  
+        csv2post_install_extension();
+    }
+                
     // if there were too many minor fails, the installation is a failure
     if($minor_fails > 2){
         $overall_install_result = false;
@@ -244,6 +151,106 @@ function csv2post_install(){
     return $overall_install_result;
 }
 
+/**
+ * Checks if plugin has been installed before (not security and not indication of full existing installation)
+ */
+function csv2post_was_installed(){
+    global $csv2post_options_array,$csv2post_templatesystem_files;
+    
+    $result = false;
+    
+    if(isset($csv2post_options_array) && is_array($csv2post_options_array)){
+        // check possible option records
+        foreach($csv2post_options_array as $id => $optionrecord){
+     
+            // avoid checking tab menu as that is added to blow on Wordpress plugin activation, we do not want to use it as an indication of install
+            if($id != WTG_C2P_ABB.'tabmenu' 
+            && $id != WTG_C2P_ABB.'installedversion' 
+            && $id != WTG_C2P_ABB.'installeddate' 
+            && $id != WTG_C2P_ABB.'activationdate'){
+                                        
+                $currentresult = get_option($id);    
+
+                // change return switch too false if option not found
+                if(isset($currentresult) && $currentresult != null){
+
+                    // we return on first detection of previous installation to avoid going through entire loop
+                    return true;    
+                }
+            }
+        } 
+        
+        return $result; 
+    }
+     
+    return $result;
+}
+
+### TODO:MEDIUMPRIORITY, move install functions to the core file and test, delete install_functions file
+
+/**
+* NOT YET IN USE - WILL CHECK IF PLUGIN HAS BEEN ACTIVATED WITH SECURITY VIA SERVER
+* Determines if the plugin is activated and validates credentials to ensure ongoing use.
+* Once done, less SOAP calls will be required and the aim is to reduce traffic.
+*/
+function csv2post_is_activated(){ 
+   global $csv2post_activationcode;
+   return false;
+}
+
+/**
+* Checks if plugin IS FULLY INSTALLED (all required options arrays,folders,path files etc)
+* Another function and variable establishes if the plugin WAS installed in the past by finding a trace
+* 
+* @see csv2post_variables_admin.php
+* 
+* @todo HIGHPRIORITY, ensure this function only runs when admin logged in
+*/
+function csv2post_is_installed(){
+    
+    global $csv2post_options_array;
+       
+    if(!isset($csv2post_options_array) || !is_array($csv2post_options_array)){
+        ### TODO:HIGHPRIORITY, log this event
+        return false;
+    }
+    
+    // currently this value is returned, if changed too false
+    $returnresult = true;
+    $failcause = 'Not Known';// only used for debugging to determine what causes indication of not fully installed
+    
+    // function only returns boolean but if required we will add results array too the log
+    $is_installed_result = array();
+    $is_installed_result['finalresult'] = false;
+    $is_installed_result['options'] = null;
+                
+    foreach($csv2post_options_array as $id => $optionrecord){
+            
+        if($optionrecord['required'] == true){
+                    
+            $currentresult = get_option($id);    
+            
+            $is_installed_result['options'][$id]['result'] = $currentresult;
+                        
+            // change return switch too false if option not found
+            if($currentresult == false || $currentresult == null){   
+                $returnresult = false;
+                $failcause = 'Option RecordMissing:'.$id;    
+            }
+        } 
+    }
+
+    // check plugins required files but do not display message, we only want a true or false outcome
+    $templatefiles_result = csv2post_templatefiles_missing(false);
+    if($templatefiles_result){         
+        // a template file is missing, user will find more info on status screen
+        $returnresult = false;
+        $failcause = 'Core File Missing';        
+    }
+
+    return $returnresult;
+}      
+
 /*
  * Removes the plugins main wp-content folder, used in csv2post_install() for failed install
  * @todo function to be complete
@@ -253,13 +260,8 @@ function csv2post_remove_contentfolder(){
 }
 
 /**
- * Uninstall most options, database tables, files etc
- * Does not remove permanent options left to track plugin version, installation issues or other data that
- * may be critical to future use of the plugin on the same blog
- * 
- * Leaves the single value options to control installation status for re-install actions or temporary un-install
- * 
- * @todo LOWPRIORITY, uninstallation needs to be revised totally, provide more options to uninstall more elements
+ * NOT IN USE
+ * @todo LOWPRIORITY, make this function perform a 100% uninstallation including CSV files, tables, option records the whole lot. This should be offered clearly as a destructive process for anyone who wants to continue using the plugin.
  */
 function csv2post_uninstall(){
     $uninstall_outcome = true;

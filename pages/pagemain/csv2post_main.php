@@ -1,11 +1,12 @@
 <?php 
-global $csv2post_mpt_arr,$wpdb,$wtgtp_pluginforum,$wtgtp_pluginblog,$csv2post_options_array,$csv2post_nav_type,$csv2post_is_free,$csv2post_theme_array;
+global $csv2post_adm_set,$csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$wtgtp_pluginforum,$wtgtp_pluginblog,$csv2post_options_array,$csv2post_nav_type,$csv2post_is_free,$csv2post_theme_array,$csv2post_projectslist_array,$csv2post_schedule_array;
+
 $pageid = 'main';// used to access variable.php configuration
 $pagefolder = 'pagemain';
 
 // main page header
 csv2post_header_page($csv2post_mpt_arr[$pageid]['title'],0);
-          
+            
 // create tab menu for the giving page
 csv2post_createmenu($pageid);
 
@@ -39,11 +40,11 @@ if($csv2post_nav_type == 'css'){
             // build form action value, will be appended
             //$csv2post_form_action = csv2post_link_toadmin($_GET['page'],'#tabs-' . $counttabs);            
             $csv2post_form_action = '';
-                        
-            echo '<div id="tabs-'.$counttabs.'">';
-            include(WTG_C2P_DIR.'pages/'.$pagefolder.'/'.WTG_C2P_ABB.'tab'.$counttabs.'_'.$pageid.'.php');
+ 
+            echo '<div id="tabs-'.$counttabs.'">';                                                                                            
+            include($csv2post_mpt_arr[$pageid]['tabs'][$counttabs]['path']);    
             echo '</div>';
-                     
+            
         }
         
         ++$counttabs;

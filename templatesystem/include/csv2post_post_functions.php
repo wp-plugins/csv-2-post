@@ -149,7 +149,6 @@ function csv2post_create_posts_basic($project_code,$request_method){
          
         // set post type (function uses post type rules if any else defaults)
         $my_post['post_type'] = csv2post_establish_posttype($project_array,$record_array);
-        
         $my_post['post_date'] =  date("Y-m-d H:i:s", time());
         $my_post['post_date_gmt'] = gmdate("Y-m-d H:i:s", time());
                 

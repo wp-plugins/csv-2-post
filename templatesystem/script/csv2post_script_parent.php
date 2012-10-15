@@ -18,19 +18,6 @@ if($side == 'admin'){
     require_once('csv2post_script_admin_jqueryui.php');
    
     /**
-     * jQuery script for styling button with roll over effect
-     * @see function csv2post_header_page()
-     */
-    function csv2post_jquery_button(){?>
-        <script>
-            $(function() {
-                $( "button, input:submit, a", ".jquerybutton" ).button();
-                $( "a", ".jquerybutton" ).click(function() { return false; });
-            });
-        </script><?php
-    }
-
-    /**
      * Required for help button, displays dialogue box (no buttons included inside box)
      * Called in csvip_helpbutton
      * @param integer or string $id (usually the total of number of uses of the help button already)

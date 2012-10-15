@@ -1,16 +1,26 @@
-<?php
-echo csv2post_notice('Still under construction, for testing only.','warning','Small','','','return');
+<?php 
+/*
+echo csv2post_notice('This is screen allows us to not only carry out an initial data import but we can also
+update our data with it. Use this screen instead of the Basic Import screen if you plan to run updates. It allows 
+us to select an ID column so that a relationship exists between CSV file rows and existing database records. There is
+no other way to update data, sometime of unique ID value is always required.
+It is important to note that the update is applied to the Data Import Job database table before being used elsewhere.
+Our approach is one step at a time for the security and safety of your blog, especially on the public side. Further
+action is required after data is imported or updated if you want the data to be displayed in posts.',
+'info','Large','Screen Introduction','','return');
+*/
+?>
+
+<?php 
 ##################################################################################
 #                                                                                #
 #         START OF DATA IMPORT JOB PANELS LOOP - CREATES A PANEL PER JOB         #
 #                                                                                #
 ##################################################################################
-if(!isset($csv2post_dataimportjobs_array) || count($csv2post_dataimportjobs_array) == 0){
+if(!isset($csv2post_dataimportjobs_array) || !is_array($csv2post_dataimportjobs_array) || count($csv2post_dataimportjobs_array) == 0){
     echo csv2post_notice('You do not have any Data Import jobs, please create one on the Start screen','info','Small','','','return');    
 }else{
 
-    var_dump($csv2post_dataimportjobs_array);
-    
     // foreach job
     foreach( $csv2post_dataimportjobs_array as $jobcode => $job ){
 
@@ -89,10 +99,24 @@ if(!isset($csv2post_dataimportjobs_array) || count($csv2post_dataimportjobs_arra
                         <?php     
                         ### TODO:HIGHPRIORITY, change the PEARCSVmethod for quote in the fget column
                         echo '</td>
-                        <td>'.$csv_filename.'</td><td>';
+                        <td>'.$csv_filename.'</td><td>';?>              
+                                            
+                        <p>
+                            <select id="csv2post_advancedidcolumn_<?php echo $jobcode;?>_<?php echo $fileChunks[0];?>" name="csv2post_advancedidcolumn_<?php echo $jobcode;?>_<?php echo $fileChunks[0];?>" class="csv2post_multiselect_menu">
+                                <?php csv2post_display_headers_menuoptions($job_array[$csv_filename]['headers'],$jobcode);?>
+                            </select>
+                        </p>
                         
-                        echo csv2post_menu_csvfile_headers($panel_array['panel_name'],$jobcode,$csv_filename);
+                        <script>
+                        $("#csv2post_advancedidcolumn_<?php echo $jobcode;?>_<?php echo $fileChunks[0];?>").multiselect({
+                           multiple: false,
+                           header: "Select ID Column",
+                           noneSelectedText: "Select ID Column",
+                           selectedList: 1
+                        });
+                        </script>
                         
+                        <?php                         
                         echo '</td>';?>
 
                     </tr><?php                         
@@ -101,6 +125,22 @@ if(!isset($csv2post_dataimportjobs_array) || count($csv2post_dataimportjobs_arra
                 }
             }?>
 
+            <h4>Import Type</h4>
+            <script>
+            $(function() {
+                $( "#csv2post_dataimport_advancedreset" ).buttonset();
+            });
+            </script>
+
+            <div id="csv2post_dataimport_advancedreset">
+                <input type="radio" id="csv2post_radio_continue" name="csv2post_radio_progresscontrols" value="continue" checked />
+                <label for="csv2post_radio_continue">Initial Import (continue )</label>
+                
+                <input type="radio" id="csv2post_radio_reset" name="csv2post_radio_progresscontrols" value="reset" />
+                <label for="csv2post_radio_reset">Updating (reset progress counters)</label>            
+            </div>
+            
+    
         <?php
         ### TODO:MEDIUMPRIORITY, these tables assume all stats exist. We should deal with this. I think
         ### we should initialize a statistic value if it is missing, so put the array through a function.
@@ -115,11 +155,12 @@ if(!isset($csv2post_dataimportjobs_array) || count($csv2post_dataimportjobs_arra
         #####################################
         #         DISPLAY MAIN STATS        #
         #####################################
+        echo '<br />';
         echo '<h4>Main Statistics</h4>';
         echo '
         <table class="widefat post fixed">            
           <tr><td width="200">Rows In File/s: </td><td  width="50">'.$job_array['totalrows'].'</td><td>in multiple file import jobs all files should have the same number of rows</td></tr>
-          <tr><td width="200">Progress: </td><td>'.$job_array['stats']['allevents']['progress'].'</td><td></td></tr>                                                                                                         
+          <tr><td width="200">Progress: </td><td>'.$job_array['stats']['allevents']['progress'].'</td><td>combined import from all files</td></tr>                                                                                                         
         </table>';            
                     
         #####################################
@@ -128,15 +169,15 @@ if(!isset($csv2post_dataimportjobs_array) || count($csv2post_dataimportjobs_arra
         echo '<h4>Last Event Statistics</h4>';
         echo '
         <table class="widefat post fixed">
-  <tr><td width="200">Rows In File: </td><td>'.$job_array['totalrows'].'</td></tr>               
-        <tr><td width="200">Loop Count: </td><td>'.$job_array['stats']['lastevent']['loop_count'].'</td></tr>
-        <tr><td>Rows Processed: </td><td>'.$job_array['stats']['lastevent']['processed'].'</td></tr>
-        <tr><td>Records Inserted: </td><td>'.$job_array['stats']['lastevent']['inserted'].'</td></tr>
-        <tr><td>Records Updated: </td><td>'.$job_array['stats']['lastevent']['updated'].'</td></tr>
-        <tr><td>Records Deleted: </td><td>'.$job_array['stats']['lastevent']['deleted'].'</td></tr>
-        <tr><td>Records Void: </td><td>'.$job_array['stats']['lastevent']['void'].'</td></tr>
-        <tr><td>Rows Dropped: </td><td>'.$job_array['stats']['lastevent']['dropped'].'</td></tr>
-        <tr><td>Duplicates Found: </td><td>'.$job_array['stats']['lastevent']['duplicates'].'</td></tr>                                                                                    
+        <tr><td width="200">Rows In File: </td><td>'.$job_array['totalrows'].'</td><td></td></tr>               
+        <tr><td width="200">Loop Count: </td><td>'.$job_array['stats']['lastevent']['loop_count'].'</td><td></td></tr>
+        <tr><td>Rows Processed: </td><td>'.$job_array['stats']['lastevent']['processed'].'</td><td></td></tr>
+        <tr><td>Records Inserted: </td><td>'.$job_array['stats']['lastevent']['inserted'].'</td><td></td></tr>
+        <tr><td>Records Updated: </td><td>'.$job_array['stats']['lastevent']['updated'].'</td><td></td></tr>
+        <tr><td>Records Deleted: </td><td>'.$job_array['stats']['lastevent']['deleted'].'</td><td></td></tr>
+        <tr><td>Records Void: </td><td>'.$job_array['stats']['lastevent']['void'].'</td><td></td></tr>
+        <tr><td>Rows Dropped: </td><td>'.$job_array['stats']['lastevent']['dropped'].'</td><td></td></tr>
+        <tr><td>Duplicates Found: </td><td>'.$job_array['stats']['lastevent']['duplicates'].'</td><td></td></tr>                                                                                    
         </table>';            
              
         #####################################
@@ -145,7 +186,7 @@ if(!isset($csv2post_dataimportjobs_array) || count($csv2post_dataimportjobs_arra
         echo '<h4>All Event Statistics</h4>';
         echo '
         <table class="widefat post fixed">
-  <tr><td width="200">Rows In File: </td><td>'.$job_array['totalrows'].'</td></tr>               
+        <tr><td width="200">Rows In File: </td><td>'.$job_array['totalrows'].'</td></tr>               
         <tr><td width="200">Rows Processed: </td><td>'.$job_array['stats']['allevents']['progress'].'</td></tr>
         <tr><td>Records Inserted: </td><td>'.$job_array['stats']['allevents']['inserted'].'</td></tr>
         <tr><td>Records Updated: </td><td>'.$job_array['stats']['allevents']['updated'].'</td></tr>

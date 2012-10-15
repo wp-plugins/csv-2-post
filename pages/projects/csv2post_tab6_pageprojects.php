@@ -109,7 +109,7 @@ $panel_array['tabnumber'] = $csv2post_tab_number;
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Create meta data with dynamic and unique content for good SEO');
 $panel_array['panel_help'] = __('This feature is used to add meta values to your posts but as a feature we use the Custom Field term. You can setup as many custom field rules as you wish. Most themes require specific keys to be entered, please refer to your themes guide for a list of keys. Enter your custom field key (meta-key) you wish all your posts to have. Then select the column of data that you wish to populate your custom field value with or select a template. The template method allows you to create a template using the WYSIWYG editor on the Content screen. The result can be a very unique value and great for SEO. Keep in mind however that this is a little more work for CSV 2 POST to do during post creation.');
-$panel_array['help_button'] = csv2post_helpbutton_text(true,true);
+$panel_array['help_button'] = csv2post_helpbutton_text(false,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);               

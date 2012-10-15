@@ -1,5 +1,5 @@
 <?php      
-global $csv2post_mpt_arr,$wpdb,$csv2post_options_array,$csv2post_nav_type,$csv2post_projectslist_array,$csv2post_schedule_array,$csv2post_is_free,$csv2post_project_array;
+global $csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$csv2post_options_array,$csv2post_nav_type,$csv2post_projectslist_array,$csv2post_schedule_array,$csv2post_is_free,$csv2post_project_array;
 $pageid = 'creation';// used to access variable.php configuration
 $pagefolder = 'creation';// the folder in pages folder holding this pages files
 
@@ -41,8 +41,8 @@ if($csv2post_nav_type == 'css'){
             //$csv2post_form_action = csv2post_link_toadmin($_GET['page'],'#tabs-' . $counttabs);            
             $csv2post_form_action = '';
                         
-            echo '<div id="tabs-'.$counttabs.'">';
-            include(WTG_C2P_DIR.'pages/'.$pagefolder.'/csv2post_tab'.$counttabs.'_pagecreation.php');
+            echo '<div id="tabs-'.$counttabs.'">';                                                                                            
+            include($csv2post_mpt_arr[$pageid]['tabs'][$counttabs]['path']);    
             echo '</div>';
                      
         }

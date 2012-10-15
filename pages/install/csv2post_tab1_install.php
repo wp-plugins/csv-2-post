@@ -1,5 +1,5 @@
 <?php 
-global $csv2post_installlog_help_0510;
+global $csv2post_installlog_help_0510;###TODO:CRITICAL,does this variable exist anymore???
 
 ++$panel_number;// increase panel counter so this panel has unique ID
 $panel_array = array();
@@ -10,7 +10,7 @@ $panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
 $panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = 'Here you can view installation status related entries to the general log file';
-$panel_array['panel_help'] = 'Any actions related to the installation status of '.WTG_C2P_PLUGINTITLE.' will be logged in the General log file. The plugin filters log entries related to install, re-insall or un-install changes. This is mainly for troubleshooting but in some cases we can offer the ability to change your installation without logging into your blog. The log entries are imported to review such changes.'; 
+$panel_array['panel_help'] = 'Any actions related to the installation status of '.$csv2post_plugintitle.' will be logged in the General log file. The plugin filters log entries related to install, re-insall or un-install changes. This is mainly for troubleshooting but in some cases we can offer the ability to change your installation without logging into your blog. The log entries are imported to review such changes.'; 
 $panel_array['help_button'] = csv2post_helpbutton_text(true,false);?>
 
 <?php csv2post_panel_header( $panel_array );?>
@@ -41,7 +41,7 @@ $panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
 $panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_array['panel_number'];// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = 'Pause and start log files';
-$panel_array['panel_help'] = 'The plugin logs different events in different files. Any actions related to the installation status of '.WTG_C2P_PLUGINTITLE.' will be logged in the General log file. The plugin filters log entries related to install, re-insall or un-install changes. This is mainly for troubleshooting but in some cases we can offer the ability to change your installation without logging into your blog. The log entries are imported to review such changes.';
+$panel_array['panel_help'] = 'The plugin logs different events in different files. Any actions related to the installation status of '.$csv2post_plugintitle.' will be logged in the General log file. The plugin filters log entries related to install, re-insall or un-install changes. This is mainly for troubleshooting but in some cases we can offer the ability to change your installation without logging into your blog. The log entries are imported to review such changes.';
 $panel_array['help_button'] = csv2post_helpbutton_text(false,false);?>
 <?php csv2post_panel_header( $panel_array );?>  
 

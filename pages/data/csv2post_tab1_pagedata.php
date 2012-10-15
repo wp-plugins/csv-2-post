@@ -144,7 +144,9 @@ if($method == 'ajax'){
     }
     
 }else{
-    if(!isset($csv2post_dataimportjobs_array) || count($csv2post_dataimportjobs_array) == 0){
+    
+    // ensure we have a valid array with a data import job in $csv2post_dataimportjobs_array
+    if(!isset($csv2post_dataimportjobs_array) || !is_array($csv2post_dataimportjobs_array) || count($csv2post_dataimportjobs_array) == 0){
         echo csv2post_notice('You do not have any Data Import jobs, please create one on the Start screen','info','Small','','','return');    
     }else{
 

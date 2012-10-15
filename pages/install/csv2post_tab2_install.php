@@ -33,7 +33,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 ### notifications in a table, also add columns for displaying smaller notifications indicating important and status
 ?>
 <?php csv2post_panel_header( $panel_array );?>
-    <?php csv2post_display_optionrecordtrace(); ?>       
+    <?php csv2post_list_optionrecordtrace(); ?>       
 <?php csv2post_panel_footer();?> 
 
 <?php
@@ -46,7 +46,7 @@ $panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
 $panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = 'Status of the folder created to store CSV files within the Wordpress content directory';
-$panel_array['panel_help'] = 'It is important that CSV files are not stored within the plugins own folder, currently named '.WTG_C2P_FOLDERNAME.' in order to prevent deletion of files. The plugin allows you to store CSV files in custom file paths but the default path and folder is created when installing '.WTG_C2P_PLUGINTITLE.'. The folder should be named '.WTG_C2P_CONTENTFOLDER_DIR.' and you will find it in the wp-content folder. If it is missing for any reason, you may create it manually.'; 
+$panel_array['panel_help'] = 'It is important that CSV files are not stored within the plugins own folder, currently named '.WTG_C2P_FOLDERNAME.' in order to prevent deletion of files. The plugin allows you to store CSV files in custom file paths but the default path and folder is created when installing '.$csv2post_plugintitle.'. The folder should be named '.WTG_C2P_CONTENTFOLDER_DIR.' and you will find it in the wp-content folder. If it is missing for any reason, you may create it manually.'; 
 $panel_array['help_button'] = csv2post_helpbutton_text(false,false);?>
 <?php csv2post_panel_header( $panel_array );?>
     <?php csv2post_contentfolder_display_status(); ?>       
@@ -62,7 +62,7 @@ $panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
 $panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = 'Check what files exist or not and the log recording status.';
-$panel_array['panel_help'] = 'Log files are not required for the plugin to operate but they can help you monitor your projects activity or for troubleshooting should your project settings not be as you need them yet. '.WTG_C2P_PLUGINTITLE.' has multiple log files, each containing rows of information from different aspects of the plugin. You do not need to have all of them active or any of them. Some may not mean a lot to you especially if your not a developer i.e. the sql log file. These files are great for sending by email when requesting support.';
+$panel_array['panel_help'] = 'Log files are not required for the plugin to operate but they can help you monitor your projects activity or for troubleshooting should your project settings not be as you need them yet. '.$csv2post_plugintitle.' has multiple log files, each containing rows of information from different aspects of the plugin. You do not need to have all of them active or any of them. Some may not mean a lot to you especially if your not a developer i.e. the sql log file. These files are great for sending by email when requesting support.';
 $panel_array['help_button'] = csv2post_helpbutton_text(false,false); 
 ?>
 <?php csv2post_panel_header( $panel_array );?>

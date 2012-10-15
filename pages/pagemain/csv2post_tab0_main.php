@@ -1,10 +1,3 @@
-<?php 
-echo csv2post_notice('This plugin is very new, released June 2012. We would appreciate it greatly if you submit
-feedback on the plugins
-<a href="http://wordpress.org/support/plugin/csv-2-post">support forum</a>. Please use the 
-"Test CSV File" tool if you have any difficutly using your file with the plugin and submit the results to us.','info','Large','New For 2012','','return');
-?>
-
 <style>
 #sortablewtg { list-style-type: none; margin: 0; padding: 0; }
 #sortablewtg li { margin: 3px 3px 3px 0; padding: 1px; float: left; width: 100px; height: 100px; font-size: 1em; text-align: center; }

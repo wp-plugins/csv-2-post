@@ -1,9 +1,11 @@
 <?php
 ####################################################################
 ####                                                            ####
-####           TABS NAVIGATION ARRAY ($csv2post_mpt_arr)          ####
+####           TABS NAVIGATION ARRAY ($csv2post_mpt_arr)        ####
 ####                                                            ####
 ####################################################################
+### TODO:HIGHPRIORITY,using the ['path'] parameter created for extensions, create the ability to add the full
+### path so that we can point to any web page or file and not just those in extension or plugin core
 
 /**
 * Returns value for displaying or hiding a page based on edition (free or full).
@@ -12,6 +14,8 @@
 * cause problems.
 * 
 * @param mixed $package_allowed, 0=free 1=full/paid 2=dont ever display
+* @returns boolean true if screen is to be shown else false
+* @todo LOWPRIORITY, rename function to csv2post_screen_active()
 */
 function csv2post_page_show_hide($package_allowed = 0){
     global $csv2post_is_free;
@@ -26,231 +30,91 @@ function csv2post_page_show_hide($package_allowed = 0){
     return true;
 }
 
-global $csv2post_homeslug;
+global $csv2post_homeslug,$csv2post_plugintitle;
 $csv2post_mpt_arr = array();
 // main page
 $csv2post_mpt_arr['main']['active'] = true;// boolean -is this page in use
 $csv2post_mpt_arr['main']['slug'] = $csv2post_homeslug;// home page slug set in main file
-$csv2post_mpt_arr['main']['menu'] = WTG_C2P_PLUGINTITLE;// plugin dashboard page title
+$csv2post_mpt_arr['main']['menu'] = $csv2post_plugintitle;// plugin dashboard page title
 $csv2post_mpt_arr['main']['name'] = "mainpage";// name of page (slug) and unique
 $csv2post_mpt_arr['main']['role'] = 'activate_plugins';// minimum required role in order to VIEW the page
 $csv2post_mpt_arr['main']['title'] = 'CSV 2 POST';// page title seen once page is opened
-$csv2post_mpt_arr['main']['pagehelp'] = 'http://www.csv2post.com';// url to the help content on plugin site for this page
 $csv2post_mpt_arr['main']['headers'] = false;// boolean - display a content area above selected tabs i.e. introductions or status
 $csv2post_mpt_arr['main']['vertical'] = false;// boolean - is the menu vertical rather than horizontal
 $csv2post_mpt_arr['main']['statusicons'] = false;// boolean - instead of related icons we use cross & tick etc indicating completion or not
-// main sub page 1 tab 1
-$csv2post_mpt_arr['main']['tabs'][0]['active'] = true;
-$csv2post_mpt_arr['main']['tabs'][0]['slug'] = 'tab0_main';
-$csv2post_mpt_arr['main']['tabs'][0]['label'] = 'Screens';
-$csv2post_mpt_arr['main']['tabs'][0]['name'] = 'screens';     
-$csv2post_mpt_arr['main']['tabs'][0]['helpurl'] = 'http://www.csv2post.com/'; 
-$csv2post_mpt_arr['main']['tabs'][0]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['main']['tabs'][0]['display'] = csv2post_page_show_hide(); 
-// main sub page 1 tab 2
-$csv2post_mpt_arr['main']['tabs'][1]['active'] = true;
-$csv2post_mpt_arr['main']['tabs'][1]['slug'] = 'tab1_main';
-$csv2post_mpt_arr['main']['tabs'][1]['label'] = 'Updates';
-$csv2post_mpt_arr['main']['tabs'][1]['name'] = 'updates'; 
-$csv2post_mpt_arr['main']['tabs'][1]['helpurl'] = 'http://www.csv2post.com/'; 
-$csv2post_mpt_arr['main']['tabs'][1]['allowhide'] = false;
-$csv2post_mpt_arr['main']['tabs'][1]['display'] = csv2post_page_show_hide();
-// main sub page 1 tab 3
-$csv2post_mpt_arr['main']['tabs'][2]['active'] = true;
-$csv2post_mpt_arr['main']['tabs'][2]['slug'] = 'tab2_main';
-$csv2post_mpt_arr['main']['tabs'][2]['label'] = 'Quick Start';
-$csv2post_mpt_arr['main']['tabs'][2]['name'] = 'quickstart'; 
-$csv2post_mpt_arr['main']['tabs'][2]['helpurl'] = 'http://www.csv2post.com/'; 
-$csv2post_mpt_arr['main']['tabs'][2]['allowhide'] = false;
-$csv2post_mpt_arr['main']['tabs'][2]['display'] = csv2post_page_show_hide();
-// main sub page 1 tab 4
-$csv2post_mpt_arr['main']['tabs'][3]['active'] = true;
-$csv2post_mpt_arr['main']['tabs'][3]['slug'] = 'tab3_main';
-$csv2post_mpt_arr['main']['tabs'][3]['label'] = 'About';
-$csv2post_mpt_arr['main']['tabs'][3]['name'] = 'about'; 
-$csv2post_mpt_arr['main']['tabs'][3]['helpurl'] = 'http://www.csv2post.com/'; 
-$csv2post_mpt_arr['main']['tabs'][3]['allowhide'] = false;
-$csv2post_mpt_arr['main']['tabs'][3]['display'] = csv2post_page_show_hide();
-// settings sub page 1 tab 1
-$csv2post_mpt_arr['main']['tabs'][4]['active'] = true;
-$csv2post_mpt_arr['main']['tabs'][4]['slug'] = 'tab4_main';
-$csv2post_mpt_arr['main']['tabs'][4]['label'] = 'General Settings';
-$csv2post_mpt_arr['main']['tabs'][4]['name'] = 'generalsettings';
-$csv2post_mpt_arr['main']['tabs'][4]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['main']['tabs'][4]['allowhide'] = true;
-$csv2post_mpt_arr['main']['tabs'][4]['display'] = csv2post_page_show_hide(2);
-// settings sub page 1 tab 2
-$csv2post_mpt_arr['main']['tabs'][5]['active'] = true;
-$csv2post_mpt_arr['main']['tabs'][5]['slug'] = 'tab5_main';
-$csv2post_mpt_arr['main']['tabs'][5]['label'] = 'Interface Settings';
-$csv2post_mpt_arr['main']['tabs'][5]['name'] = 'interfacesettings';
-$csv2post_mpt_arr['main']['tabs'][5]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['main']['tabs'][5]['allowhide'] = false;
-$csv2post_mpt_arr['main']['tabs'][5]['display'] = csv2post_page_show_hide(); 
-// settings sub page 1 tab 3
-$csv2post_mpt_arr['main']['tabs'][6]['active'] = true;
-$csv2post_mpt_arr['main']['tabs'][6]['slug'] = 'tab6_main';
-$csv2post_mpt_arr['main']['tabs'][6]['label'] = 'Easy Configuration Questions';
-$csv2post_mpt_arr['main']['tabs'][6]['name'] = 'easyconfigurationquestions';
-$csv2post_mpt_arr['main']['tabs'][6]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['main']['tabs'][6]['allowhide'] = true; 
-$csv2post_mpt_arr['main']['tabs'][6]['display'] = csv2post_page_show_hide();
-
-// install page
-$csv2post_mpt_arr['install']['active'] = true;
-$csv2post_mpt_arr['install']['slug'] = WTG_C2P_ABB . "install";
-$csv2post_mpt_arr['install']['menu'] = WTG_C2P_PLUGINTITLE." Install";
-$csv2post_mpt_arr['install']['role'] = 'activate_plugins';
-$csv2post_mpt_arr['install']['title'] = WTG_C2P_PLUGINTITLE.' Install';
-$csv2post_mpt_arr['install']['name'] = 'install';
-$csv2post_mpt_arr['install']['icon'] = 'install';
-$csv2post_mpt_arr['install']['pagehelp'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['install']['headers'] = false;
-$csv2post_mpt_arr['install']['vertical'] = false;
-$csv2post_mpt_arr['install']['statusicons'] = false;  
-// install sub page 1 tab 1
-$csv2post_mpt_arr['install']['tabs'][0]['active'] = true;
-$csv2post_mpt_arr['install']['tabs'][0]['slug'] = 'tab0_install';
-$csv2post_mpt_arr['install']['tabs'][0]['label'] = 'Install Actions';
-$csv2post_mpt_arr['install']['tabs'][0]['name'] = 'installactions';
-$csv2post_mpt_arr['install']['tabs'][0]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['install']['tabs'][0]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['install']['tabs'][0]['display'] = csv2post_page_show_hide(); 
-// install sub page 1 tab 2
-$csv2post_mpt_arr['install']['tabs'][1]['active'] = true;
-$csv2post_mpt_arr['install']['tabs'][1]['slug'] = 'tab1_install';
-$csv2post_mpt_arr['install']['tabs'][1]['label'] = 'Install History';
-$csv2post_mpt_arr['install']['tabs'][1]['name'] = 'installhistory';
-$csv2post_mpt_arr['install']['tabs'][1]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['install']['tabs'][1]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['install']['tabs'][1]['display'] = csv2post_page_show_hide();  
-// install sub page 1 tab 3
-$csv2post_mpt_arr['install']['tabs'][2]['active'] = true;
-$csv2post_mpt_arr['install']['tabs'][2]['slug'] = 'tab2_install';
-$csv2post_mpt_arr['install']['tabs'][2]['label'] = 'Install Status';
-$csv2post_mpt_arr['install']['tabs'][2]['name'] = 'installstatus';
-$csv2post_mpt_arr['install']['tabs'][2]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['install']['tabs'][2]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['install']['tabs'][2]['display'] = csv2post_page_show_hide();   
-// install sub page 1 tab 4
-$csv2post_mpt_arr['install']['tabs'][3]['active'] = true;
-$csv2post_mpt_arr['install']['tabs'][3]['slug'] = 'tab3_install';
-$csv2post_mpt_arr['install']['tabs'][3]['label'] = 'Your Server Status';
-$csv2post_mpt_arr['install']['tabs'][3]['name'] = 'yourserverstatus';
-$csv2post_mpt_arr['install']['tabs'][3]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['install']['tabs'][3]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['install']['tabs'][3]['display'] = csv2post_page_show_hide();   
-// install sub page 1 tab 5
-$csv2post_mpt_arr['install']['tabs'][4]['active'] = true;
-$csv2post_mpt_arr['install']['tabs'][4]['slug'] = 'tab4_install';
-$csv2post_mpt_arr['install']['tabs'][4]['label'] = 'Activation Controls';
-$csv2post_mpt_arr['install']['tabs'][4]['name'] = 'activationcontrols';
-$csv2post_mpt_arr['install']['tabs'][4]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['install']['tabs'][4]['allowhide'] = false  ;// is tab screen allowed to be hidden (boolean) 
-$csv2post_mpt_arr['install']['tabs'][4]['display'] = csv2post_page_show_hide();
-// install sub page 1 tab 6
-$csv2post_mpt_arr['install']['tabs'][5]['active'] = true;
-$csv2post_mpt_arr['install']['tabs'][5]['slug'] = 'tab5_install';
-$csv2post_mpt_arr['install']['tabs'][5]['label'] = 'Files Status';
-$csv2post_mpt_arr['install']['tabs'][5]['name'] = 'filesstatus';
-$csv2post_mpt_arr['install']['tabs'][5]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['install']['tabs'][5]['allowhide'] = false  ;// is tab screen allowed to be hidden (boolean) 
-$csv2post_mpt_arr['install']['tabs'][5]['display'] = csv2post_page_show_hide(1); 
-  
-// more page - includes a sub-menu for offering far more pages without adding to plugn menu
-$csv2post_mpt_arr['more']['active'] = false;
-$csv2post_mpt_arr['more']['slug'] = "csv2post_more";
-$csv2post_mpt_arr['more']['menu'] = "More";
-$csv2post_mpt_arr['more']['role'] = 'activate_plugins';
-$csv2post_mpt_arr['more']['title'] = 'More';
-$csv2post_mpt_arr['more']['name'] = 'more'; 
-$csv2post_mpt_arr['more']['icon'] = 'install';
-$csv2post_mpt_arr['more']['pagehelp'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['more']['headers'] = false;
-$csv2post_mpt_arr['more']['vertical'] = false;
-$csv2post_mpt_arr['more']['statusicons'] = false;      
-// more sub page 1 tab 1
-$csv2post_mpt_arr['more']['tabs'][0]['active'] = true;
-$csv2post_mpt_arr['more']['tabs'][0]['slug'] = 'tab0_more';
-$csv2post_mpt_arr['more']['tabs'][0]['label'] = 'Support';
-$csv2post_mpt_arr['more']['tabs'][0]['name'] = 'support';
-$csv2post_mpt_arr['more']['tabs'][0]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['more']['tabs'][0]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['more']['tabs'][0]['display'] = csv2post_page_show_hide();   
-// more sub page 1 tab 2
-$csv2post_mpt_arr['more']['tabs'][1]['active'] = true;
-$csv2post_mpt_arr['more']['tabs'][1]['slug'] = 'tab1_more';
-$csv2post_mpt_arr['more']['tabs'][1]['label'] = 'Community';
-$csv2post_mpt_arr['more']['tabs'][1]['name'] = 'community';
-$csv2post_mpt_arr['more']['tabs'][1]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['more']['tabs'][1]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['more']['tabs'][1]['display'] = csv2post_page_show_hide();  
-// more sub page 1 tab 3
-$csv2post_mpt_arr['more']['tabs'][2]['active'] = true;
-$csv2post_mpt_arr['more']['tabs'][2]['slug'] = 'tab2_more';
-$csv2post_mpt_arr['more']['tabs'][2]['label'] = 'Downloads';
-$csv2post_mpt_arr['more']['tabs'][2]['name'] = 'downloads';
-$csv2post_mpt_arr['more']['tabs'][2]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['more']['tabs'][2]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['more']['tabs'][2]['display'] = csv2post_page_show_hide();  
-// more sub page 1 tab 4
-$csv2post_mpt_arr['more']['tabs'][3]['active'] = true;
-$csv2post_mpt_arr['more']['tabs'][3]['slug'] = 'tab3_more';
-$csv2post_mpt_arr['more']['tabs'][3]['label'] = 'Affiliates';// Affiliate, payment history, traffic stats, display banners
-$csv2post_mpt_arr['more']['tabs'][3]['name'] = 'affiliates';
-$csv2post_mpt_arr['more']['tabs'][3]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['more']['tabs'][3]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['more']['tabs'][3]['display'] = csv2post_page_show_hide(); 
-// more sub page 1 tab 5
-$csv2post_mpt_arr['more']['tabs'][4]['active'] = true;
-$csv2post_mpt_arr['more']['tabs'][4]['slug'] = 'tab4_more';
-$csv2post_mpt_arr['more']['tabs'][4]['label'] = 'Development';// RSS feed link, blog entries directly, coming soon (top feature coming next)
-$csv2post_mpt_arr['more']['tabs'][4]['name'] = 'development';
-$csv2post_mpt_arr['more']['tabs'][4]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['more']['tabs'][4]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['more']['tabs'][4]['display'] = csv2post_page_show_hide();
-// more sub page 1 tab 6
-$csv2post_mpt_arr['more']['tabs'][5]['active'] = true;
-$csv2post_mpt_arr['more']['tabs'][5]['slug'] = 'tab5_more';
-$csv2post_mpt_arr['more']['tabs'][5]['label'] = 'Testing';// test blogs, beta tester list, test forum discussion, RSS for testers and developers, short TO DO list (not whole list)
-$csv2post_mpt_arr['more']['tabs'][5]['name'] = 'testing';
-$csv2post_mpt_arr['more']['tabs'][5]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['more']['tabs'][5]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['more']['tabs'][5]['display'] = csv2post_page_show_hide(); 
-// more sub page 1 tab 7
-$csv2post_mpt_arr['more']['tabs'][6]['active'] = true;
-$csv2post_mpt_arr['more']['tabs'][6]['slug'] = 'tab6_more';
-$csv2post_mpt_arr['more']['tabs'][6]['label'] = 'Offers';// display a range of main offers, hosting packages with premium plugin purchase, free installs, setup etc
-$csv2post_mpt_arr['more']['tabs'][6]['name'] = 'offers';
-$csv2post_mpt_arr['more']['tabs'][6]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['more']['tabs'][6]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['more']['tabs'][6]['display'] = csv2post_page_show_hide(); 
-// more sub page 1 tab 8
-$csv2post_mpt_arr['more']['tabs'][7]['active'] = true;
-$csv2post_mpt_arr['more']['tabs'][7]['slug'] = 'tab7_more';
-$csv2post_mpt_arr['more']['tabs'][7]['label'] = 'My Tickets';// users submitted tickets, if API can access
-$csv2post_mpt_arr['more']['tabs'][7]['name'] = 'mytickets';
-$csv2post_mpt_arr['more']['tabs'][7]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['more']['tabs'][7]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['more']['tabs'][7]['display'] = csv2post_page_show_hide(); 
-// more sub page 1 tab 9
-$csv2post_mpt_arr['more']['tabs'][8]['active'] = true;
-$csv2post_mpt_arr['more']['tabs'][8]['slug'] = 'tab8_more';
-$csv2post_mpt_arr['more']['tabs'][8]['label'] = 'My Account';// purchased plugins, users account, transactions, loyalty points, stored API key, special permissions and access indicators etc
-$csv2post_mpt_arr['more']['tabs'][8]['name'] = 'myaccount';
-$csv2post_mpt_arr['more']['tabs'][8]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['more']['tabs'][8]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['more']['tabs'][8]['display'] = csv2post_page_show_hide(); 
-// more sub page 1 tab 10
-$csv2post_mpt_arr['more']['tabs'][9]['active'] = true;
-$csv2post_mpt_arr['more']['tabs'][9]['slug'] = 'tab9_more';
-$csv2post_mpt_arr['more']['tabs'][9]['label'] = 'Contact';// advanced contact form, creates ticket, forum post and sends email
-$csv2post_mpt_arr['more']['tabs'][9]['name'] = 'contact';
-$csv2post_mpt_arr['more']['tabs'][9]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['more']['tabs'][9]['allowhide'] = false;// is tab screen allowed to be hidden (boolean) 
-$csv2post_mpt_arr['more']['tabs'][9]['display'] = csv2post_page_show_hide(1);
-/**************** Varied Sub Pages Begin Here *****************/
-
+// main 0
+$sub = 0; 
+$csv2post_mpt_arr['main']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['main']['tabs'][$sub]['slug'] = 'tab0_main';
+$csv2post_mpt_arr['main']['tabs'][$sub]['label'] = 'Screens';      
+$csv2post_mpt_arr['main']['tabs'][$sub]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['main']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['main']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/pagemain/csv2post_tab'.$sub.'_main.php';  
+// main 1
+++$sub; 
+$csv2post_mpt_arr['main']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['main']['tabs'][$sub]['slug'] = 'tab1_main';
+$csv2post_mpt_arr['main']['tabs'][$sub]['label'] = 'Updates';  
+$csv2post_mpt_arr['main']['tabs'][$sub]['allowhide'] = false;
+$csv2post_mpt_arr['main']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['main']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/pagemain/csv2post_tab'.$sub.'_main.php'; 
+// main 2
+++$sub; 
+$csv2post_mpt_arr['main']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['main']['tabs'][$sub]['slug'] = 'tab2_main';
+$csv2post_mpt_arr['main']['tabs'][$sub]['label'] = 'Quick Start';  
+$csv2post_mpt_arr['main']['tabs'][$sub]['allowhide'] = false;
+$csv2post_mpt_arr['main']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['main']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/pagemain/csv2post_tab'.$sub.'_main.php';
+// main 3
+++$sub; 
+$csv2post_mpt_arr['main']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['main']['tabs'][$sub]['slug'] = 'tab3_main';
+$csv2post_mpt_arr['main']['tabs'][$sub]['label'] = 'About';  
+$csv2post_mpt_arr['main']['tabs'][$sub]['allowhide'] = false;
+$csv2post_mpt_arr['main']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['main']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/pagemain/csv2post_tab'.$sub.'_main.php'; 
+// main 4
+++$sub; 
+$csv2post_mpt_arr['main']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['main']['tabs'][$sub]['slug'] = 'tab4_main';
+$csv2post_mpt_arr['main']['tabs'][$sub]['label'] = 'General Settings';
+$csv2post_mpt_arr['main']['tabs'][$sub]['allowhide'] = true;
+$csv2post_mpt_arr['main']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['main']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/pagemain/csv2post_tab'.$sub.'_main.php'; 
+// main 5
+++$sub; 
+$csv2post_mpt_arr['main']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['main']['tabs'][$sub]['slug'] = 'tab5_main';
+$csv2post_mpt_arr['main']['tabs'][$sub]['label'] = 'Interface Settings';
+$csv2post_mpt_arr['main']['tabs'][$sub]['allowhide'] = false;
+$csv2post_mpt_arr['main']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['main']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/pagemain/csv2post_tab'.$sub.'_main.php';  
+// main 6
+++$sub; 
+$csv2post_mpt_arr['main']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['main']['tabs'][$sub]['slug'] = 'tab6_main';
+$csv2post_mpt_arr['main']['tabs'][$sub]['label'] = 'Easy Configuration Questions';
+$csv2post_mpt_arr['main']['tabs'][$sub]['allowhide'] = true; 
+$csv2post_mpt_arr['main']['tabs'][$sub]['display'] = csv2post_page_show_hide(); 
+$csv2post_mpt_arr['main']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/pagemain/csv2post_tab'.$sub.'_main.php';
+// main 7
+++$sub;
+$csv2post_mpt_arr['main']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['main']['tabs'][$sub]['slug'] = 'schedulesettings';
+$csv2post_mpt_arr['main']['tabs'][$sub]['label'] = 'Schedule Settings';
+$csv2post_mpt_arr['main']['tabs'][$sub]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['main']['tabs'][$sub]['display'] = csv2post_page_show_hide(1);
+$csv2post_mpt_arr['main']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/pagemain/csv2post_schedulesettings.php';
+// main 8
+++$sub;
+$csv2post_mpt_arr['main']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['main']['tabs'][$sub]['slug'] = 'fileprofiles';
+$csv2post_mpt_arr['main']['tabs'][$sub]['label'] = 'File Profiles';
+$csv2post_mpt_arr['main']['tabs'][$sub]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['main']['tabs'][$sub]['display'] = csv2post_page_show_hide(1);// 0 = free+paid  1 = paid only  2 = none
+$csv2post_mpt_arr['main']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/pagemain/csv2post_fileprofiles.php';
+        
 ######################################################
 #                                                    #
 #                         DATA                       #
@@ -263,89 +127,96 @@ $csv2post_mpt_arr['data']['name'] = "yourdata";
 $csv2post_mpt_arr['data']['role'] = 'administrator';
 $csv2post_mpt_arr['data']['title'] = 'Current Job: ';
 $csv2post_mpt_arr['data']['icon'] = 'options-general';
-$csv2post_mpt_arr['data']['pagehelp'] = 'http://www.csv2post.com/';
 $csv2post_mpt_arr['data']['headers'] = false;
 $csv2post_mpt_arr['data']['vertical'] = false;
 $csv2post_mpt_arr['data']['statusicons'] = true;     
-// 1. Data sub page 1 tab 1
-$csv2post_mpt_arr['data']['tabs'][0]['active'] = true;
-$csv2post_mpt_arr['data']['tabs'][0]['slug'] = 'tab0_pagedata';
-$csv2post_mpt_arr['data']['tabs'][0]['label'] = 'Start';
-$csv2post_mpt_arr['data']['tabs'][0]['name'] = 'start';
-$csv2post_mpt_arr['data']['tabs'][0]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['data']['tabs'][0]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['data']['tabs'][0]['display'] = csv2post_page_show_hide(); 
-// 1. Data sub page 1 tab 2
-$csv2post_mpt_arr['data']['tabs'][1]['active'] = true;
-$csv2post_mpt_arr['data']['tabs'][1]['slug'] = 'tab1_pagedata';
-$csv2post_mpt_arr['data']['tabs'][1]['label'] = 'Basic Import';
-$csv2post_mpt_arr['data']['tabs'][1]['name'] = 'dataimport';
-$csv2post_mpt_arr['data']['tabs'][1]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['data']['tabs'][1]['allowhide'] = true;
-$csv2post_mpt_arr['data']['tabs'][1]['display'] = csv2post_page_show_hide(); 
-// 1. Data sub page 1 tab 3
-$csv2post_mpt_arr['data']['tabs'][2]['active'] = true;
-$csv2post_mpt_arr['data']['tabs'][2]['slug'] = 'tab2_pagedata';
-$csv2post_mpt_arr['data']['tabs'][2]['label'] = 'Export Tools';
-$csv2post_mpt_arr['data']['tabs'][2]['name'] = 'dataexport';
-$csv2post_mpt_arr['data']['tabs'][2]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['data']['tabs'][2]['allowhide'] = true;
-$csv2post_mpt_arr['data']['tabs'][2]['display'] = csv2post_page_show_hide();
-// 1. Data sub page 1 tab 4
-$csv2post_mpt_arr['data']['tabs'][3]['active'] = true;
-$csv2post_mpt_arr['data']['tabs'][3]['slug'] = 'tab3_pagedata';
-$csv2post_mpt_arr['data']['tabs'][3]['label'] = 'Created Tables';
-$csv2post_mpt_arr['data']['tabs'][3]['name'] = 'createdtables';
-$csv2post_mpt_arr['data']['tabs'][3]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['data']['tabs'][3]['allowhide'] = true;
-$csv2post_mpt_arr['data']['tabs'][3]['display'] = csv2post_page_show_hide();
-// 1. Data sub page 1 tab 5
-$csv2post_mpt_arr['data']['tabs'][4]['active'] = true;
-$csv2post_mpt_arr['data']['tabs'][4]['slug'] = 'tab4_pagedata';
-$csv2post_mpt_arr['data']['tabs'][4]['label'] = 'Data Rules';
-$csv2post_mpt_arr['data']['tabs'][4]['name'] = 'datarules';
-$csv2post_mpt_arr['data']['tabs'][4]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['data']['tabs'][4]['allowhide'] = true;
-$csv2post_mpt_arr['data']['tabs'][4]['display'] = csv2post_page_show_hide(2);
-// 1. Data sub page 1 tab 6
-$csv2post_mpt_arr['data']['tabs'][5]['active'] = true;
-$csv2post_mpt_arr['data']['tabs'][5]['slug'] = 'tab5_pagedata';
-$csv2post_mpt_arr['data']['tabs'][5]['label'] = 'History';
-$csv2post_mpt_arr['data']['tabs'][5]['name'] = 'datahistory';
-$csv2post_mpt_arr['data']['tabs'][5]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['data']['tabs'][5]['allowhide'] = true;
-$csv2post_mpt_arr['data']['tabs'][5]['display'] = csv2post_page_show_hide(2);
-// 1. Data sub page 1 tab 7
-$csv2post_mpt_arr['data']['tabs'][6]['active'] = true;
-$csv2post_mpt_arr['data']['tabs'][6]['slug'] = 'tab6_pagedata';
-$csv2post_mpt_arr['data']['tabs'][6]['label'] = 'Data Sources';
-$csv2post_mpt_arr['data']['tabs'][6]['name'] = 'datasources';
-$csv2post_mpt_arr['data']['tabs'][6]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['data']['tabs'][6]['allowhide'] = true;
-$csv2post_mpt_arr['data']['tabs'][6]['display'] = csv2post_page_show_hide(2);
-// 1. Data sub page 1 tab 8 TODO: LOWPRIORITY, search tools for the data management side of things
-$csv2post_mpt_arr['data']['tabs'][7]['active'] = false;
-$csv2post_mpt_arr['data']['tabs'][7]['slug'] = 'tab7_pagedata';
-$csv2post_mpt_arr['data']['tabs'][7]['label'] = 'Search';
-$csv2post_mpt_arr['data']['tabs'][7]['name'] = 'datasearch';
-$csv2post_mpt_arr['data']['tabs'][7]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['data']['tabs'][7]['allowhide'] = true;
-$csv2post_mpt_arr['data']['tabs'][7]['display'] = csv2post_page_show_hide(2);
-// 1. Data sub page 1 tab 9
-$csv2post_mpt_arr['data']['tabs'][8]['active'] = true;
-$csv2post_mpt_arr['data']['tabs'][8]['slug'] = 'tab8_pagedata';
-$csv2post_mpt_arr['data']['tabs'][8]['label'] = 'Advanced Import';
-$csv2post_mpt_arr['data']['tabs'][8]['name'] = 'advanceddataimport';
-$csv2post_mpt_arr['data']['tabs'][8]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['data']['tabs'][8]['allowhide'] = true;
-$csv2post_mpt_arr['data']['tabs'][8]['display'] = csv2post_page_show_hide(2);
+// data 0
+$sub = 0;
+$csv2post_mpt_arr['data']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['data']['tabs'][$sub]['slug'] = 'tab0_pagedata';
+$csv2post_mpt_arr['data']['tabs'][$sub]['label'] = 'Start';
+$csv2post_mpt_arr['data']['tabs'][$sub]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['data']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['data']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/data/csv2post_tab'.$sub.'_pagedata.php';  
+// data 1
+++$sub;
+$csv2post_mpt_arr['data']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['data']['tabs'][$sub]['slug'] = 'tab1_pagedata';
+$csv2post_mpt_arr['data']['tabs'][$sub]['label'] = 'Basic Import';
+$csv2post_mpt_arr['data']['tabs'][$sub]['allowhide'] = true;
+$csv2post_mpt_arr['data']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['data']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/data/csv2post_tab'.$sub.'_pagedata.php'; 
+// data 2
+++$sub;
+$csv2post_mpt_arr['data']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['data']['tabs'][$sub]['slug'] = 'tab2_pagedata';
+$csv2post_mpt_arr['data']['tabs'][$sub]['label'] = 'Export Tools';
+$csv2post_mpt_arr['data']['tabs'][$sub]['allowhide'] = true;
+$csv2post_mpt_arr['data']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['data']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/data/csv2post_tab'.$sub.'_pagedata.php';
+// data 3
+++$sub;
+$csv2post_mpt_arr['data']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['data']['tabs'][$sub]['slug'] = 'tab3_pagedata';
+$csv2post_mpt_arr['data']['tabs'][$sub]['label'] = 'Created Tables';
+$csv2post_mpt_arr['data']['tabs'][$sub]['allowhide'] = true;
+$csv2post_mpt_arr['data']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['data']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/data/csv2post_tab'.$sub.'_pagedata.php';
+// data 4
+++$sub;
+$csv2post_mpt_arr['data']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['data']['tabs'][$sub]['slug'] = 'tab4_pagedata';
+$csv2post_mpt_arr['data']['tabs'][$sub]['label'] = 'Data Rules';
+$csv2post_mpt_arr['data']['tabs'][$sub]['allowhide'] = true;
+$csv2post_mpt_arr['data']['tabs'][$sub]['display'] = csv2post_page_show_hide(2);
+$csv2post_mpt_arr['data']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/data/csv2post_tab'.$sub.'_pagedata.php';
+// data 5
+++$sub;
+$csv2post_mpt_arr['data']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['data']['tabs'][$sub]['slug'] = 'tab5_pagedata';
+$csv2post_mpt_arr['data']['tabs'][$sub]['label'] = 'History';
+$csv2post_mpt_arr['data']['tabs'][$sub]['allowhide'] = true;
+$csv2post_mpt_arr['data']['tabs'][$sub]['display'] = csv2post_page_show_hide(2);
+$csv2post_mpt_arr['data']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/data/csv2post_tab'.$sub.'_pagedata.php';
+// data 6
+++$sub;
+$csv2post_mpt_arr['data']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['data']['tabs'][$sub]['slug'] = 'tab6_pagedata';
+$csv2post_mpt_arr['data']['tabs'][$sub]['label'] = 'Data Sources';
+$csv2post_mpt_arr['data']['tabs'][$sub]['allowhide'] = true;
+$csv2post_mpt_arr['data']['tabs'][$sub]['display'] = csv2post_page_show_hide(2);
+$csv2post_mpt_arr['data']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/data/csv2post_tab'.$sub.'_pagedata.php';
+// data 7
+++$sub;
+$csv2post_mpt_arr['data']['tabs'][$sub]['active'] = false;
+$csv2post_mpt_arr['data']['tabs'][$sub]['slug'] = 'tab7_pagedata';
+$csv2post_mpt_arr['data']['tabs'][$sub]['label'] = 'Search';
+$csv2post_mpt_arr['data']['tabs'][$sub]['allowhide'] = true;
+$csv2post_mpt_arr['data']['tabs'][$sub]['display'] = csv2post_page_show_hide(2);
+$csv2post_mpt_arr['data']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/data/csv2post_tab'.$sub.'_pagedata.php';
+// data 8
+++$sub;
+$csv2post_mpt_arr['data']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['data']['tabs'][$sub]['slug'] = 'tab8_pagedata';
+$csv2post_mpt_arr['data']['tabs'][$sub]['label'] = 'Advanced Import';
+$csv2post_mpt_arr['data']['tabs'][$sub]['allowhide'] = true;
+$csv2post_mpt_arr['data']['tabs'][$sub]['display'] = csv2post_page_show_hide(1);
+$csv2post_mpt_arr['data']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/data/csv2post_tab'.$sub.'_pagedata.php';
+// data 9
+++$sub;
+$csv2post_mpt_arr['data']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['data']['tabs'][$sub]['slug'] = 'tab9_pagedata';
+$csv2post_mpt_arr['data']['tabs'][$sub]['label'] = 'Table To Table';
+$csv2post_mpt_arr['data']['tabs'][$sub]['allowhide'] = true;
+$csv2post_mpt_arr['data']['tabs'][$sub]['display'] = csv2post_page_show_hide(1);
+$csv2post_mpt_arr['data']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/data/csv2post_tab'.$sub.'_pagedata.php';
 ### TODO:LOWPRIORITY, add a page that tests all CSV files and lists their status and profile 
 ### if however it effects loading, could do it with the files in use or latest files uploaded
 ### full edition only 
 
 ######################################################
 #                                                    #
-#                      YOUR PROJECTS                 #
+#                    YOUR PROJECTS                   #
 #                                                    #
 ######################################################
 $csv2post_mpt_arr['projects']['active'] = true;
@@ -355,140 +226,137 @@ $csv2post_mpt_arr['projects']['name'] = "yourprojects";
 $csv2post_mpt_arr['projects']['role'] = 'administrator';
 $csv2post_mpt_arr['projects']['title'] = 'Current Project: ';
 $csv2post_mpt_arr['projects']['icon'] = 'options-general';
-$csv2post_mpt_arr['projects']['pagehelp'] = 'http://www.csv2post.com/';
 $csv2post_mpt_arr['projects']['headers'] = false;
 $csv2post_mpt_arr['projects']['vertical'] = false;
 $csv2post_mpt_arr['projects']['statusicons'] = true;     
-// 2. Project sub page 1 tab 1
-$csv2post_mpt_arr['projects']['tabs'][0]['active'] = true;
-$csv2post_mpt_arr['projects']['tabs'][0]['slug'] = 'tab0_pageprojects';
-$csv2post_mpt_arr['projects']['tabs'][0]['label'] = 'Projects';
-$csv2post_mpt_arr['projects']['tabs'][0]['name'] = 'projects';
-$csv2post_mpt_arr['projects']['tabs'][0]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['projects']['tabs'][0]['allowhide'] = false;
-$csv2post_mpt_arr['projects']['tabs'][0]['display'] = csv2post_page_show_hide(); 
-
-// 2. Project sub page 1 tab 2
-$csv2post_mpt_arr['projects']['tabs'][1]['active'] = true;
-$csv2post_mpt_arr['projects']['tabs'][1]['slug'] = 'tab1_pageprojects';
-$csv2post_mpt_arr['projects']['tabs'][1]['label'] = 'Content';
-$csv2post_mpt_arr['projects']['tabs'][1]['name'] = 'content';
-$csv2post_mpt_arr['projects']['tabs'][1]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['projects']['tabs'][1]['allowhide'] = true;
-$csv2post_mpt_arr['projects']['tabs'][1]['display'] = csv2post_page_show_hide();
-
-// 2. Project sub page 1 tab 3
-$csv2post_mpt_arr['projects']['tabs'][2]['active'] = true;
-$csv2post_mpt_arr['projects']['tabs'][2]['slug'] = 'tab2_pageprojects';
-$csv2post_mpt_arr['projects']['tabs'][2]['label'] = 'Titles';
-$csv2post_mpt_arr['projects']['tabs'][2]['name'] = 'titles';
-$csv2post_mpt_arr['projects']['tabs'][2]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['projects']['tabs'][2]['allowhide'] = true;
-$csv2post_mpt_arr['projects']['tabs'][2]['display'] = csv2post_page_show_hide();
-// 2. Project sub page 1 tab 4
-$csv2post_mpt_arr['projects']['tabs'][3]['active'] = true;
-$csv2post_mpt_arr['projects']['tabs'][3]['slug'] = 'tab3_pageprojects';
-$csv2post_mpt_arr['projects']['tabs'][3]['label'] = 'SEO';
-$csv2post_mpt_arr['projects']['tabs'][3]['name'] = 'seo';
-$csv2post_mpt_arr['projects']['tabs'][3]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['projects']['tabs'][3]['allowhide'] = true;
-$csv2post_mpt_arr['projects']['tabs'][3]['display'] = csv2post_page_show_hide();
-// 2. Project sub page 1 tab 5
-$csv2post_mpt_arr['projects']['tabs'][4]['active'] = true;
-$csv2post_mpt_arr['projects']['tabs'][4]['slug'] = 'tab4_pageprojects';
-$csv2post_mpt_arr['projects']['tabs'][4]['label'] = 'Post Types';
-$csv2post_mpt_arr['projects']['tabs'][4]['name'] = 'posttypes';
-$csv2post_mpt_arr['projects']['tabs'][4]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['projects']['tabs'][4]['allowhide'] = true;
-$csv2post_mpt_arr['projects']['tabs'][4]['display'] = csv2post_page_show_hide();
-// 2. Project sub page 1 tab 6
-$csv2post_mpt_arr['projects']['tabs'][5]['active'] = true;
-$csv2post_mpt_arr['projects']['tabs'][5]['slug'] = 'tab5_pageprojects';
-$csv2post_mpt_arr['projects']['tabs'][5]['label'] = 'Post Dates';
-$csv2post_mpt_arr['projects']['tabs'][5]['name'] = 'postdates';
-$csv2post_mpt_arr['projects']['tabs'][5]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['projects']['tabs'][5]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['projects']['tabs'][5]['display'] = csv2post_page_show_hide();
-// 2. Project sub page 1 tab 7
-$csv2post_mpt_arr['projects']['tabs'][6]['active'] = true;
-$csv2post_mpt_arr['projects']['tabs'][6]['slug'] = 'tab6_pageprojects';
-$csv2post_mpt_arr['projects']['tabs'][6]['label'] = 'Custom Fields';
-$csv2post_mpt_arr['projects']['tabs'][6]['name'] = 'customfields';
-$csv2post_mpt_arr['projects']['tabs'][6]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['projects']['tabs'][6]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['projects']['tabs'][6]['display'] = csv2post_page_show_hide();
-// 2. Project sub page 1 tab 8
-$csv2post_mpt_arr['projects']['tabs'][7]['active'] = true;
-$csv2post_mpt_arr['projects']['tabs'][7]['slug'] = 'tab7_pageprojects';
-$csv2post_mpt_arr['projects']['tabs'][7]['label'] = 'Categories';
-$csv2post_mpt_arr['projects']['tabs'][7]['name'] = 'categories';
-$csv2post_mpt_arr['projects']['tabs'][7]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['projects']['tabs'][7]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['projects']['tabs'][7]['display'] = csv2post_page_show_hide(); 
-// 2. Project sub page 1 tab 9
-$csv2post_mpt_arr['projects']['tabs'][8]['active'] = true;
-$csv2post_mpt_arr['projects']['tabs'][8]['slug'] = 'tab8_pageprojects';
-$csv2post_mpt_arr['projects']['tabs'][8]['label'] = 'Update Options';
-$csv2post_mpt_arr['projects']['tabs'][8]['name'] = 'updateoptions';
-$csv2post_mpt_arr['projects']['tabs'][8]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['projects']['tabs'][8]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['projects']['tabs'][8]['display'] = csv2post_page_show_hide(1);
-// 2. Project sub page 1 tab 10
-$csv2post_mpt_arr['projects']['tabs'][9]['active'] = true;
-$csv2post_mpt_arr['projects']['tabs'][9]['slug'] = 'tab9_pageprojects';
-$csv2post_mpt_arr['projects']['tabs'][9]['label'] = 'Images';
-$csv2post_mpt_arr['projects']['tabs'][9]['name'] = 'images';
-$csv2post_mpt_arr['projects']['tabs'][9]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['projects']['tabs'][9]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['projects']['tabs'][9]['display'] = csv2post_page_show_hide();
-// 2. Project sub page 1 tab 10
-$csv2post_mpt_arr['projects']['tabs'][10]['active'] = true;
-$csv2post_mpt_arr['projects']['tabs'][10]['slug'] = 'tab10_pageprojects';
-$csv2post_mpt_arr['projects']['tabs'][10]['label'] = 'URL Cloaking';
-$csv2post_mpt_arr['projects']['tabs'][10]['name'] = 'urlcloaking';
-$csv2post_mpt_arr['projects']['tabs'][10]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['projects']['tabs'][10]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['projects']['tabs'][10]['display'] = csv2post_page_show_hide(2);
-// 2. Project sub page 1 tab 11
-$csv2post_mpt_arr['projects']['tabs'][11]['active'] = true;
-$csv2post_mpt_arr['projects']['tabs'][11]['slug'] = 'tab11_pageprojects';
-$csv2post_mpt_arr['projects']['tabs'][11]['label'] = 'Tags';
-$csv2post_mpt_arr['projects']['tabs'][11]['name'] = 'tags';
-$csv2post_mpt_arr['projects']['tabs'][11]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['projects']['tabs'][11]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['projects']['tabs'][11]['display'] = csv2post_page_show_hide();
-// 2. Project sub page 1 tab 12
-$csv2post_mpt_arr['projects']['tabs'][12]['active'] = true;
-$csv2post_mpt_arr['projects']['tabs'][12]['slug'] = 'tab12_pageprojects';
-$csv2post_mpt_arr['projects']['tabs'][12]['label'] = 'Text Spinning';
-$csv2post_mpt_arr['projects']['tabs'][12]['name'] = 'textspinning';
-$csv2post_mpt_arr['projects']['tabs'][12]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['projects']['tabs'][12]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['projects']['tabs'][12]['display'] = csv2post_page_show_hide(1);
-// 2. Project sub page 1 tab 13
-$csv2post_mpt_arr['projects']['tabs'][13]['active'] = true;
-$csv2post_mpt_arr['projects']['tabs'][13]['slug'] = 'tab13_pageprojects';
-$csv2post_mpt_arr['projects']['tabs'][13]['label'] = 'Project Data';
-$csv2post_mpt_arr['projects']['tabs'][13]['name'] = 'projectdata';
-$csv2post_mpt_arr['projects']['tabs'][13]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['projects']['tabs'][13]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['projects']['tabs'][13]['display'] = csv2post_page_show_hide();
-// 2. Project sub page 1 tab 14
-$csv2post_mpt_arr['projects']['tabs'][14]['active'] = true;
-$csv2post_mpt_arr['projects']['tabs'][14]['slug'] = 'tab14_pageprojects';
-$csv2post_mpt_arr['projects']['tabs'][14]['label'] = 'Authors';
-$csv2post_mpt_arr['projects']['tabs'][14]['name'] = 'authors';
-$csv2post_mpt_arr['projects']['tabs'][14]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['projects']['tabs'][14]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['projects']['tabs'][14]['display'] = csv2post_page_show_hide();
-// 2. Project sub page 1 tab 15
-$csv2post_mpt_arr['projects']['tabs'][15]['active'] = true;
-$csv2post_mpt_arr['projects']['tabs'][15]['slug'] = 'tab15_pageprojects';
-$csv2post_mpt_arr['projects']['tabs'][15]['label'] = 'Theme Support';
-$csv2post_mpt_arr['projects']['tabs'][15]['name'] = 'themesupport';
-$csv2post_mpt_arr['projects']['tabs'][15]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['projects']['tabs'][15]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['projects']['tabs'][15]['display'] = csv2post_page_show_hide(1);
+// projects 0
+$sub = 0;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['slug'] = 'tab0_pageprojects';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['label'] = 'Projects';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['allowhide'] = false;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['display'] = csv2post_page_show_hide(); 
+$csv2post_mpt_arr['projects']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/projects/csv2post_tab'.$sub.'_pageprojects.php';
+// projects 1
+++$sub;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['slug'] = 'tab1_pageprojects';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['label'] = 'Content';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['allowhide'] = true;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['projects']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/projects/csv2post_tab'.$sub.'_pageprojects.php';
+// projects 2
+++$sub;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['slug'] = 'tab2_pageprojects';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['label'] = 'Titles';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['allowhide'] = true;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['projects']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/projects/csv2post_tab'.$sub.'_pageprojects.php';
+// projects 3
+++$sub;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['slug'] = 'tab3_pageprojects';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['label'] = 'SEO';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['allowhide'] = true;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['projects']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/projects/csv2post_tab'.$sub.'_pageprojects.php';
+// projects 4
+++$sub;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['slug'] = 'tab4_pageprojects';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['label'] = 'Post Types';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['allowhide'] = true;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['projects']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/projects/csv2post_tab'.$sub.'_pageprojects.php';
+// projects 5
+++$sub;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['slug'] = 'tab5_pageprojects';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['label'] = 'Post Dates';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['projects']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['projects']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/projects/csv2post_tab'.$sub.'_pageprojects.php';
+// projects 6
+++$sub;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['slug'] = 'tab6_pageprojects';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['label'] = 'Custom Fields';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['projects']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['projects']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/projects/csv2post_tab'.$sub.'_pageprojects.php';
+// projects 7
+++$sub;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['slug'] = 'tab7_pageprojects';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['label'] = 'Categories';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['projects']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['projects']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/projects/csv2post_tab'.$sub.'_pageprojects.php'; 
+// projects 8
+++$sub;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['slug'] = 'tab8_pageprojects';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['label'] = 'Update Options';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['projects']['tabs'][$sub]['display'] = csv2post_page_show_hide(1);
+$csv2post_mpt_arr['projects']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/projects/csv2post_tab'.$sub.'_pageprojects.php';
+// projects 9
+++$sub;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['slug'] = 'tab9_pageprojects';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['label'] = 'Images';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['projects']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['projects']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/projects/csv2post_tab'.$sub.'_pageprojects.php';
+// projects 10
+++$sub;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['slug'] = 'tab10_pageprojects';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['label'] = 'URL Cloaking';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['projects']['tabs'][$sub]['display'] = csv2post_page_show_hide(2);
+$csv2post_mpt_arr['projects']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/projects/csv2post_tab'.$sub.'_pageprojects.php';
+// projects 11
+++$sub;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['slug'] = 'tab11_pageprojects';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['label'] = 'Tags';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['projects']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['projects']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/projects/csv2post_tab'.$sub.'_pageprojects.php';
+// projects 12
+++$sub;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['slug'] = 'tab12_pageprojects';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['label'] = 'Text Spinning';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['projects']['tabs'][$sub]['display'] = csv2post_page_show_hide(1);
+$csv2post_mpt_arr['projects']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/projects/csv2post_tab'.$sub.'_pageprojects.php';
+// projects 13
+++$sub;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['slug'] = 'tab13_pageprojects';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['label'] = 'Project Data';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['projects']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['projects']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/projects/csv2post_tab'.$sub.'_pageprojects.php';
+// projects 14
+++$sub;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['slug'] = 'tab14_pageprojects';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['label'] = 'Authors';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['projects']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['projects']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/projects/csv2post_tab'.$sub.'_pageprojects.php';
+// projects 15
+++$sub;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['projects']['tabs'][$sub]['slug'] = 'tab15_pageprojects';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['label'] = 'Theme Support';
+$csv2post_mpt_arr['projects']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['projects']['tabs'][$sub]['display'] = csv2post_page_show_hide(1);
+$csv2post_mpt_arr['projects']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/projects/csv2post_tab'.$sub.'_pageprojects.php';
 
 ######################################################
 #                                                    #
@@ -502,64 +370,225 @@ $csv2post_mpt_arr['creation']['name'] = "yourcreation";
 $csv2post_mpt_arr['creation']['role'] = 'administrator';
 $csv2post_mpt_arr['creation']['title'] = 'Your Creation';
 $csv2post_mpt_arr['creation']['icon'] = 'options-general';
-$csv2post_mpt_arr['creation']['pagehelp'] = 'http://www.csv2post.com/';
 $csv2post_mpt_arr['creation']['headers'] = false;
 $csv2post_mpt_arr['creation']['vertical'] = false;
 $csv2post_mpt_arr['creation']['statusicons'] = true; 
-// 3. Results sub page 1 tab 1
-$csv2post_mpt_arr['creation']['tabs'][0]['active'] = true;
-$csv2post_mpt_arr['creation']['tabs'][0]['slug'] = 'tab0_pagecreation';
-$csv2post_mpt_arr['creation']['tabs'][0]['label'] = 'Create Posts';
-$csv2post_mpt_arr['creation']['tabs'][0]['name'] = 'selectables';
-$csv2post_mpt_arr['creation']['tabs'][0]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['creation']['tabs'][0]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['creation']['tabs'][0]['display'] = csv2post_page_show_hide();    
-// 3. Results sub page 1 tab 2
-$csv2post_mpt_arr['creation']['tabs'][1]['active'] = true;
-$csv2post_mpt_arr['creation']['tabs'][1]['slug'] = 'tab1_pagecreation';
-$csv2post_mpt_arr['creation']['tabs'][1]['label'] = 'Schedule';
-$csv2post_mpt_arr['creation']['tabs'][1]['name'] = 'schedule';
-$csv2post_mpt_arr['creation']['tabs'][1]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['creation']['tabs'][1]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['creation']['tabs'][1]['display'] = csv2post_page_show_hide(1); 
-// 3. Results sub page 1 tab 3
-$csv2post_mpt_arr['creation']['tabs'][2]['active'] = true;
-$csv2post_mpt_arr['creation']['tabs'][2]['slug'] = 'tab2_pagecreation';
-$csv2post_mpt_arr['creation']['tabs'][2]['label'] = 'Update Posts';
-$csv2post_mpt_arr['creation']['tabs'][2]['name'] = 'updateposts';
-$csv2post_mpt_arr['creation']['tabs'][2]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['creation']['tabs'][2]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['creation']['tabs'][2]['display'] = csv2post_page_show_hide(1);
-// 3. Results sub page 1 tab 4
-$csv2post_mpt_arr['creation']['tabs'][3]['active'] = true;
-$csv2post_mpt_arr['creation']['tabs'][3]['slug'] = 'tab3_pagecreation';
-$csv2post_mpt_arr['creation']['tabs'][3]['label'] = 'Undo';
-$csv2post_mpt_arr['creation']['tabs'][3]['name'] = 'undo';
-$csv2post_mpt_arr['creation']['tabs'][3]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['creation']['tabs'][3]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['creation']['tabs'][3]['display'] = csv2post_page_show_hide();
-// 3. Results sub page 1 tab 5
-$csv2post_mpt_arr['creation']['tabs'][4]['active'] = true;
-$csv2post_mpt_arr['creation']['tabs'][4]['slug'] = 'tab4_pagecreation';
-$csv2post_mpt_arr['creation']['tabs'][4]['label'] = 'View Posts';
-$csv2post_mpt_arr['creation']['tabs'][4]['name'] = 'viewposts';
-$csv2post_mpt_arr['creation']['tabs'][4]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['creation']['tabs'][4]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['creation']['tabs'][4]['display'] = csv2post_page_show_hide(2);
-// 3. Results sub page 1 tab 6
-$csv2post_mpt_arr['creation']['tabs'][5]['active'] = true;
-$csv2post_mpt_arr['creation']['tabs'][5]['slug'] = 'tab5_pagecreation';
-$csv2post_mpt_arr['creation']['tabs'][5]['label'] = 'Create Categories';
-$csv2post_mpt_arr['creation']['tabs'][5]['name'] = 'createcategories';
-$csv2post_mpt_arr['creation']['tabs'][5]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['creation']['tabs'][5]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['creation']['tabs'][5]['display'] = csv2post_page_show_hide(1);
-// 3. Results sub page 1 tab 7 
-$csv2post_mpt_arr['creation']['tabs'][6]['active'] = true;
-$csv2post_mpt_arr['creation']['tabs'][6]['slug'] = 'tab6_pagecreation';
-$csv2post_mpt_arr['creation']['tabs'][6]['label'] = 'Flagged Posts';
-$csv2post_mpt_arr['creation']['tabs'][6]['name'] = 'flaggedposts';
-$csv2post_mpt_arr['creation']['tabs'][6]['helpurl'] = 'http://www.csv2post.com/';
-$csv2post_mpt_arr['creation']['tabs'][6]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['creation']['tabs'][6]['display'] = csv2post_page_show_hide();       
+// creation 0
+$sub = 0;
+$csv2post_mpt_arr['creation']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['creation']['tabs'][$sub]['slug'] = 'tab0_pagecreation';
+$csv2post_mpt_arr['creation']['tabs'][$sub]['label'] = 'Create Posts';
+$csv2post_mpt_arr['creation']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['creation']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_tab'.$sub.'_pagecreation.php';     
+// creation 1
+++$sub;
+$csv2post_mpt_arr['creation']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['creation']['tabs'][$sub]['slug'] = 'tab1_pagecreation';
+$csv2post_mpt_arr['creation']['tabs'][$sub]['label'] = 'Schedule Events';
+$csv2post_mpt_arr['creation']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['creation']['tabs'][$sub]['display'] = csv2post_page_show_hide(1);
+$csv2post_mpt_arr['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_tab'.$sub.'_pagecreation.php';
+// creation 2
+++$sub;
+$csv2post_mpt_arr['creation']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['creation']['tabs'][$sub]['slug'] = 'tab2_pagecreation';
+$csv2post_mpt_arr['creation']['tabs'][$sub]['label'] = 'Update Posts';
+$csv2post_mpt_arr['creation']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['creation']['tabs'][$sub]['display'] = csv2post_page_show_hide(1);
+$csv2post_mpt_arr['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_tab'.$sub.'_pagecreation.php';
+// creation 3
+++$sub;
+$csv2post_mpt_arr['creation']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['creation']['tabs'][$sub]['slug'] = 'tab3_pagecreation';
+$csv2post_mpt_arr['creation']['tabs'][$sub]['label'] = 'Undo';
+$csv2post_mpt_arr['creation']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['creation']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_tab'.$sub.'_pagecreation.php';
+// creation 4
+++$sub;
+$csv2post_mpt_arr['creation']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['creation']['tabs'][$sub]['slug'] = 'tab4_pagecreation';
+$csv2post_mpt_arr['creation']['tabs'][$sub]['label'] = 'View Posts';
+$csv2post_mpt_arr['creation']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['creation']['tabs'][$sub]['display'] = csv2post_page_show_hide(2);
+$csv2post_mpt_arr['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_tab'.$sub.'_pagecreation.php';
+// creation 5
+++$sub;
+$csv2post_mpt_arr['creation']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['creation']['tabs'][$sub]['slug'] = 'tab5_pagecreation';
+$csv2post_mpt_arr['creation']['tabs'][$sub]['label'] = 'Create Categories';
+$csv2post_mpt_arr['creation']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['creation']['tabs'][$sub]['display'] = csv2post_page_show_hide(1);
+$csv2post_mpt_arr['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_tab'.$sub.'_pagecreation.php';
+// creation 6
+++$sub; 
+$csv2post_mpt_arr['creation']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['creation']['tabs'][$sub]['slug'] = 'tab6_pagecreation';
+$csv2post_mpt_arr['creation']['tabs'][$sub]['label'] = 'Flagged Posts';
+$csv2post_mpt_arr['creation']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['creation']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_tab'.$sub.'_pagecreation.php';       
+                       
+######################################################
+#                                                    #
+#                INSTALL and STATUS                  #
+#                                                    #
+######################################################
+// install page
+$csv2post_mpt_arr['install']['active'] = true;
+$csv2post_mpt_arr['install']['slug'] = WTG_C2P_ABB . "install";
+$csv2post_mpt_arr['install']['menu'] = $csv2post_plugintitle." Install";
+$csv2post_mpt_arr['install']['role'] = 'activate_plugins';
+$csv2post_mpt_arr['install']['title'] = $csv2post_plugintitle.' Install';
+$csv2post_mpt_arr['install']['name'] = 'install';
+$csv2post_mpt_arr['install']['icon'] = 'install';
+$csv2post_mpt_arr['install']['headers'] = false;
+$csv2post_mpt_arr['install']['vertical'] = false;
+$csv2post_mpt_arr['install']['statusicons'] = false;  
+// install 0
+$sub = 0;
+$csv2post_mpt_arr['install']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['install']['tabs'][$sub]['slug'] = 'tab0_install';
+$csv2post_mpt_arr['install']['tabs'][$sub]['label'] = 'Install Actions';
+$csv2post_mpt_arr['install']['tabs'][$sub]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['install']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['install']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/install/csv2post_tab'.$sub.'_install.php'; 
+// install 1
+++$sub;
+$csv2post_mpt_arr['install']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['install']['tabs'][$sub]['slug'] = 'tab1_install';
+$csv2post_mpt_arr['install']['tabs'][$sub]['label'] = 'Install History';
+$csv2post_mpt_arr['install']['tabs'][$sub]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['install']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['install']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/install/csv2post_tab'.$sub.'_install.php';  
+// install 2
+++$sub;
+$csv2post_mpt_arr['install']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['install']['tabs'][$sub]['slug'] = 'tab2_install';
+$csv2post_mpt_arr['install']['tabs'][$sub]['label'] = 'Install Status';
+$csv2post_mpt_arr['install']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['install']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['install']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/install/csv2post_tab'.$sub.'_install.php';   
+// install 3
+++$sub;
+$csv2post_mpt_arr['install']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['install']['tabs'][$sub]['slug'] = 'tab3_install';
+$csv2post_mpt_arr['install']['tabs'][$sub]['label'] = 'Your Server Status';
+$csv2post_mpt_arr['install']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['install']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['install']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/install/csv2post_tab'.$sub.'_install.php';   
+// install 4
+++$sub;
+$csv2post_mpt_arr['install']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['install']['tabs'][$sub]['slug'] = 'tab4_install';
+$csv2post_mpt_arr['install']['tabs'][$sub]['label'] = 'Activation Controls';
+$csv2post_mpt_arr['install']['tabs'][$sub]['allowhide'] = false  ;// is tab screen allowed to be hidden (boolean) 
+$csv2post_mpt_arr['install']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['install']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/install/csv2post_tab'.$sub.'_install.php';
+// install 5
+++$sub;
+$csv2post_mpt_arr['install']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['install']['tabs'][$sub]['slug'] = 'tab5_install';
+$csv2post_mpt_arr['install']['tabs'][$sub]['label'] = 'Files Status';
+$csv2post_mpt_arr['install']['tabs'][$sub]['allowhide'] = false  ;// is tab screen allowed to be hidden (boolean) 
+$csv2post_mpt_arr['install']['tabs'][$sub]['display'] = csv2post_page_show_hide(1);
+$csv2post_mpt_arr['install']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/install/csv2post_tab'.$sub.'_install.php'; 
+
+######################################################
+#                                                    #
+#                     MORE PAGE                      #
+#                                                    #
+######################################################  
+// more page - includes a sub-menu for offering far more pages without adding to plugn menu
+$csv2post_mpt_arr['more']['active'] = false;
+$csv2post_mpt_arr['more']['slug'] = "csv2post_more";
+$csv2post_mpt_arr['more']['menu'] = "More";
+$csv2post_mpt_arr['more']['role'] = 'activate_plugins';
+$csv2post_mpt_arr['more']['title'] = 'More';
+$csv2post_mpt_arr['more']['name'] = 'more'; 
+$csv2post_mpt_arr['more']['icon'] = 'install';
+$csv2post_mpt_arr['more']['headers'] = false;
+$csv2post_mpt_arr['more']['vertical'] = false;
+$csv2post_mpt_arr['more']['statusicons'] = false;      
+// more 0
+$sub = 0;
+$csv2post_mpt_arr['more']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['more']['tabs'][$sub]['slug'] = 'tab0_more';
+$csv2post_mpt_arr['more']['tabs'][$sub]['label'] = 'Support';
+$csv2post_mpt_arr['more']['tabs'][$sub]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['more']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['more']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/more/csv2post_tab'.$sub.'_more.php';   
+// more 1
+++$sub;
+$csv2post_mpt_arr['more']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['more']['tabs'][$sub]['slug'] = 'tab1_more';
+$csv2post_mpt_arr['more']['tabs'][$sub]['label'] = 'Community';
+$csv2post_mpt_arr['more']['tabs'][$sub]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['more']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['more']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/more/csv2post_tab'.$sub.'_more.php';  
+// more 2
+++$sub;
+$csv2post_mpt_arr['more']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['more']['tabs'][$sub]['slug'] = 'tab2_more';
+$csv2post_mpt_arr['more']['tabs'][$sub]['label'] = 'Downloads';
+$csv2post_mpt_arr['more']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['more']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['more']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/more/csv2post_tab'.$sub.'_more.php';  
+// more 3
+++$sub;
+$csv2post_mpt_arr['more']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['more']['tabs'][$sub]['slug'] = 'tab3_more';
+$csv2post_mpt_arr['more']['tabs'][$sub]['label'] = 'Affiliates';// Affiliate, payment history, traffic stats, display banners
+$csv2post_mpt_arr['more']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['more']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['more']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/more/csv2post_tab'.$sub.'_more.php'; 
+// more 4
+++$sub;
+$csv2post_mpt_arr['more']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['more']['tabs'][$sub]['slug'] = 'tab4_more';
+$csv2post_mpt_arr['more']['tabs'][$sub]['label'] = 'Development';// RSS feed link, blog entries directly, coming soon (top feature coming next)
+$csv2post_mpt_arr['more']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['more']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['more']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/more/csv2post_tab'.$sub.'_more.php';
+// more 5
+++$sub;
+$csv2post_mpt_arr['more']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['more']['tabs'][$sub]['slug'] = 'tab5_more';
+$csv2post_mpt_arr['more']['tabs'][$sub]['label'] = 'Testing';// test blogs, beta tester list, test forum discussion, RSS for testers and developers, short TO DO list (not whole list)
+$csv2post_mpt_arr['more']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['more']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['more']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/more/csv2post_tab'.$sub.'_more.php'; 
+// more 6
+++$sub;
+$csv2post_mpt_arr['more']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['more']['tabs'][$sub]['slug'] = 'tab6_more';
+$csv2post_mpt_arr['more']['tabs'][$sub]['label'] = 'Offers';// display a range of main offers, hosting packages with premium plugin purchase, free installs, setup etc
+$csv2post_mpt_arr['more']['tabs'][$sub]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['more']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['more']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/more/csv2post_tab'.$sub.'_more.php'; 
+// more 7
+++$sub;
+$csv2post_mpt_arr['more']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['more']['tabs'][$sub]['slug'] = 'tab7_more';
+$csv2post_mpt_arr['more']['tabs'][$sub]['label'] = 'My Tickets';// users submitted tickets, if API can access
+$csv2post_mpt_arr['more']['tabs'][$sub]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['more']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['more']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/more/csv2post_tab'.$sub.'_more.php'; 
+// more 8
+++$sub;
+$csv2post_mpt_arr['more']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['more']['tabs'][$sub]['slug'] = 'tab8_more';
+$csv2post_mpt_arr['more']['tabs'][$sub]['label'] = 'My Account';// purchased plugins, users account, transactions, loyalty points, stored API key, special permissions and access indicators etc
+$csv2post_mpt_arr['more']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['more']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['more']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/more/csv2post_tab'.$sub.'_more.php'; 
+// more 9
+++$sub;
+$csv2post_mpt_arr['more']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['more']['tabs'][$sub]['slug'] = 'tab9_more';
+$csv2post_mpt_arr['more']['tabs'][$sub]['label'] = 'Contact';// advanced contact form, creates ticket, forum post and sends email
+$csv2post_mpt_arr['more']['tabs'][$sub]['allowhide'] = false;// is tab screen allowed to be hidden (boolean) 
+$csv2post_mpt_arr['more']['tabs'][$sub]['display'] = csv2post_page_show_hide(1);
+$csv2post_mpt_arr['more']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/more/csv2post_tab'.$sub.'_more.php';
 ?>

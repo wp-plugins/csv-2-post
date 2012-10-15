@@ -45,16 +45,6 @@ $csv2post_options_array[WTG_C2P_ABB.'publicset']['inputtype'] = 'hidden';
 $csv2post_options_array[WTG_C2P_ABB.'publicset']['defaultvalue'] = 'NA';// NA if not applicable i.e. the default value is generated in the script   
 $csv2post_options_array[WTG_C2P_ABB.'publicset']['public'] = 'true';// boolean, false indicates users are not to be made aware of this option because it is more for development use
 $csv2post_options_array[WTG_C2P_ABB.'publicset']['required'] = 'true';// some option arrays may be optional, if that is the case true will avoid installation status checks returning false
-# tab menu array (the stored array controlling plugins tab menu, originally in file until installation)
-++$total_option_records;
-$csv2post_options_array[WTG_C2P_ABB.'tabmenu']['datatype'] = 'array';// array,boolean,string etc
-$csv2post_options_array[WTG_C2P_ABB.'tabmenu']['purpose'] = 'This array is used to build the plugins tab navigation and stores settings per tab screen offering a unique control over the plugins interface.';
-$csv2post_options_array[WTG_C2P_ABB.'tabmenu']['label'] = 'Option Record '.$total_option_records;
-$csv2post_options_array[WTG_C2P_ABB.'tabmenu']['name'] = 'Tab Menu Settings';
-$csv2post_options_array[WTG_C2P_ABB.'tabmenu']['inputtype'] = 'hidden';
-$csv2post_options_array[WTG_C2P_ABB.'tabmenu']['defaultvalue'] = 'NA';// NA if not applicable i.e. the default value is generated in the script 
-$csv2post_options_array[WTG_C2P_ABB.'tabmenu']['public'] = 'true';// boolean, false indicates users are not to be made aware of this option because it is more for development use
-$csv2post_options_array[WTG_C2P_ABB.'tabmenu']['required'] = 'true';// some option arrays may be optional, if that is the case true will avoid installation status checks returning false
 # last known installed version, used to track the gap between old and new versions ($csv2post_currentversion)
 ++$total_option_records;
 $csv2post_options_array[WTG_C2P_ABB.'installedversion']['datatype'] = 'string';

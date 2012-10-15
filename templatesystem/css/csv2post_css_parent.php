@@ -1,6 +1,11 @@
 <?php
 // $side is already set as required parameter
-if($side == 'admin'){
+if($side == 'admin' || $csv2post_css_side_override == true){
+
+    /*
+    * Do csv2post_css('admin',true); to run the admin lines but also trigger use of them on public side
+    * Do csv2post_css('public',true); to use both public and admin lines, must ensure there is no double uses
+    */
 
     // register our jquery style
     
@@ -39,9 +44,9 @@ if($side == 'admin'){
     add_action('init','csv2post_register_admin_styles');
 
     // print admin only styles (must be preregistered)
-    add_action('admin_print_styles','csv2post_styles_callback');
-    
-    function csv2post_styles_callback() {
+    add_action('admin_print_styles','csv2post_admin_styles_callback');
+                       
+    function csv2post_admin_styles_callback() {
         // jQuery UI Styling
         wp_enqueue_style('csv2post_jquery_styles');
         // notifications
@@ -64,6 +69,11 @@ if($side == 'admin'){
         // file uploader @ file uploader @ http://pixelcone.com/fileuploader/demo/
         wp_enqueue_style('csv2post_css_fileuploader');                     
     }
+    
+}
+
+// do not make this an else, this is to allow the admin override to be used AND apply public specific lines
+if($side == 'public'){
     
 }
 ?>

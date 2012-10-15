@@ -7,8 +7,8 @@ $panel_array['panel_title'] = __('Users Tutorials');// user seen panel header te
 $panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
 $panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_intro'] = __('Featured tutorials created by users of '.WTG_C2P_PLUGINTITLE);
-$panel_array['panel_help'] = __('Create a tutorial for '.WTG_C2P_PLUGINTITLE.' and make it available to the public to get a mention in the plugin plus a backlink to your own site. It is recommended you also put the WebTechGlobal site address on the backlinked page for good SEO.'); 
+$panel_array['panel_intro'] = __('Featured tutorials created by users of '.$csv2post_plugintitle);
+$panel_array['panel_help'] = __('Create a tutorial for '.$csv2post_plugintitle.' and make it available to the public to get a mention in the plugin plus a backlink to your own site. It is recommended you also put the WebTechGlobal site address on the backlinked page for good SEO.'); 
 $panel_array['help_button'] = csv2post_helpbutton_text(true,false);
 ?>
 <?php csv2post_panel_header( $panel_array );?>
@@ -29,7 +29,7 @@ $panel_array['panel_help'] = __('A great way to improve the plugin is to use it 
 $panel_array['help_button'] = csv2post_helpbutton_text(false,false);?>
 <?php csv2post_panel_header( $panel_array );?>
 
-  <h4><?php echo WTG_C2P_PLUGINTITLE;?> Price List</h4>
+  <h4><?php echo $csv2post_plugintitle;?> Price List</h4>
 
   <p>Customised Feature or New Feature: £50</p>
 
