@@ -18,12 +18,9 @@ else{$contactreason = 'pluginhelp';}?>
 
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'contact';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('Contact');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['help_button'] = csv2post_helpbutton_text(true,false);
 #### change these two lines for this page they are more dynamic
@@ -128,9 +125,13 @@ $panel_array['panel_help'] = __('Settings which effect posts (that includes page
             // form related
             $jsform_set['form_id'] = WTG_C2P_ABB.'form_id_' .$panel_array['panel_name'];
             $jsform_set['form_name'] = WTG_C2P_ABB.'form_name_'.$panel_array['panel_name'];
-
-            csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');?>
-
+            ?>
+            
+            <?php // begin form and add hidden values
+            csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
+            csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+            ?> 
+                    
             <input type="hidden" id="<?php echo WTG_C2P_ABB;?>contactreason_frompost" name="<?php echo WTG_C2P_ABB;?>contactreason_frompost" value="<?php echo $contactreason; ?>"> 
 
             <!-- CONTACT METHODS -->
@@ -329,6 +330,7 @@ $panel_array['panel_help'] = __('Settings which effect posts (that includes page
             <br /><br /> 
             
             <?php // Display help content
+            #### REMOVE THIS IFRAME, THESE GET PICKED UP AS A SECURITY ISSUE IN WORDPRESS PLUGINS AND WE DONT WANT TO RISK IT
             if($contactreason == 'bug'){?>
             
                 <div id="titles" class="postbox"> 

@@ -1,11 +1,8 @@
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'partialuninstall';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('Un-Install');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_array['panel_number'];// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = 'Delete selected parts of the plugins installation, clean-up time!';
 $panel_array['panel_help'] = 'This tool allows you to delete existing records, files and database tables so that there is no longer a trace of the installation. Settings are stored in the Wordpress options table and will be removed from there. You can leave some elements of the installation in your blog for using in future or possibly to support another plugin. Just ignore this ability if your not sure what it means or you want the most simple way to remove the plugin. Just remember if you do this and then attempt to install the blog in future you may get error type messages simply letting you know something was not installed but really indicating that it already exists.';
@@ -39,9 +36,13 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
                     $jsform_set['dialoguebox_title'] = 'Un-Installing '.$csv2post_plugintitle;
                     // wtg notice box display
                     $jsform_set['noticebox_content'] = 'Do you want to un-install the selected items?';
-
-                    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');?>
-
+                    ?>
+                    
+                    <?php // begin form and add hidden values
+                    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
+                    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+                    ?> 
+                    
                     <?php 
                     ### TODO:LOWPRIORITY,adapt these functions, use the counters and display a notice when no items exist
                     ?>
@@ -59,15 +60,15 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
                     <h4>Option Records</h4>
                     <?php csv2post_list_optionrecordtrace(true,'Tiny'); ?>                    
                                                   
-                    <?php
-                    // add the javascript that will handle our form action, prevent submission and display dialogue box
-                    // we need to pass form objects array as 2nd parameter but in this case the options array doubles as a form options array
-                    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-
-                    // add end of form - dialogue box does not need to be within the <form>
-                    csv2post_formend_standard('Un-Install',$jsform_set['form_id']);?>
-
-                    <?php csv2post_jquery_form_prompt($jsform_set);?>
+                     <?php 
+                    // add js for dialogue on form submission and the dialogue <div> itself
+                    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+                        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+                        csv2post_jquery_form_prompt($jsform_set);
+                    }
+                    ?>
+                        
+                    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
             </div>
         <?php } ?>
     </div>

@@ -11,12 +11,9 @@ if(!isset($csv2post_projectslist_array) || $csv2post_projectslist_array == false
 
         <?php
         ++$panel_number;// increase panel counter so this panel has unique ID
-        $panel_array = array();
+        $panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
         $panel_array['panel_name'] = 'createpostsproject'.$panel_number;// slug to act as a name and part of the panel ID 
-        $panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
         $panel_array['panel_title'] = __('Create Posts: ' . $project['name']);// user seen panel header text 
-        $panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-        $panel_array['tabnumber'] = $csv2post_tab_number; 
         $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
         $panel_array['panel_intro'] = __('Create posts for project named ' . $project['name']);
         $panel_array['panel_help'] = __('This panel allows you to create posts manually. Use the slider to decide how many posts to create using the records imported to your projects data table. The slider will take the number of records available into consideration and set a limit. If you are using multiple database tables, the default approach is for CSV 2 POST to link records in each table together by the order they come in. The alternative is using primary key columns and manually mapping the tables too each other. This is considered an advanced feature and watching tutorials is recommended. Importer more rows from your CSV file if you have not finished doing so to create more records in your projects data tables.');
@@ -31,8 +28,12 @@ if(!isset($csv2post_projectslist_array) || $csv2post_projectslist_array == false
             
             <?php csv2post_panel_header( $panel_array );?>
 
-                <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');?>             
-
+                <?php 
+                // begin form and add hidden values
+                csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');
+                csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+                ?>
+                
                 <?php 
                 $project_array = csv2post_get_project_array($project_code);
                  
@@ -189,15 +190,16 @@ if(!isset($csv2post_projectslist_array) || $csv2post_projectslist_array == false
                     <input type="hidden" name="csv2post_project_code" value="<?php echo $project_code; ?>">
                     <input type="hidden" name="csv2post_post_creation_request" value="true">
                     
-                    <?php
-                    // add the javascript that will handle our form action, prevent submission and display dialogue box
+                <?php 
+                // add js for dialogue on form submission and the dialogue <div> itself
+                if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
                     csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-
-                    // add end of form - dialogue box does not need to be within the <form>
-                    csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
-
-                    <?php csv2post_jquery_form_prompt($jsform_set);?>
-                                
+                    csv2post_jquery_form_prompt($jsform_set);
+                }
+                ?>
+                    
+                <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
+                                                
             <?php 
             }// if requirements met
             ?>

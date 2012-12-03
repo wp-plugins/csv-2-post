@@ -1,11 +1,8 @@
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'uploadcsvfile';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('Upload CSV File');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Upload a new .csv file to the plugins own content folder.');
 $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
@@ -41,12 +38,9 @@ $jsform_set['noticebox_content'] = 'You are about to upload a CSV file, it will 
         
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'createdataimportjobcsvfiles';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('Create Data Import Jobs With CSV Files');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Create a data import job using one or more CSV files');
 $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
@@ -70,8 +64,12 @@ $nonce = wp_create_nonce( "csv2post_referer_" . $panel_array['panel_name'] );
 
 <?php csv2post_panel_header( $panel_array );?>
     
-    <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);?>
-
+    <?php 
+    // begin form and add hidden values
+    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
+    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+    ?> 
+    
     <?php // set ID and NAME variables
     $jobname_id = 'csv2post_jobname_id_' . $panel_array['panel_name'];
     $jobname_name = 'csv2post_jobname_name_' . $panel_array['panel_name'];?>
@@ -132,26 +130,24 @@ $nonce = wp_create_nonce( "csv2post_referer_" . $panel_array['panel_name'] );
     <h2>Select CSV File/s</h2>
     <p><?php csv2post_display_csvfiles_fornewdataimportjob(); ?></p>
     
-    <?php
-    // add the javascript that will handle our form action, prevent submission and display dialogue box
-    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-
-    // add end of form - dialogue box does not need to be within the <form>
-    csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
-
-    <?php csv2post_jquery_form_prompt($jsform_set);?>            
+     <?php 
+    // add js for dialogue on form submission and the dialogue <div> itself
+    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        csv2post_jquery_form_prompt($jsform_set);
+    }
+    ?>
+        
+    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>            
 
 <?php csv2post_panel_footer();?>
 
 
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'deletedataimportjob';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
-$panel_array['panel_title'] = __('Delete Data Import Jobs');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
+$panel_array['panel_title'] = __('Delete Data Import Jobs');// user seen panel header text  
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('A list of all data import jobs that can be deleted');
 $panel_array['panel_help'] = __('As the plugin becomes more advanced, some Data Import Jobs may not allow deletion in certain circumstances. They will probably show in the list but not allow selection.');
@@ -167,26 +163,31 @@ $jsform_set['noticebox_content'] = 'You are about to delete select data import j
 
 <?php csv2post_panel_header( $panel_array );?>
 
-    <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','','');?>
-
+    <?php 
+    // begin form and add hidden values
+    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
+    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+    ?> 
+    
     <?php csv2post_list_dataimportjobs();?>
 
-    <?php 
-    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-    csv2post_formend_standard('Delete',$jsform_set['form_id']);
-    csv2post_jquery_form_prompt($jsform_set);
+            <?php 
+    // add js for dialogue on form submission and the dialogue <div> itself
+    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        csv2post_jquery_form_prompt($jsform_set);
+    }
     ?>
+        
+    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
 
 <?php csv2post_panel_footer();?>
 
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'csvfileprofiles';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('CSV File Profiles');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Information about all available CSV files, used or not');
 $panel_array['panel_help'] = __('This panel shows all the .csv files available to import data. Some basic information about the files is displayed.');
@@ -205,12 +206,9 @@ $panel_array['panel_url'] = 'http://www.csv2post.com/feature-guides/csv-file-pro
 
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'testcsvfiles';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('Test CSV Files');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Run a series of tests on a file to help determine its suitability as a CSV file');
 $panel_array['panel_help'] = __('This tool will run some tests on your file and try to detect potential problems. You may get recommendations for your file which you can ignore, you will know best but the plugin will try to suggest changes that you can try should you experience any problems with your file. Where a fault is detected and confirmed to prevent proper use of a file it will be made very clear to you. The most common cause of problems is a CSV file that is not properly formatted. A CSV files rows should be spread over a single line within the file when opened in Notepad and Excel. Many files are created with data covering multiple rows within the file, missing commas or headers/titles that are not suitable as an identifier i.e. too many words and special characters. Most of the requirements of a properly formatted CSV file follow standards often expected within database management because the data usually comes from a database and is eventually being imported to a database.');
@@ -226,8 +224,12 @@ $jsform_set['noticebox_content'] = 'Do you want to run the full series of tests 
 
 <?php csv2post_panel_header( $panel_array );?>
 
-    <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form');?>
-
+    <?php 
+    // begin form and add hidden values
+    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
+    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+    ?> 
+    
     <h2>Select CSV File</h2>
     <?php csv2post_menu_csvfiles('all',$panel_array['panel_name']);?>
 
@@ -244,25 +246,23 @@ $jsform_set['noticebox_content'] = 'Do you want to run the full series of tests 
         <input type="radio" id="csv2post_separator_radio3<?php echo $panel_array['panel_name'];?>" name="csv2post_testcsvfile_separator_radiogroup" value="|" /><label for="csv2post_separator_radio3<?php echo $panel_array['panel_name'];?>">|</label>
     </div>
     
-    <?php
-    // add the javascript that will handle our form action, prevent submission and display dialogue box
-    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-
-    // add end of form - dialogue box does not need to be within the <form>
-    csv2post_formend_standard('Run Test',$jsform_set['form_id']);?>
-
-    <?php csv2post_jquery_form_prompt($jsform_set);?> 
+     <?php 
+    // add js for dialogue on form submission and the dialogue <div> itself
+    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        csv2post_jquery_form_prompt($jsform_set);
+    }
+    ?>
+        
+    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?> 
         
 <?php csv2post_panel_footer();?>
 
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'deletecsvfiles';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('Delete CSV File');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('A list of used files, scroll further down to view import jobs');
 $panel_array['panel_help'] = __('Refreshing the browser will show the latest statistics in this table if you have imported data on this page. This list of files are those used in data import jobs. If a file shows twice it is because you are using it in more than one job. This panel is not for importing data. Scroll further down the Import screen to view individual job panels to begin manual data importing and view their progress.');
@@ -273,29 +273,31 @@ $jsform_set['dialoguebox_title'] = 'Delete CSV File';
 $jsform_set['noticebox_content'] = 'You are about to delete the selected CSV file. If it is in use by a Data Import Job or a project, CSV 2 POST will prevent the deletion. Do you wish to continue?';?>
 <?php csv2post_panel_header( $panel_array );?>
  
-    <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form');?>
-     
+    <?php 
+    // begin form and add hidden values
+    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
+    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+    ?> 
+    
     <?php csv2post_csv_files_list();?>
 
-    <?php
-    // add the javascript that will handle our form action, prevent submission and display dialogue box
-    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-
-    // add end of form - dialogue box does not need to be within the <form>
-    csv2post_formend_standard('Delete File',$jsform_set['form_id']);?>
-
-    <?php csv2post_jquery_form_prompt($jsform_set);?>
+      <?php 
+    // add js for dialogue on form submission and the dialogue <div> itself
+    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        csv2post_jquery_form_prompt($jsform_set);
+    }
+    ?>
+        
+    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
         
 <?php csv2post_panel_footer();?> 
 
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'usedcsvfilelist';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('Used CSV File List');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('A list of used files, scroll further down to view import jobs');
 $panel_array['panel_help'] = __('Refreshing the browser will show the latest statistics in this table if you have imported data on this page. This list of files are those used in data import jobs. If a file shows twice it is because you are using it in more than one job. This panel is not for importing data. Scroll further down the Import screen to view individual job panels to begin manual data importing and view their progress.');
@@ -316,12 +318,9 @@ if($csv2post_is_dev){
     
     // Current Job Array Panel
     ++$panel_number;// increase panel counter so this panel has unique ID
-    $panel_array = array();
+    $panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
     $panel_array['panel_name'] = 'currentjobarraydump';// slug to act as a name and part of the panel ID 
-    $panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
     $panel_array['panel_title'] = __('Current Job Array Dump');// user seen panel header text 
-    $panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-    $panel_array['tabnumber'] = $csv2post_tab_number; 
     $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
     $panel_array['panel_intro'] = __('A dump of your current job array');
     $panel_array['panel_help'] = __('If you have a current data import job set, the jobs array will be dumped here. The array is a set of PHP values stored in the Wordpress options table under the key "csv2post_currentjobcode".');
@@ -336,12 +335,9 @@ if($csv2post_is_dev){
     
     // $csv2post_dataimportjobs_array Panel
     ++$panel_number;// increase panel counter so this panel has unique ID
-    $panel_array = array();
+    $panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
     $panel_array['panel_name'] = 'dataimportjobsarray';// slug to act as a name and part of the panel ID 
-    $panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
     $panel_array['panel_title'] = __('Data Import Jobs Array');// user seen panel header text 
-    $panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-    $panel_array['tabnumber'] = $csv2post_tab_number; 
     $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
     $panel_array['panel_intro'] = __('A dump of the array that holds a list of all data import jobs');
     $panel_array['panel_help'] = __('The data import jobs array is a list of all jobs. It is mainly used to create a list of data import jobs for user to select as their current one.');
@@ -356,12 +352,9 @@ if($csv2post_is_dev){
 
     // $csv2post_jobtable_array Panel
     ++$panel_number;// increase panel counter so this panel has unique ID
-    $panel_array = array();
+    $panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
     $panel_array['panel_name'] = 'jobtablesarray';// slug to act as a name and part of the panel ID 
-    $panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
     $panel_array['panel_title'] = __('Job Tables Array');// user seen panel header text 
-    $panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-    $panel_array['tabnumber'] = $csv2post_tab_number; 
     $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
     $panel_array['panel_intro'] = __('The array dumped here holds all tables created for Data Import Jobs');
     $panel_array['panel_help'] = __('All database tables created by CSV 2 POST for data import jobs are added to this array. As I write this, entries are not removed when deleting tables. How the plugin deals with this may change later, but for now the left over entries act as a history. The array is stored in $csv2post_jobtable_array which can be called globally and used to list tables.');

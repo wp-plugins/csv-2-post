@@ -8,14 +8,11 @@ if($side == 'admin' || $csv2post_css_side_override == true){
     */
 
     // register our jquery style
-    
+
     /**
-    * Applicable themes stated with $csv2post_theme_array, defined in csv2post_variables_admin.php
-    */   
-    
-    /**
-    * Registers all administration area CSS sources 
+    * @todo move this function to an appropriate function file and move add_action to the main file
     */
+    
     function csv2post_register_admin_styles() {
         global $csv2post_jqueryuitheme;
         
@@ -41,11 +38,6 @@ if($side == 'admin' || $csv2post_css_side_override == true){
         wp_register_style(WTG_C2P_ABB . 'css_fileuploader',plugins_url(WTG_C2P_FOLDERNAME.'/templatesystem/css/fileuploader.css'), __FILE__);                
     }
 
-    add_action('init','csv2post_register_admin_styles');
-
-    // print admin only styles (must be preregistered)
-    add_action('admin_print_styles','csv2post_admin_styles_callback');
-                       
     function csv2post_admin_styles_callback() {
         // jQuery UI Styling
         wp_enqueue_style('csv2post_jquery_styles');
@@ -70,6 +62,10 @@ if($side == 'admin' || $csv2post_css_side_override == true){
         wp_enqueue_style('csv2post_css_fileuploader');                     
     }
     
+    
+    // print admin only styles (must be preregistered)
+    add_action('admin_print_styles','csv2post_admin_styles_callback');
+    add_action('init','csv2post_register_admin_styles');
 }
 
 // do not make this an else, this is to allow the admin override to be used AND apply public specific lines

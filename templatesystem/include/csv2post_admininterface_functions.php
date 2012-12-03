@@ -119,41 +119,39 @@ function csv2post_navigation_jquery($thepagekey){
 
     <?php 
     if($csv2post_mpt_arr[$thepagekey]['headers'] == true){
-        $counttabs = 0;
-        foreach($csv2post_mpt_arr[$thepagekey]['tabs'] as $tab=>$values){
-            
-            $pageslug = $csv2post_mpt_arr[$thepagekey]['slug'];
-            $tabslug = $csv2post_mpt_arr[$thepagekey]['tabs'][$counttabs]['slug'];
-            $tablabel = $csv2post_mpt_arr[$thepagekey]['tabs'][$counttabs]['label'];   
 
-            if($csv2post_mpt_arr[ $thepagekey ]['tabs'][ $counttabs ]['display'] == true && $csv2post_mpt_arr[$thepagekey]['tabs'][$counttabs]['active'] == true ){
+        foreach($csv2post_mpt_arr[$thepagekey]['tabs'] as $tab => $values){
+
+            $pageslug = $csv2post_mpt_arr[$thepagekey]['slug'];
+            $tabslug = $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['slug'];
+            $tablabel = $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['label'];   
+
+            if($csv2post_mpt_arr[ $thepagekey ]['tabs'][ $tab ]['display'] == true && $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['active'] == true ){
 
                 // install menu is handled different
                 ### ??? is this correct, is the install page key not install rather than 1
                 if($thepagekey == 1){?>
-                    <div id="tabs-<?php echo $counttabs;?>">
-                        <?php echo $csv2post_mpt_arr[$thepagekey]['tabs'][$counttabs]['label'];?>
+                    <div id="tabs-<?php echo $tab;?>">
+                        <?php echo $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['label'];?>
                     </div><?php    
                 }        
             } 
-            
-            ++$counttabs;
+
         }
     }?>       
     
-    <?php
+    <?php 
     // begin building menu - controlled by jQuery
-    echo '<ul>';
+    echo '<ul>'; 
 
     // loop through tabs - held in menu pages tabs array
-    $counttabs = 0;
     foreach($csv2post_mpt_arr[$thepagekey]['tabs'] as $tab=>$values){
-        
+
         $pageslug = $csv2post_mpt_arr[$thepagekey]['slug'];
-        $tabslug = $csv2post_mpt_arr[$thepagekey]['tabs'][$counttabs]['slug'];
-        $tablabel = $csv2post_mpt_arr[$thepagekey]['tabs'][$counttabs]['label'];   
+        $tabslug = $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['slug'];
+        $tablabel = $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['label'];   
   
-        if( $csv2post_mpt_arr[ $thepagekey ]['tabs'][ $counttabs ]['display'] == true && $csv2post_mpt_arr[$thepagekey]['tabs'][$counttabs]['active'] == true ){
+        if( $csv2post_mpt_arr[ $thepagekey ]['tabs'][ $tab ]['display'] == true && $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['active'] == true ){
 
             // TODO:LOWPRIORITY, if( $csv2post_is_activated == 'true' ){    if not fully installed it will be dealt with on status screen
 
@@ -162,16 +160,16 @@ function csv2post_navigation_jquery($thepagekey){
              
                 if( $csv2post_is_installed == 'true' ){                
                     // do not show installation tab
-                    if($counttabs != 4){ 
-                        echo '<li><a href="'.csv2post_create_adminurl($pageslug,'').'#tabs-'.$counttabs.'">'.$tablabel.'</a></li>';       
+                    if($tab != 4){ 
+                        echo '<li><a href="'.csv2post_create_adminurl($pageslug,'').'#tabs-'.$tab.'">'.$tablabel.'</a></li>';       
                     }
 
                 }else{
                    
                     // only show installation tab
-                    if($counttabs == 4){ 
-                        echo '<li><a href="'.csv2post_create_adminurl($pageslug,'').'#tabs-'.$counttabs.'">'.$tablabel.'</a></li>';       
-                        ++$counttabs;
+                    if($tab == 4){ 
+                        echo '<li><a href="'.csv2post_create_adminurl($pageslug,'').'#tabs-'.$tab.'">'.$tablabel.'</a></li>';       
+                        ++$tab;
                         // break the loop to prevent loop through further pages
                         break;
                     }            
@@ -179,12 +177,9 @@ function csv2post_navigation_jquery($thepagekey){
                 
             }else{
                 // default menu build approach
-                echo '<li><a href="'.csv2post_create_adminurl($pageslug,'').'#tabs-'.$counttabs.'">' . $tablabel . '</a></li>';                                
+                echo '<li><a href="'.csv2post_create_adminurl($pageslug,'').'#tabs-'.$tab.'">' . $tablabel . '</a></li>';                                
             }
-            
         } 
-        
-        ++$counttabs;
     }// for each
     
     echo '</ul>';?>    
@@ -958,8 +953,7 @@ function csv2post_hidden_form_values($tabnumber,$pageid,$panel_name,$panel_title
  * 
  * @todo this function requires the form
  */
-function csv2post_jqueryform_singleaction_middle($jsform_set,$formobjects_array){
-
+function csv2post_jqueryform_singleaction_middle($jsform_set,$formobjects_array){         
     extract( shortcode_atts( array(
     'has_options' => false,
     'pageid' => 0,
@@ -973,9 +967,6 @@ function csv2post_jqueryform_singleaction_middle($jsform_set,$formobjects_array)
 
     // add the javascript
     csv2post_jquery_opendialog_confirmformaction($jsform_set,$formobjects_array);
-
-    // add wtg hidden form values (for debugging)
-    csv2post_hidden_form_values($tab_number,$pageid,$panel_name,$panel_title,$panel_number);
 }
 
 /**
@@ -1436,18 +1427,18 @@ function csv2post_list_dataimportjobs(){
 * @param array $panel_array
 */
 function csv2post_panel_header( $panel_array, $boxintro_div = true ){
-    global $csv2post_panels_closed;
-    
-    // establish panel state
+    global $csv2post_adm_set;
+                         
+    // establish global panel state for all panels in plugin, done prior 
     $panel_state = ''; 
-    if($csv2post_panels_closed){
+    if($panel_state){
         $panel_state = 'closed';    
-    }
-    
+    }    
+          
     // override panel state if $panel_array includes specific state
-    if(isset($panel_array['panel_state']) && $panel_array['panel_state'] == 1){
+    if(isset($panel_array['panel_state']) && ($panel_array['panel_state'] == 1 || $panel_array['panel_state'] == 'open')){
         $panel_state = 'open';    
-    }elseif(isset($panel_array['panel_state']) && $panel_array['panel_state'] == 0){
+    }elseif(isset($panel_array['panel_state']) && ($panel_array['panel_state'] == 0 || $panel_array['panel_state'] == 'closed')){
         $panel_state = 'closed';
     }?>
 
@@ -1842,10 +1833,11 @@ function csv2post_save_postdata_titletemplate( $post_id ) {
 * Standard form submission prompt 
 */
 function csv2post_jquery_form_prompt($jsform_set){?>
-    <!-- dialogue box -->
+    <!-- dialogue box start -->
     <div id="<?php echo $jsform_set['dialoguebox_id'];?>" title="<?php echo $jsform_set['dialoguebox_title'];?>">
         <?php echo wtgcore_notice($jsform_set['noticebox_content'],'question','Small',false,'','return');?>
-    </div><?php      
+    </div>
+    <!-- dialogue box end --> <?php      
 } 
 
 /**
@@ -1912,25 +1904,23 @@ function csv2post_navigation_css($thepagekey){
 
     <?php 
     if($csv2post_mpt_arr[$thepagekey]['headers'] == true){
-        $counttabs = 0;
+        
         foreach($csv2post_mpt_arr[$thepagekey]['tabs'] as $tab=>$values){
             
             $pageslug = $csv2post_mpt_arr[$thepagekey]['slug'];
-            $tabslug = $csv2post_mpt_arr[$thepagekey]['tabs'][$counttabs]['slug'];
-            $tablabel = $csv2post_mpt_arr[$thepagekey]['tabs'][$counttabs]['label'];   
+            $tabslug = $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['slug'];
+            $tablabel = $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['label'];   
  
-             if($csv2post_mpt_arr[ $thepagekey ]['tabs'][ $counttabs ]['display'] == true){
+             if($csv2post_mpt_arr[ $thepagekey ]['tabs'][ $tab ]['display'] == true){
 
                 // install menu is handled different
                 ### ??? is this correct, is the install page key not install rather than 1
                 if($thepagekey == 1){?>
-                    <div id="tabs-<?php echo $counttabs;?>">
-                        <?php echo $csv2post_mpt_arr[$thepagekey]['tabs'][$counttabs]['label'];?>
+                    <div id="tabs-<?php echo $tab;?>">
+                        <?php echo $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['label'];?>
                     </div><?php    
                 }        
             } 
-            
-            ++$counttabs;
         }
     }?>       
     
@@ -1939,14 +1929,13 @@ function csv2post_navigation_css($thepagekey){
     echo '<ul>';
 
     // loop through tabs - held in menu pages tabs array
-    $counttabs = 0;
-    foreach($csv2post_mpt_arr[$thepagekey]['tabs'] as $tab=>$values){
+    foreach($csv2post_mpt_arr[$thepagekey]['tabs'] as $tab => $values){
         
         $pageslug = $csv2post_mpt_arr[$thepagekey]['slug'];
-        $tabslug = $csv2post_mpt_arr[$thepagekey]['tabs'][$counttabs]['slug'];
-        $tablabel = $csv2post_mpt_arr[$thepagekey]['tabs'][$counttabs]['label'];   
+        $tabslug = $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['slug'];
+        $tablabel = $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['label'];   
         
-        if($csv2post_mpt_arr[ $thepagekey ]['tabs'][ $counttabs ]['display'] == true){
+        if($csv2post_mpt_arr[ $thepagekey ]['tabs'][ $tab ]['display'] == true){
 
             // TODO:LOWPRIORITY, if( $csv2post_is_activated == 'true' ){    if not fully installed it will be dealt with on status screen          
             
@@ -1955,16 +1944,16 @@ function csv2post_navigation_css($thepagekey){
              
                 if( $csv2post_is_installed == 'true' ){                
                     // do not show installation tab
-                    if($counttabs != 4){ 
-                        echo '<li><a href="'.csv2post_create_adminurl($pageslug,'').'#tabs-'.$counttabs.'">'.$tablabel.'</a></li>';       
+                    if($tab != 4){ 
+                        echo '<li><a href="'.csv2post_create_adminurl($pageslug,'').'#tabs-'.$tab.'">'.$tablabel.'</a></li>';       
                     }
 
                 }else{
                    
                     // only show installation tab
-                    if($counttabs == 4){ 
-                        echo '<li><a href="'.csv2post_create_adminurl($pageslug,'').'#tabs-'.$counttabs.'">'.$tablabel.'</a></li>';       
-                        ++$counttabs;
+                    if($tab == 4){ 
+                        echo '<li><a href="'.csv2post_create_adminurl($pageslug,'').'#tabs-'.$tab.'">'.$tablabel.'</a></li>';       
+
                         // break the loop to prevent loop through further pages
                         break;
                     }            
@@ -1972,12 +1961,10 @@ function csv2post_navigation_css($thepagekey){
                 
             }else{
                 // default menu build approach
-                echo '<li><a href="'.csv2post_create_adminurl($pageslug,'').'&tabnumber='.$counttabs.'">' . $tablabel . '</a></li>';                                
+                echo '<li><a href="'.csv2post_create_adminurl($pageslug,'').'&tabnumber='.$tab.'">' . $tablabel . '</a></li>';                                
             }
             
         } 
-        
-        ++$counttabs;
     }// for each
     
     echo '</ul>';  
@@ -3853,5 +3840,5 @@ function csv2post_display_sample_data($table_name,$limit = 10,$columns = '*'){
         }
     
     echo '</table>';           
-}                                                                                                                  
+}                                                                                                              
 ?>

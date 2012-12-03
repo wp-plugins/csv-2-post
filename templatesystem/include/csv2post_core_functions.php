@@ -59,7 +59,7 @@ function csv2post_print_admin_scripts() {
             //wp_register_script( 'jquery-ui', 'http://jquery-ui.googlecode.com/svn/tags/latest/ui/jquery-ui.js');
             wp_register_script( 'jquery-ui', WTG_C2P_URL.'templatesystem/script/jquery-ui.js');
         wp_enqueue_script( 'jquery-ui' );
-        
+          
         #####################################################################################
         #                                                                                   #
         #                        SCRIPTS NOT PACKAGED WITH WORDPRESS                        #
@@ -83,7 +83,7 @@ function csv2post_print_admin_scripts() {
         
         // multi-select (lists, not the same as multiselect menus)
         wp_register_script('jquery-cookie',WTG_C2P_URL.'templatesystem/script/jquery.cookie.js');
-        wp_enqueue_script('jquery-cookie');        
+        wp_enqueue_script('jquery-cookie');  
      }
 }
                
@@ -1049,7 +1049,7 @@ function csv2post_formend_standard($buttontitle = 'Submit',$buttonid = 'notrequi
 }
             
 /**
-* Returns the plugins standard date with common format used in Wordpress.
+* Returns the plugins standard date (MySQL Date Time Formatted) with common format used in Wordpress.
 * Optional $time parameter, if false will return the current time().
 * 
 * @param integer $timeaddition, number of seconds to add to the current time to create a future date and time
@@ -1410,7 +1410,7 @@ function csv2post_get_option_notifications_array(){
     if(!is_array($v)){
         return array();    
     }
-    return $val;    
+    return $v;    
 }
 
 /**
@@ -1764,6 +1764,32 @@ function csv2post_log_posts($post_id,$post_title,$action,$message,$project_name)
     $atts['projectname'] = $project_name;
     // set log type so the log entry is made to the required log file
     $atts['type'] = 'posts';
+    // call log function which performs log and uses $csv2post_logfiles_array
+    wtgcore_log($atts);    
+}
+
+/**
+* Use this to log automated events and track progress in automated scripts.
+* Mainly used in schedule function but can be used in any functions called by add_action() or
+* other processing that is triggered by user events but not specifically related to what the user is doing.
+* 
+* @param mixed $outcome
+* @param mixed $trigger schedule, hook (action hooks such as text spinning could be considered automation), cron, url, user (i.e. user does something that triggers background processing)
+* @param mixed $line
+* @param mixed $file
+* @param mixed $function
+*/
+function csv2post_log_automation($action,$outcome,$trigger = 'schedule',$line = 'NA',$file = 'NA',$function = 'NA'){
+    $atts = array();   
+    $atts['logged'] = csv2post_date();
+    $atts['action'] = $action;
+    $atts['outcome'] = $outcome;
+    $atts['trigger'] = $trigger;
+    $atts['line'] = $line;
+    $atts['file'] = $file;
+    $atts['function'] = $function;
+    // set log type so the log entry is made to the required log file
+    $atts['type'] = 'automation';
     // call log function which performs log and uses $csv2post_logfiles_array
     wtgcore_log($atts);    
 }

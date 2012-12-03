@@ -1,11 +1,8 @@
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'defaultauthor';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
-$panel_array['panel_title'] = __('Default Author');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
+$panel_array['panel_title'] = __('Default Author');// user seen panel header text  
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Select a user in your blog to be applied as the author by default');
 $panel_array['panel_help'] = __('Your default author will always be the author applied if you do not setup any other advanced rules.');
@@ -17,8 +14,12 @@ $jsform_set['dialoguebox_title'] = 'Save Default Author';
 $jsform_set['noticebox_content'] = 'Do you want to save a default author now?';?>
 <?php csv2post_panel_header( $panel_array );?>
 
-    <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');?>
-
+    <?php 
+    // begin form and add hidden values
+    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
+    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+    ?> 
+    
     <select name="csv2post_defaultauthor_select" id="csv2post_defaultauthor_select_id" class="csv2post_multiselect_menu">
         
         <?php
@@ -48,26 +49,24 @@ $jsform_set['noticebox_content'] = 'Do you want to save a default author now?';?
     
     <br />
        
-    <?php
-    // add the javascript that will handle our form action, prevent submission and display dialogue box
-    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-
-    // add end of form - dialogue box does not need to be within the <form>
-    csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
-
-    <?php csv2post_jquery_form_prompt($jsform_set);?>
+     <?php 
+    // add js for dialogue on form submission and the dialogue <div> itself
+    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        csv2post_jquery_form_prompt($jsform_set);
+    }
+    ?>
+        
+    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
 
 <?php csv2post_panel_footer();?>
 
 <?php
 if(!$csv2post_is_free){
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'createauthors';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
-$panel_array['panel_title'] = __('Create Authors');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
+$panel_array['panel_title'] = __('Create Authors');// user seen panel header text  
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Suitable if your CSV file rows has an email address column');
 $panel_array['panel_help'] = __('This tool can create users using email address only. CSV 2 POST will generate
@@ -85,8 +84,12 @@ $jsform_set['noticebox_content'] = 'Authors will be generated using this feature
 Wordpress may send emails to every email address used. Do you wish to continue?';?>
 <?php csv2post_panel_header( $panel_array );?>
 
-    <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');?>
-
+    <?php 
+    // begin form and add hidden values
+    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
+    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+    ?> 
+    
     Email Address Column:
     <select name="csv2post_createusers_emailcolumn" id="csv2post_createusers_emailcolumn" class="csv2post_multiselect_menu">
         <option value="notselected">Not Selected</option>    
@@ -129,14 +132,15 @@ Wordpress may send emails to every email address used. Do you wish to continue?'
     
     <br />
        
-    <?php
-    // add the javascript that will handle our form action, prevent submission and display dialogue box
-    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-
-    // add end of form - dialogue box does not need to be within the <form>
-    csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
-
-    <?php csv2post_jquery_form_prompt($jsform_set);?>
+     <?php 
+    // add js for dialogue on form submission and the dialogue <div> itself
+    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        csv2post_jquery_form_prompt($jsform_set);
+    }
+    ?>
+        
+    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
 
 <?php csv2post_panel_footer();
 }?>

@@ -1,11 +1,8 @@
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'quickstartintroduction';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('Quick Start Introduction');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 ?>
 <?php csv2post_panel_header( $panel_array, false );?>
@@ -29,12 +26,9 @@ $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a
 
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'quickstartyourdata';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('Step One: Create Data Import Job');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 ?>
 <?php csv2post_panel_header( $panel_array, false );?>
@@ -59,12 +53,9 @@ Job to be created at this time.</p>
 
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'quickstartyourprojects';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('Step Two: Create Post Creation Project');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 ?>
 <?php csv2post_panel_header( $panel_array, false );?>
@@ -88,12 +79,9 @@ auto-configure settings for specific themes so users have even less to do. That 
 
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'quickstartyourcreation';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('Step Three: Your Creation');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 ?>
 <?php csv2post_panel_header( $panel_array, false );?>

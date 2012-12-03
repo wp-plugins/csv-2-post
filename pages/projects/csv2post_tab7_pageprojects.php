@@ -8,12 +8,9 @@ if(!isset($csv2post_project_array['categories'])){
 
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'defaultcategory';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
-$panel_array['panel_title'] = __('Set Default Category');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
+$panel_array['panel_title'] = __('Set Default Category');// user seen panel header text  
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Select an existing category in to act as a default');
 $panel_array['panel_help'] = __('If you do not have category data you should select a default category. The menu will allow you to select any category already in your blog. It is recommended that you select a default category even if you want to use category data however it should not be used if your category data is complete. If any issues do arise when trying to create categories using your data, then you can expect to find posts in your default. If this does ever happen, please investigate it and seek support if you feel your data is complete.');
@@ -26,8 +23,12 @@ $jsform_set['noticebox_content'] = 'Do you want to save a default category now?'
 ### TODO:HIGHPRIORITY, add default category option ?>
 <?php csv2post_panel_header( $panel_array );?>
 
-    <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');?>
-
+    <?php 
+    // begin form and add hidden values
+    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');
+    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+    ?>
+    
     <select name="csv2post_defaultcategory_select" id="csv2post_defaultcategory_select_id" class="csv2post_multiselect_menu">
         
         <?php
@@ -53,25 +54,23 @@ $jsform_set['noticebox_content'] = 'Do you want to save a default category now?'
     
     <br />
        
-    <?php
-    // add the javascript that will handle our form action, prevent submission and display dialogue box
-    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-
-    // add end of form - dialogue box does not need to be within the <form>
-    csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
-
-    <?php csv2post_jquery_form_prompt($jsform_set);?>
+       <?php 
+    // add js for dialogue on form submission and the dialogue <div> itself
+    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        csv2post_jquery_form_prompt($jsform_set);
+    }
+    ?>
+        
+    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
 
 <?php csv2post_panel_footer();?>
 
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'standardcategories';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
-$panel_array['panel_title'] = __('Set Standard Categories');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
+$panel_array['panel_title'] = __('Set Standard Categories');// user seen panel header text  
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Create categories using your data and configure them to suit your theme');
 $panel_array['panel_help'] = __('Category features will get more advanced during 2012. A full description and help content will be created when this panel has all planned options added. Currently you can create five levels of categories using your data simply by selecting each category column individually. This panel does not handle multiple levels of categories stored in a single column, that requires the Category Splitter approach.');
@@ -84,7 +83,11 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
 ### TODO:HIGHPRIORITY, add default category option ?>
 <?php csv2post_panel_header( $panel_array );?>
 
-    <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');?>
+    <?php 
+    // begin form and add hidden values
+    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');
+    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+    ?>
     
     <h4>Setup Category Data Columns</h4>
     <select name="csv2post_categorylevel1_select_columnandtable" id="csv2post_categorylevel1_select_columnandtable_objectid" class="csv2post_multiselect_menu">
@@ -227,26 +230,24 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
     </div>
     <?php }?>
                    
-    <?php
-    // add the javascript that will handle our form action, prevent submission and display dialogue box
-    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-
-    // add end of form - dialogue box does not need to be within the <form>
-    csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
-
-    <?php csv2post_jquery_form_prompt($jsform_set);?>
+     <?php 
+    // add js for dialogue on form submission and the dialogue <div> itself
+    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        csv2post_jquery_form_prompt($jsform_set);
+    }
+    ?>
+        
+    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
 
 <?php csv2post_panel_footer();?> 
 
 <?php
 if(!$csv2post_is_free){
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'advancedcategories';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('Set Advanced Categories');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Take full control of category creation with more advanced category creation features');
 $panel_array['panel_help'] = __('If you require a category description or mapping too existing categories rather than creating or only creating new categories, you will need to use this panel
@@ -260,8 +261,12 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
 ### TODO:HIGHPRIORITY, add default category option ?>
 <?php csv2post_panel_header( $panel_array );?>
 
-    <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');?>
-
+    <?php 
+    // begin form and add hidden values
+    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');
+    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+    ?>
+    
     <div class="csv2post_forms_div">
         <h4>Setup Category Data Columns</h4>
 
@@ -528,14 +533,15 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
 
     </div>
         
-    <?php
-    // add the javascript that will handle our form action, prevent submission and display dialogue box
-    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-
-    // add end of form - dialogue box does not need to be within the <form>
-    csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
-
-    <?php csv2post_jquery_form_prompt($jsform_set);?>
+     <?php 
+    // add js for dialogue on form submission and the dialogue <div> itself
+    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        csv2post_jquery_form_prompt($jsform_set);
+    }
+    ?>
+        
+    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
 
 <?php csv2post_panel_footer();
 }?> 
@@ -543,12 +549,9 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
 <?php
 if(!$csv2post_is_free && is_plugin_active('ultimate-taxonomy-manager' . '/'. 'ultimate-taxonomy-manager.php' )){
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'ultimatetaxonomymanagercategories';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('Category Custom Taxonomy Fields (Ultimate Taxonomy Manager)');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Setup taxonomies for the Ultimate Taxonomy Manager plugin');
 $panel_array['panel_help'] = __('If you are seeing this panel you must have the Ultimate Taxonomy Manager plugin
@@ -565,8 +568,12 @@ $jsform_set['noticebox_content'] = 'Do you want to continue saving?';
 ### TODO:HIGHPRIORITY, add default category option ?>
 <?php csv2post_panel_header( $panel_array );?>
 
-    <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');?>
-
+    <?php 
+    // begin form and add hidden values
+    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');
+    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+    ?>
+    
         <?php
         // get ultimate taxonomy manager custom taxonomies
         $catfields = csv2post_sql_ultimatetaxonomymanager_taxonomyfield();### TODO:LOWPRIORITY, change this too a function that gets category related custom fields only
@@ -627,14 +634,15 @@ $jsform_set['noticebox_content'] = 'Do you want to continue saving?';
         }// end if $catfields
         ?>
         
-    <?php
-    // add the javascript that will handle our form action, prevent submission and display dialogue box
-    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-
-    // add end of form - dialogue box does not need to be within the <form>
-    csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
-
-    <?php csv2post_jquery_form_prompt($jsform_set);?>
+     <?php 
+    // add js for dialogue on form submission and the dialogue <div> itself
+    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        csv2post_jquery_form_prompt($jsform_set);
+    }
+    ?>
+        
+    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
 
 <?php csv2post_panel_footer();
 }?> 
@@ -642,12 +650,9 @@ $jsform_set['noticebox_content'] = 'Do you want to continue saving?';
 <?php
 if(!$csv2post_is_free){
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'createcategorymappingrules';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('Set Category Map');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Map values in your data to categories in your blog');
 $panel_array['panel_help'] = __('This feature will overwrite category creation i.e. instead of using a term in your data to create a category, the post will be put in a category you have mapped the term to. This feature is for users who are auto-blogging but their data does not have matching category values. In that situation you can pair values to existing categories in your blog. You can do it with none category data, just as long as the values are small. This is not just an advanced feature but can be very complex. Consider what happens when a term in your data, is paired with an existing category. The plugin will use the existing categories ID, however if done wrong the next level of category term may not exist under the existing category as a child. I can add more settings to adapt how category creation works, please contact me to discuss your requirements.');
@@ -660,8 +665,12 @@ $jsform_set['noticebox_content'] = 'Do you want to save category mapping rules n
 ### TODO:HIGHPRIORITY, add default category option ?>
 <?php csv2post_panel_header( $panel_array );?>
 
-    <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');?>
-
+    <?php 
+    // begin form and add hidden values
+    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');
+    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+    ?>
+    
     <?php 
     function csv2post_display_categories_menu($increment){?>
      
@@ -769,14 +778,15 @@ $jsform_set['noticebox_content'] = 'Do you want to save category mapping rules n
       
     <br />
        
-    <?php
-    // add the javascript that will handle our form action, prevent submission and display dialogue box
-    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-
-    // add end of form - dialogue box does not need to be within the <form>
-    csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
-
-    <?php csv2post_jquery_form_prompt($jsform_set);?>
+     <?php 
+    // add js for dialogue on form submission and the dialogue <div> itself
+    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        csv2post_jquery_form_prompt($jsform_set);
+    }
+    ?>
+        
+    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
 
 <?php csv2post_panel_footer();
 }?>
@@ -790,12 +800,9 @@ $jsform_set['noticebox_content'] = 'Do you want to save category mapping rules n
 <?php
 if($csv2post_is_dev && isset($csv2post_project_array)){
     ++$panel_number;// increase panel counter so this panel has unique ID
-    $panel_array = array();
+    $panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
     $panel_array['panel_name'] = 'categoriesarraydump';// slug to act as a name and part of the panel ID 
-    $panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
     $panel_array['panel_title'] = __('Categories Array Dump');// user seen panel header text 
-    $panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-    $panel_array['tabnumber'] = $csv2post_tab_number; 
     $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
     $panel_array['panel_intro'] = __('A dump of your Current Project category settings');
     $panel_array['panel_help'] = __('The array dump shows the values that CSV 2 POST works with and is intended for advanced users. This panel only shows when Developer Mode is active, with the idea that only developers would really have use for what is then displayed. The more data in this array, the higher chance there is of post creation being slower. Not because there are more values in this array, but because the values trigger more functions to be used. If you see values in the array for settings and features you realise you do not need. It is recommended that you remove them by visiting the applicable screens and panels.');

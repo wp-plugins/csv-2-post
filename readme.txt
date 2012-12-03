@@ -12,25 +12,20 @@ CSV 2 POST
 
 == Description ==
 
-CSV 2 POST is the most advanced Wordpress data import and post creation plugin. This
-plugin has been designed with a sandbox approach (not a step-by-step system) and it does not assume anything when
-dealing with your data. Many users will need a plugin that takes the complication out of imorting data.Please see 
-Easy CSV Importer for a more step-by-step interface which configures posts with less configuration. 
+CSV 2 POST is a growing box of tools for mass blogging (easily hacked to auto-blog if you know how) plus more. 
+Everything added to this plugin is at the
+request of people who know best: professionals developing true money making websites. They come to us because
+other plugins which offer a step by step system and assume a lot about what the user wants done with their data
+are simply not good enough. They know that, we know that but about 95% of CSV importer users do not.
+
+CSV 2 POST has been designed to out perform other importers and we have done that with the help of the Wordpress
+community who use them all. It is not not a step-by-step system like most (possibly all) other plugins available,
+which takes you through the same process on every single use, every single website no matter what theme or plugins
+you have. Instead it is more of a workshop and in this workshop are hidden tools that obvious on first use. There is
+just too much to put on the interface at this time and so anyone keen should hack the plugin using the PHP functions
+provided. 
 
 Thank you for your interest in our software.
-
-
-= Versus Other Imports =
-CSV 2 POST mass creates posts, categories, meta data, custom fields and more. The design of the plugins
-interface and php functions offers a sandbox approach. That approach will become more clear as we enter 2013.
-The plugin is well supported with a dedicated website and services.
-
-= Getting Started =
-We have  written a start guide and tips on the plugin main page. Please browse the guide there. The main thing 
-to know is that any problems encountered are not always due to a bug. The plugin may require further development 
-depending on your needs or your project configuration is not compatible with values in your data.
-
-Please seek support by creating a ticket here on the [forum](http://wordpress.org/support/plugin/csv-2-post/)
 
 = Support = 
 The plugin is supported by a dedicated
@@ -104,6 +99,30 @@ first plugin was created in 2009 and was halted pending re-development.
 6. You can use up to 3 columns of data to create 3 levels of categories.
  
 == Changelog ==
+= 6.7.3 =
+* From The Developers
+    * Next big patch is expected to be released in January 
+* Fixes
+    * Fix in notifications function csv2post_get_option_notifications_array()
+    * Fix in notifications function wtgcore_n()
+    * Fixed problem that happened when some tabs/screens on a page were hidden (plugins loop was still coded to expect all tabs due to the loop incrementing the tab ID)
+* Feature Changes
+    * Dialogue on clicking form Submit buttons can now be hidden (new option on Interface Settings screen)
+    * Persistent notifications are now coming into play. These will require the user to indicate they have been read. Two methods, a settings panel listing current notifications and a link on the notification.
+    * Panels are open by default: should a user have a javascript conflict they will still be able to access panels
+    * New log file created 'automation.csv', will be used to log Schedule events and their outcomes plus any functions called using add_action()
+* Support Changes
+    * 
+* Technical Changes
+    * Extension loading now loads variable file first
+    * Moved code in panel function csv2post_panel_header() so that global panel state is taking into consideration after the individual panel state
+    * Panel state can be set by passing open or closed in ['panel_state']
+    * Replaced all use of $counttabs in menu functions (incremented integer inside loop), arrays are now accessed using $tab (key value) set by the for itself
+    * $csv2post_panels_closed no longer in use (removed from main file)
+    * csv2post_hidden_form_values() function removed from csv2post_jqueryform_singleaction_middle(), the function should be within the panel code in screen file.
+    * The order of functions in panels for form and jQuery dialogue has been changed on ALL panels. This is a plugin wide change to apply the ability to disable the dialogue feature.
+    * New file for functions related to deciding setting states i.e. functions will return a default where a setting is not stored as we do not set all setting values straight away as a measure to use less memory
+    * csv2post_SETTINGS_panel_array() added to all panels for initializing $panel_array (3 lines removed from each panel making it a little easier to understand the array also)
 
 = 6.7.2 =
 * Public Messages

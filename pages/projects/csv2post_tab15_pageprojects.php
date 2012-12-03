@@ -86,12 +86,9 @@ if(!$csv2post_is_free){
 ### TODO:MEDIUMPRIORITY, for premium edition, add form and menus for quickly setting up all required custom fields (will be basic custom field rules)
 ### TODO:LOWPRIORITY, for premium edition, create admin setting to display example data in the notifications
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'postcustomfieldschecklist';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('Post Custom Fields Checklist');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('A checklist for '.$csv2post_supported_themes[$theme_key]['name'].' post custom field configuration');
 $panel_array['panel_help'] = __('This panel compares your themes custom field keys against those

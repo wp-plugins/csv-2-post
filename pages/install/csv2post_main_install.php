@@ -24,9 +24,6 @@ if( $csv2post_is_installed == false ){// change to do a check on $csv2post_is_ac
     include(WTG_C2P_DIR.'pages/'.$pageid.'/csv2post_tab4_'.$pageid.'.php');       
     echo '</div>';
     
-    // set $counttabs so that the help pages have correct number assigned
-    $counttabs = 5;### TODO: CRITICAL, check what this should be now that help pages have been removed
-    
 }else{
 
     if($csv2post_nav_type == 'css'){ 
@@ -49,47 +46,39 @@ if( $csv2post_is_installed == false ){// change to do a check on $csv2post_is_ac
         csv2post_createmenu($pageid);
                     
         // loop through tabs - held in menu pages tabs array
-        $counttabs = 0;// used as tab id also
         foreach($csv2post_mpt_arr[$pageid]['tabs'] as $tab=>$values){
             
             // check if tab is to be displayed, if not, we do not add the div for it    
-            if($csv2post_mpt_arr[ $pageid ]['tabs'][ $counttabs ]['display'] == true){
+            if($csv2post_mpt_arr[ $pageid ]['tabs'][ $tab ]['display'] == true){
                 
                 // avoid displaying installation actions screen
-                if($counttabs != 4){
+                if($tab != 4){
                     
-                    // build form action value, will be appended
-                    //$csv2post_form_action = csv2post_link_toadmin($_GET['page'],'#tabs-' . $counttabs);            
+                    // build form action value, will be appended            
                     $csv2post_form_action = '';
                         
-                    echo '<div id="tabs-'.$counttabs.'">';                                                                                            
-                    include($csv2post_mpt_arr[$pageid]['tabs'][$counttabs]['path']);    
+                    echo '<div id="tabs-'.$tab.'">';                                                                                            
+                    include($csv2post_mpt_arr[$pageid]['tabs'][$tab]['path']);    
                     echo '</div>';
                 }
                          
             }
-            
-            ++$counttabs;
         }
         
     }elseif($csv2post_nav_type == 'nonav'){
         
         // loop through tabs - held in menu pages tabs array
-        $counttabs = 0;// used as tab id also
-        foreach($csv2post_mpt_arr[$pageid]['tabs'] as $tab=>$values){
+        foreach($csv2post_mpt_arr[$pageid]['tabs'] as $tab => $values){
             
             // chekc if tab is to be displayed, if not, we do not add the div for it    
-            if($csv2post_mpt_arr[ $pageid ]['tabs'][ $counttabs ]['display'] == true){
+            if($csv2post_mpt_arr[ $pageid ]['tabs'][ $tab ]['display'] == true){
                 
-                $csv2post_form_action = csv2post_link_toadmin($_GET['page'],'#tabs-' . $counttabs);            
+                $csv2post_form_action = csv2post_link_toadmin($_GET['page'],'#tabs-' . $tab);            
 
-                include(WTG_C2P_DIR.'pages/'.$pagefolder.'/csv2post_tab'.$counttabs.'_page'.$pageid.'.php');
+                include(WTG_C2P_DIR.'pages/'.$pagefolder.'/csv2post_tab'.$tab.'_page'.$pageid.'.php');
             
             }
-            
-            ++$counttabs;
         }    
-        
     }  
 }
 

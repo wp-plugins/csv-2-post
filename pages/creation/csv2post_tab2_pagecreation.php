@@ -1,12 +1,9 @@
 
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'globalpostupdatesettings';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('Global Post Updating Settings *global panel*');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Configure how you want the plugin to handle post updating for all projects');
 $panel_array['panel_help'] = __('This is a global panel, what you configure here will effect all projects.
@@ -23,8 +20,12 @@ $jsform_set['noticebox_content'] = 'Your new post updating settings will apply t
 ?>
     <?php csv2post_panel_header( $panel_array );?>
 
-    <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');?>
-
+    <?php 
+    // begin form and add hidden values
+    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
+    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+    ?> 
+    
     <h4>Public Post Content Updating</h4>
     <p>Do you want the plugin to update posts as they are opened by visitors and do this outside of the schedule?</p>
     <script>
@@ -45,25 +46,23 @@ $jsform_set['noticebox_content'] = 'Your new post updating settings will apply t
         <input type="radio" id="csv2post_constantcontentupdating_switch_off" name="csv2post_globalpostupdatesettings_constantupdating_content" value="0" <?php echo $template_value_off;?> /><label for="csv2post_constantcontentupdating_switch_off">No</label>            
     </div>
 
-    <?php
-    // add the javascript that will handle our form action, prevent submission and display dialogue box
-    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-
-    // add end of form - dialogue box does not need to be within the <form>
-    csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
-
-    <?php csv2post_jquery_form_prompt($jsform_set);?>
+    <?php 
+    // add js for dialogue on form submission and the dialogue <div> itself
+    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        csv2post_jquery_form_prompt($jsform_set);
+    }
+    ?>
+        
+    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
 
 <?php csv2post_panel_footer();?>
 
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'updatespecificpost';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('Update Specific Post');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Enter the ID of a post you would like to update');
 $panel_array['panel_help'] = __('Enter the post ID of any post to update it. The plugin will do all required 
@@ -82,18 +81,23 @@ $jsform_set['noticebox_content'] = 'You are about to manually updating a single 
 ?>
     <?php csv2post_panel_header( $panel_array );?>
 
-    <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');?>
-
+    <?php 
+    // begin form and add hidden values
+    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
+    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+    ?> 
+    
     <input type="text" name="csv2post_update_post_with_id" value="">
     <br />
 
-    <?php
-    // add the javascript that will handle our form action, prevent submission and display dialogue box
-    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-
-    // add end of form - dialogue box does not need to be within the <form>
-    csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
-
-    <?php csv2post_jquery_form_prompt($jsform_set);?>
+     <?php 
+    // add js for dialogue on form submission and the dialogue <div> itself
+    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        csv2post_jquery_form_prompt($jsform_set);
+    }
+    ?>
+        
+    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
 
 <?php csv2post_panel_footer();?>

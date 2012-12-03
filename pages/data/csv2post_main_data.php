@@ -32,41 +32,34 @@ if($csv2post_nav_type == 'css'){
 }elseif($csv2post_nav_type == 'jquery'){
     
     // loop through tabs - held in menu pages tabs array
-    $counttabs = 0;// used as tab id also
     foreach($csv2post_mpt_arr[$pageid]['tabs'] as $tab=>$values){
         
         // check if tab is to be displayed, if not, we do not add the div for it    
-        if($csv2post_mpt_arr[ $pageid ]['tabs'][ $counttabs ]['display'] == true && $csv2post_mpt_arr[$pageid]['tabs'][$counttabs]['active'] == true){
+        if($csv2post_mpt_arr[ $pageid ]['tabs'][ $tab ]['display'] == true && $csv2post_mpt_arr[$pageid]['tabs'][$tab]['active'] == true){
         ### TODO:LOWPRIORITY, apply the ['active'] value to all menu build methods and to all page files like this one
       
-            // build form action value, will be appended
-            //$csv2post_form_action = csv2post_link_toadmin('csv2post_yourdata','#tabs-' . $counttabs);            
+            // build form action value, will be appended            
             $csv2post_form_action = '';
             
-            echo '<div id="tabs-'.$counttabs.'">';                                                                                            
-            include($csv2post_mpt_arr[$pageid]['tabs'][$counttabs]['path']);    
+            echo '<div id="tabs-'.$tab.'">';                                                                                            
+            include($csv2post_mpt_arr[$pageid]['tabs'][$tab]['path']);    
             echo '</div>';        
         }
-        
-        ++$counttabs;
     } 
     
 }elseif($csv2post_nav_type == 'nonav'){
     
     // loop through tabs - held in menu pages tabs array
-    $counttabs = 0;// used as tab id also
     foreach($csv2post_mpt_arr[$pageid]['tabs'] as $tab=>$values){
         
         // chekc if tab is to be displayed, if not, we do not add the div for it    
-        if($csv2post_mpt_arr[ $pageid ]['tabs'][ $counttabs ]['display'] == true){
+        if($csv2post_mpt_arr[ $pageid ]['tabs'][ $tab ]['display'] == true){
             
-            $csv2post_form_action = csv2post_link_toadmin($_GET['page'],'#tabs-' . $counttabs);            
+            $csv2post_form_action = csv2post_link_toadmin($_GET['page'],'#tabs-' . $tab);            
 
-            include(WTG_C2P_DIR.'pages/'.$pagefolder.'/csv2post_tab'.$counttabs.'_page'.$pageid.'.php');
+            include(WTG_C2P_DIR.'pages/'.$pagefolder.'/csv2post_tab'.$tab.'_page'.$pageid.'.php');
         
         }
-        
-        ++$counttabs;
     }    
     
 }

@@ -154,9 +154,12 @@ function csv2post_get_callcode(){
 }
 
 /**
-* Called from main file using add_action. Must always be within an admin check for security.
+* Called from main file using add_action. 
+* 1. Is and must always be within an admin check for security. We do the check in the main file so we dont need to do it multiple times in many functions.
 * 
-* @todo HIGHPRIORITY, Ajax wont do anything with this but add the code for avoiding it when ajax call 
+* @todo HIGHPRIORITY, this function does not appear to be finished and overall export ability could be improved on interface
+* @todo HIGHPRIORITY, Ajax wont do anything with this but add the code for avoiding it when ajax call
+* @todo LOWPRIORITY, consider another approach using fputcsv as used in csv2post_dfone_csvexport_finishedsubmissions()
 */
 function csv2post_export_singlesqltable_as_csvfile(){
     if(isset($_POST['csv2post_post_processing_required'])){
@@ -194,6 +197,8 @@ function csv2post_export_singlesqltable_as_csvfile(){
       
                     echo implode(',',$record_array);    
                 }
+                
+                exit;
             }
         }
     }    
@@ -689,7 +694,7 @@ function csv2post_get_template_bypostrequest(){
     if(isset($_POST["csv2post_opencontentdesign"]) && isset($_POST["csv2post_templatename_and_id"])){
 
         // extract post_id from the csv2post_templatename_and_id value which is the buttons visual text
-        $templatedesign_array['template_id'] = csv2post_extract_value_from_string_between_two_values('(',')',$_POST["csv2post_templatename_and_id"]);    
+        $templatedesign_array['template_id'] = csv2post_STRINGS_get_between_two_values('(',')',$_POST["csv2post_templatename_and_id"]);    
 
         // get post (post type: wtgcsvtemplate)
         $template_post_object = get_post($templatedesign_array['template_id']);
@@ -710,7 +715,7 @@ function csv2post_get_template_bypostrequest(){
 * @return string or false on failure
 * 
 */
-function csv2post_extract_value_from_string_between_two_values($start_limiter,$end_limiter,$haystack){
+function csv2post_STRINGS_get_between_two_values($start_limiter,$end_limiter,$haystack){
     $start_pos = strpos($haystack,$start_limiter);
     if ($start_pos === false){
         return false;

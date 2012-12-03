@@ -1,11 +1,8 @@
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'recentchanges';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('Recent Changes');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('The most recent changes made to the plugin');
 $panel_array['panel_help'] = __('This panel shows the most recent key changes to the plugin. For more detailed list of changes please go to www.wordpresscsvimpoter.com where each versions changes are stored.');
@@ -19,13 +16,10 @@ $panel_array['help_button'] = csv2post_helpbutton_text(true,false);
 <?php csv2post_panel_footer();?> 
 
 <?php
-++$panel_number;// increase panel counter so this panel has unique ID
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array = array();
 $panel_array['panel_name'] = 'requestedchanges';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
-$panel_array['panel_title'] = __('Requested Changes');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
+$panel_array['panel_title'] = __('Requested Changes');// user seen panel header text  
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Find out what others have already requested each requests status.');
 $panel_array['panel_help'] = __('This is another idea to increase communications between myself and users of my plugins. If a requested change is made I process it to ensure it is a new requesst, whatever the case the user submitted the request is registered with the change tha will possibly be made. If the change is made, I then change its status to complete and all those interested are automatically sent an email letting them know.');
@@ -40,12 +34,9 @@ $panel_array['help_button'] = csv2post_helpbutton_text(true,false);
 
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'requestachange';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('Request A Change');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Requesting a change here will enter it straight into the requests database.');
 $panel_array['panel_help'] = __('Not everyone has access to this service as it makes entries straight to what is essentially a to do list. It is a feature only activated by myself, usually for beta testers. Please try to avoid submitting duplicate requests however I do understand one persons description of an idea may differ from another persons.');
@@ -60,12 +51,9 @@ $panel_array['help_button'] = csv2post_helpbutton_text(true,false);
 
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'jobsavailable';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('Jobs Available');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Jobs are set priced, not full-time work and involve working on all my Wordpress projects.');
 $panel_array['panel_help'] = __('I want to offer something back to the community of all my software. One

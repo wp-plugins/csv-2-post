@@ -364,7 +364,7 @@ function wtgcore_notice($message,$type = 'success',$size = 'Extra',$title = fals
 * @todo HIGHPRIORITY, change the arrow to a "Help" button and also add "Go To" button, also add local url parameter to display both Help and Go To buttons on a notification. Scrap the Next Step approach, it does not allow for highly custom html once link is applied
 * @todo LOWPRIORITY, create options for creating lists of notifications with numbered icons or CSS styled numbers
 */
-function wtgcore_n($title,$mes,$style,$size,$atts){
+function wtgcore_n($title,$mes,$style,$size,$atts = array()){
 
     extract( shortcode_atts( array( 
         'url' => false,
@@ -373,6 +373,10 @@ function wtgcore_n($title,$mes,$style,$size,$atts){
         'user_mes' => 'No user message giving',// only used when audience is set to user, user_mes replaces $mes
         'side' => 'private',// private,public (use to apply themes styles if customised, do not use for security)      
         'clickable' => false,// boolean
+        'persistent' => false,// true will add message too stored array for displaying constantly
+        'persistentpage' => false,// if persistent, indicates a specific page (below title) to show notification on
+        'persistentscreen' => false,// if persistent, indicates a specific screen to show notification on
+        'persistentpanel' => false,// if persistent, indicates a specific panel to show message in
     ), $atts ) );
 
     // do not allow a notice box if $output not stated as public and current visitor is not logged in
@@ -392,21 +396,23 @@ function wtgcore_n($title,$mes,$style,$size,$atts){
           
     // set next array key value
     $next_key = 0;
-    
+
     // determine next array key
     if(isset($csv2post_notice_array['notifications'])){
         $next_key = csv2post_get_array_nextkey($csv2post_notice_array['notifications']);
     }    
                
     // add new message to the notifications array
-    $csv2post_notice_array['notifications'][$next_key]['message'] = $message;
-    $csv2post_notice_array['notifications'][$next_key]['type'] = $type;
+    $csv2post_notice_array['notifications'][$next_key]['message'] = $mes;
+    $csv2post_notice_array['notifications'][$next_key]['type'] = $style;
     $csv2post_notice_array['notifications'][$next_key]['size'] = $size;
     $csv2post_notice_array['notifications'][$next_key]['title'] = $title;
     $csv2post_notice_array['notifications'][$next_key]['helpurl'] = $url; 
     
-    // update notifications array
-    csv2post_update_option_notifications_array($csv2post_notice_array);
+    // update notifications array if the new message is meant to be persistent
+    if($persistent){
+        csv2post_update_option_notifications_array($csv2post_notice_array);
+    }
 }
 
 /**
@@ -532,26 +538,18 @@ function wtgcore_notice_output(){
     global $csv2post_notice_array;
     if(isset($csv2post_notice_array['notifications'])){
         foreach($csv2post_notice_array['notifications'] as $key => $notice){
+            // set default values where any requires are null
+            if(!isset($notice['type'])){$notice['type'] = 'info';}
+            if(!isset($notice['helpurl'])){$notice['helpurl'] = false;} 
+            if(!isset($notice['size'])){$notice['size'] = 'Large';} 
+            if(!isset($notice['title'])){$notice['title'] = 'Sorry No Title Was Provided';}
+            if(!isset($notice['message'])){$notice['message'] = 'Sorry No Message Was Provided';}
+            if(!isset($notice['clickable'])){$notice['clickable'] = false;} 
+            if(!isset($notice['persistent'])){$notice['persistent'] = false;}
+              
             echo wtgcore_notice_display($notice['type'],$notice['helpurl'],$notice['size'],$notice['title'],$notice['message'],$notice['clickable'],$notice['persistent']);                                               
         }
     }  
-}
-
-/**
-* Perisistent notice (not in use yet) 
-* 
-* SEE THE MAIN wtgcore_n() function and copy most of that
-*/
-function wtgcore_n_p($title,$mes,$style,$size,$log,$atts){
-
-}
-
-/**
-* Notice has its own code and requires user response to hide it. Once hidden 
-* the code is updated in persistent notice array 
-*/
-function wtgcore_n_persistent(){
-      
 }
 
 /**
@@ -559,10 +557,12 @@ function wtgcore_n_persistent(){
 * @param string $log  (error,user,admin,general,sql) (in CSV 2 POST we have custom data,posts,project logs)
 */
 function wtgcore_log_display($log,$display_rows = 100){
+    global $csv2post_logfiles_array;
+    
     csv2post_pearcsv_include();    
 
-    $fileexists_result = wtgcore_logfile_exists('csv2post_log_'.$log.'.csv');
-    
+    $fileexists_result = wtgcore_logfile_exists($log);
+     
     // if file does not exist
     if(!$fileexists_result){
         wtgcore_n_incontent('You have not installed the '.$log.' file yet.','info','Small');
@@ -577,6 +577,7 @@ function wtgcore_log_display($log,$display_rows = 100){
         wtgcore_n_incontent('The '.$log.' log file does not have any entries.','info','Small');
         return;
     }
+    
     // establish how many rows we need to skip
     $skip_rows = 0;
     if($csvfile_rows > $display_rows){
@@ -606,30 +607,29 @@ function wtgcore_log_display($log,$display_rows = 100){
     // reverse the order of the array
     $rows_array_reversed = array_reverse($rows_array);
     
+
     echo '<table class="widefat post fixed">
-    <tr class="first">
-        <td><strong>Date</strong></td>                
-        <td><strong>Comment</strong></td>
-        <td width="50"><strong>Line</strong></td>
-        <td><strong>File</strong></td>                
-        <td><strong>Function</strong></td>
-        <td><strong>Dump</strong></td>
-        <td><strong>SQL Result</strong></td>                
-        <td><strong>SQL Query</strong></td>                                                                                                       
-    </tr>';  
+    <tr class="first">';
+        echo '<td><strong>Date/Time</strong></td>';
+        
+        // get csv files headers
+        foreach($csv2post_logfiles_array[$log]['headers'] as $headerkey => $header){
+            echo '<td><strong>'.$header['label'].'</strong></td>';
+        }    
+                                                                                        
+    echo '</tr>';  
 
     foreach($rows_array_reversed as $k => $row){
-        echo '
-        <tr>                
-            <td>'.$row[1].'</td>
-            <td>'.$row[2].'</td>
-            <td>'.$row[3].'</td>                
-            <td>'.$row[4].'</td>
-            <td>'.$row[5].'</td>
-            <td>'.$row[6].'</td>                
-            <td>'.$row[7].'</td>
-            <td>'.$row[8].'</td>                                                                                                       
-        </tr>';
+        echo '<tr>'; 
+
+            $row_number = 0;
+            foreach($csv2post_logfiles_array[$log]['headers'] as $headerkey => $header){
+                echo '<td>'.$row[$row_number].'</td>';
+                ++$row_number;
+            } 
+ 
+                                                                                                                  
+        echo '</tr>';
     }
                         
     echo '</table>';      

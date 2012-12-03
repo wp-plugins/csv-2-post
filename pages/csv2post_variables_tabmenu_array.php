@@ -395,7 +395,7 @@ $csv2post_mpt_arr['creation']['tabs'][$sub]['active'] = true;
 $csv2post_mpt_arr['creation']['tabs'][$sub]['slug'] = 'tab0_pagecreation';
 $csv2post_mpt_arr['creation']['tabs'][$sub]['label'] = 'Create Posts';
 $csv2post_mpt_arr['creation']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['creation']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['creation']['tabs'][$sub]['display'] = csv2post_page_show_hide(0);
 $csv2post_mpt_arr['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_tab'.$sub.'_pagecreation.php';     
 // creation 1
 ++$sub;
@@ -419,7 +419,7 @@ $csv2post_mpt_arr['creation']['tabs'][$sub]['active'] = true;
 $csv2post_mpt_arr['creation']['tabs'][$sub]['slug'] = 'tab3_pagecreation';
 $csv2post_mpt_arr['creation']['tabs'][$sub]['label'] = 'Undo';
 $csv2post_mpt_arr['creation']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['creation']['tabs'][$sub]['display'] = csv2post_page_show_hide();
+$csv2post_mpt_arr['creation']['tabs'][$sub]['display'] = csv2post_page_show_hide(1);
 $csv2post_mpt_arr['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_tab'.$sub.'_pagecreation.php';
 // creation 4
 ++$sub;
@@ -453,7 +453,15 @@ $csv2post_mpt_arr['creation']['tabs'][$sub]['label'] = 'Posts History';
 $csv2post_mpt_arr['creation']['tabs'][$sub]['allowhide'] = true;   
 $csv2post_mpt_arr['creation']['tabs'][$sub]['display'] = csv2post_page_show_hide(0);// 0 = free+paid  1 = paid only  2 = none
 $csv2post_mpt_arr['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_postshistory.php';
- 
+// creation 8
+++$sub;                                                        
+$csv2post_mpt_arr['creation']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['creation']['tabs'][$sub]['slug'] = 'automationhistory';
+$csv2post_mpt_arr['creation']['tabs'][$sub]['label'] = 'Automation History';
+$csv2post_mpt_arr['creation']['tabs'][$sub]['allowhide'] = true;   
+$csv2post_mpt_arr['creation']['tabs'][$sub]['display'] = csv2post_page_show_hide(1);// 0 = free+paid  1 = paid only  2 = none
+$csv2post_mpt_arr['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_automation.php';
+  
 ######################################################
 #                                                    #
 #                INSTALL and STATUS                  #

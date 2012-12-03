@@ -27,12 +27,9 @@ if(!isset($csv2post_dataimportjobs_array) || !is_array($csv2post_dataimportjobs_
         $job_array = csv2post_get_dataimportjob($jobcode);
              
         ++$panel_number;// increase panel counter so this panel has unique ID
-        $panel_array = array();                       
+        $panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);                      
         $panel_array['panel_name'] = 'advanceddataimportjob' . $jobcode;// slug to act as a name and part of the panel ID 
-        $panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
         $panel_array['panel_title'] = __('Data Import Job: ' . $job['name']);// user seen panel header text 
-        $panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-        $panel_array['tabnumber'] = $csv2post_tab_number; 
         $panel_array['panel_id'] = $panel_array['panel_name'] . $panel_number;// creates a unique id, may change from version to version but within a version it should be unique
         $panel_array['panel_intro'] = __('This is your data import job named ' . $job['name'] .' and the job code is ' . $jobcode);
         $panel_array['panel_help'] = __('Please refresh the browser in order to view the latest job statistics (until more Ajax is added). Your data import panel for ' . $job['name'] . ' allows you to import rows from individual CSV files. You can also manually update the statistics. By default rows are imported and put into the database table using an UPDATE query, not an INSERT. The rows are placed in order as found in the CSV files. Meaning all CSV files within a single job must be in matching order for the finished table of data to be correct. This is only the default behaviour as there is the ability to save a set of key columns which contain some type of ID per record. Each CSV file must contain the same column of ID values in order for this ability to work. This allows the rows in each CSV file to be in any order and still be updated to the correct record in the database.');
@@ -45,8 +42,12 @@ if(!isset($csv2post_dataimportjobs_array) || !is_array($csv2post_dataimportjobs_
         
         csv2post_panel_header( $panel_array );?>
 
-        <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);?>
- 
+            <?php 
+            // begin form and add hidden values
+            csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
+            csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+            ?> 
+    
             <input type="hidden" name="csv2post_importdatarequest_jobcode" value="<?php echo $jobcode;?>">
             <input type="hidden" name="csv2post_importdatarequest_advanced_postmethod" value="true">
                                           
@@ -146,11 +147,14 @@ if(!isset($csv2post_dataimportjobs_array) || !is_array($csv2post_dataimportjobs_
         ### we should initialize a statistic value if it is missing, so put the array through a function.
         ### That we zero exists as the counter/stat
                            
-        // add the javascript that will handle our form action, prevent submission and display dialogue box
-        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
 
-        // add end of form - dialogue box does not need to be within the <form>
-        csv2post_formend_standard('Start Data Import',$jsform_set['form_id']); 
+        // add js for dialogue on form submission and the dialogue <div> itself
+        if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+            csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+            csv2post_jquery_form_prompt($jsform_set);
+        }
+
+        csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);
 
         #####################################
         #         DISPLAY MAIN STATS        #
@@ -230,9 +234,7 @@ if(!isset($csv2post_dataimportjobs_array) || !is_array($csv2post_dataimportjobs_
 
             echo wtgcore_notice($message,$state,'Small',$csv_filename,'','return');
         } 
-        
-        // end of form (including jquery prompts/dialogue)            
-        csv2post_jquery_form_prompt($jsform_set);  
+
         csv2post_panel_footer(); 
                                                     
     }// end of $job loop

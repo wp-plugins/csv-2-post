@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: CSV 2 POST
-Version: 6.7.2
+Version: 6.7.3
 Plugin URI: http://www.csv2post.com
 Description: CSV 2 POST released 2012 by Zara Walsh and Ryan Bayne
 Author: Zara Walsh
@@ -30,7 +30,7 @@ This license does not apply to the paid edition which is bundled with a seperate
 // package variables 
 $csv2post_debug_mode = false;// boolean true or false 
 $csv2post_is_dev = false;// boolean, true displays more panels with even more data i.e. array dumps
-$csv2post_currentversion = '6.7.2';// this value should not be relied on but only used for guidance
+$csv2post_currentversion = '6.7.3';// this value should not be relied on but only used for guidance
 $csv2post_is_free_override = false;// change to true for free edition setup when fulledition folder present
               
 // other variables required on installation or loading
@@ -82,22 +82,24 @@ if(!defined("WTG_C2P_EXTENSIONS")){define("WTG_C2P_EXTENSIONS",get_option('csv2p
 if(!is_admin() || defined('DOING_AJAX') && DOING_AJAX){
     $csv2post_debug_mode = false;
 }
-      
+
 // decide if package is free or full edition - apply the over-ride variable to use as free edition when full edition files present
-if(file_exists(WTG_C2P_DIR . '/fulledition') && $csv2post_is_free_override == false){
+if(file_exists(WTG_C2P_DIR . 'fulledition') && $csv2post_is_free_override == false){
     $csv2post_is_free = false;
 }else{
     $csv2post_is_free = true;
 }
-         
+
 ##########################################################################################
 #                                                                                        #
 #              INCLUDE WEBTECHGLOBAL WORDPRESS CORE LIBRARY FUNCTION FILES               #
 #                                                                                        #
-##########################################################################################
-foreach (scandir( WTG_C2P_DIR . '/wtg-wordpress-core/' ) as $filename) {   
-    if ($filename != '.' && $filename != '..' && is_file(WTG_C2P_DIR . '/wtg-wordpress-core/' . $filename)) { 
-        require_once(WTG_C2P_DIR . '/wtg-wordpress-core/' . $filename);
+########################################################################################## 
+foreach (scandir( WTG_C2P_DIR . 'wtg-wordpress-core/' ) as $filename) {   
+    if ($filename != '.' && $filename != '..' && is_file(WTG_C2P_DIR . 'wtg-wordpress-core/' . $filename)) { 
+        if($fulledition_filename != 'license.html' && $fulledition_filename != 'index.php'){
+            require_once(WTG_C2P_DIR . 'wtg-wordpress-core/' . $filename);
+        }        
     }
 }    
 
@@ -112,6 +114,7 @@ require_once(WTG_C2P_DIR.'templatesystem/include/csv2post_core_functions.php');#
 require_once(WTG_C2P_DIR.'templatesystem/csv2post_load_initialplugin_configuration.php');// must be loaded after core_functions.php
 require_once(WTG_C2P_DIR.'templatesystem/include/webservices/csv2post_api_parent.php');
 require_once(WTG_C2P_DIR.'templatesystem/include/csv2post_admininterface_functions.php');
+require_once(WTG_C2P_DIR.'templatesystem/include/csv2post_settings_functions.php');
 require_once(WTG_C2P_DIR.'templatesystem/include/csv2post_ajax_admin_functions.php');  
 require_once(WTG_C2P_DIR.'templatesystem/include/csv2post_install_functions.php');
 require_once(WTG_C2P_DIR.'templatesystem/include/csv2post_admin_functions.php');
@@ -120,9 +123,21 @@ require_once(WTG_C2P_DIR.'templatesystem/include/csv2post_file_functions.php');/
 require_once(WTG_C2P_DIR.'templatesystem/include/csv2post_post_functions.php');// post creation,update related functions              
 require_once(WTG_C2P_DIR.'pages/csv2post_variables_tabmenu_array.php');  
 
-// include full edition files
-if(!$csv2post_is_free){require_once(WTG_C2P_DIR.'fulledition/csv2post_advanced_functions.php');}
-         
+##########################################################################################
+#                                                                                        #
+#               INCLUDE FULL EDITION WORDPRESS CORE LIBRARY FUNCTION FILES               #
+#                                                                                        #
+##########################################################################################
+if(!$csv2post_is_free){ 
+    foreach (scandir( WTG_C2P_DIR.'fulledition/' ) as $fulledition_filename) {   
+        if ($fulledition_filename != '.' && $fulledition_filename != '..' && is_file(WTG_C2P_DIR . 'fulledition/' . $fulledition_filename)) { 
+            if($fulledition_filename != 'license.html' && $fulledition_filename != 'index.php'){
+                require_once(WTG_C2P_DIR . 'fulledition/' . $fulledition_filename);
+            }
+        }
+    } 
+}   
+
 ##########################################################################################
 #                                                                                        #
 #                              LOAD EXTENSION CONFIGURATION                              #
@@ -131,8 +146,11 @@ if(!$csv2post_is_free){require_once(WTG_C2P_DIR.'fulledition/csv2post_advanced_f
 if(WTG_C2P_EXTENSIONS != 'disable' && file_exists(WTG_C2P_CONTENTFOLDER_DIR . '/extensions')){
     // we are only going to load our prototype extension right
     if(file_exists(WTG_C2P_CONTENTFOLDER_DIR . '/extensions/ryanair')){
+        // include constants, variables and arrays
+        include_once(WTG_C2P_CONTENTFOLDER_DIR . '/extensions/ryanair/variables.php');
+        // include functions
         include_once(WTG_C2P_CONTENTFOLDER_DIR . '/extensions/ryanair/functions.php');        
-        // this file will change variable values, undefine core constants and define new values
+        // include configuration (this makes changes required for the Wordpress installation)
         include_once(WTG_C2P_CONTENTFOLDER_DIR . '/extensions/ryanair/configuration.php');            
     }
 }
@@ -159,8 +177,7 @@ $csv2post_textspin_array = csv2post_get_option_textspin_array();
 
 // get all other admin variables    
 $csv2post_was_installed = csv2post_was_installed();// boolean - indicates if a trace of previous installation found       
-$csv2post_schedule_array = csv2post_get_option_schedule_array();
-$csv2post_panels_closed = true;// boolean true forces all panels closed, false opens them all
+$csv2post_schedule_array = csv2post_get_option_schedule_array();// holds permitted hours and limits
 
 ####################################################
 ####                                            ####
@@ -207,7 +224,7 @@ if(is_admin()){
 }
 
 // add public actions 
-if(!$csv2post_is_free){
+if(!$csv2post_is_free){# if you hack this, you will need to write the require functions
     // run auto post and data updating events if any are due
     add_action('init', 'csv2post_event_check');
     // has user disabled public post updating
@@ -256,7 +273,8 @@ if(is_admin()){
     add_action('admin_menu','csv2post_admin_menu');// main navigation 
     add_action('init','csv2post_export_singlesqltable_as_csvfile');// export CSV file request by $_POST
         
-    csv2post_script('admin');
+    csv2post_script('admin');// TODO
+    /* ################ TODO:CRITICAL, change the way scripts loaded, make use of admin_init */
     csv2post_css('admin');
                  
 }else{

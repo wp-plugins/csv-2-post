@@ -239,7 +239,10 @@ if($cont){
     $cont = csv2post_form_save_reporting_settings();
     
     // Save admin triggered automation settings
-    $cont = csv2post_form_save_admin_triggered_automaton();      
+    $cont = csv2post_form_save_admin_triggered_automaton();
+    
+    // Save form settings
+    $cont = csv2post_form_save_formsettings();      
 }    
     
 // rare used forms      
@@ -248,6 +251,20 @@ if($cont){
     $cont = csv2post_form_createcontentfolder();
     $cont = csv2post_form_deletecontentfolder();    
 }
+
+function csv2post_form_save_formsettings(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'formsettings'){
+
+        global $csv2post_adm_set;
+        $csv2post_adm_set['interface']['forms']['dialogue']['status'] = $_POST['csv2post_radiogroup_dialogue'];
+        csv2post_update_option_adminsettings($csv2post_adm_set);
+        wtgcore_n_postresult('success','Form Settings Saved','Your form settings have been saved.');
+        
+        return false;
+    }else{
+        return true;
+    }       
+}  
 
 /**
 * Save reporting settings 
@@ -2654,7 +2671,7 @@ function csv2post_form_change_default_contenttemplate(){
     if(isset($_POST['csv2post_change_default_contenttemplate']) && isset($_POST['csv2post_templatename_and_id'])){
   
         // extract template id from string
-        $template_id = csv2post_extract_value_from_string_between_two_values('(',')',$_POST['csv2post_templatename_and_id']);        
+        $template_id = csv2post_STRINGS_get_between_two_values('(',')',$_POST['csv2post_templatename_and_id']);        
 
         if(!is_numeric($template_id)){
             wtgcore_notice('The template ID could not be extracted from the submission, please try again then report this issue.','error','Large','Error Saving Default Content Template');
@@ -2674,7 +2691,7 @@ function csv2post_form_change_default_titletemplate(){
     if(isset($_POST['csv2post_change_default_titletemplate']) && isset($_POST['csv2post_templatename_and_id'])){
   
         // extract template id from string
-        $template_id = csv2post_extract_value_from_string_between_two_values('(',')',$_POST['csv2post_templatename_and_id']);        
+        $template_id = csv2post_STRINGS_get_between_two_values('(',')',$_POST['csv2post_templatename_and_id']);        
 
         if(!is_numeric($template_id)){
             wtgcore_notice('The title template ID (also post id) could not be extracted from the submission, please try again then report this issue.','error','Large','Error Saving Default Title Template');
@@ -2694,7 +2711,7 @@ function csv2post_form_change_default_excerpttemplate(){
     if(isset($_POST['csv2post_change_default_excerpttemplate']) && isset($_POST['csv2post_change_default_excerpttemplate'])){
   
         // extract template id from string
-        $template_id = csv2post_extract_value_from_string_between_two_values('(',')',$_POST['csv2post_templatename_and_id']);        
+        $template_id = csv2post_STRINGS_get_between_two_values('(',')',$_POST['csv2post_templatename_and_id']);        
 
         if(!is_numeric($template_id)){
             wtgcore_notice('The excerpt template ID could not be extracted from the submission, please try again then report this issue.','error','Large','Error Saving Default Excerpt Template');

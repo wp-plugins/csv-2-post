@@ -4,12 +4,9 @@ foreach($csv2post_file_profiles as $csvfile_name => $profile){
     $csvfile_name_cleaned = csv2post_clean_string($csvfile_name);
    
     ++$panel_number;// increase panel counter so this panel has unique ID
-    $panel_array = array();
+    $panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
     $panel_array['panel_name'] = 'fileprofile'.$csvfile_name_cleaned;// slug to act as a name and part of the panel ID 
-    $panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
     $panel_array['panel_title'] = __('Profile for ' . $csvfile_name);// user seen panel header text 
-    $panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-    $panel_array['tabnumber'] = $csv2post_tab_number; 
     $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
     $panel_array['panel_intro'] = __('Information about your file named ' . $csvfile_name);
     $panel_array['panel_help'] = __('We build a profile of information for each file for various purposes.');
@@ -23,8 +20,11 @@ foreach($csv2post_file_profiles as $csvfile_name => $profile){
     ?>
     <?php csv2post_panel_header( $panel_array );?>
 
-        <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');?>
-
+        <?php // begin form and add hidden values
+        csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
+        csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+        ?> 
+    
         <h4>Current Modification Date</h4>
         <?php echo csv2post_date(0,$profile['currentmodtime']);?>
                 

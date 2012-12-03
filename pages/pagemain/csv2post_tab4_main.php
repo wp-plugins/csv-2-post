@@ -1,11 +1,8 @@
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'reportingsettings';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
-$panel_array['panel_title'] = __('Reporting');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
+$panel_array['panel_title'] = __('Reporting');// user seen panel header text  
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Settings in relation to notices, log files and email reminders');
 $panel_array['panel_help'] = __('Reporting settings include the log and notice box systems. These two systems include a group of 
@@ -22,64 +19,66 @@ $jsform_set['dialoguebox_title'] = 'Save Report Settings';
 $jsform_set['noticebox_content'] = 'Reporting will change the information displays when using the plugin and information stored for tracing user actions, debugging and general monitoring. Do you wish to continue?';?>
 <?php csv2post_panel_header( $panel_array );?>
 
-    <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');?>
+    <?php 
+    // begin form and add hidden values
+    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');
+    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+    ?>
     
-        <h4>All Log Files</h4>
-        <script>
-            $(function() {
-                $( "#csv2post_div_<?php echo $panel_array['panel_name'];?>_reporting_logstatus" ).buttonset();
-            });
-        </script>
+    <h4>All Log Files</h4>
+    <script>
+        $(function() {
+            $( "#csv2post_div_<?php echo $panel_array['panel_name'];?>_reporting_logstatus" ).buttonset();
+        });
+    </script>
 
-        <?php 
-        // if is not set ['admintriggers']['newcsvfiles']['status'] then it is enabled by default
-        if(!isset($csv2post_adm_set['reporting']['uselog'])){
+    <?php 
+    // if is not set ['admintriggers']['newcsvfiles']['status'] then it is enabled by default
+    if(!isset($csv2post_adm_set['reporting']['uselog'])){
+        $radio1_uselog_enabled = 'checked'; 
+        $radio2_uselog_disabled = '';                    
+    }else{
+        if($csv2post_adm_set['reporting']['uselog'] == 1){
             $radio1_uselog_enabled = 'checked'; 
-            $radio2_uselog_disabled = '';                    
-        }else{
-            if($csv2post_adm_set['reporting']['uselog'] == 1){
-                $radio1_uselog_enabled = 'checked'; 
-                $radio2_uselog_disabled = '';    
-            }elseif($csv2post_adm_set['reporting']['uselog'] == 0){
-                $radio1_uselog_enabled = ''; 
-                $radio2_uselog_disabled = 'checked';    
-            }
-        }?>
-        <div id="csv2post_div_<?php echo $panel_array['panel_name'];?>_reporting_logstatus">
-            <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_logstatus_enable" name="csv2post_radiogroup_logstatus" value="1" <?php echo $radio1_uselog_enabled;?> /><label for="csv2post_<?php echo $panel_array['panel_name'];?>_logstatus_enable">Enable</label>
-            <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_logstatus_disable" name="csv2post_radiogroup_logstatus" value="0" <?php echo $radio2_uselog_disabled;?> /><label for="csv2post_<?php echo $panel_array['panel_name'];?>_logstatus_disable">Disable</label>
-        </div>     
+            $radio2_uselog_disabled = '';    
+        }elseif($csv2post_adm_set['reporting']['uselog'] == 0){
+            $radio1_uselog_enabled = ''; 
+            $radio2_uselog_disabled = 'checked';    
+        }
+    }?>
+    <div id="csv2post_div_<?php echo $panel_array['panel_name'];?>_reporting_logstatus">
+        <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_logstatus_enable" name="csv2post_radiogroup_logstatus" value="1" <?php echo $radio1_uselog_enabled;?> /><label for="csv2post_<?php echo $panel_array['panel_name'];?>_logstatus_enable">Enable</label>
+        <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_logstatus_disable" name="csv2post_radiogroup_logstatus" value="0" <?php echo $radio2_uselog_disabled;?> /><label for="csv2post_<?php echo $panel_array['panel_name'];?>_logstatus_disable">Disable</label>
+    </div>     
 
-        <?php
-        // establish log file size limit
-        $log_file_limit = 307200;
-        if(isset($csv2post_adm_set['reporting']['loglimit']) && is_numeric($csv2post_adm_set['reporting']['loglimit'])){
-            $log_file_limit = $csv2post_adm_set['reporting']['loglimit'];
-        } ?>        
-        <h4>Log File Size Limit (<?php echo 'currently: ' . csv2post_format_file_size($log_file_limit);?>)</h4>
-        <label for="csv2post_<?php echo $panel_array['panel_name'];?>_loglimit"><input type="text" name="csv2post_loglimit" id="csv2post_<?php echo $panel_array['panel_name'];?>_loglimit" value="<?php echo $log_file_limit;?>"></label>
-
-        <br /><br />
-        
     <?php
-    // add the javascript that will handle our form action, prevent submission and display dialogue box
-    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+    // establish log file size limit
+    $log_file_limit = 307200;
+    if(isset($csv2post_adm_set['reporting']['loglimit']) && is_numeric($csv2post_adm_set['reporting']['loglimit'])){
+        $log_file_limit = $csv2post_adm_set['reporting']['loglimit'];
+    } ?>        
+    <h4>Log File Size Limit (<?php echo 'currently: ' . csv2post_format_file_size($log_file_limit);?>)</h4>
+    <label for="csv2post_<?php echo $panel_array['panel_name'];?>_loglimit"><input type="text" name="csv2post_loglimit" id="csv2post_<?php echo $panel_array['panel_name'];?>_loglimit" value="<?php echo $log_file_limit;?>"></label>
 
-    // add end of form - dialogue box does not need to be within the <form>
-    csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
-
-    <?php csv2post_jquery_form_prompt($jsform_set);?>
+    <br /><br />
+        
+     <?php 
+    // add js for dialogue on form submission and the dialogue <div> itself
+    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        csv2post_jquery_form_prompt($jsform_set);
+    }
+    ?>
+        
+    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
    
 <?php csv2post_panel_footer();?>
 
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'admintriggeredautomation';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
-$panel_array['panel_title'] = __('Admin Triggered Automation');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
+$panel_array['panel_title'] = __('Admin Triggered Automation');// user seen panel header text  
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Settings related to automatic events, processing the user does not need to initiate');
 $panel_array['panel_help'] = __('Admin Triggered Automation settings basically activate or disable triggers
@@ -97,8 +96,12 @@ $jsform_set['dialoguebox_title'] = 'Save Automation Settings';
 $jsform_set['noticebox_content'] = 'Please ensure the schedule settings are setup to suit your needs before allowing automatic events. Do you wish to continue?';?>
 <?php csv2post_panel_header( $panel_array );?>
 
-    <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');?>
-
+    <?php 
+    // begin form and add hidden values
+    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');
+    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+    ?>
+    
     <table class="widefat post fixed">
         <tr class="first">
             <td width="200"><strong>Action</strong></td>
@@ -166,25 +169,23 @@ $jsform_set['noticebox_content'] = 'Please ensure the schedule settings are setu
         </tr>
     </table>
     
-    <?php
-    // add the javascript that will handle our form action, prevent submission and display dialogue box
-    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-
-    // add end of form - dialogue box does not need to be within the <form>
-    csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
-
-    <?php csv2post_jquery_form_prompt($jsform_set);?>
+     <?php 
+    // add js for dialogue on form submission and the dialogue <div> itself
+    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        csv2post_jquery_form_prompt($jsform_set);
+    }
+    ?>
+        
+    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
    
 <?php csv2post_panel_footer();?>
 
 <?php 
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'encodingsettings';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
-$panel_array['panel_title'] = __('Encoding');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
+$panel_array['panel_title'] = __('Encoding');// user seen panel header text  
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Put CSV file data through encoding before it is inserted to database');
 $panel_array['panel_help'] = __('The main requirement is putting data through a php function named utf8_encode(). Try and test all available encoding options. Encoding functions are being tested and we are discussion required features for encoding.');
@@ -197,8 +198,12 @@ $jsform_set['noticebox_content'] = 'These encoding settings may effect your data
 should ensure you have made the correct selections by doing some testing. Do you wish to continue?';?>
 <?php csv2post_panel_header( $panel_array );?>
 
-    <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');?>   
-
+    <?php 
+    // begin form and add hidden values
+    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');
+    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+    ?>
+    
     <script>
         $(function() {
             $( "#csv2post_div_<?php echo $panel_array['panel_name'];?>_encoding" ).buttonset();
@@ -225,14 +230,16 @@ should ensure you have made the correct selections by doing some testing. Do you
     </div 
 
     <br />
-    <?php
-    // add the javascript that will handle our form action, prevent submission and display dialogue box
-    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-
-    // add end of form - dialogue box does not need to be within the <form>
-    csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
-
-    <?php csv2post_jquery_form_prompt($jsform_set);?>
+    
+     <?php 
+    // add js for dialogue on form submission and the dialogue <div> itself
+    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        csv2post_jquery_form_prompt($jsform_set);
+    }
+    ?>
+        
+    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
    
     <br />           
     <?php 
@@ -261,12 +268,9 @@ should ensure you have made the correct selections by doing some testing. Do you
 
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'extensionsettings';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('Extensions');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Configure the plugins extension ability');
 $panel_array['panel_help'] = __('CSV 2 POST extension settings. If you do not have any extensions present
@@ -282,8 +286,12 @@ $jsform_set['dialoguebox_title'] = 'Save Extension Settings';
 $jsform_set['noticebox_content'] = 'These settings will change the look and functionality of CSV 2 POST. Do you wish to continue?';?>
 <?php csv2post_panel_header( $panel_array );?>
 
-    <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');?>
-
+    <?php 
+    // begin form and add hidden values
+    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');
+    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+    ?>
+    
     <script>
         $(function() {
             $( "#csv2post_div_<?php echo $panel_array['panel_name'];?>_extensionstatus" ).buttonset();
@@ -308,13 +316,14 @@ $jsform_set['noticebox_content'] = 'These settings will change the look and func
     ### TODO:LOWPRIORITY, list present extensions and allow user to select the extension they want to be active.
     ?>      
 
-    <?php
-    // add the javascript that will handle our form action, prevent submission and display dialogue box
-    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-
-    // add end of form - dialogue box does not need to be within the <form>
-    csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
-
-    <?php csv2post_jquery_form_prompt($jsform_set);?>
+     <?php 
+    // add js for dialogue on form submission and the dialogue <div> itself
+    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        csv2post_jquery_form_prompt($jsform_set);
+    }
+    ?>
+        
+    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
    
 <?php csv2post_panel_footer();?>

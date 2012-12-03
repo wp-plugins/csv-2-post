@@ -1,4 +1,35 @@
 <?php
+# RENAME THIS FILE TOO csv2post_strings
+/**
+* Compares giving possible/expected prepend (needle) characters too haystack string and determines if the
+* needle exists at the beginning of the haystack.
+* 
+* @param mixed $h
+* @param mixed $n
+* @param mixed $len
+* @returns boolean true means needle exists at the beginning of the haystick, false indicates it does not
+*/
+function csv2post_STRINGS_prepend_exists($haystack,$needle){
+    $strncmp_abc = strncmp($haystack,$needle,strlen($needle));// 0 means there is a match (-1 or 1 means one string is greater than other in matching characters)
+    if($strncmp_abc == 0){return true;}else{return false;}                
+}
+
+/**
+* PHP strtotime does not allow UK time, it treats it as US format.
+
+* @param mixed $format This function allows specification of the US or UK or other format.
+*/
+function csv2post_STRINGS_strtotime($date_string,$format = 'UK'){
+    if($format == 'US'){
+        return strtotime($date_string);    
+    }elseif($format == 'UK'){
+        $date_explode = explode("/", $date_string);
+        return mktime(0,0,0,$date_explode[1],$date_explode[0],$date_explode[2]);      
+    }else{
+        return strtotime($date_string);    
+    }    
+}  
+                
 /**
 * Converts Special Characters Using Correct Encoding Values For Content
 * 
@@ -63,5 +94,9 @@ function csv2post_wtgcore_encoding_clean_permalinks($title){
     $title = str_replace($csv2post_wtgcore_o42chars['html'], $csv2post_wtgcore_o42chars['perma'], $title);
     $title = sanitize_title_with_dashes($title);
     return $title;
+}
+
+function csv2post_wtgcore_remove_last_comma($s){
+    return substr_replace($s, '', -1);     
 }
 ?>

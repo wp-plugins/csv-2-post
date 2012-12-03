@@ -2,12 +2,9 @@
 
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'pairtables';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
-$panel_array['panel_title'] = __('Pair Tables');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
+$panel_array['panel_title'] = __('Pair Tables');// user seen panel header text  
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Create a pair of tables and copy data from one to the other');
 $panel_array['panel_help'] = __('Use this panel to create the pair of tables. Select the Source table and 
@@ -25,8 +22,12 @@ two tables. Do you wish to continue?';?>
 
 <?php csv2post_panel_header( $panel_array );?>
 
-    <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form');?>
-  
+    <?php 
+    // begin form and add hidden values
+    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
+    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+    ?> 
+    
     <p>  
         <label for="csv2post_wtgpt_tabletotable_tableone">Source</label>      
         <select id="wtgpt_tabletotable_tableone" name="wtgpt_tabletotable_tableone" multiple="no" class="csv2post_multiselect_menu">
@@ -59,25 +60,23 @@ two tables. Do you wish to continue?';?>
     });
     </script>
            
-    <?php
-    // add the javascript that will handle our form action, prevent submission and display dialogue box
-    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-
-    // add end of form - dialogue box does not need to be within the <form>
-    csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
-
-    <?php csv2post_jquery_form_prompt($jsform_set);?> 
+     <?php 
+    // add js for dialogue on form submission and the dialogue <div> itself
+    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        csv2post_jquery_form_prompt($jsform_set);
+    }
+    ?>
+        
+    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?> 
         
 <?php csv2post_panel_footer();?>
 
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'pairtablesdelete';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
-$panel_array['panel_title'] = __('Delete Pairs');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
+$panel_array['panel_title'] = __('Delete Pairs');// user seen panel header text  
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Remove a pairing from the interface');
 $panel_array['panel_help'] = __('You can delete a pairing of two tables using this panel. If you need to change the
@@ -92,8 +91,12 @@ $jsform_set['noticebox_content'] = 'You are about to delete a pair. Do you wish 
 
 <?php csv2post_panel_header( $panel_array );?>
 
-    <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form');?>
-  
+    <?php 
+    // begin form and add hidden values
+    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
+    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+    ?> 
+    
     <?php
     if(!isset($csv2post_tabletotable_array) || !is_array($csv2post_tabletotable_array)){
         echo wtgcore_notice('You do not have any paired tables.','info','Small','','','return');    
@@ -140,14 +143,15 @@ $jsform_set['noticebox_content'] = 'You are about to delete a pair. Do you wish 
     }
     ?>
            
-    <?php
-    // add the javascript that will handle our form action, prevent submission and display dialogue box
-    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-
-    // add end of form - dialogue box does not need to be within the <form>
-    csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
-
-    <?php csv2post_jquery_form_prompt($jsform_set);?> 
+     <?php 
+    // add js for dialogue on form submission and the dialogue <div> itself
+    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        csv2post_jquery_form_prompt($jsform_set);
+    }
+    ?>
+        
+    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
         
 <?php csv2post_panel_footer();?>
 
@@ -171,12 +175,9 @@ if(!$csv2post_tabletotable_array){
         <?php
         ### TODO:HIGHPRIORITY, change the help and dialogue text after first time column setup done to mention actual data transfer
         ++$panel_number;// increase panel counter so this panel has unique ID
-        $panel_array = array();
+        $panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
         $panel_array['panel_name'] = 'tabletotablepair'.$key;// slug to act as a name and part of the panel ID 
-        $panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
         $panel_array['panel_title'] = __($pair['t1'].' to ' . $pair['t2']);// user seen panel header text 
-        $panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-        $panel_array['tabnumber'] = $csv2post_tab_number; 
         $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
         $panel_array['panel_intro'] = __('Transfer data from '.$pair['t1'].' to ' . $pair['t2']);
         $panel_array['panel_help'] = __('First we need to tell CSV 2 POST where the data is meant to go. We need
@@ -198,8 +199,11 @@ if(!$csv2post_tabletotable_array){
 
         <?php csv2post_panel_header( $panel_array );?>
 
-            <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form');?>
-
+            <?php // begin form and add hidden values
+            csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
+            csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+            ?> 
+    
             <input type="hidden" name="csv2post_t1" value="<?php echo $pair['t1'];?>">
             <input type="hidden" name="csv2post_t2" value="<?php echo $pair['t2'];?>">
             <input type="hidden" name="csv2post_t2no" value="<?php echo $pair['t2'];?>">
@@ -243,13 +247,15 @@ if(!$csv2post_tabletotable_array){
                 }// end if tables exist
             }// end if column relationships set
             
-            // add the javascript that will handle our form action, prevent submission and display dialogue box
-            csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
 
-            // add end of form - dialogue box does not need to be within the <form>
-            csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
-
-            <?php csv2post_jquery_form_prompt($jsform_set);?> 
+            // add js for dialogue on form submission and the dialogue <div> itself
+            if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+                csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+                csv2post_jquery_form_prompt($jsform_set);
+            }
+            ?>
+                
+            <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?> 
                 
         <?php csv2post_panel_footer();?>
         
@@ -261,12 +267,9 @@ if(!$csv2post_tabletotable_array){
 <?php
 if($csv2post_is_dev){
     ++$panel_number;// increase panel counter so this panel has unique ID
-    $panel_array = array();
+    $panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
     $panel_array['panel_name'] = 'tabletotablearraydump';// slug to act as a name and part of the panel ID 
-    $panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
     $panel_array['panel_title'] = __('Table To Table Array Dump');// user seen panel header text 
-    $panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-    $panel_array['tabnumber'] = $csv2post_tab_number; 
     $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
     $panel_array['panel_intro'] = __('A dump of the Table To Table array');
     $panel_array['panel_help'] = __('The array dump shows the values that CSV 2 POST works with and is intended for advanced users. This panel only shows when Developer Mode is active, with the idea that only developers would really have use for what is then displayed. The more data in this array, the higher chance there is of post creation being slower. Not because there are more values in this array, but because the values trigger more functions to be used. If you see values in the array for settings and features you realise you do not need. It is recommended that you remove them by visiting the applicable screens and panels.');

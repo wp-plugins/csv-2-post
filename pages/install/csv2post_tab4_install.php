@@ -18,12 +18,9 @@ if($csv2post_is_installed){
 
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = array();
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'premiumuseractivation';// slug to act as a name and part of the panel ID 
-$panel_array['panel_number'] = $panel_number;// number of panels counted on page, used to create object ID
 $panel_array['panel_title'] = __('Activation Controls');// user seen panel header text 
-$panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
-$panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('The current activation controls are basic but will eventually offer more options');
 $panel_array['panel_help'] = __('A key aspect of CSV 2 POST is the remote support provided using web services. The controls will eventually allow users to register their domain on their members account. The plugin will send the domain too the plugins website and it will be stored. This allows the use of remote support features and priority responses for any matters concerning a specific domain. To register a domain from the plugin itself, email authorisation will be required. This simple means the current user of the plugin must have the same email address in their blog as registered on the plugins website. A simple security step to reduce the number of none paying users getting priority support.'); 
@@ -39,23 +36,25 @@ $jsform_set['noticebox_content'] = 'Would you like to begin installation of all 
 
 <?php csv2post_panel_header( $panel_array );?>
 
-    <?php csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');?>
-
+    <?php // begin form and add hidden values
+    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
+    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+    ?> 
+    
     <h4>Register This Domain (not in use yet)</h4>
     <input type="radio" name="method" value="yes" selected="selected" disabled="disabled" /> Yes<br />
     <input type="radio" name="method" value="no" disabled="disabled" /> No
 
     <br /><br />
     
-    <?php 
-    // add the javascript that will handle our form action, prevent submission and display dialogue box
-    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-
-    // add end of form - dialogue box does not need to be within the <form>
-    csv2post_formend_standard('Activate',$jsform_set['form_id']);?>
-
-    <br />        
- 
-    <?php csv2post_jquery_form_prompt($jsform_set);?>
+     <?php 
+    // add js for dialogue on form submission and the dialogue <div> itself
+    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        csv2post_jquery_form_prompt($jsform_set);
+    }
+    ?>
+        
+    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
 
 <?php csv2post_panel_footer();?>
