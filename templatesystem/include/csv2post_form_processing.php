@@ -725,7 +725,7 @@ function csv2post_form_tabletotable_pair(){
 function csv2post_form_upload_csv_file(){
     global $csv2post_projectslist_array,$csv2post_schedule_array,$csv2post_plugintitle;
     
-    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'data' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'uploadcsvfile'){
+    if(isset($_POST['csv2post_post_uploadcsvfile']) && $_POST['csv2post_post_uploadcsvfile'] == true){
         
         $upload = $_FILES['file'];  
 

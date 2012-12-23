@@ -29,7 +29,8 @@ $jsform_set['noticebox_content'] = 'You are about to upload a CSV file, it will 
         ?>
         
         <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">
-        
+        <input type="hidden" id="csv2post_post_uploadcsvfile" name="csv2post_post_uploadcsvfile" value="true">
+		
     </form>
 
     <?php csv2post_jquery_form_prompt($jsform_set);?>
