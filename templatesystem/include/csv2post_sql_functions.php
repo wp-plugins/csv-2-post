@@ -1,4 +1,13 @@
-<?php                  
+<?php     
+/**
+* Creates a new record in giving table, ready for updating with CSV file data. 
+*/
+function csv2post_query_insert_new_record ( $table_name,$csvfile_modtime ){
+    global $wpdb;
+    $wpdb->query( "INSERT INTO `".$table_name."` (csv2post_postid) VALUES (0)" );
+    return $wpdb->insert_id;
+}
+             
 /**
 * Queries a projects database table for giving posts linked record, last update value
 * 1. Always queries the main project table, if main table not set in project array then defaults to the first in tables array 
@@ -303,21 +312,11 @@ function csv2post_sql_update_record( $row, $csvfile_name, $column_total, $jobcod
                   
     return $updatequery_result;
 }
-                     
-/**
-* Creates a new record in giving table, ready for updating with CSV file data. 
-*/
-function csv2post_query_insert_new_record ( $table_name,$csvfile_modtime ){
-    global $wpdb;
-    $sql_query = $wpdb->prepare( "INSERT INTO `".$table_name."` (csv2post_postid) VALUES (0)" );
-    $wpdb->query( $sql_query );
-    return $wpdb->insert_id;
-}
 
 /**
 * Determine if post exists using any giving method
 */
-function wtgcore_does_post_exist($method,$value) {
+function csv2post_does_post_exist($method,$value) {
     
     if($method == 'id'){
         return csv2post_does_post_exist_byid($value);
@@ -328,7 +327,7 @@ function wtgcore_does_post_exist($method,$value) {
 /**
 * Query posts by ID 
 */
-function wtgcore_does_post_exist_byid($id){
+function csv2post_does_post_exist_byid($id){
     global $wpdb;
     return $wpdb->get_row("SELECT post_title FROM wp_posts WHERE id = '" . $id . "'", 'ARRAY_A');    
 }  
@@ -353,7 +352,7 @@ function csv2post_create_dataimportjob_table($jobcode,$job_file_group,$maintable
     * csv2post_imported    - date of first import of row from csv file, not the last update
     * csv2post_updated     - date a newer row was imported from csv file and updated the record
     * csv2post_changed     - latest date that the plugin auto changed or user manually changed values in record
-    * csv2post_applied     - last date and time the record was applied too its post
+    * csv2post_applied     - last date and time the record was applied to its post
     * csv2post_filetime    - csv file datestamp when record imported, can then be compared against a newer file to trigger updates
     * 
     * Update Webpage
@@ -427,7 +426,7 @@ function csv2post_create_dataimportjob_table($jobcode,$job_file_group,$maintable
         csv2post_add_jobtable('csv2post_' . $jobcode);  
         return true; 
     }else{
-        wtgcore_notice('Database query failed. If you did not enter separator, quote or number of columns for your CSV file 
+        csv2post_notice('Database query failed. If you did not enter separator, quote or number of columns for your CSV file 
         that may be the cause:<br /><br />' . csv2post_sql_formatter($table),'error','Large','Database Query Failure','http://www.csv2post.com/notifications/database-query-failure-on-creating-data-import-job','echo','');
         return false;
     }        

@@ -13,7 +13,7 @@ $csv2post_apisession_array = false;
 ####                                                                   ####
 ########################################################################### 
 // set theme variable from users own setting, set default if it has not been saved.
-$csv2post_jqueryuitheme = get_option('csv2post_theme');
+$csv2post_jqueryuitheme = csv2post_option('csv2post_theme','get');
 if(!is_string($csv2post_jqueryuitheme) || $csv2post_jqueryuitheme == null || $csv2post_jqueryuitheme == false){
     $csv2post_jqueryuitheme = 'start';
 }       
@@ -23,42 +23,42 @@ if(!is_string($csv2post_jqueryuitheme) || $csv2post_jqueryuitheme == null || $cs
 ####                         THEME ARRAY                               ####
 ####                                                                   ####
 ########################################################################### 
-# TODO:LOWPRIORITY, move this array too its own array file then include it in load_admin_arrays
+# TODO:LOWPRIORITY, move this array to its own array file then include it in load_admin_arrays
 $csv2post_theme_array = array();
 // 1: overcast
 $csv2post_theme_array[0]['name'] = 'overcast';
 $csv2post_theme_array[0]['source'] = 'default';// hardcoded path to default css source
-$csv2post_theme_array[0]['thumb'] = 'default';// hardcoded path too themethumb folder
+$csv2post_theme_array[0]['thumb'] = 'default';// hardcoded path to themethumb folder
 $csv2post_theme_array[0]['author'] = 'jquery.com';// mainly for custom themes where whole icon set etc is changed
 // 3: cupertino
 $csv2post_theme_array[2]['name'] = 'cupertino';
 $csv2post_theme_array[2]['source'] = 'default';// hardcoded path to default css source
-$csv2post_theme_array[2]['thumb'] = 'default';// hardcoded path too themethumb folder
+$csv2post_theme_array[2]['thumb'] = 'default';// hardcoded path to themethumb folder
 $csv2post_theme_array[2]['author'] = 'jquery.com';// mainly for custom themes where whole icon set etc is changed
 // 4: dark-hive
 $csv2post_theme_array[3]['name'] = 'dark-hive';
 $csv2post_theme_array[3]['source'] = 'default';// hardcoded path to default css source
-$csv2post_theme_array[3]['thumb'] = 'default';// hardcoded path too themethumb folder
+$csv2post_theme_array[3]['thumb'] = 'default';// hardcoded path to themethumb folder
 $csv2post_theme_array[3]['author'] = 'jquery.com';// mainly for custom themes where whole icon set etc is changed
 // 5: flick
 $csv2post_theme_array[4]['name'] = 'flick';
 $csv2post_theme_array[4]['source'] = 'default';// hardcoded path to default css source
-$csv2post_theme_array[4]['thumb'] = 'default';// hardcoded path too themethumb folder
+$csv2post_theme_array[4]['thumb'] = 'default';// hardcoded path to themethumb folder
 $csv2post_theme_array[4]['author'] = 'jquery.com';// mainly for custom themes where whole icon set etc is changed
 // 6: overcast
 $csv2post_theme_array[5]['name'] = 'redmond';
 $csv2post_theme_array[5]['source'] = 'default';// hardcoded path to default css source
-$csv2post_theme_array[5]['thumb'] = 'default';// hardcoded path too themethumb folder
+$csv2post_theme_array[5]['thumb'] = 'default';// hardcoded path to themethumb folder
 $csv2post_theme_array[5]['author'] = 'jquery.com';// mainly for custom themes where whole icon set etc is changed
 // 7: smoothness
 $csv2post_theme_array[6]['name'] = 'smoothness';
 $csv2post_theme_array[6]['source'] = 'default';// hardcoded path to default css source
-$csv2post_theme_array[6]['thumb'] = 'default';// hardcoded path too themethumb folder
+$csv2post_theme_array[6]['thumb'] = 'default';// hardcoded path to themethumb folder
 $csv2post_theme_array[6]['author'] = 'jquery.com';// mainly for custom themes where whole icon set etc is changed
 // 9: start
 $csv2post_theme_array[8]['name'] = 'start';
 $csv2post_theme_array[8]['source'] = 'default';// hardcoded path to default css source
-$csv2post_theme_array[8]['thumb'] = 'default';// hardcoded path too themethumb folder
+$csv2post_theme_array[8]['thumb'] = 'default';// hardcoded path to themethumb folder
 $csv2post_theme_array[8]['author'] = 'jquery.com';// mainly for custom themes where whole icon set etc is changed
 
 ###############################################################

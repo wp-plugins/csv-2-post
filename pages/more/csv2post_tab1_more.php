@@ -5,7 +5,7 @@ $panel_array['panel_name'] = 'morecommunitydonations';// slug to act as a name a
 $panel_array['panel_title'] = __('Donations');// user seen panel header text  
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Donations encourage more work on free services and can pay for more support content');
-$panel_array['panel_help'] = __('Donations are sent too WebTechglobal. You may notice on buying CSV 2 POST full edition your payment is sent too WebTechGlobal Software. You may make payments too either by using paypal@webtechglobal.co.uk or paypal@csv2post.com. The "Software" account exists only to make admin easier and to increase our security.'); 
+$panel_array['panel_help'] = __('Donations are sent to WebTechglobal. You may notice on buying CSV 2 POST full edition your payment is sent to WebTechGlobal Software. You may make payments to either by using paypal@webtechglobal.co.uk or paypal@csv2post.com. The "Software" account exists only to make admin easier and to increase our security.'); 
 $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 ?>
 <?php csv2post_panel_header( $panel_array );?>

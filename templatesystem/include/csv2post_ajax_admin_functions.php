@@ -15,13 +15,13 @@ function csv2post_ajax_dataimportjob_import_manual() {
     }
     
     // display result    
-    echo wtgcore_notice('<h4>Data Import Result<h4>
+    echo csv2post_notice('<h4>Data Import Result<h4>
     <p>You requested up to '.$_POST[ 'targetrows' ].' rows to be imported from '.urldecode($_POST[ 'csvfilename' ]).'.</p>
-    '.wtgcore_notice('New Records: '.$dataimportjob_array["stats"]["lastevent"]['inserted'],'success','Small',false,'','return').'
-    '.wtgcore_notice('Void Records: '.$dataimportjob_array["stats"]["lastevent"]['void'],'info','Small',false,'','return').'
-    '.wtgcore_notice('Dropped Rows: '.$dataimportjob_array["stats"]["lastevent"]['dropped'],'warning','Small',false,'','return').'
-    '.wtgcore_notice('Rows Processed: '.$dataimportjob_array["stats"]["lastevent"]['processed'],'info','Small',false,'','return').'     
-    '.wtgcore_notice('Job Progress: '.$dataimportjob_array["stats"]["allevents"]['progress'],'info','Small',false,'','return').'    
+    '.csv2post_notice('New Records: '.$dataimportjob_array["stats"]["lastevent"]['inserted'],'success','Small',false,'','return').'
+    '.csv2post_notice('Void Records: '.$dataimportjob_array["stats"]["lastevent"]['void'],'info','Small',false,'','return').'
+    '.csv2post_notice('Dropped Rows: '.$dataimportjob_array["stats"]["lastevent"]['dropped'],'warning','Small',false,'','return').'
+    '.csv2post_notice('Rows Processed: '.$dataimportjob_array["stats"]["lastevent"]['processed'],'info','Small',false,'','return').'     
+    '.csv2post_notice('Job Progress: '.$dataimportjob_array["stats"]["allevents"]['progress'],'info','Small',false,'','return').'    
     ',$overall_result,'Extra','','','return');  
 
     die();
@@ -44,7 +44,7 @@ add_action( 'wp_ajax_dataimportjob_requestupdate', 'csv2post_ajax_dataimportjob_
 #######################################################################
 /**
 * Checks if the user entered data import job name has already been used or not
-* then displays the result using wtgcore_notice()
+* then displays the result using csv2post_notice()
 * 
 * @todo HIGHPRIORITY, requires data import job array to be called and compare submitting name against existing 
 */
@@ -55,7 +55,7 @@ function csv2post_ajax_createdataimportjobcsvfiles_validatefield() {
     // TODO:HIGHPRIORITY, to avoid the user getting confused, warn them about duplicate job names (not used as an ID though so we will allow duplicate, that is the users choice)
     ////$importjobname_validate_result = csv2post_validate_dataimportjob_name(); 
     
-    echo wtgcore_notice(urldecode( $_POST[ 'csv2post_jobname' ] ) .' is a good data import job name, please continue' ,'success','Large','Job Name Is Suitable','','return');
+    echo csv2post_notice(urldecode( $_POST[ 'csv2post_jobname' ] ) .' is a good data import job name, please continue' ,'success','Large','Job Name Is Suitable','','return');
     
     die();
 }
@@ -66,7 +66,7 @@ add_action( 'wp_ajax_action_createdataimportjobcsvfiles_validatefield', 'csv2pos
 */
 function csv2post_ajax_createdataimportjobcsvfiles_saveform() {
     check_ajax_referer( "csv2post_referer_createdataimportjobcsvfiles" );// createdataimportjobcsvfiles is panel name
-    echo wtgcore_notice('The POST Value Processed By Ajax Is: ' . urldecode( $_POST[ 'colour' ] ) . ' END OF VALUE','success','Large','Testing','','return');
+    echo csv2post_notice('The POST Value Processed By Ajax Is: ' . urldecode( $_POST[ 'colour' ] ) . ' END OF VALUE','success','Large','Testing','','return');
     die();
 }
 add_action( 'wp_ajax_action_createdataimportjobcsvfiles_saveform', 'csv2post_ajax_createdataimportjobcsvfiles_saveform' );
@@ -83,7 +83,7 @@ function csv2post_ajax_createproject_checkprojectname() {
     // TODO:HIGHPRIORITY, to avoid the user getting confused, warn them about duplicate job names (not used as an ID though so we will allow duplicate, that is the users choice)
     ////$importjobname_validate_result = csv2post_validate_dataimportjob_name(); 
     
-    echo wtgcore_notice(urldecode( $_POST[ 'csv2post_projectname' ] ) .' appears to be a suitable project name, please continue' ,'success','Extra','Suitable Project Name','','return');
+    echo csv2post_notice(urldecode( $_POST[ 'csv2post_projectname' ] ) .' appears to be a suitable project name, please continue' ,'success','Extra','Suitable Project Name','','return');
     
     die();
 }

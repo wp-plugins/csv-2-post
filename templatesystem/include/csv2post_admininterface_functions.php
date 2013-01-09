@@ -11,30 +11,56 @@ function csv2post_page_more(){csv2post_include_form_processing_php();require_onc
 */
 function csv2post_admin_menu(){
    global $csv2post_mpt_arr,$wtgtp_homeslug,$csv2post_pluginname,$csv2post_is_installed,$csv2post_is_free;
-                         
+     
    $n = $csv2post_pluginname;
-    
-   // if plugin not installed (manual action by admin) then display install page csv2post_is_installed set
-   if(!$csv2post_is_installed){
-        add_menu_page(__('Install',$n.$csv2post_mpt_arr['install']['slug']), __('CSV 2 POST ' . $csv2post_mpt_arr['install']['menu'],'install'), 'administrator', $csv2post_mpt_arr['install']['slug'], WTG_C2P_ABB . 'page_install' );
-   }else{
+
+    // if file version is newer than install we display the main page only but re-label it as an update screen
+    // the main page itself will also change to offer plugin update details. This approach prevent the problem with 
+    // visiting a page without permission between installation
+    $installed_version = csv2post_SETTING_get_version();                
+    global $csv2post_currentversion;
+  
+    if(!$csv2post_is_installed){   
+       
+        // if plugin not installed (manual action by admin) then display install page csv2post_is_installed set
+        add_menu_page(__('Install',$n.$csv2post_mpt_arr['menu']['install']['slug']), __('CSV 2 POST ' . $csv2post_mpt_arr['menu']['install']['menu'],'install'), 'administrator', $csv2post_mpt_arr['menu']['install']['slug'], 'csv2post_page_install' );
+
+    }elseif($csv2post_currentversion > $installed_version || isset($_POST['csv2post_plugin_update_now']) && $_POST['csv2post_plugin_update_now'] == 'a43bt7695c34'){
 
         // main is always set in menu, even in extensions main must exist
-        add_menu_page(__($csv2post_mpt_arr['main']['title'],$n.$csv2post_mpt_arr['main']['slug']), __($csv2post_mpt_arr['main']['menu'],'home'), $csv2post_mpt_arr['main']['role'], $n, WTG_C2P_ABB . 'page_toppage' ); 
+        add_menu_page(__('Update',$n.'update'), __('CSV 2 POST Update','home'), 'administrator', 'csv2post', 'csv2post_page_toppage' );
         
+    }else{
+
+        // main is always set in menu, even in extensions main must exist
+        add_menu_page(__($csv2post_mpt_arr['menu']['main']['title'],$n.$csv2post_mpt_arr['menu']['main']['slug']), __($csv2post_mpt_arr['menu']['main']['menu'],'home'), $csv2post_mpt_arr['menu']['main']['permissions']['defaultcapability'], $n, 'csv2post_page_toppage' ); 
+
         // loop through sub-pages
-        foreach($csv2post_mpt_arr as $k => $a){
-            // skip main page (even extensions use the same main page file but the tab screens may be customised
-            if($csv2post_is_free && $a == 'beta' || $k == 'main'){
-                // page is either for paid edition only or is added to the menu elsewhere    
-            }else{
-                // if ['active'] is set and not equal to false, if not set we assume true   
-                if(!isset($csv2post_mpt_arr[$k]['active']) || isset($csv2post_mpt_arr[$k]['active']) && $csv2post_mpt_arr[$k]['active'] != false){
-                    add_submenu_page($n, __($csv2post_mpt_arr[$k]['title'],$n.$csv2post_mpt_arr[$k]['slug']), __($csv2post_mpt_arr[$k]['menu'],$n.$csv2post_mpt_arr[$k]['slug']), $csv2post_mpt_arr[$k]['role'], $csv2post_mpt_arr[$k]['slug'], 'csv2post_page_' . $k);
+        foreach($csv2post_mpt_arr['menu'] as $k => $a){
+
+            // skip none page values such as ['arrayinfo']
+            if($k != 'arrayinfo'){
+                // skip main page (even extensions use the same main page file but the tab screens may be customised
+                if($csv2post_is_free && $a == 'beta' || $k == 'main'){
+                    // page is either for paid edition only or is added to the menu elsewhere    
+                }else{
+                    // if ['active'] is set and not equal to false, if not set we assume true   
+                    if(!isset($csv2post_mpt_arr['menu'][$k]['active']) || isset($csv2post_mpt_arr['menu'][$k]['active']) && $csv2post_mpt_arr['menu'][$k]['active'] != false){
+                        $required_capability = csv2post_SETTINGS_get_page_capability($k);    
+                        add_submenu_page($n, __($csv2post_mpt_arr['menu'][$k]['title'],$n.$csv2post_mpt_arr['menu'][$k]['slug']), __($csv2post_mpt_arr['menu'][$k]['menu'],$n.$csv2post_mpt_arr['menu'][$k]['slug']), $required_capability, $csv2post_mpt_arr['menu'][$k]['slug'], 'csv2post_page_' . $k);
+                    }
                 }
             }
-        }
+
+        }// end page loop
    }
+   
+    ###############################################################
+    #                                                             #
+    #    PRINT SCRIPT FUNCTIONS CALLED WITHIN VARIOUS SCREENS     #
+    #                                                             #
+    ###############################################################
+    add_action( 'wp_print_scripts', 'csv2post_print_admin_scripts' );   
 }
 
 /**
@@ -54,7 +80,7 @@ function csv2post_list_optionrecordtrace($form = false,$size = 'Small',$optionty
             $form = '<input type="checkbox" name="csv2post_deleteoptions_array[]" value="'.$option.'" />';
         }
         
-        echo wtgcore_notice($form . ' ' . $counter . '. ' . $option,'success',$size,'','','return');
+        echo csv2post_notice($form . ' ' . $counter . '. ' . $option,'success',$size,'','','return');
         
         ++$counter;
     }
@@ -64,41 +90,42 @@ function csv2post_navigation_jquery($thepagekey){
     global $csv2post_is_activated,$csv2post_is_installed,$csv2post_mpt_arr;?>
 
     <?php 
-    // TODO:LOWPRIORITY, once syntax plugin installed add this too a page then remove from here should we wish to use it in future
-    if($csv2post_mpt_arr[$thepagekey]['vertical'] === true){?>
+    // vertical tab menu CSS
+    // TODO:LOWPRIORITY, put this CSS into .css file and provide option for it providing it is ready
+    if($csv2post_mpt_arr['menu'][$thepagekey]['vertical'] === true){?>
 
-    <style> 
-    #csv2post_maintabs {
-        position: relative;
-        padding-left: 10em;
-    }
-    #csv2post_maintabs .ui-tabs-nav {
-        position: absolute;
-        left: 0.25em;
-        top: 0.25em;
-        bottom: 0.25em;
-        width: 10em;
-        padding: 0.2em 0 0.2em 0.2em;
-    }
-    #csv2post_maintabs .ui-tabs-nav li {
-        right: 1px;
-        width: 100%;
-        border-right: none;
-        border-bottom-width: 1px !important;
-        border-radius: 4px 0px 0px 4px;
-        -moz-border-radius: 4px 0px 0px 4px;
-        -webkit-border-radius: 4px 0px 0px 4px;
-        overflow: hidden;
-    }
-    #csv2post_maintabs .ui-tabs-nav li.ui-tabs-selected {
-        border-right: 1px solid transparent;
-    }
-    #csv2post_maintabs .ui-tabs-nav li a {
-        float: right;
-        width: 100%;
-        text-align: right;
-    }
-    </style>
+        <style> 
+        #csv2post_maintabs {
+            position: relative;
+            padding-left: 10em;
+        }
+        #csv2post_maintabs .ui-tabs-nav {
+            position: absolute;
+            left: 0.25em;
+            top: 0.25em;
+            bottom: 0.25em;
+            width: 10em;
+            padding: 0.2em 0 0.2em 0.2em;
+        }
+        #csv2post_maintabs .ui-tabs-nav li {
+            right: 1px;
+            width: 100%;
+            border-right: none;
+            border-bottom-width: 1px !important;
+            border-radius: 4px 0px 0px 4px;
+            -moz-border-radius: 4px 0px 0px 4px;
+            -webkit-border-radius: 4px 0px 0px 4px;
+            overflow: hidden;
+        }
+        #csv2post_maintabs .ui-tabs-nav li.ui-tabs-selected {
+            border-right: 1px solid transparent;
+        }
+        #csv2post_maintabs .ui-tabs-nav li a {
+            float: right;
+            width: 100%;
+            text-align: right;
+        }
+        </style>
     <?php }?>       
 
     <script>
@@ -118,25 +145,29 @@ function csv2post_navigation_jquery($thepagekey){
     <div id="csv2post_maintabs">
 
     <?php 
-    if($csv2post_mpt_arr[$thepagekey]['headers'] == true){
+    ##########################################################
+    #                                                        #
+    #          ADD HEADERS FIRST not currently in use        #
+    #                                                        #
+    ##########################################################
+    if($csv2post_mpt_arr['menu'][$thepagekey]['headers'] == true){
 
-        foreach($csv2post_mpt_arr[$thepagekey]['tabs'] as $tab => $values){
+        foreach($csv2post_mpt_arr['menu'][$thepagekey]['tabs'] as $tab => $values){
 
-            $pageslug = $csv2post_mpt_arr[$thepagekey]['slug'];
-            $tabslug = $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['slug'];
-            $tablabel = $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['label'];   
+            $pageslug = $csv2post_mpt_arr['menu'][$thepagekey]['slug'];
+            $tabslug = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['slug'];
+            $tablabel = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['label'];   
 
-            if($csv2post_mpt_arr[ $thepagekey ]['tabs'][ $tab ]['display'] == true && $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['active'] == true ){
-
+            if( csv2post_menu_should_tab_be_displayed($thepagekey,$tab) ){
+                                
                 // install menu is handled different
                 ### ??? is this correct, is the install page key not install rather than 1
                 if($thepagekey == 1){?>
                     <div id="tabs-<?php echo $tab;?>">
-                        <?php echo $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['label'];?>
+                        <?php echo $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['label'];?>
                     </div><?php    
                 }        
             } 
-
         }
     }?>       
     
@@ -144,14 +175,14 @@ function csv2post_navigation_jquery($thepagekey){
     // begin building menu - controlled by jQuery
     echo '<ul>'; 
 
-    // loop through tabs - held in menu pages tabs array
-    foreach($csv2post_mpt_arr[$thepagekey]['tabs'] as $tab=>$values){
+    // loop through tabs - held in menu pages tabs array 
+    foreach($csv2post_mpt_arr['menu'][$thepagekey]['tabs'] as $tab=>$values){
 
-        $pageslug = $csv2post_mpt_arr[$thepagekey]['slug'];
-        $tabslug = $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['slug'];
-        $tablabel = $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['label'];   
-  
-        if( $csv2post_mpt_arr[ $thepagekey ]['tabs'][ $tab ]['display'] == true && $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['active'] == true ){
+        $pageslug = $csv2post_mpt_arr['menu'][$thepagekey]['slug'];
+        $tabslug = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['slug'];
+        $tablabel = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['label'];   
+                                 
+        if( csv2post_menu_should_tab_be_displayed($thepagekey,$tab) ){
 
             // TODO:LOWPRIORITY, if( $csv2post_is_activated == 'true' ){    if not fully installed it will be dealt with on status screen
 
@@ -179,7 +210,8 @@ function csv2post_navigation_jquery($thepagekey){
                 // default menu build approach
                 echo '<li><a href="'.csv2post_create_adminurl($pageslug,'').'#tabs-'.$tab.'">' . $tablabel . '</a></li>';                                
             }
-        } 
+        }   
+            
     }// for each
     
     echo '</ul>';?>    
@@ -188,8 +220,6 @@ function csv2post_navigation_jquery($thepagekey){
 }
 
 function csv2post_include_form_processing_php(){
-
-    if(is_user_logged_in()){
 
         if(isset($_POST['csv2post_post_processing_required']) && $_POST['csv2post_post_processing_required'] == true){
 
@@ -214,7 +244,7 @@ function csv2post_include_form_processing_php(){
                 require_once(WTG_C2P_CONTENTFOLDER_DIR . '/extensions/'.WTG_C2P_EXT.'/formprocessing.php');
             }         
         }
-    }
+    
 }
 
 /**
@@ -262,7 +292,6 @@ function csv2post_header_page($pagetitle,$layout){
     global $csv2post_mpt_arr,$csv2post_adm_set,$csv2post_pub_set,$csv2post_currentproject_code,$csv2post_is_free;
 
     $csv2post_adm_set = csv2post_get_option_adminsettings();  
-    $csv2post_pub_set = csv2post_get_option_publicset();
     
     csv2post_jquery_button();?> 
 
@@ -284,7 +313,9 @@ function csv2post_header_page($pagetitle,$layout){
 
     <div class="wrap">
 
-        <?php
+        <?php       
+        csv2post_persistentnotice_output('global');
+        
         // decide if user is probably activating for the first time and display message accordingly
         csv2post_first_activation_check();?>
     
@@ -298,8 +329,11 @@ function csv2post_header_page($pagetitle,$layout){
         // check existing plugins and give advice or warnings
         csv2post_plugin_conflict_prevention();
                  
-        // display all notifications (both new ones as a result of form submission and persistent messages)
-        wtgcore_notice_output();?>
+        // display form submission result notices
+        csv2post_notice_output();
+        
+        // display persistent notices
+        csv2post_persistentnotice_output('page',$_GET['page']);?>
         
         <?php     
         // process global security and any other types of checks here such such check systems requirements, also checks installation status
@@ -308,6 +342,30 @@ function csv2post_header_page($pagetitle,$layout){
         <div class="postbox-container" style="width:99%">
             <div class="metabox-holder">
                 <div class="meta-box-sortables"><?php
+}
+
+/**
+* Displays persistent messages.
+* The parameters allow filtering to display notices in their intended parts of the interface.
+* 
+* @param mixed $placement_type global OR page OR screen OR panel
+* @param mixed $placement_specific page slug OR screens tab number OR panel id
+* @param string $pageid used with screen number, $placement_specific is the screen number
+* 
+* When $placement_type is global, all other parameteres are false
+*/
+function csv2post_persistentnotice_output($placement_type,$placement_specific = false,$pageid = false){
+    global $csv2post_persistent_array;
+
+    if(!is_array($csv2post_persistent_array) || !isset($csv2post_persistent_array['notifications'])){
+        return false;
+    }   
+
+    foreach($csv2post_persistent_array['notifications'] as $key => $n){
+        if($placement_type == $n['placement_type'] && $placement_specific == $n['placement_specific'] && $pageid == $n['pageid']){
+            echo csv2post_persistentnotice_display($n['type'],$n['helpurl'],$n['size'],$n['title'],$n['message'],true,$n['id']);
+        }
+    }
 }
 
 /**
@@ -382,10 +440,10 @@ function csv2post_helpbutton_closebox($panel_array){
     'help_button' => 'Help' 
     ), $panel_array ) );   
     
-    // call jquery for dialogue on button press
+    // call jquery for dialog on button press
     csv2post_jquery_opendialog_helpbutton($panel_number,$panel_intro,$panel_title,$panel_help,$panel_icon,$panel_name,$panel_url);?>
                                   
-    <!-- dialogue div, displayed when help button clicked -->
+    <!-- dialog div, displayed when help button clicked -->
     <div id="csv2post_helpbutton-<?php echo $panel_number;?>" title="<?php echo $panel_title;?>">
         <p style="font-size: 16px;"><?php echo $panel_help;?></p>
     </div> 
@@ -454,7 +512,7 @@ function csv2post_easy_configuration_questionlist_demo(){
                         
                 <script type="text/javascript">
                 $(function(){
-                    $("select#<?php echo WTG_C2P_ABB.'single'.$singles_created;?>").multiselect({
+                    $("select#<?php echo 'csv2post_single'.$singles_created;?>").multiselect({
                        // TODO: LOWPRIORITY, get single select working, it still shows checkboxes instead of a radio button approach
                        selectedList: 10,
                        minWidth: 600,
@@ -467,16 +525,14 @@ function csv2post_easy_configuration_questionlist_demo(){
                 </script>
 
                 <?php
-                // build list of option values
-                $opt_array = explode(",", $question['answers']);
                 $optionlist = '';
-                foreach($opt_array as $key => $optanswer){
-                    $optionlist .= '<option value="'.$optanswer.'"> '.$optanswer.' </option> ';     
+                foreach($question['answers'] as $key => $optanswer){
+                    $optionlist .= '<option value="'.$optanswer['value'].'"> '.$optanswer['text'].' </option> ';     
                 } 
            
-                echo wtgcore_notice($question['question'] . ' ' . csv2post_link('?',$question['helpurl'],'','_blank','','return','Click here to get more help for this question') .'
+                echo csv2post_notice($question['question'] . ' ' . csv2post_link('?',$question['helpurl'],'','_blank','','return','Click here to get more help for this question') .'
                 <p> 
-                    <select id="'.WTG_C2P_ABB.'single'.$singles_created.'" title="Please click on a single option" multiple="multiple" name="example-basic" class="csv2post_multiselect_menu">
+                    <select id="csv2post_single'.$singles_created.'" title="Please click on a single option" multiple="multiple" name="example-basic" class="csv2post_multiselect_menu">
                         '.$optionlist.'
                     </select>
                 </p>','question','Small','','','return');?>
@@ -487,7 +543,7 @@ function csv2post_easy_configuration_questionlist_demo(){
                    
                 <script type="text/javascript">
                 $(function(){
-                    $("select#<?php echo WTG_C2P_ABB.'multiple'.$multiple_created;?>").multiselect({
+                    $("select#<?php echo 'csv2post_multiple'.$multiple_created;?>").multiselect({
                         selectedList: 10,
                         minWidth: 600,
                         header: "Please select one or more options",
@@ -504,9 +560,9 @@ function csv2post_easy_configuration_questionlist_demo(){
                     $optionlist .= '<option value="'.$optanswer.'"> '.$optanswer.' </option> ';     
                 } 
                              
-                echo wtgcore_notice($question['question'] . ' ' . csv2post_link('?',$question['helpurl'],'','_blank','','return','Click here to get more help for this question') .'
+                echo csv2post_notice($question['question'] . ' ' . csv2post_link('?',$question['helpurl'],'','_blank','','return','Click here to get more help for this question') .'
                 <p> 
-                    <select id="'.WTG_C2P_ABB.'multiple'.$multiple_created.'" title="You may select multiple options" multiple="multiple" name="example-basic" class="csv2post_multiselect_menu">
+                    <select id="csv2post_multiple'.$multiple_created.'" title="You may select multiple options" multiple="multiple" name="example-basic" class="csv2post_multiselect_menu">
                         '.$optionlist.'
                     </select>
                 </p>','question','Small','','','return');?>
@@ -541,11 +597,11 @@ function csv2post_easy_configuration_questionlist_demo(){
                 </script>
 
                 <?php  
-                echo wtgcore_notice($question['question'] . ' ' . csv2post_link('?',$question['helpurl'],'','_blank','','return','Click here to get more help for this question') .'
+                echo csv2post_notice($question['question'] . ' ' . csv2post_link('?',$question['helpurl'],'','_blank','','return','Click here to get more help for this question') .'
                 <div class="ui-widget">
                     <p>
-                        <label for="'. WTG_C2P_ABB . 'text'.$text_created .'">Tags: </label>
-                        <input id="'. WTG_C2P_ABB . 'text'.$text_created .'" />
+                        <label for="csv2post_text'.$text_created .'">Tags: </label>
+                        <input id="csv2post_text'.$text_created .'" />
                     </p>
                 </div>','question','Small','','','return');?>
 
@@ -568,13 +624,13 @@ function csv2post_easy_configuration_questionlist_demo(){
                         }
                     });
                                       
-                    $( "#amount<?php echo $slider_created;?>" ).val( "" + $( "#<?php echo WTG_C2P_ABB;?>slider-range-min<?php echo $slider_created;?>" ).slider( "value" ) );
+                    $( "#amount<?php echo $slider_created;?>" ).val( "" + $( "#csv2post_slider-range-min<?php echo $slider_created;?>" ).slider( "value" ) );
                     //                   ^ prepend value
                 });
                 </script>
 
                 <?php  
-                echo wtgcore_notice($question['question'] . ' ' . csv2post_link('?',$question['helpurl'],'','_blank','','return','Click here to get more help for this question') .'
+                echo csv2post_notice($question['question'] . ' ' . csv2post_link('?',$question['helpurl'],'','_blank','','return','Click here to get more help for this question') .'
                 <p> 
                     <div id="csv2post_slider-range-min'. $slider_created .'"></div> 
                 </p>
@@ -621,11 +677,11 @@ function csv2post_easy_configuration_questionlist_demo(){
 */
 function csv2post_logfile_exists_notice($logtype){
     global $csv2post_adm_set;
-    $fileexists_result = wtgcore_logfile_exists($logtype);
+    $fileexists_result = csv2post_logfile_exists($logtype);
     
     if($fileexists_result){
         if(isset($csv2post_adm_set['log_'.$logtype.'_active']) && $csv2post_adm_set['log_'.$logtype.'_active'] == true){
-            echo wtgcore_notice('Your '.ucfirst($logtype).' Log file exists and is active'.
+            echo csv2post_notice('Your '.ucfirst($logtype).' Log file exists and is active'.
             csv2post_formstart_standard('csv2post_activatelogfile_'.$logtype,'none','post','').'
             <button class="button" name="csv2post_deletelogfile">Delete</button>
             <button class="button" name="csv2post_disablelogfile">Disable</button>
@@ -633,7 +689,7 @@ function csv2post_logfile_exists_notice($logtype){
             <input type="hidden" name="csv2post_logtype" value="'.$logtype.'">
         </form>', 'success', 'Small', false,'','return');
         }else{
-            echo wtgcore_notice('Your '.ucfirst($logtype).' Log file exists but is not active'.
+            echo csv2post_notice('Your '.ucfirst($logtype).' Log file exists but is not active'.
             csv2post_formstart_standard('csv2post_activatelogfile_'.$logtype,'none','post','').'
             <button class="button" name="csv2post_deletelogfile">Delete</button>            
             <button class="button" name="csv2post_activatelogfile">Activate</button>
@@ -642,7 +698,7 @@ function csv2post_logfile_exists_notice($logtype){
         </form>', 'info', 'Small', false,'','return');
         }
     }elseif(!$fileexists_result){
-        echo wtgcore_notice('Your '.ucfirst($logtype).' Log file does not exist'.
+        echo csv2post_notice('Your '.ucfirst($logtype).' Log file does not exist'.
             csv2post_formstart_standard('csv2post_createlogfile_'.$logtype,'none','post','').'
             <button class="button" name="csv2post_createlogfile">Create</button>
             <input type="hidden" name="csv2post_logtype" value="'.$logtype.'">        
@@ -661,13 +717,13 @@ function csv2post_contentfolder_display_status(){
     
     if($contentfolder_exists){
 
-        echo wtgcore_notice('Content folder exists'.
+        echo csv2post_notice('Content folder exists'.
         csv2post_formstart_standard('csv2post_deletecontentfolder_form','none','post','').'
             <button class="button" name="csv2post_contentfolder_delete">Delete</button>                        
         </form>', 'success', 'Small', false,'','return');
 
     }elseif(!$contentfolder_exists){
-        echo wtgcore_notice('Content folder does not exist please create it'.
+        echo csv2post_notice('Content folder does not exist please create it'.
         csv2post_formstart_standard('csv2post_createcontentfolder_form','none','post','').'
             <button class="button" name="csv2post_contentfolder_create">Create</button>        
         </form>', 'error', 'Small', false,'','return');
@@ -703,12 +759,12 @@ function csv2post_viewhistory($filter_array){
     else{$log_file = 'csv2post_log_general.csv';$logtype = 'general';}
                 
     // check if file exists
-    $logfileexists_result = wtgcore_logfile_exists($logtype);
+    $logfileexists_result = csv2post_logfile_exists($logtype);
 
     // if file exists continue
     if(!$logfileexists_result){
         
-        echo wtgcore_notice('The log file for recording installation entries does not appear to exist. This may be because log recording is not active or
+        echo csv2post_notice('The log file for recording installation entries does not appear to exist. This may be because log recording is not active or
         permissions are preventing the history file being created. This is not an error. 
         <br /><br />
         '.csv2post_formstart_standard('csv2post_createlogfile','none','post','').'
@@ -722,7 +778,7 @@ function csv2post_viewhistory($filter_array){
         csv2post_pearcsv_include();
 
         // PEAR CSV reads file and gets configuration
-        $logfile_conf = File_CSV::discoverFormat(wtgcore_logfilepath($filter_array['logfile']));
+        $logfile_conf = File_CSV::discoverFormat(csv2post_logfilepath($filter_array['logfile']));
 
         // apply Separator
         $logfile_conf['sep'] = ',';
@@ -745,7 +801,7 @@ function csv2post_viewhistory($filter_array){
              
         // loop through records
         // exit if we hit speed profile maximum processing time
-        while ( ( $logrow = File_CSV::read(wtgcore_logfilepath($filter_array['logfile']), $logfile_conf ) ) ){
+        while ( ( $logrow = File_CSV::read(csv2post_logfilepath($filter_array['logfile']), $logfile_conf ) ) ){
             // if on first row we echo table title
             if($rows_looped == 0){
                 echo $tablehead_complete;
@@ -777,22 +833,26 @@ function csv2post_log_table($logrow){
 }
                                         
 /**
- * Display a notice box per option record
+ * Display a notice box per option record. Where possible defaults are used. So a failure
+ * in these checks does not mean a failure in the plugin, it could indicate that the user wants to
+ * use the file version of an array and not store it locally.
  * 
- * @todo finish urls
+ * @todo HIGHPRIORITY, generate this list based on options array. Make outcome more complex. Indicate if option record or not.
  */
 function csv2post_install_optionstatus_list(){
 
-    if(get_option('csv2post_adminset')){
-        echo wtgcore_notice('csv2post_adminset is installed', 'success', 'Small', false,'','return');
+    $admin_settings_array = get_option('csv2post_adminset');
+    if(is_array($admin_settings_array)){
+        echo csv2post_notice('csv2post_adminset is installed', 'success', 'Small', false,'','return');
     }else{
-        echo wtgcore_notice('csv2post_adminset not installed <a class="button" href="'.csv2post_currenturl().'&test=test">Install Now</a>', 'error', 'Small', false,'','return');
+        echo csv2post_notice('csv2post_adminset not installed properly <a class="button" href="'.csv2post_currenturl().'&test=test">Install Now</a>', 'error', 'Small', false,'','return');
     }
 
-    if(get_option('csv2post_publicset')){
-        echo wtgcore_notice('csv2post_publicset is installed', 'success', 'Small', false,'','return');
+    $public_settings_array = get_option('csv2post_publicset');
+    if(is_array($public_settings_array)){
+        echo csv2post_notice('csv2post_publicset is installed', 'success', 'Small', false,'','return');
     }else{
-        echo wtgcore_notice('csv2post_publicset not installed <a class="button" href="'.csv2post_currenturl().'&test=test">Install Now</a>', 'error', 'Small', false,'','return');
+        echo csv2post_notice('csv2post_publicset not installed properly <a class="button" href="'.csv2post_currenturl().'&test=test">Install Now</a>', 'error', 'Small', false,'','return');
     } 
 }
 
@@ -813,7 +873,8 @@ function csv2post_check_requirements($display){
             $requirement_missing = true;
             if($display == true){
                 global $csv2post_plugintitle;
-                wtgcore_notice('The plugin detected an older php version than the minimum requirement which 
+                # TODO:LOWPRIORITY, change this to a persistent notice once system in place to track notices already displayed
+                csv2post_notice('The plugin detected an older php version than the minimum requirement which 
                 is '.WTG_C2P_PHPVERSIONMINIMUM.'. Wordpress itself also operates better with a later version 
                 of php than you are using. Most features will work fine but some important ones will not.',
                 'warning','Large',$csv2post_plugintitle . ' Requires PHP '.WTG_C2P_PHPVERSIONMINIMUM);
@@ -828,14 +889,14 @@ function csv2post_check_requirements($display){
         if(!$extensioninstalled_result){
             $requirement_missing = true;
             if($display == true){
-                wtgcore_notice('Your server does not have the soap extension loaded. This is required for '.$csv2post_plugintitle.' premium edition and the premium services offered by WebTechGlobal.','error','Extra','Soap Extension Required');
+                csv2post_notice('Your server does not have the soap extension loaded. This is required for '.$csv2post_plugintitle.' premium edition and the premium services offered by WebTechGlobal.','error','Extra','Soap Extension Required');
             }
         }else{
             // now confirm SoapClient class exists
             if (!class_exists('SoapClient')) {
                 $requirement_missing = true;
                 if($display == true){
-                    wtgcore_notice('SoapClient class does not exist and is required by '.$csv2post_plugintitle.' for the premium edition and premium web services.','error','Extra','SoapClient Class Required');            
+                    csv2post_notice('SoapClient class does not exist and is required by '.$csv2post_plugintitle.' for the premium edition and premium web services.','error','Extra','SoapClient Class Required');            
                 }
             }            
         }
@@ -845,24 +906,24 @@ function csv2post_check_requirements($display){
 }
 
 /**
- * Calls wtgtp_jquery_opendialog (no buttons) to apply jQuery to button and display dialogue box
+ * Calls wtgtp_jquery_opendialog (no buttons) to apply jQuery to button and display dialog box
  * @param integer $used (number of times function used equals number of buttons and $used acts as an ID)
- * @param string $title (title of the dialogue box)
- * @param string $content (content in the dialogue box)
+ * @param string $title (title of the dialog box)
+ * @param string $content (content in the dialog box)
  * 
  * @todo check if this function is in use, if not remove it. It should be an depreciated function
  */
 function csv2post_helpbutton($used,$intro,$title,$content){
-    // call jquery for dialogue on button press
+    // call jquery for dialog on button press
     csv2post_jquery_opendialog($used);?>
 
-    <div id="<?php echo WTG_C2P_ABB;?>dialog<?php echo $used;?>" title="<?php echo $title;?>">
+    <div id="csv2post_dialog<?php echo $used;?>" title="<?php echo $title;?>">
         <p><?php echo $content;?></p>
     </div>
 
     <!--<div class="jquerybutton">-->
     <div class="jquerybutton">
-        <button id="<?php echo WTG_C2P_ABB;?>opener<?php echo $used;?>">Video Tutorial</button> <?php echo $intro;?>
+        <button id="csv2post_opener<?php echo $used;?>">Video Tutorial</button> <?php echo $intro;?>
     </div>
 
     <?php
@@ -905,7 +966,7 @@ function csv2post_displayfilesize($file_path){
 }
 
 /**
-* Builds URL too the Contact screen
+* Builds URL to the Contact screen
 * 
 */
 function csv2post_contactscreen_url(){
@@ -946,10 +1007,10 @@ function csv2post_hidden_form_values($tabnumber,$pageid,$panel_name,$panel_title
 }
 
 /**
- * Builds form middle with jquery dialogue, flexible options allow a single action with or without many form objects
+ * Builds form middle with jquery dialog, flexible options allow a single action with or without many form objects
  * @link http://www.webtechglobal.co.uk/blog/wordpress/wtg-plugin-template/wtg-pt-jquery-dialogue-form
  * @param array $jqueryform_settings (configuration see: )
- * @param array $formobjects_array (list of form object ID for looping through and adding to dialogue)
+ * @param array $formobjects_array (list of form object ID for looping through and adding to dialog)
  * 
  * @todo this function requires the form
  */
@@ -960,9 +1021,9 @@ function csv2post_jqueryform_singleaction_middle($jsform_set,$formobjects_array)
     'panel_number' => 0,
     'panel_name' => 'nopanelname',
     'panel_title' => 'No Panel Name',    
-    'tab_number' => 'error no tab number passed too csv2post_jqueryform_singleaction_middle()',
-    'form_id' => WTG_C2P_ABB.'form_id_default',
-    'form_name' => WTG_C2P_ABB.'form_name_default',
+    'tab_number' => 'error no tab number passed to csv2post_jqueryform_singleaction_middle()',
+    'form_id' => 'csv2post_form_id_default',
+    'form_name' => 'csv2post_form_name_default',
     ), $jsform_set ) );
 
     // add the javascript
@@ -1067,14 +1128,14 @@ function csv2post_google_searchlink($text,$subscription,$string){
 * @param string $soapcallfunction, the function name that called soap and cause fault
 */
 function csv2post_soap_fault_display($soapcallfunction){
-    wtgcore_notice('Sorry there was a problem contacting WebTechGlobal Web Services for Wordpress.
+    csv2post_notice('Sorry there was a problem contacting WebTechGlobal Web Services for Wordpress.
     Please report this notice with the following information: SOAP Call Function '.$soapcallfunction.'
     returned "soapfault". I think you for your patience. Please repeat your action again while you wait on a
     response as it may be caused by maintenance on the WebTechGlobal site.','error','Extra','WebTechGlobal Web Service Fault');    
 }
 
 /**
-* Returns array with common values required for forms that need jQuery dialogue etc.
+* Returns array with common values required for forms that need jQuery dialog etc.
 * The default values can be overridden by populating the $jsform_set_override array. 
 * 
 * @param mixed $pageid
@@ -1097,11 +1158,11 @@ function csv2post_jqueryform_commonarrayvalues($pageid,$csv2post_tab_number,$pan
     $jsform_set['panel_number'] = $panel_number;
     $jsform_set['panel_name'] = $panel_name;
     $jsform_set['panel_title'] = $panel_title;                
-    // dialogue box, javascript
-    $jsform_set['dialoguebox_id'] = $panel_name.$panel_number;
-    $jsform_set['dialoguebox_height'] = 300;// false will remove the height entry from the script
-    $jsform_set['dialoguebox_width'] = 800;// false will remove the width entry from the script
-    $jsform_set['dialoguebox_autoresize'] = false;// true or false, overrides width and height 
+    // dialog box, javascript
+    $jsform_set['dialogbox_id'] = $panel_name.$panel_number;
+    $jsform_set['dialogbox_height'] = 300;// false will remove the height entry from the script
+    $jsform_set['dialogbox_width'] = 800;// false will remove the width entry from the script
+    $jsform_set['dialogbox_autoresize'] = false;// true or false, overrides width and height 
     // form related
     $jsform_set['form_id'] = csv2post_create_formid($panel_name);
     $jsform_set['form_name'] = csv2post_create_formname($panel_name);  
@@ -1153,7 +1214,7 @@ function csv2post_available_csv_file_list(){
  
     if (!is_dir(WTG_C2P_CONTENTFOLDER_DIR)) {
     
-        echo wtgcore_notice('The content folder does not exist, has it been deleted or move?','error','Small','','','return');
+        echo csv2post_notice('The content folder does not exist, has it been deleted or move?','error','Small','','','return');
                    
     }else{    
         
@@ -1161,7 +1222,7 @@ function csv2post_available_csv_file_list(){
         
         if(!$opendir_result){
             
-            echo wtgcore_notice($csv2post_plugintitle . ' does not have permission to open the plugins content folder','error','Small','','','return');
+            echo csv2post_notice($csv2post_plugintitle . ' does not have permission to open the plugins content folder','error','Small','','','return');
 
         }else{
 
@@ -1210,7 +1271,7 @@ function csv2post_available_csv_file_list(){
                  
             echo '</table>';
             
-            wtgcore_notice_filesizetotal($filesize_total);
+            csv2post_notice_filesizetotal($filesize_total);
 
             // clear stored values
             clearstatcache();
@@ -1243,7 +1304,7 @@ function csv2post_list_csvfiles(){
                         
                         $form = '<input type="checkbox" name="csv2post_deletecsvfiles_array[]" value="'.$filename.'" />';
                         
-                        echo wtgcore_notice($form . ' ' . $counter . '. ' . $filename,'success','Tiny','','','return');
+                        echo csv2post_notice($form . ' ' . $counter . '. ' . $filename,'success','Tiny','','','return');
                         
                         ++$counter;                  
                         
@@ -1269,7 +1330,7 @@ function csv2post_csv_files_status_list(){
  
     if (!is_dir(WTG_C2P_CONTENTFOLDER_DIR)) {
     
-        wtgcore_notice('The content folder does not exist, has it been deleted or move?','error','Small','','');
+        csv2post_notice('The content folder does not exist, has it been deleted or move?','error','Small','','');
                    
     }else{    
         
@@ -1277,7 +1338,7 @@ function csv2post_csv_files_status_list(){
         
         if(!$opendir_result){
             global $csv2post_plugintitle;
-            wtgcore_notice($csv2post_plugintitle . ' does not have permission to open the plugins content folder','error','Small','','');
+            csv2post_notice($csv2post_plugintitle . ' does not have permission to open the plugins content folder','error','Small','','');
 
         }else{
 
@@ -1456,6 +1517,9 @@ function csv2post_panel_header( $panel_array, $boxintro_div = true ){
             <?php }?>
             
             <div class="csv2post_boxcontent_div"><?php
+            
+                // display persistent notices for the current panel
+                csv2post_persistentnotice_output('panel',$panel_array['panel_id']);
 }
 
 /**
@@ -1833,11 +1897,11 @@ function csv2post_save_postdata_titletemplate( $post_id ) {
 * Standard form submission prompt 
 */
 function csv2post_jquery_form_prompt($jsform_set){?>
-    <!-- dialogue box start -->
-    <div id="<?php echo $jsform_set['dialoguebox_id'];?>" title="<?php echo $jsform_set['dialoguebox_title'];?>">
-        <?php echo wtgcore_notice($jsform_set['noticebox_content'],'question','Small',false,'','return');?>
+    <!-- dialog box start -->
+    <div id="<?php echo $jsform_set['dialogbox_id'];?>" title="<?php echo $jsform_set['dialogbox_title'];?>">
+        <?php echo csv2post_notice($jsform_set['noticebox_content'],'question','Small',false,'','return');?>
     </div>
-    <!-- dialogue box end --> <?php      
+    <!-- dialog box end --> <?php      
 } 
 
 /**
@@ -1858,13 +1922,13 @@ function csv2post_createmenu($thepagekey){
 
 /**
 * Secondary navigation builder - CSS only (use for javascript debugging etc)
-* @todo MEDIUMPRIORITY, move the css in function too a .css file and double check no duplicates
+* @todo MEDIUMPRIORITY, move the css in function to a .css file and double check no duplicates
 * @param mixed $thepagekey
 */
 function csv2post_navigation_css($thepagekey){    
     global $csv2post_is_activated,$csv2post_is_installed,$csv2post_mpt_arr;?>
 
-    <?php if($csv2post_mpt_arr[$thepagekey]['vertical'] == true){?>
+    <?php if($csv2post_mpt_arr['menu'][$thepagekey]['vertical'] == true){?>
 
     <style> 
     #csv2post_maintabs {
@@ -1903,21 +1967,21 @@ function csv2post_navigation_css($thepagekey){
     <div id="csv2post_maintabs">
 
     <?php 
-    if($csv2post_mpt_arr[$thepagekey]['headers'] == true){
+    if($csv2post_mpt_arr['menu'][$thepagekey]['headers'] == true){
         
-        foreach($csv2post_mpt_arr[$thepagekey]['tabs'] as $tab=>$values){
+        foreach($csv2post_mpt_arr['menu'][$thepagekey]['tabs'] as $tab=>$values){
             
-            $pageslug = $csv2post_mpt_arr[$thepagekey]['slug'];
-            $tabslug = $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['slug'];
-            $tablabel = $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['label'];   
+            $pageslug = $csv2post_mpt_arr['menu'][$thepagekey]['slug'];
+            $tabslug = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['slug'];
+            $tablabel = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['label'];   
  
-             if($csv2post_mpt_arr[ $thepagekey ]['tabs'][ $tab ]['display'] == true){
+             if($csv2post_mpt_arr['menu'][ $thepagekey ]['tabs'][ $tab ]['display'] == true){
 
                 // install menu is handled different
                 ### ??? is this correct, is the install page key not install rather than 1
                 if($thepagekey == 1){?>
                     <div id="tabs-<?php echo $tab;?>">
-                        <?php echo $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['label'];?>
+                        <?php echo $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['label'];?>
                     </div><?php    
                 }        
             } 
@@ -1929,13 +1993,13 @@ function csv2post_navigation_css($thepagekey){
     echo '<ul>';
 
     // loop through tabs - held in menu pages tabs array
-    foreach($csv2post_mpt_arr[$thepagekey]['tabs'] as $tab => $values){
+    foreach($csv2post_mpt_arr['menu'][$thepagekey]['tabs'] as $tab => $values){
         
-        $pageslug = $csv2post_mpt_arr[$thepagekey]['slug'];
-        $tabslug = $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['slug'];
-        $tablabel = $csv2post_mpt_arr[$thepagekey]['tabs'][$tab]['label'];   
+        $pageslug = $csv2post_mpt_arr['menu'][$thepagekey]['slug'];
+        $tabslug = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['slug'];
+        $tablabel = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['label'];   
         
-        if($csv2post_mpt_arr[ $thepagekey ]['tabs'][ $tab ]['display'] == true){
+        if($csv2post_mpt_arr['menu'][ $thepagekey ]['tabs'][ $tab ]['display'] == true){
 
             // TODO:LOWPRIORITY, if( $csv2post_is_activated == 'true' ){    if not fully installed it will be dealt with on status screen          
             
@@ -2002,14 +2066,14 @@ function csv2post_list_replacement_tokens($currentproject_code){
             
             // confirm table still exists else display warning - great opportunity to let user know they deleted the WRONG table :) 
             if(!csv2post_does_table_exist($table_name)){
-                echo wtgcore_notice('This table is missing, have you possibly manually deleted it?','error','Tiny','','','return');
+                echo csv2post_notice('This table is missing, have you possibly manually deleted it?','error','Tiny','','','return');
             }
             
             $table_columns = csv2post_sql_get_tablecolumns($table_name);
             
             if(!$table_columns){
             
-                echo wtgcore_notice('The database table named '.$table_name.' does not appear to exist anymore. Have you
+                echo csv2post_notice('The database table named '.$table_name.' does not appear to exist anymore. Have you
                 deleted it manually using this plugin or when editing the database directly?','error','Small','','','return');
                 
             }else{
@@ -2149,22 +2213,29 @@ function csv2post_display_project_columnsandtables_menuoptions($project_code,$cu
 
         foreach( $csv2post_project_array['tables'] as $key => $table ){
             $table_columns = csv2post_sql_get_tablecolumns($table);
-            while ($row_column = mysql_fetch_row($table_columns)) {
+            
+            if($table_columns == false){
+                
+                echo '<option value="fault">Problem Detected In Relation To Table Named: '.$table.'</option>';        
+            
+            }else{
+                while ($row_column = mysql_fetch_row($table_columns)) {
 
-                // establish selected status for this option
-                $selected = '';
-                
-                ### TODO:MEDIUMPRIORITY change these not provided values all over the plugin
-                ### we use a random number so that it can never match a users own column name but this approach has not been used everywhere
-                if($current_table != 'NOTPROVIDED98723462' && $current_column != 'NOTPROVIDED09871237'){
-                    if($current_table == $table && $current_column == $row_column[0]){
-                        $selected = ' selected="selected"';
-                    }    
-                } 
-                
-                // must add table name also to avoid confusion when two or more tables share the same column name               
-                echo '<option value="'.$table.','.$row_column[0].'"'.$selected.'>' . $table . ' - '.$row_column[0].'</option>'; 
-            }                          
+                    // establish selected status for this option
+                    $selected = '';
+                    
+                    ### TODO:MEDIUMPRIORITY change these not provided values all over the plugin
+                    ### we use a random number so that it can never match a users own column name but this approach has not been used everywhere
+                    if($current_table != 'NOTPROVIDED98723462' && $current_column != 'NOTPROVIDED09871237'){
+                        if($current_table == $table && $current_column == $row_column[0]){
+                            $selected = ' selected="selected"';
+                        }    
+                    } 
+                    
+                    // must add table name also to avoid confusion when two or more tables share the same column name               
+                    echo '<option value="'.$table.','.$row_column[0].'"'.$selected.'>' . $table . ' - '.$row_column[0].'</option>'; 
+                }  
+            }                        
         } 
     }  
 }
@@ -2219,20 +2290,20 @@ function csv2post_display_date_method(){
     if(isset($csv2post_project_array['dates']['currentmethod'])){
         
         if($csv2post_project_array['dates']['currentmethod'] == 'data'){
-            echo wtgcore_notice('You selected a column in your project database tables for populating the publish dates of your posts.
+            echo csv2post_notice('You selected a column in your project database tables for populating the publish dates of your posts.
             Please ensure the date formats in your data is suitable if your dates do not turn out as expected.','info','Large','Pre-Set Data Dates','','return');        
             return;    
         }
                 
         if($csv2post_project_array['dates']['currentmethod'] == 'random'){
-            echo wtgcore_notice('Your project is currently setup to create random publish dates. Your 
+            echo csv2post_notice('Your project is currently setup to create random publish dates. Your 
             random dates will be generated using the giving start and end dates. All publish dates will fall
             between those giving dates and will not be created with any increment or in order.','info','Large','Random Dates','','return');        
             return;    
         }
         
         if($csv2post_project_array['dates']['currentmethod'] == 'increment'){
-            echo wtgcore_notice('The current project is setup to use the incremental publish dates method.
+            echo csv2post_notice('The current project is setup to use the incremental publish dates method.
             The first publish date will be the Start date you submitted. The increment will then be used to 
             create the next publish date.','info','Large','Incremental Dates','','return');        
             return;    
@@ -2241,7 +2312,7 @@ function csv2post_display_date_method(){
     }
     
     // display default
-    echo wtgcore_notice('Your project will use your blogs default publish date. '.$csv2post_plugintitle.' will not apply
+    echo csv2post_notice('Your project will use your blogs default publish date. '.$csv2post_plugintitle.' will not apply
     a date or make modifications to the one decided by Wordpress based on your current Date configuration here on
     this screen.','info','Large','Wordpress Default Publish Dates','','return');    
 }
@@ -2478,7 +2549,7 @@ function csv2post_table_customfield_rules_basic(){
     
     $project_array = csv2post_get_project_array($csv2post_currentproject_code);
     if(!isset($project_array['custom_fields']['basic'])){
-        wtgcore_notice('You do not have any basic custom field rules for adding meta data to your posts.','info','Large');
+        csv2post_notice('You do not have any basic custom field rules for adding meta data to your posts.','info','Large');
     }else{    
         echo '<table class="widefat post fixed"><tr class="first">
             <td width="50"><strong>Delete</strong></td>
@@ -2508,7 +2579,7 @@ function csv2post_table_customfield_rules_advanced(){
     
     $project_array = csv2post_get_project_array($csv2post_currentproject_code);
     if(!isset($project_array['custom_fields']['advanced'])){
-        wtgcore_notice('You do not have any advanced custom field rules for adding meta data to your posts.','info','Large');
+        csv2post_notice('You do not have any advanced custom field rules for adding meta data to your posts.','info','Large');
     }else{    
         echo '<table class="widefat post fixed"><tr class="first">
             <td width="50"><strong>Delete</strong></td>
@@ -2562,7 +2633,7 @@ function csv2post_display_posttyperules_byvalue_table(){
     $project_array = csv2post_get_project_array($csv2post_currentproject_code);
     
     if(!isset($project_array['posttyperules']['byvalue'])){
-        wtgcore_notice('You do not have any post type rules by specific values for your current project.','info','Small');
+        csv2post_notice('You do not have any post type rules by specific values for your current project.','info','Small');
         return 0;
     }else{
 
@@ -2594,7 +2665,7 @@ function csv2post_display_templatedesignrules_byvalue_table(){
     
     $project_array = csv2post_get_project_array($csv2post_currentproject_code);
     if(!isset($project_array['contenttemplaterules']['byvalue'])){
-        wtgcore_notice('You do not have any dynamic content design rules triggered by specific values.','info','Small');
+        csv2post_notice('You do not have any dynamic content design rules triggered by specific values.','info','Small');
         return 0;
     }else{
 
@@ -2639,7 +2710,7 @@ function csv2post_list_jobtables(){
                 
                 $form = '<input type="checkbox" name="csv2post_deletejobtables_array[]" value="'.$table_name.'" />';
             
-                echo wtgcore_notice($form . ' ' . $counter . '. ' . $table_name,'success','Tiny','','','return');                
+                echo csv2post_notice($form . ' ' . $counter . '. ' . $table_name,'success','Tiny','','','return');                
                 
             }
             
@@ -2658,7 +2729,7 @@ function csv2post_list_folders(){
     
     if($contentfolder_exists){
 
-        echo wtgcore_notice('<input type="checkbox" name="csv2post_deletefolders_array[]" value="wpcsvimportercontent" />' . ' 1. wpcsvimportercontent','success','Tiny','','','return');                
+        echo csv2post_notice('<input type="checkbox" name="csv2post_deletefolders_array[]" value="wpcsvimportercontent" />' . ' 1. wpcsvimportercontent','success','Tiny','','','return');                
  
     }
 }
@@ -2797,13 +2868,24 @@ function csv2post_display_project_database_tables_and_columns(){
             echo '</tr>';
                 
             $table_columns = csv2post_sql_get_tablecolumns($table_name);
-            while ($row_column = mysql_fetch_row($table_columns)) {
+            if($table_columns == false){
+            
                 echo '<tr>';                
                     echo '<td></td>';
                     echo '<td></td>';                    
-                    echo '<td>'.$row_column[0].'</td>';
-                echo '</tr>'; 
-            } 
+                    echo '<td>Could not get column headers, please seek support for your CSV file</td>';
+                echo '</tr>';                          
+            }else{
+                
+                while ($row_column = mysql_fetch_row($table_columns)) {
+                    echo '<tr>';                
+                        echo '<td></td>';
+                        echo '<td></td>';                    
+                        echo '<td>'.$row_column[0].'</td>';
+                    echo '</tr>'; 
+                } 
+            
+            }
  
             ++$count;         
         }           
@@ -2829,7 +2911,7 @@ function csv2post_display_databasetables_withjobnames($checkbox_column = false,$
     
     // if no applicable database tables would be displayed, display message
     if($csv2post_is_free && $table_count == 0){
-        echo wtgcore_notice('Your database does not have any tables created by '.$csv2post_plugintitle.'. You will need to create a Data Import Job which creates a new database table.','warning','Small','','','return');    
+        echo csv2post_notice('Your database does not have any tables created by '.$csv2post_plugintitle.'. You will need to create a Data Import Job which creates a new database table.','warning','Small','','','return');    
     }else{
         
         echo '<table class="widefat post fixed"><tr class="first">';
@@ -2966,7 +3048,7 @@ function csv2post_display_users_options($current_value){
         
         // apply selected value to current save
         $selected = '';
-        if( $current_value == $user->user_ID ) {
+        if( $current_value == $user->ID ) {
             $selected = 'selected="selected"';
         }
         
@@ -3049,7 +3131,7 @@ function csv2post_helpbutton_text($under_construction = false,$paid_only = false
     global $csv2post_is_free;
     
     if($csv2post_is_free && $paid_only){
-        return 'Feature Not Released';// full edition only but possibly coming too the free edition
+        return 'Feature Not Released';// full edition only but possibly coming to the free edition
     }    
     
     if($under_construction){
@@ -3166,18 +3248,18 @@ function csv2post_schedulescreen_notices(){
     // if not allowed today display
     $day = strtolower( date('l') );
     if(!isset($csv2post_schedule_array['days'][$day])){
-        echo wtgcore_notice('Scheduled events have not been permitted for ' . date('l'),'info','Tiny','','','return');     
+        echo csv2post_notice('Scheduled events have not been permitted for ' . date('l'),'info','Tiny','','','return');     
     }
     
     // if not allowed this hour display
     $hour = strtolower(date('G'));
     if(!isset($csv2post_schedule_array['hours'][$hour])){
-        echo wtgcore_notice('Scheduled events have not been permitted for the current hour: ' . date('G'),'info','Tiny','','','return');    
+        echo csv2post_notice('Scheduled events have not been permitted for the current hour: ' . date('G'),'info','Tiny','','','return');    
     }
     
     // if no hours array set OR if no boolean true exists for any hours
     if( !isset($csv2post_schedule_array['hours']) ){
-        echo wtgcore_notice('Schedule is not ready as no hours have been permitted','info','Tiny','','','return');    
+        echo csv2post_notice('Schedule is not ready as no hours have been permitted','info','Tiny','','','return');    
     }else{
         // if no hours are boolean true
         $hour_permitted = false;
@@ -3189,13 +3271,13 @@ function csv2post_schedulescreen_notices(){
         }    
         
         if(!$hour_permitted){
-            echo wtgcore_notice('Schedule paused because no hours are permitted','info','Tiny','','','return');    
+            echo csv2post_notice('Schedule paused because no hours are permitted','info','Tiny','','','return');    
         }
     }
     
     // if no days array set OR if no boolean true exists for any days
     if( !isset($csv2post_schedule_array['days']) ){
-        echo wtgcore_notice('Schedule is not ready as no days have been permitted','info','Tiny','','','return');    
+        echo csv2post_notice('Schedule is not ready as no days have been permitted','info','Tiny','','','return');    
     }else{
         // if no hours are boolean true
         $days_permitted = false;
@@ -3207,13 +3289,13 @@ function csv2post_schedulescreen_notices(){
         }    
         
         if(!$days_permitted){
-            echo wtgcore_notice('Schedule has been disabled because no days are permitted','info','Tiny','','','return');    
+            echo csv2post_notice('Schedule has been disabled because no days are permitted','info','Tiny','','','return');    
         }
     }
     
     // if no event types set display this
     if(!isset($csv2post_schedule_array['eventtypes'])){
-        echo wtgcore_notice('Schedule is not setup, no event types have been activated yet','info','Tiny','','','return');    
+        echo csv2post_notice('Schedule is not setup, no event types have been activated yet','info','Tiny','','','return');    
     }else{
         // have event types been disabled
         $event_type_set = false;
@@ -3225,18 +3307,18 @@ function csv2post_schedulescreen_notices(){
         }
         
         if(!$event_type_set){
-            echo wtgcore_notice('Schedule has been stopped because all event types are disabled','info','Tiny','','','return');    
+            echo csv2post_notice('Schedule has been stopped because all event types are disabled','info','Tiny','','','return');    
         }
     }
 
     // if current 24 hour period limit reached display this
     if(isset($csv2post_schedule_array['history']['daycounter']) && isset($csv2post_schedule_array['limits']['day']) && $csv2post_schedule_array['history']['daycounter'] >= $csv2post_schedule_array['limits']['day']){
-        echo wtgcore_notice('The maximum events number for the current 24 hour period has been reached','info','Tiny','','','return');        
+        echo csv2post_notice('The maximum events number for the current 24 hour period has been reached','info','Tiny','','','return');        
     }
     
     // if current 60 minute period limit reached display this
     if(isset($csv2post_schedule_array['history']['hourcounter']) && isset($csv2post_schedule_array['limits']['hour']) && $csv2post_schedule_array['history']['hourcounter'] >= $csv2post_schedule_array['limits']['hour']){
-        echo wtgcore_notice('The maximum events number for the current 60 minute period has been reached','info','Tiny','','','return');        
+        echo csv2post_notice('The maximum events number for the current 60 minute period has been reached','info','Tiny','','','return');        
     }
 
     // if no projects are on drip feeding display
@@ -3251,7 +3333,7 @@ function csv2post_schedulescreen_notices(){
     }
     
     if(!$project_dripfeeding){
-        echo wtgcore_notice('You do not have any Post Creation Projects activated for drip-feeding through the plugins schedule','info','Tiny','','','return');    
+        echo csv2post_notice('You do not have any Post Creation Projects activated for drip-feeding through the plugins schedule','info','Tiny','','','return');    
     } 
 }
 
@@ -3454,7 +3536,7 @@ function csv2post_display_designtype_menu($post_id){
 * 3. Check for each files stored profile
 * 4. Goes through data import projects, adds multiple entries of one file if the file exists in more than one project
 *                      
-* @todo HIGHPRIORITY, each file may exist in more than one data import project, so we must check this then add the file too table
+* @todo HIGHPRIORITY, each file may exist in more than one data import project, so we must check this then add the file to table
 * @todo MEDIUMPRIORITY, if more than 20 files are listed, create a message recommending cleanup for interface speed improvement
 * @todo LOWPRIORITY, use DataTables with ability to click and view more information plus delete files.
 * @todo LOWPRIORITY, a file is caused a blank age result, investigate why it happened when the file was edited then uploaded again, it could be because it was changed within seconds ago and that is not active        
@@ -3471,7 +3553,7 @@ function csv2post_used_csv_file_list(){
  
     if (!is_dir(WTG_C2P_CONTENTFOLDER_DIR)) {
     
-        wtgcore_notice('The content folder does not exist, has it been deleted or move?','error','Small','','');
+        csv2post_notice('The content folder does not exist, has it been deleted or move?','error','Small','','');
                    
     }else{    
         
@@ -3479,7 +3561,7 @@ function csv2post_used_csv_file_list(){
         
         if(!$opendir_result){
             
-            wtgcore_notice($csv2post_plugintitle . ' does not have permission to open the plugins content folder','error','Small','','');
+            csv2post_notice($csv2post_plugintitle . ' does not have permission to open the plugins content folder','error','Small','','');
 
         }else{
 
@@ -3502,7 +3584,7 @@ function csv2post_used_csv_file_list(){
                 // get the jobs own option record
                 $jobrecord = csv2post_get_dataimportjob($jobid);
                 if(!$jobrecord){
-                    wtgcore_notice('Failed to locate the option table record for data import job named '.$job['name'].'. Is it possible the record was deleted manually?','error','Extra');
+                    csv2post_notice('Failed to locate the option table record for data import job named '.$job['name'].'. Is it possible the record was deleted manually?','error','Extra');
                 }else{
 
                     foreach($jobrecord['files'] as $key => $csvfile_name){
@@ -3548,7 +3630,7 @@ function csv2post_used_csv_file_list(){
    
             echo '</table>';
             
-            wtgcore_notice_filesizetotal($filesize_total);
+            csv2post_notice_filesizetotal($filesize_total);
 
             // clear stored values
             clearstatcache();
@@ -3644,7 +3726,7 @@ function csv2post_menu_options_job_csvfiles($jobcode){
 
     // get job array
     foreach($job_array['files'] as $key => $csv_filename){ 
-        // we need to remove ".csv" but do not change filename too lowercase (due to case sensitive file functions)
+        // we need to remove ".csv" but do not change filename to lowercase (due to case sensitive file functions)
         $csv_filename_cleaned = str_replace('.csv','',$csv_filename); 
         echo '<option value="'.$csv_filename_cleaned.'">'.$csv_filename.'</option>';
     }   
@@ -3670,7 +3752,7 @@ function csv2post_csv_files_list(){
  
     if (!is_dir(WTG_C2P_CONTENTFOLDER_DIR)) {
     
-        echo wtgcore_notice('The content folder does not exist, has it been deleted or move?','error','Small','','','return');
+        echo csv2post_notice('The content folder does not exist, has it been deleted or move?','error','Small','','','return');
                    
     }else{    
         
@@ -3678,7 +3760,7 @@ function csv2post_csv_files_list(){
         
         if(!$opendir_result){
             
-            echo wtgcore_notice($csv2post_plugintitle . ' does not have permission to open the plugins content folder','error','Small','','','return');
+            echo csv2post_notice($csv2post_plugintitle . ' does not have permission to open the plugins content folder','error','Small','','','return');
 
         }else{
 
@@ -3751,7 +3833,7 @@ function csv2post_csv_files_list(){
                  
             echo '</table>';
             
-            wtgcore_notice_filesizetotal($filesize_total);
+            csv2post_notice_filesizetotal($filesize_total);
 
             // clear stored values
             clearstatcache();
@@ -3789,6 +3871,32 @@ function csv2post_menu_csvfile_headers($id,$jobcode,$f){
 }  
 
 /**
+* Displays menu of all categories
+*  
+* @param mixed $increment
+*/
+function csv2post_display_categories_menu($increment){?>
+ 
+    <select name="csv2post_createcategorymapping<?php echo $increment;?>_select" id="csv2post_createcategorymapping<?php echo $increment;?>_select_id" class="csv2post_multiselect_menu">
+              
+        <option value="notselected">Not Selected</option> 
+                
+        <?php csv2post_display_categories_options($current_value);?>
+                                                                                                                             
+    </select>  
+      
+    <script>
+    $("#csv2post_createcategorymapping<?php echo $increment;?>_select_id").multiselect({
+       multiple: false,
+       header: "Select Category",
+       noneSelectedText: "Select Category",
+       selectedList: 1
+    });
+    </script><?php    
+}
+  
+
+/**
 * Displays a table of data from giving table name
 * 
 * @param mixed $jt
@@ -3798,13 +3906,13 @@ function csv2post_display_sample_data($table_name,$limit = 10,$columns = '*'){
 
     // if table does not exist
     if(!csv2post_does_table_exist($table_name)){
-        wtgcore_n_incontent('Table named ' . $table_name . ' no longer exists','info','Small');
+        csv2post_n_incontent('Table named ' . $table_name . ' no longer exists','info','Small');
         return;
     }
     
     // if table does not have any records
     if(csv2post_sql_counttablerecords($table_name) == 0){
-        wtgcore_n_incontent('There are no records in the table named ' . $table_name,'info','Small');
+        csv2post_n_incontent('There are no records in the table named ' . $table_name,'info','Small');
         return;
     }
     

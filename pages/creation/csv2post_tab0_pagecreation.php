@@ -16,12 +16,12 @@ if(!isset($csv2post_projectslist_array) || $csv2post_projectslist_array == false
         $panel_array['panel_title'] = __('Create Posts: ' . $project['name']);// user seen panel header text 
         $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
         $panel_array['panel_intro'] = __('Create posts for project named ' . $project['name']);
-        $panel_array['panel_help'] = __('This panel allows you to create posts manually. Use the slider to decide how many posts to create using the records imported to your projects data table. The slider will take the number of records available into consideration and set a limit. If you are using multiple database tables, the default approach is for CSV 2 POST to link records in each table together by the order they come in. The alternative is using primary key columns and manually mapping the tables too each other. This is considered an advanced feature and watching tutorials is recommended. Importer more rows from your CSV file if you have not finished doing so to create more records in your projects data tables.');
+        $panel_array['panel_help'] = __('This panel allows you to create posts manually. Use the slider to decide how many posts to create using the records imported to your projects data table. The slider will take the number of records available into consideration and set a limit. If you are using multiple database tables, the default approach is for CSV 2 POST to link records in each table together by the order they come in. The alternative is using primary key columns and manually mapping the tables to each other. This is considered an advanced feature and watching tutorials is recommended. Importer more rows from your CSV file if you have not finished doing so to create more records in your projects data tables.');
         $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
         // Form Settings - create the array that is passed to jQuery form functions
         $jsform_set_override = array();
         $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);   
-        $jsform_set['dialoguebox_title'] = 'Create Posts';
+        $jsform_set['dialogbox_title'] = 'Create Posts';
         $jsform_set['noticebox_content'] = 'You are about to create posts based on the configuration applied on the Your Projects screen, do you want to begin?';
         $jsform_set['form_id'] = $jsform_set['form_id'] . $i;
         ?>
@@ -41,16 +41,16 @@ if(!isset($csv2post_projectslist_array) || $csv2post_projectslist_array == false
                 
                 // ensure content template selected
                 if(!isset($project_array['default_contenttemplate_id'])){
-                    ## TODO:LOWPRIORITY, once we have decided on our approach with links, link this too the content screen
-                    echo wtgcore_notice('your project does not have a default post content template. Please create
+                    ## TODO:LOWPRIORITY, once we have decided on our approach with links, link this to the content screen
+                    echo csv2post_notice('your project does not have a default post content template. Please create
                     a content template or select an existing one.','error','Small','No Content Template: ','','return');
                     $requirements_met = false;
                 }
                 
                 // ensure title template selected
                 if(!isset($project_array['default_titletemplate_id'])){
-                    ## TODO:LOWPRIORITY, once we have decided on our approach with links, link this too the content screen
-                    echo wtgcore_notice('your project requires a post title template. Please create
+                    ## TODO:LOWPRIORITY, once we have decided on our approach with links, link this to the content screen
+                    echo csv2post_notice('your project requires a post title template. Please create
                     a title template or select an existing one.','error','Small','No Title Template: ','','return');
                     $requirements_met = false;
                 }
@@ -191,8 +191,8 @@ if(!isset($csv2post_projectslist_array) || $csv2post_projectslist_array == false
                     <input type="hidden" name="csv2post_post_creation_request" value="true">
                     
                 <?php 
-                // add js for dialogue on form submission and the dialogue <div> itself
-                if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+                // add js for dialog on form submission and the dialog <div> itself
+                if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
                     csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
                     csv2post_jquery_form_prompt($jsform_set);
                 }

@@ -1,12 +1,12 @@
 <?php
 if(!isset($csv2post_project_array['dates'])){
-    echo wtgcore_notice('Post publish dates will be the default decided by Wordpress.','info','Tiny','','','return');
+    echo csv2post_notice('Post publish dates will be the default decided by Wordpress.','info','Tiny','','','return');
 }else{
     if(isset($csv2post_project_array['dates']['currentmethod'])){
         if($csv2post_project_array['dates']['currentmethod'] == 'random'){
-            echo wtgcore_notice('Post publish dates will be random.','info','Tiny','','','return');
+            echo csv2post_notice('Post publish dates will be random.','info','Tiny','','','return');
         }elseif($csv2post_project_array['dates']['currentmethod'] == 'increment'){
-            echo wtgcore_notice('Post publish dates will be incremental','info','Tiny','','','return');
+            echo csv2post_notice('Post publish dates will be incremental','info','Tiny','','','return');
         }                                                                    
     }
 }
@@ -25,7 +25,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);                
-$jsform_set['dialoguebox_title'] = 'Use Wordpress Default Publish Dates';
+$jsform_set['dialogbox_title'] = 'Use Wordpress Default Publish Dates';
 $jsform_set['noticebox_content'] = 'Do you want to cancel the current date method? Doing this will allow Wordpress to set your publish times based on when each post is created.';
 // TODO: HIGHPRIORITY, write function to test dates, display on this panel and use in processing?>
 <?php csv2post_panel_header( $panel_array );?>
@@ -39,8 +39,8 @@ $jsform_set['noticebox_content'] = 'Do you want to cancel the current date metho
     <?php csv2post_display_date_method(); ?>  
     
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -62,7 +62,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);                
-$jsform_set['dialoguebox_title'] = 'Save Data Column';
+$jsform_set['dialogbox_title'] = 'Save Data Column';
 $jsform_set['noticebox_content'] = 'You are saving your dates column so that posts are published with the dates in your data. Do you wish to continue?';
 // TODO: HIGHPRIORITY, write function to test dates, display on this panel and use in processing?>
 <?php csv2post_panel_header( $panel_array );?>
@@ -102,8 +102,8 @@ $jsform_set['noticebox_content'] = 'You are saving your dates column so that pos
     <br />
     
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -126,7 +126,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);     
-$jsform_set['dialoguebox_title'] = 'Save Incremental Publish Date Settings';
+$jsform_set['dialogbox_title'] = 'Save Incremental Publish Date Settings';
 $jsform_set['help_button'] = csv2post_helpbutton_text(false,true);
 $jsform_set['noticebox_content'] = 'You are about to switch your project to incremental publish dates, do you want to continue?';
 ### TODO: LOWPRIORITY, displays hours,days,week on slider
@@ -178,8 +178,8 @@ $jsform_set['noticebox_content'] = 'You are about to switch your project to incr
     <div id="csv2post_increment_slider"></div>
 
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -203,7 +203,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);     
-$jsform_set['dialoguebox_title'] = 'Save Random Publish Date Settings';
+$jsform_set['dialogbox_title'] = 'Save Random Publish Date Settings';
 $jsform_set['help_button'] = 'Paid Edition Only';
 $jsform_set['noticebox_content'] = 'You are about to change your random publish date settings, this will only effect new posts. Do you want to continue?';?>
 <?php csv2post_panel_header( $panel_array );?>
@@ -240,8 +240,8 @@ $jsform_set['noticebox_content'] = 'You are about to change your random publish 
     <p>End Date: <input type="text" name="csv2post_randompublishdate_end" id="csv2post_randompublishdate_end" value="<?php echo $ran_end;?>"></p>
     
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }

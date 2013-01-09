@@ -10,7 +10,7 @@ event. You can delete flags as you attend to the matters raised.');
 $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialoguebox_title'] = 'Delete Flags';
+$jsform_set['dialogbox_title'] = 'Delete Flags';
 $jsform_set['noticebox_content'] = 'You are about to delete flags, please ensure you have delete with the issues raised first. Do you wish to continue?';?>
 <?php csv2post_panel_header( $panel_array );?>
  
@@ -30,7 +30,7 @@ $jsform_set['noticebox_content'] = 'You are about to delete flags, please ensure
     ");  
 
     if(!$pageposts || !is_array($pageposts) || count($pageposts) == 0){
-        echo wtgcore_notice('You do not have any flagged posts','info','Small','','','return');
+        echo csv2post_notice('You do not have any flagged posts','info','Small','','','return');
     }else{ ?>
         
         <table class="widefat post fixed">
@@ -64,7 +64,7 @@ $jsform_set['noticebox_content'] = 'You are about to delete flags, please ensure
                     
                     echo '<tr><td><input type="checkbox" name="csv2post_delete_flag[]" id="csv2post_delete_flag" value="'.$post->meta_id.'" class="csv2post_tagexclusioncheckboxes" /></td><td>';
                     
-                    echo wtgcore_notice($message,$type,'Small','',$admin_url,'return');
+                    echo csv2post_notice($message,$type,'Small','',$admin_url,'return');
                     
                     echo '</td></tr>';
                 }
@@ -74,8 +74,8 @@ $jsform_set['noticebox_content'] = 'You are about to delete flags, please ensure
     <?php
     }// end if $pageposts
     
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }

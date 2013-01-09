@@ -1,8 +1,8 @@
 <?php 
 if(!isset($csv2post_project_array['default_titletemplate_id'])){
-    echo wtgcore_notice('You have not selected a title template yet, this is a requirement for all projects.','warning','Tiny','','','return');
+    echo csv2post_notice('You have not selected a title template yet, this is a requirement for all projects.','warning','Tiny','','','return');
 }else{
-    echo wtgcore_notice('Your project has a title template setup.','success','Tiny','','','return');
+    echo csv2post_notice('Your project has a title template setup.','success','Tiny','','','return');
 }
 ?>
 
@@ -64,7 +64,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);   
-$jsform_set['dialoguebox_title'] = 'Creating New Title Template';
+$jsform_set['dialogbox_title'] = 'Creating New Title Template';
 $jsform_set['noticebox_content'] = 'Do you want to create your new title template now?';
 // TODO: LOWPRIORITY, add a checkbox to allow user to save design for the mapping approach?>
 <?php csv2post_panel_header( $panel_array );?>
@@ -84,8 +84,8 @@ $jsform_set['noticebox_content'] = 'Do you want to create your new title templat
     <br /><br />
 
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -107,7 +107,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);   
-$jsform_set['dialoguebox_title'] = 'Update Title Templates';
+$jsform_set['dialogbox_title'] = 'Update Title Templates';
 $jsform_set['noticebox_content'] = 'Do you want to update any changes made to your title templates, all posts made after the update will use the new design?';
 // TODO: LOWPRIORITY, add a checkbox to allow user to save design for the mapping approach?>
 <?php csv2post_panel_header( $panel_array );?>
@@ -123,8 +123,8 @@ $jsform_set['noticebox_content'] = 'Do you want to update any changes made to yo
     <br />
      
       <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -146,7 +146,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);   
-$jsform_set['dialoguebox_title'] = 'Save Title Column';
+$jsform_set['dialogbox_title'] = 'Save Title Column';
 $jsform_set['noticebox_content'] = 'You are saving a column of data to be used as titles alone, do you wish to continue?';
 // TODO: LOWPRIORITY, add a checkbox to allow user to save design for the mapping approach?>
 <?php csv2post_panel_header( $panel_array );?>
@@ -184,8 +184,8 @@ $jsform_set['noticebox_content'] = 'You are saving a column of data to be used a
     </script> 
        
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }

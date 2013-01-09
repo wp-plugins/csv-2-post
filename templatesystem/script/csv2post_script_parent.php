@@ -18,7 +18,7 @@ if($side == 'admin'){
     require_once('csv2post_script_admin_jqueryui.php');
    
     /**
-     * Required for help button, displays dialogue box (no buttons included inside box)
+     * Required for help button, displays dialog box (no buttons included inside box)
      * Called in csvip_helpbutton
      * @param integer or string $id (usually the total of number of uses of the help button already)
      */
@@ -59,12 +59,12 @@ if($side == 'admin'){
         'panelnumber' => 0,
         'panel_name' => 'nopanelname',
         'panel_title' => 'No Panel Name',
-        'dialoguebox_title' => '$dialoguebox_title has not been set',
-        'dialoguebox_height' => false,
-        'dialoguebox_width' => false,
-        'dialoguebox_autoresize' => false,        
+        'dialogbox_title' => '$dialoguebox_title has not been set',
+        'dialogbox_height' => false,
+        'dialogbox_width' => false,
+        'dialogbox_autoresize' => false,        
         'dialoguebox_id' => WTG_C2P_ABB . 'ERROR',
-        'noticebox_content' => '$dialoguebox_content has not been set',
+        'noticebox_content' => '$dialogbox_content has not been set',
         'noticebox_type' => 'question',
         'noticebox_size' => 'Small',
         'form_id' => WTG_C2P_ABB.'form_id_exampleonly',
@@ -77,20 +77,20 @@ if($side == 'admin'){
         $(function(){
             var form_id = "<?php echo $form_id; ?>";
             var form_name = "<?php echo $form_name; ?>";
-            var dialogue_id = "<?php echo $jsform_set['dialoguebox_id']; ?>";
+            var dialog_id = "<?php echo $jsform_set['dialogbox_id']; ?>";
 
-            // auto resize dialogue box or not
+            // auto resize dialog box or not
             // apply auto resize if height and width is set to false
-            <?php if($dialoguebox_autoresize || !$dialoguebox_height && !$dialoguebox_width){?>
+            <?php if($dialogbox_autoresize || !$dialogbox_height && !$dialogbox_width){?>
 
-                $(<?php echo '"#'.$jsform_set['dialoguebox_id'].'"'; ?>).dialog(
+                $(<?php echo '"#'.$jsform_set['dialogbox_id'].'"'; ?>).dialog(
                   "resize", "auto"
                  );
 
             <?php }?>
 
-            // display dialogue box
-            $(<?php echo '"#'.$jsform_set['dialoguebox_id'].'"'; ?>).dialog({
+            // display dialog box
+            $(<?php echo '"#'.$jsform_set['dialogbox_id'].'"'; ?>).dialog({
                 autoOpen: false,
                 modal: true,
                 width: 800,
@@ -106,7 +106,7 @@ if($side == 'admin'){
                 }
             });
 
-            // prevent form submission, display dialogue box instead
+            // prevent form submission, display dialog box instead
             $(<?php echo '"#'.$form_id.'_formbutton"'; ?>).click(function(e){
                 e.preventDefault();
            
@@ -114,7 +114,7 @@ if($side == 'admin'){
                     //echo '$("td#showinput-'.$ID.'").html($("input#'.$ID.'").val());';
                 ?>
 
-                $(<?php echo '"#'.$jsform_set['dialoguebox_id'].'"'; ?>).dialog('open');
+                $(<?php echo '"#'.$jsform_set['dialogbox_id'].'"'; ?>).dialog('open');
             });
         });
         </script><?php
@@ -134,11 +134,11 @@ if($side == 'admin'){
         'panel_number' => 0,
         'panel_name' => 'nopanelname',
         'panel_title' => 'No Panel Name',
-        'dialoguebox_title' => '$dialoguebox_title has not been set',
-        'dialoguebox_height' => false,
-        'dialoguebox_width' => false,
-        'dialoguebox_autoresize' => false,
-        'noticebox_content' => '$dialoguebox_content has not been set',
+        'dialogbox_title' => '$dialogbox_title has not been set',
+        'dialogbox_height' => false,
+        'dialogbox_width' => false,
+        'dialogbox_autoresize' => false,
+        'noticebox_content' => '$dialogbox_content has not been set',
         'noticebox_type' => 'question',
         'noticebox_size' => 'Small',
         'form_id' => 'csv2post_form_id_exampleonly',
@@ -149,20 +149,20 @@ if($side == 'admin'){
         $(function(){
             var form_id = "<?php echo $form_id; ?>";
             var form_name = "<?php echo $form_name; ?>";
-            var dialogue_id = "<?php echo $jsform_set['dialoguebox_id']; ?>";
+            var dialogue_id = "<?php echo $jsform_set['dialogbox_id']; ?>";
 
-            // auto resize dialogue box or not
+            // auto resize dialog box or not
             // apply auto resize if height and width is set to false
-            <?php if($dialoguebox_autoresize || !$dialoguebox_height && !$dialoguebox_width){?>
+            <?php if($dialogbox_autoresize || !$dialogbox_height && !$dialogbox_width){?>
                         
-                $(<?php echo '"#'.$jsform_set['dialoguebox_id'].'"'; ?>).dialog(
+                $(<?php echo '"#'.$jsform_set['dialogbox_id'].'"'; ?>).dialog(
                   "resize", "auto"
                  );
 
             <?php }?>
 
-            // display dialogue box
-            $(<?php echo '"#'.$jsform_set['dialoguebox_id'].'"'; ?>).dialog({
+            // display dialog box
+            $(<?php echo '"#'.$jsform_set['dialogbox_id'].'"'; ?>).dialog({
                 autoOpen: false,
                 modal: true,
                 width: 800,
@@ -177,12 +177,12 @@ if($side == 'admin'){
                 }
             });
 
-            // prevent form submission, display dialogue box instead
+            // prevent form submission, display dialog box instead
             $(<?php echo '"#'.$form_id.'_formbutton"'; ?>).click(function(e){
                 e.preventDefault();
 
                 <?php
-                // TODO: MEDIUMPRIORITY, improve dialogue information using inputs
+                // TODO: MEDIUMPRIORITY, improve dialog information using inputs
                 // loop through the giving array of input ID's
                 /*
                  *       $formobjects_array['testid1']['label'] = 'Test Name One';
@@ -196,7 +196,7 @@ if($side == 'admin'){
                 //}
                 ?>
 
-                $(<?php echo '"#'.$jsform_set['dialoguebox_id'].'"'; ?>).dialog('open');
+                $(<?php echo '"#'.$jsform_set['dialogbox_id'].'"'; ?>).dialog('open');
             });
         });
         </script><?php
@@ -248,13 +248,13 @@ if($side == 'admin'){
      * Dialogue for button that requires a url sending button, mainly used as part of form process results output
      * but can use as an alternative to $_POST by passing values through url
      * 
-     * @deprecated 18th October 2012 we will not display a dialogue as part of form submission result
+     * @deprecated 18th October 2012 we will not display a dialog as part of form submission result
      */
-    function csv2post_jquerydialogue_results($documentlocation = 'default',$buttontext = 'Click Here'){?>
+    function csv2post_jquerydialog_results($documentlocation = 'default',$buttontext = 'Click Here'){?>
 
         <script>
         $(function() {
-            $( "#<?php echo WTG_C2P_ABB;?>dialogueoutcome" ).dialog({
+            $( "#<?php echo WTG_C2P_ABB;?>dialogoutcome" ).dialog({
                 autoOpen: true,
                 resizable: false,
                 width:800,

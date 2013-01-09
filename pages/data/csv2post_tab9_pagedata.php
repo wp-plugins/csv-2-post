@@ -15,7 +15,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 // <form> values, seperate from panel value
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialoguebox_title'] = 'Create Pair';
+$jsform_set['dialogbox_title'] = 'Create Pair';
 $jsform_set['noticebox_content'] = 'You are about to create a pair of tables. This will display a new panel offering
 a form used to create relationships between columns. So once you create this pair, please find the panel for your
 two tables. Do you wish to continue?';?>
@@ -61,8 +61,8 @@ two tables. Do you wish to continue?';?>
     </script>
            
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -86,7 +86,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 // <form> values, seperate from panel value
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialoguebox_title'] = 'Delete Pair';
+$jsform_set['dialogbox_title'] = 'Delete Pair';
 $jsform_set['noticebox_content'] = 'You are about to delete a pair. Do you wish to continue?';?>
 
 <?php csv2post_panel_header( $panel_array );?>
@@ -99,7 +99,7 @@ $jsform_set['noticebox_content'] = 'You are about to delete a pair. Do you wish 
     
     <?php
     if(!isset($csv2post_tabletotable_array) || !is_array($csv2post_tabletotable_array)){
-        echo wtgcore_notice('You do not have any paired tables.','info','Small','','','return');    
+        echo csv2post_notice('You do not have any paired tables.','info','Small','','','return');    
     }else{
         echo '<table class="widefat post fixed">';
                 
@@ -144,8 +144,8 @@ $jsform_set['noticebox_content'] = 'You are about to delete a pair. Do you wish 
     ?>
            
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -164,16 +164,16 @@ $jsform_set['noticebox_content'] = 'You are about to delete a pair. Do you wish 
 #                                                           #
 #############################################################
 if(!$csv2post_tabletotable_array){
-    echo wtgcore_notice('You do not have any paired tables yet. Please use the Pair Tables panel to setup a pair
+    echo csv2post_notice('You do not have any paired tables yet. Please use the Pair Tables panel to setup a pair
     and this message will be replaced with a panel offering more options.','info','Large','No Table Pairs','','return');
 }elseif(!is_array($csv2post_tabletotable_array)){
-    echo wtgcore_notice('There Table To Table variable is not an array as expected. This is a fault and must be reported before using features on this screen.','error','Large','Fault Detected','','return');
+    echo csv2post_notice('There Table To Table variable is not an array as expected. This is a fault and must be reported before using features on this screen.','error','Large','Fault Detected','','return');
 }else{
     
     foreach($csv2post_tabletotable_array as $key => $pair){?>
 
         <?php
-        ### TODO:HIGHPRIORITY, change the help and dialogue text after first time column setup done to mention actual data transfer
+        ### TODO:HIGHPRIORITY, change the help and dialog text after first time column setup done to mention actual data transfer
         ++$panel_number;// increase panel counter so this panel has unique ID
         $panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
         $panel_array['panel_name'] = 'tabletotablepair'.$key;// slug to act as a name and part of the panel ID 
@@ -192,7 +192,7 @@ if(!$csv2post_tabletotable_array){
         // <form> values, seperate from panel value
         $jsform_set_override = array();
         $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-        $jsform_set['dialoguebox_title'] = 'Save Table To Table Settings';
+        $jsform_set['dialogbox_title'] = 'Save Table To Table Settings';
         $jsform_set['noticebox_content'] = 'If you select the wrong columns or have selected the wrong
         tables you may cause irreversable corruption in your database data. If you are unsure in the slightest
         please backup your database. Do you wish to continue?';?>
@@ -215,7 +215,7 @@ if(!$csv2post_tabletotable_array){
             
                 <input type="hidden" name="csv2post_tabletotable_transfer" value="true"><?php
                  
-                echo wtgcore_notice('Your column relationships have been saved for this Table To Table pairing. To
+                echo csv2post_notice('Your column relationships have been saved for this Table To Table pairing. To
                 begin transferring data click the Submit button below. The transfer process continues until
                 every record is transferred. If you find that you need to change the relationships between
                 columns you must delete this pairing and re-make it.','info','Small','','','return');
@@ -228,7 +228,7 @@ if(!$csv2post_tabletotable_array){
                 // ensure both tables still exist before querying column names
                 $tables_exist_result = csv2post_sql_do_tables_exist(array($pair['t1'],$pair['t2']));
                 if(!$tables_exist_result){
-                    echo wtgcore_notice('One of the tables in this pair no longer exists. Please delete the pair.','warning','Small','','','return');
+                    echo csv2post_notice('One of the tables in this pair no longer exists. Please delete the pair.','warning','Small','','','return');
                 }else{?>
                 
                     <table class="widefat post fixed">
@@ -248,8 +248,8 @@ if(!$csv2post_tabletotable_array){
             }// end if column relationships set
             
 
-            // add js for dialogue on form submission and the dialogue <div> itself
-            if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+            // add js for dialog on form submission and the dialog <div> itself
+            if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
                 csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
                 csv2post_jquery_form_prompt($jsform_set);
             }

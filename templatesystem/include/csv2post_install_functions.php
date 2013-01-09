@@ -1,7 +1,7 @@
 <?php
 /**
 * Call this function to check everything that can be checked.
-* Add functions too this function that create notice output only. The idea is that the user
+* Add functions to this function that create notice output only. The idea is that the user
 * gets a very descriptive status of the plugin and for troubleshooting we can browse a long list
 * of notifications for anything unusual.* 
 * 
@@ -37,93 +37,101 @@ function csv2post_diagnostic_custom(){
 }
 
 /**
- * Installs everything for the first time only (deletes any previous trace to ensure a first time install procedure)
+ * Installs anything not yet installed (does not destroy existing values)
+ * Updates values or files that have changed in a newer version.
  * 
- * @return array $install_result_array (holds option key or table name with outcome of the installation attempt for each
- *
+ * 1. Do not use the individual INSTALL functions, they use update
+ * 
  * @todo include folders and database tables in the installation summary not just option keys
  */
 function csv2post_install(){
     
     // settings arrays are includes by 
-    global $csv2post_adm_set,$csv2post_pub_set,$csv2post_mpt_arr,$csv2post_currentversion,$csv2post_is_free;
-    
+    global $csv2post_pub_set,$csv2post_mpt_arr,$csv2post_currentversion,$csv2post_is_free;
+
     $minor_fails = 0;// count minor number of failures, if 3 or more then we'll call it a failed install
     $overall_install_result = true;// used to indicate overall result
-   
-    // install admin only settings
-    if( !wtgcore_option('csv2post_adminset','add',serialize($csv2post_adm_set)) ){
-            
-        // should never happen - csv2post_uninstall() used at the beginning of csv2post_install()
-        echo wtgcore_notice('Adding option csv2post_adminset returned false, this is usually because it already exists.','error','Tiny',false,'','return');
-        
-        $overall_install_result = false;          
-
-    }else{
-        echo wtgcore_notice('Installed option record called csv2post_adminset','success','Tiny',false,'','return');
-    }
-
-    // install main public settings option record
-    if( !wtgcore_option('csv2post_publicset','add',serialize($csv2post_pub_set)) ){
-        
-        // should never happen - csv2post_uninstall() used at the beginning of csv2post_install()
-        echo wtgcore_notice('Adding option csv2post_publicset returned false, this is usually because it already exists.','error','Tiny',false,'','return');
-        
-        $overall_install_result = false;
-
-    }else{
-        echo wtgcore_notice('Installed option record called csv2post_publicset','success','Tiny',false,'','return');
-    }
-         
-    // install admin menu array - see csv2post_variables_adminconfig.php
-    if( !wtgcore_option('csv2post_tabmenu','add',serialize($csv2post_mpt_arr)) ){
-        
-        // should never happen - csv2post_uninstall() used at the beginning of csv2post_install()
-        echo wtgcore_notice('Adding option csv2post_tabmenu returned false, this is usually because it already exists.','error','Tiny',false,'','return');
-       
-        $overall_install_result = false; 
-                 
-    }else{
-        echo wtgcore_notice('Installed option record called csv2post_tabmenu','success','Tiny',false,'','return');
-    }
-       
-    // schedule array
+     
+    #################################################
+    #                                               #
+    #       INSTALL SCHEDULE ARRAY NOTICE ARRAY     #
+    #                                               #
+    #################################################
     if(!$csv2post_is_free){
         require(WTG_C2P_DIR.'templatesystem/include/variables/csv2post_schedule_array.php');
-        if( !wtgcore_option('csv2post_schedule','add',serialize($csv2post_schedule_array)) ){
+        if( !csv2post_option('csv2post_schedule','add',serialize($csv2post_schedule_array)) ){
              
             // should never happen - csv2post_uninstall() used at the beginning of csv2post_install()
-            echo wtgcore_notice('Adding option csv2post_schedule returned false, this is usually because it already exists.','error','Tiny',false,'','return');
+            echo csv2post_notice('Schedule settings are already installed, no changes were made to those settings.','warning','Tiny',false,'','return');
             
             $overall_install_result = false;          
        
         }else{
-            echo wtgcore_notice('Installed option record called csv2post_schedule','success','Tiny',false,'','return');
+            echo csv2post_notice('Installed the schedule settings','success','Tiny',false,'','return');
         }
     }
+    
+    #################################################
+    #                                               #
+    #         INSTALL PERSISTENT NOTICE ARRAY       #
+    #                                               #
+    #################################################
+    require(WTG_C2P_DIR.'templatesystem/include/variables/csv2post_variables_notices_array.php');
+    if( !csv2post_option('csv2post_notifications','add',serialize($csv2post_persistent_array)) ){
+         
+        // should never happen - csv2post_uninstall() used at the beginning of csv2post_install()
+        echo csv2post_notice('Notification settings are already installed, no changes were made to those settings.','warning','Tiny',false,'','return');
+        
+        $overall_install_result = false;          
+   
+    }else{
+        echo csv2post_notice('Installed the notification settings','success','Tiny',false,'','return');
+    }  
+    
+    #################################################
+    #                                               #
+    #                INSTALL ECI ARRAY              #
+    #                                               #
+    #################################################
+    $csv2post_eci_session_array = array();
+    $csv2post_eci_session_array['arrayupdated'] = time();
+    $csv2post_eci_session_array['nextstep'] = 1;  
+    if( !csv2post_option('csv2post_ecisession','add',serialize($csv2post_eci_session_array)) ){
+         
+        // should never happen - csv2post_uninstall() used at the beginning of csv2post_install()
+        echo csv2post_notice('Easy CSV Importer settings are already installed, no changes were made to those settings.','warning','Tiny',false,'','return');
+        
+        $overall_install_result = false;          
+   
+    }else{
+        echo csv2post_notice('Installed the Easy CSV Importer settings','success','Tiny',false,'','return');
+    }       
 
-    // theme - only change the theme value when it is not set    
-    if(!get_option('csv2post_theme')){
-        wtgcore_option('csv2post_theme','add','start');
+    // theme - only change the theme value when it is not set      
+    if(!csv2post_option('csv2post_theme','get')){
+        csv2post_option('csv2post_theme','add','start');
     }         
                              
     // extension
-    if(!get_option('csv2post_extensions')){
-        wtgcore_option('csv2post_extensions','add','disable');    
+    if(!csv2post_option('csv2post_extensions','get')){
+        csv2post_option('csv2post_extensions','add','disable');    
     }
                     
     // update switches
     update_option('csv2post_is_installed',true);
     update_option('csv2post_was_installed',true); 
-    update_option('csv2post_installeddate',time());
-    update_option('csv2post_installedversion',$csv2post_currentversion);
   
     // register custom post types (currently one for post content designs)
     csv2post_install_customposttypes();
     
-    update_option('csv2post_installedversion',$csv2post_currentversion);
+    // installed version will only be updated when user prompted to upgrade rather than activation
+    add_option('csv2post_installedversion',$csv2post_currentversion);### TODO:LOWPRIORITY, hide this option from un-install page, we want this to be included as a trace of previous installation  
+    
+    // update the installed date, this includes the installed date of new versions
     update_option('csv2post_installeddate',time());
-    wtgcore_option('csv2post_activationdate','add',time());// track original first use on current blog
+    
+    // this date never changes, we also want to avoid user deleted it
+    csv2post_option('csv2post_activationdate','add',time());### TODO:LOWPRIORITY, hide this option from un-install page, we want this to be included as a trace of previous installation
     
     // create or confirm content folder for storing main uploads - false means no folder wanted, otherwise a valid path is expected
     if( defined("WTG_C2P_CONTENTFOLDER_DIR")){$overall_install_result = csv2post_install_contentfolder(WTG_C2P_CONTENTFOLDER_DIR);}
@@ -133,13 +141,13 @@ function csv2post_install(){
         csv2post_install_extension();
     }
                 
-    // if there were too many minor fails, the installation is a failure
+    // if there were to many minor fails, the installation is a failure
     if($minor_fails > 2){
         $overall_install_result = false;
     }
 
     if($overall_install_result == false){
-        echo wtgcore_notice( 'You are attempting to run a First-Time Install but there was a problem. If you have installed the plugin previously, it
+        echo csv2post_notice( 'You are attempting to run a First-Time Install but there was a problem. If you have installed the plugin previously, it
             could be because there is a trace of that installation still in your blog. Please use the Un-Install feature then try again. First-Time
             Installation is designed only for first time use on a blog unless you have used the Un-Install feature to remove any trace of a previous
             installation.','error','Large','Installation Problems','','return');
@@ -168,7 +176,7 @@ function csv2post_was_installed(){
                                         
                 $currentresult = get_option($id);    
 
-                // change return switch too false if option not found
+                // change return switch to false if option not found
                 if(isset($currentresult) && $currentresult != null){
 
                     // we return on first detection of previous installation to avoid going through entire loop
@@ -211,12 +219,12 @@ function csv2post_is_installed(){
         ### TODO:HIGHPRIORITY, log this event
         return false;
     }
-    
-    // currently this value is returned, if changed too false
+             
+    // currently this value is returned, if changed to false
     $returnresult = true;
     $failcause = 'Not Known';// only used for debugging to determine what causes indication of not fully installed
     
-    // function only returns boolean but if required we will add results array too the log
+    // function only returns boolean but if required we will add results array to the log
     $is_installed_result = array();
     $is_installed_result['finalresult'] = false;
     $is_installed_result['options'] = null;
@@ -229,8 +237,9 @@ function csv2post_is_installed(){
             
             $is_installed_result['options'][$id]['result'] = $currentresult;
                         
-            // change return switch too false if option not found
-            if($currentresult == false || $currentresult == null){   
+            // change return switch to false if option not found
+            if($currentresult == false || $currentresult == null){ 
+              
                 $returnresult = false;
                 $failcause = 'Option RecordMissing:'.$id;    
             }
@@ -244,7 +253,7 @@ function csv2post_is_installed(){
         $returnresult = false;
         $failcause = 'Core File Missing';        
     }
-
+     
     return $returnresult;
 }      
 
@@ -357,5 +366,42 @@ function csv2post_register_customposttype_titledesigns() {
 */
 function csv2post_install_customposttypes(){
     add_action( 'init', 'csv2post_register_customposttype_contentdesigns' );        
+}
+
+/**
+* DO NOT CALL DURING FULL PLUGIN INSTALL
+* This function uses update. Do not call it during full install because user may be re-installing but
+* wishing to keep some existing option records.
+* 
+* Use this function when installing admin settings during use of the plugin. 
+*/
+function csv2post_INSTALL_admin_settings(){
+    require_once(WTG_C2P_DIR.'templatesystem/include/variables/csv2post_variables_adminset_array.php');
+    return csv2post_option('csv2post_adminset','update',$csv2post_adm_set);# update creates record if it does not exist   
+}
+
+/**
+* DO NOT CALL DURING FULL PLUGIN INSTALL
+* This function uses update. Users may want their installation to retain old values, we cannot assume the
+* installation is 100% fresh.
+* 
+* Use this function when the tab menu option array is missing or invalid or when user actions a re-install of everything 
+*/
+function csv2post_INSTALL_tabmenu_settings(){
+    require_once(WTG_C2P_DIR.'pages/csv2post_variables_tabmenu_array.php');
+    $result = csv2post_option('csv2post_tabmenu','update',$csv2post_mpt_arr);   
+} 
+
+/**
+* Installs the Easy CSV Importer by using update.
+* This function should not be used during plugin installation because it
+* would destroy values that the user may be trying to retain for a new
+* installation. 
+*/
+function csv2post_INSTALL_ecisession(){
+    $csv2post_eci_session_array = array();
+    $csv2post_eci_session_array['arrayupdated'] = time();
+    $csv2post_eci_session_array['nextstep'] = 1;  
+    csv2post_option('csv2post_ecisession','update',serialize($csv2post_eci_session_array));
 }
 ?>

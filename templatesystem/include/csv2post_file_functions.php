@@ -42,7 +42,7 @@ function csv2post_establish_csvfile_separator_fgetmethod($csv_filename, $output 
         }  
         
         if (!feof($handle)) {
-            wtgcore_notice('A failure happened with end-of-file function feof for '.$csv_filename.'. You may need to seek support if you want to use this CSV file.','success','error','Large','Test 1: Could Not Establish Separator Using fgets','','echo');    
+            csv2post_notice('A failure happened with end-of-file function feof for '.$csv_filename.'. You may need to seek support if you want to use this CSV file.','success','error','Large','Test 1: Could Not Establish Separator Using fgets','','echo');    
         }
         fclose($handle);                
       
@@ -83,7 +83,7 @@ function csv2post_establish_csvfile_separator_fgetmethod($csv_filename, $output 
 
         // display the result of output required
         if($output){
-            wtgcore_notice('Separator was established using method one, fgets. Established Separator is <strong>'.$probable_separator_name.' ( '.$probable_separator.' )</strong>','success','Large','Test 1: Established Separator Using fgets','','echo');       
+            csv2post_notice('Separator was established using method one, fgets. Established Separator is <strong>'.$probable_separator_name.' ( '.$probable_separator.' )</strong>','success','Large','Test 1: Established Separator Using fgets','','echo');       
         }
         
     }// if handle open for giving file
@@ -139,7 +139,7 @@ function csv2post_establish_csvfile_separator_PEARCSVmethod( $csv_filename,$outp
             
         }        
         
-        wtgcore_notice('Separator was established using method two, PEAR CSV. Established Separator is <strong>'.$probable_separator_name.' ( '.$probable_separator.' )</strong>','success','Large','Test 2: Established Separator Using PEAR CSV','','echo');
+        csv2post_notice('Separator was established using method two, PEAR CSV. Established Separator is <strong>'.$probable_separator_name.' ( '.$probable_separator.' )</strong>','success','Large','Test 2: Established Separator Using PEAR CSV','','echo');
     }
             
     return $csv_file_conf['sep'];          
@@ -187,7 +187,7 @@ function csv2post_establish_csvfile_quote_PEARCSVmethod( $csv_filename,$output =
             
         }
 
-        wtgcore_notice('Quote was established using PEAR CSV. Established quote is <strong>'.$probable_quote_name.' ( '.$probable_quote.' )</strong>','success','Large','Test 3: Established Quote','','echo');
+        csv2post_notice('Quote was established using PEAR CSV. Established quote is <strong>'.$probable_quote_name.' ( '.$probable_quote.' )</strong>','success','Large','Test 3: Established Quote','','echo');
     }
                     
     return $csv_file_conf['quote'];   

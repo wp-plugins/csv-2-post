@@ -176,7 +176,7 @@ function csv2post_add_is_emailauthorised($authmethod){
 /**
 * Returns result from get_option(_apiauthmethod)
 * 
-* @todo MEDIUMPRIORITY, add these option records too the options array as none public option records
+* @todo MEDIUMPRIORITY, add these option records to the options array as none public option records
 */
 function csv2post_get_is_emailauthorised(){
     return get_option(WTG_C2P_ABB.'isemailauthorised');   
@@ -191,7 +191,7 @@ function csv2post_get_activationcode(){
 
 /**
 * Updates activation code
-* @todo MEDIUMPRIORITY, add these option records too the options array as none public option records
+* @todo MEDIUMPRIORITY, add these option records to the options array as none public option records
 */
 function csv2post_update_activationcode($activationcode){
     return update_option(WTG_C2P_ABB.'activationcode',$activationcode);  

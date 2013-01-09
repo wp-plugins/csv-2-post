@@ -22,7 +22,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(true,true);
     $total_tickets = count($open_tickets);
 
     if($total_tickets == 0){
-        wtgcore_notice('You do not have any open tickets', 'info', 'Tiny', false);
+        csv2post_notice('You do not have any open tickets', 'info', 'Tiny', false);
     }else{?>
 
         <script>
@@ -68,7 +68,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(true,true);?>
     $total_tickets = count($open_tickets);
 
     if($total_tickets == 0){
-        wtgcore_notice('You do not have any open tickets', 'info', 'Tiny', false);
+        csv2post_notice('You do not have any open tickets', 'info', 'Tiny', false);
     }else{?>
 
         <script>

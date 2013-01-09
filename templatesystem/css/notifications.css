@@ -14,10 +14,29 @@ Email: info@csv2post.com
 	background-repeat: no-repeat;  
 	background-position: 3px center; 
 	display: block;
-	font-size:16px;
     background-size:20px 20px;
     border-radius: 8px;
 }
+
+.infoTiny p, .successTiny p, .warningTiny p, .errorTiny p, .validationTiny p, 
+.questionTiny p, .processingTiny p, .restrictedTiny p, .stopTiny p, .stepTiny p {  
+    margin: 4px 0px 4px 0px;  
+    font-size:14px;
+}
+
+/* Apply text size to the jQuery buttons, used for persistent messages */
+.infoTiny .jquerybutton, 
+.successTiny .jquerybutton, 
+.warningTiny .jquerybutton, 
+.errorTiny .jquerybutton, 
+.validationTiny .jquerybutton, 
+.questionTiny .jquerybutton, 
+.processingTiny .jquerybutton, 
+.restrictedTiny .jquerybutton, 
+.stopTiny .jquerybutton, 
+.stepTiny .jquerybutton{  
+    font-size:10px;
+} 
 
 .TinyHelpLink{  
     display: block;
@@ -27,7 +46,7 @@ Email: info@csv2post.com
     right:3px;
     height:15px;
     width:15px;
-} 
+}
 
 .infoTiny{  
 	color: #00529B;  
@@ -90,14 +109,39 @@ Email: info@csv2post.com
 .infoSmall, .successSmall, .warningSmall, .errorSmall, .validationSmall, 
 .questionSmall, .processingSmall, .restrictedSmall, .stopSmall, .stepSmall {  
 	margin: 10px 0px; /* top and bottom */ 
-	padding:17px 10px 17px 60px;  
+	padding:10px 10px 10px 60px;  
 	background-repeat: no-repeat;  
 	background-position: 10px center; 
 	display: block;
-	font-size:18px;
     background-size:44px 44px;
     border-radius: 8px;
 }
+
+.infoSmall h4, .successSmall h4, .warningSmall h4, .errorSmall h4, .validationSmall h4, 
+.questionSmall h4, .processingSmall h4, .restrictedSmall h4, .stopSmall h4, .stepSmall h4 {  
+    margin: 4px 0px 4px 0px;  
+    font-size:16px;
+}
+
+.infoSmall p, .successSmall p, .warningSmall p, .errorSmall p, .validationSmall p, 
+.questionSmall p, .processingSmall p, .restrictedSmall p, .stopSmall p, .stepSmall p {  
+    margin: 4px 0px 4px 0px;  
+    font-size:14px;
+}
+
+/* Apply text size to the jQuery buttons, used for persistent messages */
+.infoSmall .jquerybutton, 
+.successSmall .jquerybutton, 
+.warningSmall .jquerybutton, 
+.errorSmall .jquerybutton, 
+.validationSmall .jquerybutton, 
+.questionSmall .jquerybutton, 
+.processingSmall .jquerybutton, 
+.restrictedSmall .jquerybutton, 
+.stopSmall .jquerybutton, 
+.stepSmall .jquerybutton{  
+    font-size:12px;
+} 
 
 .SmallHelpLink{  
     display: block;
@@ -170,14 +214,39 @@ Email: info@csv2post.com
 .infoLarge, .successLarge, .warningLarge, .errorLarge, .validationLarge, 
 .questionLarge, .processingLarge, .restrictedLarge, .stopLarge, .stepLarge {  
 	margin: 10px 0px; /* top and bottom */ 
-	padding:10px 20px 20px 115px;  
+	padding: 10px 5px 10px 115px;  
 	background-repeat: no-repeat;  
 	background-position: 10px center; 
 	display: block;
-	font-size:18px;
     background-size:80px 80px;
     border-radius: 8px;
 }
+
+.infoLarge h4, .successLarge h4, .warningLarge h4, .errorLarge h4, .validationLarge h4, 
+.questionLarge h4, .processingLarge h4, .restrictedLarge h4, .stopLarge h4, .stepLarge h4 {  
+    margin: 4px 0px 4px 0px;  
+    font-size:20px;
+}
+
+.infoLarge p, .successLarge p, .warningLarge p, .errorLarge p, .validationLarge p, 
+.questionLarge p, .processingLarge p, .restrictedLarge p, .stopLarge p, .stepLarge p {  
+    margin: 4px 0px 4px 0px;  
+    font-size:18px;
+}
+
+/* Apply text size to the jQuery buttons, used for persistent messages */
+.infoLarge .jquerybutton, 
+.successLarge .jquerybutton, 
+.warningLarge .jquerybutton, 
+.errorLarge .jquerybutton, 
+.validationLarge .jquerybutton, 
+.questionLarge .jquerybutton, 
+.processingLarge .jquerybutton, 
+.restrictedLarge .jquerybutton, 
+.stopLarge .jquerybutton, 
+.stepLarge .jquerybutton{  
+    font-size:12px;
+} 
 
 .LargeHelpLink{  
     display: block;
@@ -258,13 +327,38 @@ Email: info@csv2post.com
 .infoExtra, .successExtra, .warningExtra, .errorExtra, .validationExtra, 
 .questionExtra, .processingExtra, .restrictedExtra, .stopExtra, .stepExtra {  
 	margin: 5px 0px; /* top and bottom */ 
-	padding:0px 10px 30px 20px;  
+	padding:0px 10px 10px 20px;  
 	background-repeat: no-repeat;  
-	background-position: 10px center; 
+	background-position: right; 
 	display: block;
-	font-size:18px;
     border-radius: 8px;
 }
+
+.infoExtra h4, .successExtra h4, .warningExtra h4, .errorExtra h4, .validationExtra h4, 
+.questionExtra h4, .processingExtra h4, .restrictedExtra h4, .stopExtra h4, .stepExtra h4 {  
+    margin: 10px 0px 8px 0px;  
+    font-size:24px;
+}
+
+.infoExtra p, .successExtra p, .warningExtra p, .errorExtra p, .validationExtra p, 
+.questionExtra p, .processingExtra p, .restrictedExtra p, .stopExtra p, .stepExtra p {  
+    margin: 4px 0px 8px 0px;  
+    font-size:20px;
+}
+
+/* Apply text size to the jQuery buttons, used for persistent messages */
+.infoExtra .jquerybutton, 
+.successExtra .jquerybutton, 
+.warningExtra .jquerybutton, 
+.errorExtra .jquerybutton, 
+.validationExtra .jquerybutton, 
+.questionExtra .jquerybutton, 
+.processingExtra .jquerybutton, 
+.restrictedExtra .jquerybutton, 
+.stopExtra .jquerybutton, 
+.stepExtra .jquerybutton{  
+    font-size:12px;
+} 
 
 .ExtraHelpLink{  
     display: block;

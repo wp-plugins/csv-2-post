@@ -8,7 +8,7 @@ $panel_array['panel_intro'] = __('Create custom shortcodes for copying and pasti
 $panel_array['panel_help'] = __('Warning, not all content types will currently processing shortcodes i.e. custom field
 content designs or category description content. This will eventually change but as I write this shortcode are intended
 for use in post content designs. These shortcodes allow us to apply a random html value to our post html
-content. This means we can randomise everything from plain text too html code such as images or links. We can add the random
+content. This means we can randomise everything from plain text to html code such as images or links. We can add the random
 value to any part of our content using shortcodes. There are endless things we can do, some simple, some complex. Not
 everything CSV 2 POST can do is obvious from looking at the interface, so if you have specific text spinning
 needs please contact us.');
@@ -16,7 +16,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);     
-$jsform_set['dialoguebox_title'] = 'Save Text Spinning Rules';
+$jsform_set['dialogbox_title'] = 'Save Text Spinning Rules';
 $jsform_set['noticebox_content'] = 'Please remember to copy and paste text spinning shortcodes into your templates. Your changes to any rules in this panel will effect all posts using the related shortcodes, do you wish to continue?';?>
 <?php csv2post_panel_header( $panel_array );?>
 
@@ -51,8 +51,8 @@ $jsform_set['noticebox_content'] = 'Please remember to copy and paste text spinn
     <br />
                                                  
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -77,7 +77,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);     
-$jsform_set['dialoguebox_title'] = 'Delete Text Spinning Rules';
+$jsform_set['dialogbox_title'] = 'Delete Text Spinning Rules';
 $jsform_set['noticebox_content'] = 'Deleting advanced text spinning rules that have already been used in post content will cause the shortcodes to be displayed instead of content. Do you still want to continue?';
 ### TODO:LOWPRIORITY,improve the list of values so when many characters is used each line is clear?>
 <?php csv2post_panel_header( $panel_array );?>
@@ -118,8 +118,8 @@ $jsform_set['noticebox_content'] = 'Deleting advanced text spinning rules that h
     ?>
                                                  
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }

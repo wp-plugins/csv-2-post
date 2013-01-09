@@ -5,27 +5,25 @@ License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: CSV 2 POST, CSV 2 POST Plugin, CSV 2 POST Software, CSV2POST, wordpress data import,wordpress data importer,auto blogging,auto blogger,autoblog,mass create posts,mass post creation,csv file importer,csv file data import,post injection,import spreadsheet,excel file import,excel import,www.csv2post.com,CSV2POST,wordpresscsv import,wordpress import plugin,wordpress data import tool,wordpress data import plugin,wordpress post creation plugin
 Requires at least: 3.3.1
-Tested up to: 3.4.2
+Tested up to: 3.5.1
 Stable tag: trunk
 
 CSV 2 POST
 
 == Description ==
 
-CSV 2 POST is a growing box of tools for mass blogging (easily hacked to auto-blog if you know how) plus more. 
-Everything added to this plugin is at the
-request of people who know best: professionals developing true money making websites. They come to us because
+CSV 2 POST is a growing box of tools for auto-blogging and managing imported data. 
+Everything added to this plugin is at the request of users who know best including professionals developing true money 
+making websites and even well known companies have made use of CSV 2 POST to help with administration. Those
+include CBS News and Ryanair Ltd. They come to us because
 other plugins which offer a step by step system and assume a lot about what the user wants done with their data
-are simply not good enough. They know that, we know that but about 95% of CSV importer users do not.
+are simply not good enough. 
 
-CSV 2 POST has been designed to out perform other importers and we have done that with the help of the Wordpress
-community who use them all. It is not not a step-by-step system like most (possibly all) other plugins available,
-which takes you through the same process on every single use, every single website no matter what theme or plugins
-you have. Instead it is more of a workshop and in this workshop are hidden tools that obvious on first use. There is
-just too much to put on the interface at this time and so anyone keen should hack the plugin using the PHP functions
-provided. 
-
-Thank you for your interest in our software.
+CSV 2 POST has been designed to out-perform other importers and we have done that with the help of the Wordpress
+community who use them all. We include a step-by-step system like most (possibly all) other plugins available,
+which takes users through the same process on every single use, every single website no matter what theme or plugins
+we use. However our main interface is more of a workshop or a sandbox and in this sandbox are endless tools, some
+are not obvious because it's hard putting them all on one interface without making it feel over complicated.
 
 = Support = 
 The plugin is supported by a dedicated
@@ -35,13 +33,12 @@ the user needs help for. Some pages will have video tutorials and screenshots. T
 also plan to create help content specifically for the free edition so that it is truly supported.
 
 = Our Mission =
-It is very important to us that we deliver a useful free plugin for the Wordpress community to use. We must also support
-the plugin and take responsibility for it. Priority development and focus in the free edition goes to the actual data 
-import side of the plugin. It must do what it says in its name and we would like to deliver a tool for uncommon projects
-i.e. importing product data to shopping cart plugin tables and manipulating data as it is being imported based on various
-conditions. We have a very long term plan for CSV 2 POST, both free and paid. If you budget is tight there is no harm in 
-letting me know what you think the free plugin should offer users. We are keen to provide the most common requirements
-for free in respect to the Wordpress community.
+It is very important to us that we deliver a useful free plugin for the Wordpress community to use and not
+deliver software that behaves like a trial in order to advertise our paid edition. To ensure we do not make that
+mistake as we have done before, we encourage all potential customers who email us to try the free edition, unless
+thier project is unique and requires changes to the plugin. We have a very long term plan for CSV 2 POST, both free 
+and paid. Most of the time a new feature begins on the free edition and grows in the paid edition. This is how
+we ensure full respect to Wordpress is giving. If you budget is tight just say
 
 == Installation ==
 
@@ -99,12 +96,70 @@ first plugin was created in 2009 and was halted pending re-development.
 6. You can use up to 3 columns of data to create 3 levels of categories.
  
 == Changelog ==
+
+= 6.7.4 =
+* From The Developers
+    * Hope everyone has a Happy 2013 and we wish you all success in your Wordpress ventures
+* New Features
+    * A new Easy CSV Importer screen/system has been added and is in a BETA phase 
+    * Added a 'Screen Permissions' panel on Interface Settings screen for configuring the Wordpress ability a user requires to view screens (individual screen abilities can be selected). This is feature was added more for the long term use of the plugins core to create other plugins but still a good feature to have.
+    * Plugin update/upgrade system. This will prompt user to initiate an upgrade process which in most cases will do nothing apart from update the blog with a record of the current version for comparison later. The intended purpose of this new system is to alter the plugins installation in some way when it is required, in a controlled way with warning to the user.  
+* Support Changes
+    * Not this time, we are not ready to deply support services or material until the plugins rate of change slows down a little
+* Fixes
+    * Post Author menu fixed
+    * Problems saving admin settings (default settings kept being re-installed and cause was in csv2post_get_option_adminsettings()
+    * Using remove_action() to prevent Comprehensive Google Map Plugin causing a jQuery UI conflict breaking the CSV 2 POST interface
+    * Undefined Variable when no projects created yet, (not critical) Warning would be caused in csv2post_event_action() when the projects array is used in a foreach loop. Simply by passing it now when there are no projects.
+    * Notice: Undefined variable: fulledition_filename (not critical)
+    * Warning: Missing argument 2 for wpdb::prepare(), called in /home/buyusedc/public_html/wp-content/plugins/csv-2-post/templatesystem/include/csv2post_sql_functions.php on line 312. Fixed by removing prepare from csv2post_query_insert_new_record().
+    * csv2post_drop_dataimportjob_table() no longer causes error when dropping data import table AFTER $csv2post_jobtable_array option record has been deleted. This is a scenario during un-installing the plugin including for re-install.  
+    * Warning: array_rand() expects parameter 1 to be array, boolean given in /home/sites/games-hq.com/public_html/testing/csv2post672/wp-content/plugins/csv-2-post/fulledition/csv2post_automation_functions.php on line 449. The schedule now checks if $csv2post_jobtable_array is an array before going further during post update event. 
+    * PHP Warning: unlink(/home/eosworld/public_html/wp-content/wpcsvimportercontent/csv2post_log_automation.csv). Causing function csv2post_logfile_autodelete() is being called in csv2post_log() before any check for files status. csv2post_logfile_autodelete() now checks if file exists before continuing.
+    * Easy Configuration Questions fixed. This system is still in beta. The two current test questions are menus with single choice answers and they were not being populated properly, would throw an error if error display on.             
+* Feature Changes
+    * Notification values are now added to the options table during installation. These notifications are default persistent notifications that need to be deleted by user and they show on various places on the interface.
+    * Notices boxes CSS has been improved to accomodate buttons on the notices
+    * Extra large notice box backgrounds are now positioned on the right so text is easier to read 
+    * Quick Start tab now hidden to avoid confusion with new Easy CSV Importer tab which is designed for instant first time use
+    * As above but for the plugins pages
+    * Persistent notices has been taking a step further. Soon we will see notices that we must manually delete. They will be used to deliver priority information and ensure the user gets it. We may also add notices when a feature changes and include a little warning about how the changes may effect existing projects etc. 
+    * Public settings array is no longer being used and will no longer be part of the installation
+* Technical Changes
+    * Script used by CSV 2 POST admin pages is not only loaded when on a CSV 2 POST page, avoiding conflicts with other plugins and Wordpress. New function csv2post_is_plugin_page() part of the process starting in csv2post.php
+    * Seperator and enclosure values added to fputcsv() function for log file creation. There is an issue where log file display does not display the last value and I'm hoping it corrects that issue.
+    * $conf['fields'] is now populated with a count() of the log files headers + 1 for the date column which is default. Previously it was set to 10 and overlooping, never caused any known issues though.
+    * Changed 'Line' to 'Code Line' for automation.csv to prevent mistaking it for the row line in CSV file.
+    * New values added to many tabs in tab menu array ($csv2post_mpt_arr) for permissions (WP capability). Some do not have the new value (['permissions']['defaultcapability']) as a default admin role capability will be applied to all screens.
+    * csv2post_load_admin_arrays.php renamed to csv2post_load_arrays.php and now loads log file array on public and admin side
+    * New csv2post_STRINGS_is_alphanumeric() function for validating staff numbers
+    * New csv2post_SETTINGS_get_page_capability() function for returning a pages required capability for user to access the page
+    * $csv2post_mpt_arr[PAGENAME]['role'] no longer in use, replaced with permissions values
+    * Deleted csv2post_get_option()
+    * $menu_id in Screen Permissions panel is incremented when a menu is added rather than for each screen in loop. This is to allow the total menu count to be used to loop through $_POST submission.
+    * contents of csv2post_load_initialplugin_configuration.php move to the main file and this file deleted
+    * csv2post_get_option_adminsettings() uses global $csv2post_adm_set and returns that global if option record not valid. The global should come from the included array file.#
+    * csv2post_install_optionstatus_list() now checks if option values are valid, not just that the options are installed
+    * New function csv2post_get_option_tabmenu(): checks admin setting to allowing loading from option record or from file, calls installation file if option should be valid but is not
+    * New function csv2post_get_option_adminsettings(): installs admin option record if it is invalid in any way
+    * csv2post_page_show_hide() function moved to csv2post_core_functions.php from csv2post_variables_tabmenu_array.php
+    * LOAD EXTENSION CONFIGURATION now happens after LOAD OPTION RECORD VALUES so that the extension can change the loaded option record values
+    * JavaScript is loaded differently, as recommended by Wordpress by making use of "admin_init"
+    * Removed all use of csv2post_get_option_publicset() and the function itself. We will have one settings array, now the admin array. We can use a public node within that.
+    * New function csv2post_persistentnotice_output() has been placed in three location types: pages, screens and panels. The function will filter notifications and allow persistent notices to be displayed within specific panels, the head of specific screens, the head of specific pages or display on all pages if urgent.
+    * Tab menu array is no longer installed manually, removing a notice from the installation results which simply confirms the record already exists    
+    * csv2post_php_version_check_wp_die() function delete and no longer called in csv2post.com
+    * The use of csv2post_insert_post_contenttemplate() in csv2post_form_save_contenttemplate() has been changed to pass values where previously the function was expecting $_POST values                                                                   
+    * Database table named csv2post_freeproject is always put through a DROP query when creating data import project
+    * Function csv2post_display_categories_menu() moved from a projects screen file to the admin interface functions file 
+    * Option record csv2post_installedversion is now created using add_option() rather than update_option(). We will now update it during an upgrade process which the user will be prompted to complete.
+    
 = 6.7.3 =
 * From The Developers
     * Next big patch is expected to be released in January 
 * Fixes
-    * Fix in notifications function csv2post_get_option_notifications_array()
-    * Fix in notifications function wtgcore_n()
+    * Fix in notifications function csv2post_get_option_persistentnotifications_array()
+    * Fix in notifications function csv2post_n()
     * Fixed problem that happened when some tabs/screens on a page were hidden (plugins loop was still coded to expect all tabs due to the loop incrementing the tab ID)
 * Feature Changes
     * Dialogue on clicking form Submit buttons can now be hidden (new option on Interface Settings screen)
@@ -120,13 +175,13 @@ first plugin was created in 2009 and was halted pending re-development.
     * Replaced all use of $counttabs in menu functions (incremented integer inside loop), arrays are now accessed using $tab (key value) set by the for itself
     * $csv2post_panels_closed no longer in use (removed from main file)
     * csv2post_hidden_form_values() function removed from csv2post_jqueryform_singleaction_middle(), the function should be within the panel code in screen file.
-    * The order of functions in panels for form and jQuery dialogue has been changed on ALL panels. This is a plugin wide change to apply the ability to disable the dialogue feature.
+    * The order of functions in panels for form and jQuery dialog has been changed on ALL panels. This is a plugin wide change to apply the ability to disable the dialog feature.
     * New file for functions related to deciding setting states i.e. functions will return a default where a setting is not stored as we do not set all setting values straight away as a measure to use less memory
     * csv2post_SETTINGS_panel_array() added to all panels for initializing $panel_array (3 lines removed from each panel making it a little easier to understand the array also)
 
 = 6.7.2 =
 * Public Messages
-    * Re-installation of the csv2post_schedule option for Schedule System required when upgrading too this version
+    * Re-installation of the csv2post_schedule option for Schedule System required when upgrading to this version
 * Fixes
     * The new logging system had a bug effecting the creation of log files
     * csv2post_install() used maybe_serialize() for installing schedule array but the serialize function is not loaded by Wordpress, replaced it with serialize() instead
@@ -144,18 +199,18 @@ first plugin was created in 2009 and was halted pending re-development.
 * Technical Changes
     * $csv2post_twitter variable no longer in use, all instances of it deleted and replaced with 'CSV2POST' which is the plugins Twitter account
     * add_action('the_posts', 'csv2post_posts_autoupdate' ) removed from the schedule for postupdating, it appears to be called at all times from main file anyway
-    * csv2post_posts_autoupdate() renamed too csv2post_posts_publicupdating() (this function updates posts as they are opened by visitors)
+    * csv2post_posts_autoupdate() renamed to csv2post_posts_publicupdating() (this function updates posts as they are opened by visitors)
     * Removed use of csv2post_log from csv2post_install_functions.php
     * Added index.php to all directories to prevent indexing
     * New updating method by schedule that uses new values in $csv2post_projectlist_array to indicate if a project may have outdated posts
     * New function csv2post_project_changed($project_code) used to mark a project has updated within $csv2post_projectlist_array
-    * Changed $csv2post_schedule_array, each event type now stores the event name and we'll use this for looping and building forms
-    * wtgcore_notice() was coded to update schedule option record instead of notifications option record, however it has never happened as its not fully in use
+    * Changed $.csv2post_schedule_array, each event type now stores the event name and we'll use this for looping and building forms
+    * csv2post_notice() was coded to update schedule option record instead of notifications option record, however it has never happened as its not fully in use
     * Use of csv2post_uninstall() removed from csv2post_install(), we will track the versions of records eventually to ensure installation is suitable for plugin version
-    * csv2post_schedule_array.php is only included when needed (install and get_option function)
+    * csv2post_schedule_array..php is only included when needed (install and get_option function)
     * add_option('csv2post_theme','start') is now performed during install but no output
     * Use of var_dump() replaced with csv2post_var_dump() throughout plugin. csv2post_var_dump() is only to be used for permanent dumps, var_dump() is for during development only, this approach allows us to locate the use of var_dump() and remove.
-    * All use of add_option() replaced with wtgcore_option() which is new and does add,update and delete. It will allow us to log install related changes easier.
+    * All use of add_option() replaced with csv2post_option() which is new and does add,update and delete. It will allow us to log install related changes easier.
     
 = 6.7.1 =
 * Public Messages
@@ -176,7 +231,7 @@ first plugin was created in 2009 and was halted pending re-development.
     * New Data Samples: the Created Tables screen now has a panel for each Data Import Job table which lists some records for the table. A tool for quickly confirming the existence of records, handy for us accessing users blogs and knowing they have imported records when we do not have access to phpmyadmin.
     * Reporting Settings: new panel offering ability to disable all logging and set the maximum size of log files
     * Two new log files: posts and data. We want to focus on these two new log files and get building a usable history of the plugins main purpose 
-    * Log Files: dialogue boxes are no longer used to confirm form submission outcome when creating, delete or activating log files
+    * Log Files: dialog boxes are no longer used to confirm form submission outcome when creating, delete or activating log files
     * Removed Critical Options panel from the Install Status screen, it never really had much use for the average user
     * Moved Log File Status panel up to make it easier for users to find and manage the files
     * Extensions: the main file now checks for an existing active extension if the plugin has never been installed, rather than requiring the extension status setting to be active. This allows the menu to display the extensions name straight away where previously it would still say CSV 2 POST
@@ -187,14 +242,14 @@ first plugin was created in 2009 and was halted pending re-development.
 * Support Changes
     * None   
 * Technical Changes
-    * csv2post_log() is now wtgcore_log() and moved to wtgcore_reports.php
-    * New range of wtgcore_log_#####() functions created, one for each log type and each has parameters suiting the type
-    * Moved wtgcore_log() and all other log related functions to wtgcore_reports.php (in the new core folder)  
-    * csv2post_notice() functions renamed to wtgcore_notice() and moved to wtgcore_reports.php
-    * Range of new wtgcore_notice() functions to make it easier for applying a standard to the most common uses of notice boxes i.e. form submission, in panels and at the top of screens 
+    * csv2post_log() is now csv2post_log() and moved to wtgcore_reports.php
+    * New range of csv2post_log_#####() functions created, one for each log type and each has parameters suiting the type
+    * Moved csv2post_log() and all other log related functions to wtgcore_reports.php (in the new core folder)  
+    * csv2post_notice() functions renamed to csv2post_notice() and moved to wtgcore_reports.php
+    * Range of new csv2post_notice() functions to make it easier for applying a standard to the most common uses of notice boxes i.e. form submission, in panels and at the top of screens 
     * csv2post_templatefiles_missing() removed from main file to help increase performance
     * csv2post_create_dataimportjob_table() changed so that csv2post_updated column updates on manual edit
-    * wtgcore_activate_logfile() no longer returns value and log file activation (form processing) no longer requires it
+    * csv2post_activate_logfile() no longer returns value and log file activation (form processing) no longer requires it
     * csv2post_sql_query_rowid_exists() now returns csv2post_id value and not the CSV file row ID value
     * csv2post_load_admin_arrays_templatesystem.php renamed to csv2post_load_admin_arrays.php
     * New file csv2post_logfile_array.php (log files will have their own headers which are stored in the $csv2post_logfile_array)
@@ -245,11 +300,11 @@ first plugin was created in 2009 and was halted pending re-development.
     * New folder added named "wtgcore", we are starting a library of Wordpress suitable functions for all of our plugins (we have many planned for the next few years but focusing on building foundations right now)
     * Removed ['name'] value from tab menu array, it was never used
     * We can now name screen files something unique i.e. "csv2post_schedulesettings.php" rather than csv2post_tab4_creation.php
-    * Tab Menu Array: the ['active'] feature is now in use for all pages and csv2post_admin_menu() adapted for it
+    * Tab Menu Array: the ['active'] feature is now in use for all pages and csv2post._admin_menu() adapted for it
     * csv2post_date() can now be used to return a giving time value as formatted date
     * Tab Menu: a big change to the tab menu array $csv2post_mpt_arr. All tabs now have the ['path'] value and it is always used. We can use it to point to any file on the server. This approach initially came about in our first extension.
     * csv2post_data_prep() function added to csv2post_sql_update_record(), all imported data will go through csv2post_data_prep()
-    
+
 = 6.6.9 =
 * Public Messages
     * I work on the plugin daily but right now I'm so busy I cannot reply to every email straight away. I do read them and feedback is noted. 
@@ -432,7 +487,7 @@ first plugin was created in 2009 and was halted pending re-development.
     * Advanced post creation now makes use of csv2post_post_poststatus_calculate()
     * csv2post_get_contenttemplate_design() renamed to csv2post_get_template_design()
 * Known Issues
-    * (minor) Lightbox type overlay applied by jQuery UI dialogue, on 2. Your Projects page, appears to have two overlays (there is a light gap between two of them)
+    * (minor) Lightbox type overlay applied by jQuery UI dialog, on 2. Your Projects page, appears to have two overlays (there is a light gap between two of them)
 * Web Services, Support and Websites changes
     * None
    
@@ -441,14 +496,14 @@ first plugin was created in 2009 and was halted pending re-development.
     * Free users please use the CSV 2 POST forum on Wordpress.org for support, unless your communication contains sensitive information or attachments
     * http://wordpress.org/support/plugin/csv-2-post
 * Bug Fixes
-    * (minor) Installation dialogue result now has content confirming the installation outcome
+    * (minor) Installation dialog result now has content confirming the installation outcome
     * (minor) Function for displaying panels was not using the panel state value properly
     * (minor) Post Types page was display the project type value i.e. post, instead of the default post type value
     * (critical) Post types are now applied properly in the full edition (free users can hack the plugin to create different post types)
     * (critical) Free edition wont display message saying there are no database tables created by CSV 2 POST
 * General Improvements
     * Known conflicting plugins will now be entered into the plugin in a way that triggers warnigns to be displayed when conflicting plugin in use
-    * Moved files age in CSV File Profiles too the second table to make room in the first table for fields/column count
+    * Moved files age in CSV File Profiles to the second table to make room in the first table for fields/column count
     * File Profile Information table in the CSV Files Profile panel now displays the number of fields/columns
     * Uninstall is now confirmed with a notice
     * Activation panel will now be open by default
@@ -456,7 +511,7 @@ first plugin was created in 2009 and was halted pending re-development.
     * $conflict_found variable no longer used in arugments in csv2post_tab0_install.php (plugin conflict check not part of the script anymore)
     * csv2post_plugin_conflict_prevention() improved and put into use
 * Known Issues
-    * Tweet My Post plugin conflicting on line 40 where a .js file is registered called jquery-latest, causes jQuery UI dialogue not to display
+    * Tweet My Post plugin conflicting on line 40 where a .js file is registered called jquery-latest, causes jQuery UI dialog not to display
     * Wordpress HTTPS is reported to also conflict and causes jQuery UI tabs to break, all content displayed at once
 * Web Services, Support and Websites changes
     * Installation guide published http://www.csv2post.com/how-to-articles/installing-csv-2-post   
@@ -464,13 +519,13 @@ first plugin was created in 2009 and was halted pending re-development.
           
 = 6.5.8 =
 * Public Messages
-    * There are always many hidden abilities being added too CSV 2 POST, contact us if you seek something 
+    * There are always many hidden abilities being added to CSV 2 POST, contact us if you seek something 
 * Bug Fixes
     * (minor) Undefined variabled $csv2post_is_free when submitting category settings
     * (minor) functions that use get_posts() now have the "numberposts" argument and will query up to 999, not 5 which must be the default
 * General Improvements
-    * Clicking on the View More Help buttons displayed on help dialogue will now open a new tab
-    * Many notifications will display an arrow which takes user too a help page explaining the notification further
+    * Clicking on the View More Help buttons displayed on help dialog will now open a new tab
+    * Many notifications will display an arrow which takes user to a help page explaining the notification further
     * Can no longer make a post creation project with no name
     * Ability to apply pre-made post title data has been added (panel already existed on interface but was not complete)
     * Advanced SEO panel now displays what settings have been saved (it was already saving properly)
@@ -479,7 +534,7 @@ first plugin was created in 2009 and was halted pending re-development.
     * csv2post_jquery_opendialog_helpbutton() now opens help page in new tab and does not open in current window
     * csv2post_display_designtype_menu() sets $customfield_types_array as an array if get_post_meta returns false
 * Known Issues
-    * (minor) Lightbox type overlay applied by jQuery UI dialogue, on 2. Your Projects page, appears to have two overlays (there is a light gap between two of them)
+    * (minor) Lightbox type overlay applied by jQuery UI dialog, on 2. Your Projects page, appears to have two overlays (there is a light gap between two of them)
 * Web Services, Support and Websites changes
     * More support pages have been blogged...
     * http://www.csv2post.com/feature-guides/create-data-import-jobs-using-csv-files
@@ -492,13 +547,13 @@ first plugin was created in 2009 and was halted pending re-development.
 * Bug Fixes
     * (critical) custom fields fix
 * General Improvements
-    * Category creator (without the need to create posts) added too the Your Creation page
-    * Feedburner email subscription form changed too CSV 2 POST feed
+    * Category creator (without the need to create posts) added to the Your Creation page
+    * Feedburner email subscription form changed to CSV 2 POST feed
     * Twitter button updated to the CSV2POST twitter account
-    * Adding tutorial RSS feed banner too the Updates screen
+    * Adding tutorial RSS feed banner to the Updates screen
     * Improved content design panels to be easier to understand
     * Advanced Categories panel only displays category templates in the menus and not all template designs
-    * Changed "Select CSV File" too "Select Database Tables" on the Create Post Creation Project panel
+    * Changed "Select CSV File" to "Select Database Tables" on the Create Post Creation Project panel
     * List of database tables in the Create Post Creation Project panel now indicates if a csv2post table has been used or not
 * Technical Improvements
     * Project ID is stored in meta for all template designs not just in certain circumstances
@@ -507,9 +562,9 @@ first plugin was created in 2009 and was halted pending re-development.
     * csv2post_is_table_used() added for deciding if a database table has been used or not
     * csv2post_sql_query_unusedrecords_singletable() is now giving the main table and not first table a the maintable always holds the main status/history
 * Known Issues
-    * (minor) Lightbox type overlay applied by jQuery UI dialogue, on 2. Your Projects page, appears to have two overlays (there is a light gap between two of them)
+    * (minor) Lightbox type overlay applied by jQuery UI dialog, on 2. Your Projects page, appears to have two overlays (there is a light gap between two of them)
 * Web Services, Support and Websites changes
-    * Tutorials are not being typed up with the first already published, videos will eventually be added too them also
+    * Tutorials are not being typed up with the first already published, videos will eventually be added to them also
     
 = 6.5.6 =
 * Public Messages
@@ -521,7 +576,7 @@ first plugin was created in 2009 and was halted pending re-development.
 * Technical Improvements
     * csv2post_create_posts_advanced() now avoids doing anything further when $my_post is not an array after attempting to create draft
 * Known Issues
-    * (minor) Lightbox type overlay applied by jQuery UI dialogue, on 2. Your Projects page, appears to have two overlays (there is a light gap between two of them)
+    * (minor) Lightbox type overlay applied by jQuery UI dialog, on 2. Your Projects page, appears to have two overlays (there is a light gap between two of them)
 * Web Services, Support and Websites changes
     * None
     
@@ -536,7 +591,7 @@ first plugin was created in 2009 and was halted pending re-development.
 * Technical Improvements
     * None
 * Known Issues
-    * Lightbox type overlay applied by jQuery UI dialogue, on 2. Your Projects page, appears to have two overlays (there is a light gap between two of them)
+    * Lightbox type overlay applied by jQuery UI dialog, on 2. Your Projects page, appears to have two overlays (there is a light gap between two of them)
 * Web Services, Support and Websites changes
     * None
     
@@ -549,7 +604,7 @@ first plugin was created in 2009 and was halted pending re-development.
 * General Improvements
     * Change the help button text for beta features and features currently not released in free edition
 * Technical Improvements
-    * maybe_unserialize() added too csv2post_get_dataimportjob()
+    * maybe_unserialize() added to csv2post_get_dataimportjob()
 * Known Issues
     * Nothing has been reported
 * Web Services, Support and Websites changes
@@ -589,7 +644,7 @@ first plugin was created in 2009 and was halted pending re-development.
     * Finished "Delete Advanced Random Shortcodes" panel
     * Notification will be displayed on SEO screen if no known SEO plugin is installed
     * Basic SEO Options panel allows selection of data column and entry of meta key used by SEO plugins
-    * Advanced SEO Options panel allows selection of template design to create unique meta values that have a close match too the main page content
+    * Advanced SEO Options panel allows selection of template design to create unique meta values that have a close match to the main page content
     * SEO screen added to free edition
     * Basic SEO Options Array Dump panel added (only displayed when developer more active)
     * Meta box on Title Template post edit screen has been removed

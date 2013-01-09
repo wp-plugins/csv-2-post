@@ -18,7 +18,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(true,false);?>
     $install_filter_array['logfile'] = 'admin';// use logfile to open specific log file
     $install_filter_array['action'] = 'install';// use this action for uninstall,reinstall etc
     $install_filter_array['priority'] = 'all';// all (default),low,high,critical
-    // add panel details too array, used for forms in notices
+    // add panel details to array, used for forms in notices
     $install_filter_array['pageid'] = $pageid;         
     $install_filter_array['panel_title'] = $panel_array['panel_title'];            
     $install_filter_array['panel_name'] = $panel_array['panel_name'];
@@ -140,7 +140,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);?>
             }
         });
 
-        // prevent form submission, display dialogue box instead
+        // prevent form submission, display dialog box instead
         $("#<?php echo WTG_C2P_ABB;?>logbutton_id1").click(function(e){
             e.preventDefault();
             if( $("#hiddenField_process_1").length == 0 ) $("<input type='hidden' name='hiddenField_process_1' id='hiddenField_process_1' value='submittedone' />").appendTo("form#" + form_id); else $("#formMainHiddenField_id").val("submittedone");
@@ -208,29 +208,29 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);?>
 
     <!-- will display output <div><p><b>Results:</b> <span id="resultstest"></span></p></div> -->
 
-    <!-- each buttons own dialogue box -->
+    <!-- each buttons own dialog box -->
     <div id="<?php echo WTG_C2P_ABB;?>logdivid1" title="Pause Installation Log">
-        <?php wtgcore_notice(__('Do you want to pause any log recording regarding the installation state of the plugin?'), 'question', 'Small', false); ?>
+        <?php csv2post_notice(__('Do you want to pause any log recording regarding the installation state of the plugin?'), 'question', 'Small', false); ?>
     </div>
 
     <div id="<?php echo WTG_C2P_ABB;?>logdivid2" title="Pause General Log">
-        <?php wtgcore_notice(__('Do you want to pause any log entries to the general log file?'), 'question', 'Small', false); ?>
+        <?php csv2post_notice(__('Do you want to pause any log entries to the general log file?'), 'question', 'Small', false); ?>
     </div>
 
     <div id="<?php echo WTG_C2P_ABB;?>logdivid3" title="Pause All Logs">
-        <?php wtgcore_notice(__('Do you want to pause all log keeping for the whole plugin?'), 'question', 'Small', false); ?>
+        <?php csv2post_notice(__('Do you want to pause all log keeping for the whole plugin?'), 'question', 'Small', false); ?>
     </div>
 
     <div id="<?php echo WTG_C2P_ABB;?>logdivid4" title="Start Installation Log">
-        <?php wtgcore_notice(__('Do you want to log installation related activities?'), 'question', 'Small', false); ?>
+        <?php csv2post_notice(__('Do you want to log installation related activities?'), 'question', 'Small', false); ?>
     </div>
 
     <div id="<?php echo WTG_C2P_ABB;?>logdivid5" title="Start General Log">
-        <?php wtgcore_notice(__('Do you want to log general activity to the general log file?'), 'question', 'Small', false); ?>
+        <?php csv2post_notice(__('Do you want to log general activity to the general log file?'), 'question', 'Small', false); ?>
     </div>
 
     <div id="<?php echo WTG_C2P_ABB;?>logdivid6" title="Start All Logs">
-        <?php wtgcore_notice(__('Do you want to start keeping a record of everything and use all log files?'), 'question', 'Small', false); ?>
+        <?php csv2post_notice(__('Do you want to start keeping a record of everything and use all log files?'), 'question', 'Small', false); ?>
     </div>
 
 </div>

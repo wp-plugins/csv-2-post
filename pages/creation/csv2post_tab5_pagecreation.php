@@ -14,7 +14,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);     
-$jsform_set['dialoguebox_title'] = 'Create Categories Now';
+$jsform_set['dialogbox_title'] = 'Create Categories Now';
 $jsform_set['noticebox_content'] = 'You are about to create categories using all of your category data, based on your category settings. Do you wish to continue?';
 // TODO:MEDIUMPRIORITY, add optional date criteria to restrict deletion to a publish date range ?>
 
@@ -31,17 +31,17 @@ $jsform_set['noticebox_content'] = 'You are about to create categories using all
     // if no category settings saved at all
     if(!isset($csv2post_project_array['categories'])){
         
-        echo wtgcore_notice( 'No category settings have been saved for your current project. You must save some category settings to make categories as the plugin does not know what columns your category data is in or the order of categories.','warning','Large','No Category Settings',
+        echo csv2post_notice( 'No category settings have been saved for your current project. You must save some category settings to make categories as the plugin does not know what columns your category data is in or the order of categories.','warning','Large','No Category Settings',
         'www.csv2post.com/notifications/no-category-settings-saved-for-testing','return');
     
     }else{
 
-        echo wtgcore_notice('Do not use this tool until you have complete your Category settings. We also
+        echo csv2post_notice('Do not use this tool until you have complete your Category settings. We also
         recommend that you backup your database. Click submit when you are ready to continue.','warning','Large','Warning','','return');
 
 
-        // add js for dialogue on form submission and the dialogue <div> itself
-        if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+        // add js for dialog on form submission and the dialog <div> itself
+        if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
             csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
             csv2post_jquery_form_prompt($jsform_set);
         }

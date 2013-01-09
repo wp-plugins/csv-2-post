@@ -1,5 +1,41 @@
 <?php
 /**
+* Used to determine if a screen is meant to be displayed or not, based on package and settings 
+*/
+function csv2post_menu_should_tab_be_displayed($page,$tab){
+    global $csv2post_mpt_arr,$csv2post_is_free;
+    
+    // if screen not active
+    if(isset($csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['active']) && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['active'] == false){
+        return false;
+    }    
+    
+    // if user does not want screen displays
+    if($csv2post_mpt_arr['menu'][$page]['tabs'][ $tab ]['display'] == false){
+        return false;    
+    }
+    
+    // if package is not set return true and display page. This will only effect users who upgrade but do not re-install menu
+    // the ['package'] value was added 5th January 2013, we will be forcing a re-install of the menu in version 6.7.4
+    if(!isset($csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'])){
+        return true;
+    }
+        
+    // if package is free and screen is free OR if package is not free and screen is not free = return false
+    if($csv2post_is_free && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'] == 'free'  
+    || !$csv2post_is_free && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'] == 'paid'){
+        return true;
+    }
+
+    // if package is not free and screen is free = return true
+    if(!$csv2post_is_free && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'] == 'free'){
+        return true;
+    }   
+    
+    return false;      
+}
+
+/**
 * Loads scripts
 * 
 * @param string $side, admin, public
@@ -27,6 +63,51 @@ function csv2post_css($side = 'admin',$csv2post_css_side_override = false){
     include_once(WTG_C2P_DIR.'templatesystem/css/csv2post_css_parent.php');
 }
  
+function csv2post_ADDACTION_admin_init_registered_scripts() {
+    /* Register our script. */
+    ########################################
+    #                                      #
+    #                jquery                #
+    #                                      #
+    ######################################## 
+    wp_deregister_script( 'jquery' );
+        //wp_register_script( 'jquery');                
+        wp_register_script( 'jquery','http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js');
+        //wp_register_script( 'jquery','http://ajax.googleapis.com/ajax/libs/jquery/1.8.23/jquery.min.js');
+        //wp_register_script( 'jquery',WTG_C2P_URL.'templatesystem/script/jquery-1.7.1.js');
+                                                                     
+    ########################################
+    #                                      #
+    #                jquery-ui             #
+    #                                      #
+    ########################################    
+    wp_deregister_script( 'jquery-ui' );
+        //wp_register_script( 'jquery-ui');
+        //wp_register_script( 'jquery-ui', 'http://jquery-ui.googlecode.com/svn/tags/latest/ui/jquery-ui.js');
+        wp_register_script( 'jquery-ui', WTG_C2P_URL.'templatesystem/script/jquery-ui.js');
+
+    #####################################################################################
+    #                                                                                   #
+    #                        SCRIPTS NOT PACKAGED WITH WORDPRESS                        #
+    #                                                                                   #
+    #####################################################################################
+    // multiselect (checkbox menus)
+    wp_register_script('jquery-multiselect',WTG_C2P_URL.'templatesystem/script/multiselect/src/jquery.multiselect.js');
+
+    // multiselect (theming I think)
+    wp_register_script('jquery-multiselect-prettify',WTG_C2P_URL.'templatesystem/script/multiselect/assets/prettify.js');
+
+    // multiselect menu filter (filter may not be used much until 2013 but the menu is used a lot)
+    wp_register_script('jquery-multiselect-filter',WTG_C2P_URL.'templatesystem/script/multiselect/src/jquery.multiselect.filter.js');
+
+    // multi-select (lists, not the same as multiselect menus)
+    wp_register_script('jquery-multi-select',WTG_C2P_URL.'templatesystem/script/multi-select-basic/jquery.multi-select.js');
+
+    // multi-select (lists, not the same as multiselect menus)
+    wp_register_script('jquery-cookie',WTG_C2P_URL.'templatesystem/script/jquery.cookie.js');
+
+}
+    
 /**
 * Enqueues scripts using Wordpress functions.
 * This is where new .js files should be added. 
@@ -42,11 +123,6 @@ function csv2post_print_admin_scripts() {
         #                jquery                #
         #                                      #
         ######################################## 
-        wp_deregister_script( 'jquery' );
-            //wp_register_script( 'jquery');                
-            wp_register_script( 'jquery','http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js');
-            //wp_register_script( 'jquery','http://ajax.googleapis.com/ajax/libs/jquery/1.8.23/jquery.min.js');
-            //wp_register_script( 'jquery',WTG_C2P_URL.'templatesystem/script/jquery-1.7.1.js');
         wp_enqueue_script( 'jquery' );
                                                                                                 
         ########################################
@@ -54,10 +130,6 @@ function csv2post_print_admin_scripts() {
         #                jquery-ui             #
         #                                      #
         ########################################    
-        wp_deregister_script( 'jquery-ui' );
-            //wp_register_script( 'jquery-ui');
-            //wp_register_script( 'jquery-ui', 'http://jquery-ui.googlecode.com/svn/tags/latest/ui/jquery-ui.js');
-            wp_register_script( 'jquery-ui', WTG_C2P_URL.'templatesystem/script/jquery-ui.js');
         wp_enqueue_script( 'jquery-ui' );
           
         #####################################################################################
@@ -66,23 +138,18 @@ function csv2post_print_admin_scripts() {
         #                                                                                   #
         #####################################################################################
         // multiselect (checkbox menus)
-        wp_register_script('jquery-multiselect',WTG_C2P_URL.'templatesystem/script/multiselect/src/jquery.multiselect.js');
         wp_enqueue_script('jquery-multiselect');
         
         // multiselect (theming I think)
-        wp_register_script('jquery-multiselect-prettify',WTG_C2P_URL.'templatesystem/script/multiselect/assets/prettify.js');
         wp_enqueue_script('jquery-multiselect-prettify');
                 
         // multiselect menu filter (filter may not be used much until 2013 but the menu is used a lot)
-        wp_register_script('jquery-multiselect-filter',WTG_C2P_URL.'templatesystem/script/multiselect/src/jquery.multiselect.filter.js');
         wp_enqueue_script('jquery-multiselect-filter');
                 
         // multi-select (lists, not the same as multiselect menus)
-        wp_register_script('jquery-multi-select',WTG_C2P_URL.'templatesystem/script/multi-select-basic/jquery.multi-select.js');
         wp_enqueue_script('jquery-multi-select');
         
         // multi-select (lists, not the same as multiselect menus)
-        wp_register_script('jquery-cookie',WTG_C2P_URL.'templatesystem/script/jquery.cookie.js');
         wp_enqueue_script('jquery-cookie');  
      }
 }
@@ -114,7 +181,7 @@ function csv2post_plugin_conflict_prevention(){
     $plugin_profiles[0]['title_active'] = 'Tweet My Post Conflict';
     $plugin_profiles[0]['message_active'] = __('On 16th August 2012 a critical and persistent conflict was found 
     between Tweet My Post 
-    and '.$csv2post_plugintitle.'. It breaks the plugins dialogue boxes (jQuery UI Dialogue) while the plugin is active,
+    and '.$csv2post_plugintitle.'. It breaks the plugins dialog boxes (jQuery UI Dialogue) while the plugin is active,
     you may not be able to install '.$csv2post_plugintitle.' due to this. After some searching we found many others to be having
     JavaScript related conflicts with this plugin, which the author responded too. Please ensure you have the latest
     version installed.
@@ -138,7 +205,7 @@ function csv2post_plugin_conflict_prevention(){
     $plugin_profiles[1]['message_active'] = __('On 15th August 2012 a critical and persistent conflict was found 
     between Wordpress HTTPS and CSV 2 POST. It breaks the jQuery UI tabs by making all panels/features show on
     one screen rather than on individual tabbed screens. A search on Google found many posts regarding the
-    plugin causing JavaScript related conflicts, responded too my the plugins author. So please ensure you
+    plugin causing JavaScript related conflicts, responded to my the plugins author. So please ensure you
     have the latest version. One of the posts suggested the fault, was exactly as we found to be causing our
     broken interface in CSV 2 POST. URL were being re-written, specifically those passed through jQuery UI functions
     were having a slash removed. It would not just break the interface but submitting some forms would fail
@@ -160,7 +227,7 @@ function csv2post_plugin_conflict_prevention(){
             if( is_plugin_active( $plugin['slug']) ){ 
                
                 // recommend that the user does not use the plugin
-                wtgcore_notice($plugin['message_active'],'warning','Large',$plugin['title_active'],'','echo');
+                csv2post_notice($plugin['message_active'],'warning','Large',$plugin['title_active'],'','echo');
 
                 // if the conflict is critical, we will prevent installation
                 if($plugin['criticalconflict'] == true){
@@ -169,7 +236,7 @@ function csv2post_plugin_conflict_prevention(){
                 
             }elseif(is_plugin_inactive($plugin['slug'])){
                 // warn user about potential problems if they active the plugin
-                // wtgcore_notice($plugin['message_inactive'],'info','Tiny',false);
+                // csv2post_notice($plugin['message_inactive'],'info','Tiny',false);
             }
         }
     }
@@ -199,10 +266,77 @@ function csv2post_debugmode(){
         global $wpdb;
         ini_set('display_errors',1);
         error_reporting(E_ALL);
-        $wpdb->show_errors();
-        $wpdb->print_error();
+        //$wpdb->show_errors();
+        //$wpdb->print_error();
     }
 }
+
+/**
+* Returns value for displaying or hiding a page based on edition (free or full).
+* These is no point bypassing this. The pages hidden require PHP that is only provided with
+* the full edition. You may be able to use the forms, but the data saved won't do anything or might
+* cause problems.
+* 
+* @param mixed $package_allowed, 0=free 1=full/paid 2=dont ever display
+* @returns boolean true if screen is to be shown else false
+* 
+* @deprecated
+*/
+function csv2post_page_show_hide($package_allowed = 0){
+    global $csv2post_is_free;
+    
+    if($package_allowed == 2){
+        return false;// do not display in any package   
+    }elseif($csv2post_is_free && $package_allowed == 0){
+        return true;     
+    }elseif($csv2post_is_free && $package_allowed == 1){
+        return false;// paid edition page only, not be displayed in free edition
+    }
+    return true;
+}
+
+/**
+* Gets option value for csv2post_adminset or defaults to the file version of the array if option returns invalid.
+* 1. Called in the main csv2post.php file.
+* 2. Installs the admin settings option record if it is currently missing due to the settings being required by all screens, this is to begin applying and configuring settings straighta away for a per user experience 
+*/
+function csv2post_get_option_adminsettings(){
+    $result = csv2post_option('csv2post_adminset','get');
+    $result = maybe_unserialize($result); 
+    if(is_array($result)){
+        return $result; 
+    }else{     
+        return csv2post_INSTALL_admin_settings();
+    }  
+}     
+    
+/**
+* Gets tab menu array
+* 
+* @todo LOWPRIORITY, rename function, it gets array from file not just option record. Possible csv2post_SETTINGS_tabmenu()
+*   
+*/
+function csv2post_get_option_tabmenu(){
+    global $csv2post_adm_set;# this is coming from the loaded array file
+    // if load method not set and global is an array return the global
+    if(isset($csv2post_adm_set['tabmenu']['loadmethod']) && $csv2post_adm_set['tabmenu']['loadmethod'] == 'file'){
+
+        require_once(WTG_C2P_DIR.'pages/csv2post_variables_tabmenu_array.php');
+        return $csv2post_mpt_arr;
+                        
+    }else{
+
+        // load from option array but only return value if its a valid array else we install the admin settings array now        
+        $result = csv2post_option('csv2post_tabmenu','get');
+        if(is_array($result)){
+            return $result;
+        }else{
+            // users wants menu to load from stored option value but it returned an invald value
+            return csv2post_INSTALL_tabmenu_settings();# returns the tabmenu array
+        }
+        
+    }        
+}        
 
 /**
 * Formats number into currency, default is en_GB and no GBP i.e. not GBP145.50 just 145.50 is returned
@@ -212,24 +346,6 @@ function csv2post_debugmode(){
 function csv2post_format_money($s){
     setlocale(LC_MONETARY, 'en_GB');
     return money_format('%!2n',$s) . "\n";        
-}
-
-/**
-* Compares plugins required minimum php version too the servers. 
-* Uses wp_die if version does not match and displays message 
-*/
-function csv2post_php_version_check_wp_die(){
-    global $csv2post_php_version_minimum,$csv2post_currentversion,$csv2post_plugintitle;
-    if ( version_compare(PHP_VERSION, $csv2post_php_version_minimum, '<') ) {
-        if ( is_admin() && (!defined('DOING_AJAX') || !DOING_AJAX) ) {
-            require_once ABSPATH.'/wp-admin/includes/plugin.php';
-            deactivate_plugins( 'csv-2-post' );
-            wtgcore_notice('Wordpress 3.2.1 (or a later version) and '.$csv2post_plugintitle.' '.$csv2post_currentversion.' requires PHP '.$csv2post_php_version_minimum.' 
-            or later to operate fully. Your PHP version was detected as '.PHP_VERSION.', it is recommended that you upgrade your PHP
-            on your hosting for security and reliability. You can get suitable hosting here at <a href="http://www.webtechglobal.co.uk">WebTechGlobal Hosting</a> for
-            free simply for trying the plugin.','error','Extra',$csv2post_plugintitle . ' Requires PHP 5.3 Above','','echo');
-        }
-    }
 }
 
 /**
@@ -390,7 +506,7 @@ function csv2post_test_csvfile_countfields_fgetpriority( $csvfile_name, $separat
 
     // if PEAR CSV somehow could not get header row we end the test here
     if(!$header_row_string){
-        wtgcore_notice('The plugin could not retrieve the header row from your CSV file while running a test. Please ensure you select the correct separator then try again and seek support if you continue to experience problems.','error','Large','Test 4: Count CSV File Column Headers Using fget','','echo');
+        csv2post_notice('The plugin could not retrieve the header row from your CSV file while running a test. Please ensure you select the correct separator then try again and seek support if you continue to experience problems.','error','Large','Test 4: Count CSV File Column Headers Using fget','','echo');
         return;
     } 
 
@@ -422,7 +538,7 @@ function csv2post_test_csvfile_countfields_fgetpriority( $csvfile_name, $separat
     }
 
     if(!isset($PEARCSV_count)){
-        wtgcore_notice('Could not establish CSV file column header number using PEAR CSV, possibly due to the 
+        csv2post_notice('Could not establish CSV file column header number using PEAR CSV, possibly due to the 
         wrong separator being used. Please ensure the correct separator is in use then run more tests or 
         seek support.','warning','Large','Test 4: Count CSV File Column Headers Using PEAR CSV','','echo');    
         return;
@@ -430,7 +546,7 @@ function csv2post_test_csvfile_countfields_fgetpriority( $csvfile_name, $separat
         
         // compare both counts
         if($PEARCSV_count != $fgetcsv_header_count){
-            wtgcore_notice('Two methods of counting your CSV files returned different results. This is not a fault,
+            csv2post_notice('Two methods of counting your CSV files returned different results. This is not a fault,
             it happens with certain formats of CSV file i.e. no quotes or tab instead of comma. This test is to 
             establish the best method to read your CSV file '.$csvfile_name.'.
             Below are the returned counts.<br /><br />
@@ -441,7 +557,7 @@ function csv2post_test_csvfile_countfields_fgetpriority( $csvfile_name, $separat
              CSV file so that both methods works. PEAR CSV is the plugins default.','warning','Large','Test 4: Count CSV File Column Headers Using All Methods (fget is priority)','','echo');
             return;
         }     
-        wtgcore_notice('I counted '.$conf['fields'].' fields/columns in '.$csvfile_name.'. If this happens to be incorrect it must be investigated. This test
+        csv2post_notice('I counted '.$conf['fields'].' fields/columns in '.$csvfile_name.'. If this happens to be incorrect it must be investigated. This test
         establishes your files configuration using fget and over-rides the PEAR CSV method.','success','Large','Test 4: Count CSV File Column Headers Using All Methods (fget is priority)','','echo');
     }  
 }   
@@ -475,7 +591,7 @@ function csv2post_test_csvfile_countfields_pearcsvpriority( $csvfile_name, $sepa
 
     // if PEAR CSV somehow could not get header row we end the test here
     if(!$header_row_string){
-        wtgcore_notice('The plugin could not retrieve the header row from your CSV file while running a test. Please ensure you select the correct separator then try again and seek support if you continue to experience problems.','error','Large','Test 5: Count CSV File Column Headers Using fget','','echo');
+        csv2post_notice('The plugin could not retrieve the header row from your CSV file while running a test. Please ensure you select the correct separator then try again and seek support if you continue to experience problems.','error','Large','Test 5: Count CSV File Column Headers Using fget','','echo');
         return;
     } 
 
@@ -506,7 +622,7 @@ function csv2post_test_csvfile_countfields_pearcsvpriority( $csvfile_name, $sepa
     }
 
     if(!isset($PEARCSV_count) || $PEARCSV_count == 1){
-        wtgcore_notice('Could not establish CSV file column headers number using PEAR CSV. If you are sure that
+        csv2post_notice('Could not establish CSV file column headers number using PEAR CSV. If you are sure that
         all quotes and separators are in the correct place. You should use the fget method for reading your CSV file
         rather then PEAR CSV.','warning','Large','Test 5: Count CSV File Column Headers Using PEAR CSV','','echo');    
         return;
@@ -514,7 +630,7 @@ function csv2post_test_csvfile_countfields_pearcsvpriority( $csvfile_name, $sepa
         
         // compare both counts
         if($PEARCSV_count != $fgetcsv_header_count){
-            wtgcore_notice('Two methods of counting your CSV files returned different results. This is not a fault,
+            csv2post_notice('Two methods of counting your CSV files returned different results. This is not a fault,
             it happens with certain formats of CSV file i.e. no quotes or tab instead of comma. This test is to 
             establish the best method to read your CSV file '.$csvfile_name.'.
             Below are the returned counts.<br /><br />
@@ -525,7 +641,7 @@ function csv2post_test_csvfile_countfields_pearcsvpriority( $csvfile_name, $sepa
              CSV file so that both methods works. PEAR CSV is the plugins default.','warning','Large','Test 5: Count CSV File Column Headers Using All Methods','','echo');
             return;
         }     
-        wtgcore_notice('I counted '.$conf['fields'].' fields/columns in '.$csvfile_name.'. If this happens to be incorrect it must be investigated. This test
+        csv2post_notice('I counted '.$conf['fields'].' fields/columns in '.$csvfile_name.'. If this happens to be incorrect it must be investigated. This test
         establishes your files configuration using fget and also does it using PEAR CSV. Comparison of field/column count is made
         to help establish what method of reading CSV files is suitable for '.$csvfile_name.'.','success','Large','Test 5: Count CSV File Column Headers Using All Methods','','echo');
     }  
@@ -533,7 +649,7 @@ function csv2post_test_csvfile_countfields_pearcsvpriority( $csvfile_name, $sepa
 
 /**
 * Updates empty premade record in data job table using CSV file row.
-* Reports errors too server log.
+* Reports errors to server log.
 * 
 * @returns boolean, true if an update was done with success else returns false
 * 
@@ -591,8 +707,8 @@ function csv2post_get_headers_key($header_name,$csvfile_name,$job_code){
 * Establishes the giving files ID within the giving job
 * 
 * @param mixed $_POST
-* @returns integer $fileid, if a match is found, the ID applies to the giving job and file only. It is appened too table column names
-* @returns boolean false if csv file loop does not match a file up too the giving $csvfile_name
+* @returns integer $fileid, if a match is found, the ID applies to the giving job and file only. It is appened to table column names
+* @returns boolean false if csv file loop does not match a file up to the giving $csvfile_name
 */
 function csv2post_get_csvfile_id($csvfile_name,$jobcode){
     $dataimportjob_array = csv2post_get_dataimportjob($jobcode);
@@ -904,15 +1020,16 @@ function csv2post_drop_dataimportjob_table($table_name){
     $wpdb->query( 'DROP TABLE '. $table_name );
     
     // remove table from $csv2post_jobtable_array
-    foreach($csv2post_jobtable_array as $key => $jobtable_name){
-        if($table_name == $jobtable_name){
+    if(is_array($csv2post_jobtable_array)){
+        foreach($csv2post_jobtable_array as $key => $jobtable_name){
+            if($table_name == $jobtable_name){
 
-            unset($csv2post_jobtable_array[ $key ]);
-            csv2post_update_option_jobtables_array($csv2post_jobtable_array);
-            break;
-        }
-    }  
-                              
+                unset($csv2post_jobtable_array[ $key ]);
+                csv2post_update_option_jobtables_array($csv2post_jobtable_array);
+                break;
+            }
+        } 
+    }                          
 }
 
 /**
@@ -1010,7 +1127,7 @@ function csv2post_formstart_standard($name,$id = 'none', $method = 'post',$class
         $class = '';         
     }
     echo '<form '.$class.' '.$enctype.' id="'.$id.'" method="'.$method.'" name="'.$name.'" action="'.$action.'">
-    <input type="hidden" id="'.WTG_C2P_ABB.'post_processing_required" name="'.WTG_C2P_ABB.'post_processing_required" value="true">';
+    <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">';
 }
 
 /**
@@ -1083,7 +1200,7 @@ function csv2post_is_WP_Error($wpval,$returnv = false){
         $atts['comment'] = 'Created by csv2post_is_WP_Error, Wordpress message is: ' . $wpval->get_error_message();
         $atts['style'] = 'error';
 
-        wtgcore_log($atts);  
+        csv2post_log($atts);  
         
         $result = true;   
     }else{
@@ -1103,7 +1220,7 @@ function csv2post_is_WP_Error($wpval,$returnv = false){
 }
 
 /**
-* Uses error_log to record an error too servers main error log.
+* Uses error_log to record an error to servers main error log.
 *  
 * @param string $m, the message to be recorded
 */
@@ -1283,7 +1400,7 @@ function csv2post_explode_tablecolumn_returnnode($delimeter,$returnpart,$string)
 }
 
 /**
-* add new post creation project too data import job array
+* add new post creation project to data import job array
 * @param mixed $project_code
 * @param mixed $project_name
 * @return bool
@@ -1337,7 +1454,7 @@ function csv2post_get_projectslist(){
 * Use before adding new entry to array. This approach allows the key to be displayed to user for reference or returned for other use.
 * 
 * @uses ksort, sorts array key order should the keys be random order
-* @uses end, moves internal pointer too end of array
+* @uses end, moves internal pointer to end of array
 * @uses key, returns the key for giving array element
 * @returns mixed, key value could be string or numeric depending on giving array
 */
@@ -1387,7 +1504,7 @@ function csv2post_update_option_schedule_array($schedule_array){
 * @param array $notifications_array
 * @return bool
 */
-function csv2post_update_option_notifications_array($notifications_array){
+function csv2post_update_option_persistentnotifications_array($notifications_array){
     return update_option('csv2post_notifications',maybe_serialize($notifications_array));    
 }
 
@@ -1396,15 +1513,10 @@ function csv2post_update_option_adminsettings($csv2post_adm_set){
     return update_option('csv2post_adminset',$admin_settings_array_serialized);    
 }
 
-function csv2post_get_option_adminsettings(){
-    $admin_settings_array = get_option( 'csv2post_adminset');
-    return maybe_unserialize($admin_settings_array);    
-}
-
 /**
 * Gets notifications array if it exists in Wordpress options table else returns empty array
 */
-function csv2post_get_option_notifications_array(){
+function csv2post_get_option_persistentnotifications_array(){
     $a = get_option('csv2post_notifications');
     $v = maybe_unserialize($a);
     if(!is_array($v)){
@@ -1527,18 +1639,11 @@ function csv2post_save_dataimportjob($jobarray,$code){
 * @param mixed $jobarray
 * @param mixed $code
 * @return boolean,
-* @todo rename function too csv2post_update_option_dataimportjob() and replace then remove csv2post_save_dataimportjob($jobarray,$code)
+* @todo rename function to csv2post_update_option_dataimportjob() and replace then remove csv2post_save_dataimportjob($jobarray,$code)
 */
 function csv2post_update_dataimportjob($jobarray,$code){
     return csv2post_save_dataimportjob($jobarray,$code);
 }    
-
-/**
-* Gets and unserializes public settings array (publicset) 
-*/
-function csv2post_get_option_publicset(){
-    return maybe_unserialize(get_option('csv2post_publicset'));
-}
 
 /**
 * Deletes the option record for giving data import job code
@@ -1669,7 +1774,7 @@ function csv2post_is_csvfile_in_use($csv_file_name,$output = true){
         // get the jobs own option record
         $jobrecord = csv2post_get_dataimportjob($jobid);
         if(!$jobrecord && $output == true){
-            wtgcore_notice('Failed to locate the option table record for data import job named '.$job['name'].'. Is it possible the record was deleted manually?','error','Tiny','','','echo');
+            csv2post_notice('Failed to locate the option table record for data import job named '.$job['name'].'. Is it possible the record was deleted manually?','error','Tiny','','','echo');
         }else{
 
             foreach($jobrecord['files'] as $key => $csvfile_name){
@@ -1765,7 +1870,7 @@ function csv2post_log_posts($post_id,$post_title,$action,$message,$project_name)
     // set log type so the log entry is made to the required log file
     $atts['type'] = 'posts';
     // call log function which performs log and uses $csv2post_logfiles_array
-    wtgcore_log($atts);    
+    csv2post_log($atts);    
 }
 
 /**
@@ -1791,7 +1896,7 @@ function csv2post_log_automation($action,$outcome,$trigger = 'schedule',$line = 
     // set log type so the log entry is made to the required log file
     $atts['type'] = 'automation';
     // call log function which performs log and uses $csv2post_logfiles_array
-    wtgcore_log($atts);    
+    csv2post_log($atts);    
 }
 
 /**
@@ -1812,7 +1917,7 @@ function csv2post_log_data($comment,$line,$file,$function,$dump = 'NA',$sqlresul
     // set log type so the log entry is made to the required log file
     $atts['type'] = 'data';    
     // call log function which performs log and uses $csv2post_logfiles_array
-    wtgcore_log($atts);       
+    csv2post_log($atts);       
 }
 
 /**
@@ -1849,5 +1954,15 @@ function csv2post_project_changed($project_code){
         $csv2post_projectslist_array[$project_code]['updatecomplete'] = false;
     }
     csv2post_update_option_postcreationproject_list($csv2post_projectslist_array);
+}
+
+/**
+* Determines if the giving value is a CSV 2 POST page or not
+*/
+function csv2post_is_plugin_page($page){
+    
+    // we have two approaches to use. We could loop through page array and check slug values.
+    // instead we will just check for "csv2post" within the string, that should be suitable and faster
+    return strstr($page,'csv2post');    
 }
 ?>

@@ -7,16 +7,11 @@ $pagefolder = 'projects';// the folder in pages folder holding this pages files
 if($csv2post_is_free){
     $page_title_string = 'Your Project Configuration';    
 }else{
-    $page_title_string = $csv2post_mpt_arr[$pageid]['title'] . csv2post_get_current_project_name() . ' (ID: '.csv2post_convertvalue_projectcodefalse_toostring().')';
+    $page_title_string = $csv2post_mpt_arr['menu'][$pageid]['title'] . csv2post_get_current_project_name() . ' (ID: '.csv2post_convertvalue_projectcodefalse_toostring().')';
 }
 
 csv2post_header_page($page_title_string,0);
- 
-// if no projects have been set, display notice telling user a project is required
-if(!isset($csv2post_currentproject_code) || $csv2post_currentproject_code == false){
-    echo wtgcore_notice_display_step('http://www.games-hq.com/testing/wpcsvimp/wp-admin/admin.php?page=csv2post_yourprojects#tabs-0','Please Create A Project','You do not have any projects or no project has been set as your current one. Please either create a project on the Projects screen below or use the Select Current Project panel.');
-}
-                    
+             
 // create tab menu for the giving page
 csv2post_createmenu($pageid);
 
@@ -42,17 +37,28 @@ if($csv2post_nav_type == 'css'){
 }elseif($csv2post_nav_type == 'jquery'){
     
     // loop through tabs - held in menu pages tabs array
-    foreach($csv2post_mpt_arr[$pageid]['tabs'] as $tab=>$values){
+    foreach($csv2post_mpt_arr['menu'][$pageid]['tabs'] as $tab=>$values){
         
         // chekc if tab is to be displayed, if not, we do not add the div for it    
-        if($csv2post_mpt_arr[ $pageid ]['tabs'][ $tab ]['display'] == true){
+        if(csv2post_menu_should_tab_be_displayed($pageid,$tab)){
             
             // build form action value, will be appended
-            $csv2post_form_action = csv2post_link_toadmin($_GET['page'],'#tabs-' . $tab);### TODO:HIGHPRIORITY,is this variable still in use? if not remove it from entire plugin            
-            //$csv2post_form_action = '';
+            $csv2post_form_action = csv2post_link_toadmin($_GET['page'],'#tabs-' . $tab);            
+
+            echo '<div id="tabs-'.$tab.'">';
                       
-            echo '<div id="tabs-'.$tab.'">';                                                                                            
-            include($csv2post_mpt_arr[$pageid]['tabs'][$tab]['path']);    
+            // check users permissions for this screen
+            if(current_user_can(csv2post_SETTINGS_get_tab_capability($pageid,$tab))){
+                
+                // display persistent notices for the current screen
+                csv2post_persistentnotice_output('screen',$tab,$pageid);                
+                // create screen content 
+                include($csv2post_mpt_arr['menu'][$pageid]['tabs'][$tab]['path']);   
+                 
+            }else{
+                csv2post_n_incontent('Your Wordpress user account does not have permission to access this screen.','info','Small','No Permission: ');    
+            }
+            
             echo '</div>';
                      
         }
@@ -61,10 +67,10 @@ if($csv2post_nav_type == 'css'){
 }elseif($csv2post_nav_type == 'nonav'){
     
     // loop through tabs - held in menu pages tabs array
-    foreach($csv2post_mpt_arr[$pageid]['tabs'] as $tab=>$values){
+    foreach($csv2post_mpt_arr['menu'][$pageid]['tabs'] as $tab=>$values){
         
         // chekc if tab is to be displayed, if not, we do not add the div for it    
-        if($csv2post_mpt_arr[ $pageid ]['tabs'][ $tab ]['display'] == true){
+        if(csv2post_menu_should_tab_be_displayed($pageid,$tab)){
             
             $csv2post_form_action = csv2post_link_toadmin($_GET['page'],'#tabs-' . $tab);            
 

@@ -168,7 +168,7 @@ function csv2post_export_singlesqltable_as_csvfile(){
             global $csv2post_is_free;
 
             if($csv2post_is_free || !strstr( $_POST['wtgpt_exporttable'] , 'csv2post_' )){
-                wtgcore_notice('This action is not permitted for security. We do not want to provide a free tool that allows any tables in
+                csv2post_notice('This action is not permitted for security. We do not want to provide a free tool that allows any tables in
                 the database to be exported. Only the paid edition, created with developers in mind, offers this feature.','warning','Large','Export Not Permitted','','echo');
             }else{
                 
@@ -181,7 +181,7 @@ function csv2post_export_singlesqltable_as_csvfile(){
                 $query_results = $wpdb->get_results( 'SELECT ' . $column_string . ' FROM ' . $_POST['wtgpt_exporttable'],ARRAY_A );
                 
                 if(!$query_results){
-                    wtgcore_notice('No records could be obtained for export from table named '.$_POST['wtgpt_exporttable'].'. Please ensure you have selected the correct database table for export.','warning','Large','No Records To Export','','echo');                    
+                    csv2post_notice('No records could be obtained for export from table named '.$_POST['wtgpt_exporttable'].'. Please ensure you have selected the correct database table for export.','warning','Large','No Records To Export','','echo');                    
                     return;
                 }
                 
@@ -308,11 +308,11 @@ function csv2post_install_contentfolder($pathdir,$output = false){
     if(!$contentfolder_outcome){
         $contentfolder_outcome = false;
         if($output){
-            wtgcore_notice('Plugins content folder could be not created:'.$pathdir, 'error', 'Tiny');
+            csv2post_notice('Plugins content folder could be not created:'.$pathdir, 'error', 'Tiny');
         }
     }elseif($contentfolder_outcome){
          if($output){
-            wtgcore_notice('Plugin content folder has been created here: '.$pathdir, 'success', 'Tiny');
+            csv2post_notice('Plugin content folder has been created here: '.$pathdir, 'success', 'Tiny');
          }
     }
 
@@ -343,7 +343,7 @@ function csv2post_createfolder($path,$chmod = 0700){
 function csv2post_delete_contentfolder($pathdir,$output = false){
     if(!is_dir($pathdir)){
         global $csv2post_plugintitle;
-        wtgcore_notice($csv2post_plugintitle . ' could not locate the main content folder, it appears it
+        csv2post_notice($csv2post_plugintitle . ' could not locate the main content folder, it appears it
         may have already been deleted or moved.', 'warning', 'Extra');
         return false;
     }else{
@@ -365,7 +365,7 @@ function csv2post_hideshow_tab($newstate,$pageid,$tab_number){
     
     global $csv2post_mpt_arr; 
     
-    $csv2post_mpt_arr[ $pageid ]['tabs'][ $tab_number ]['display'] = $newstate;      
+    $csv2post_mpt_arr['menu'][ $pageid ]['tabs'][ $tab_number ]['display'] = $newstate;      
     
     return csv2post_update_tabmenu($csv2post_mpt_arr);           
 }  
@@ -379,7 +379,7 @@ function csv2post_hideshow_tab($newstate,$pageid,$tab_number){
 */
 function csv2post_update_tabmenu(){
     global $csv2post_mpt_arr;
-    return update_option(WTG_C2P_ABB . 'tabmenu',serialize($csv2post_mpt_arr)); 
+    return update_option('csv2post_tabmenu',serialize($csv2post_mpt_arr)); 
 }
 
 /**
@@ -405,10 +405,10 @@ function csv2post_templatefiles_missing($output = false){
         if(!file_exists($path)){ 
         
             if($output){
-                wtgcore_notice('A files important for the plugin to operate appear to be missing. The expect
+                csv2post_notice('A files important for the plugin to operate appear to be missing. The expect
                 file should be on the follow path...<br /><br />' . $path,'error','Small',' Core File Missing: ','','echo');             
             }
-               
+              
             return true;// yes file is missing
         } 
     }
@@ -422,13 +422,12 @@ function csv2post_templatefiles_missing($output = false){
 * 
 * @return boolean true if valid else false
 * 
-* @todo HIGHPRIORITY, complete function
+* @todo MEDIUMPRIORITY, complete function
 */
-function csv2post_validate_dataimportjob_name(){
-    $result = true;
+function csv2post_validate_dataimportjob_name($jobname){
     # ensure name is unique among existing job names
     # ensure name does not include special char
-    return $result;
+    return true;
 }
 
 /**
@@ -512,7 +511,7 @@ function csv2post_count_contenttemplates($template_type){
 
 /**
 * Update the current project wordpress option record
-* If user deletes project which is set as current project, the value is set too false 
+* If user deletes project which is set as current project, the value is set to false 
 */
 function csv2post_update_currentproject($project_code){
     global $csv2post_currentproject_code;
@@ -591,12 +590,12 @@ function csv2post_delete_dataimportjob_postrequest($jobcode,$output = true){
     $deleteoption_result = csv2post_delete_dataimportjob_optionrecord($jobcode);
     if($deleteoption_result != false){
         if($output){
-            wtgcore_notice('Data import job named '.$csv2post_dataimportjobs_array[$jobcode]['name'].' has been 
+            csv2post_notice('Data import job named '.$csv2post_dataimportjobs_array[$jobcode]['name'].' has been 
             deleted.','success','Extra'); 
         }    
     }else{
         if($output){
-            wtgcore_notice('Data import job named '.$csv2post_dataimportjobs_array[$jobcode]['name'].' could not be 
+            csv2post_notice('Data import job named '.$csv2post_dataimportjobs_array[$jobcode]['name'].' could not be 
             deleted. The Wordpress option record for this job may still be in the options table and require manual 
             removal. Please report this issue. If however you already removed the option record manually being this 
             action then that may cause this error and it can be ignored.','error','Extra'); 
@@ -618,7 +617,7 @@ function csv2post_delete_dataimportjob_postrequest($jobcode,$output = true){
 
 /**
 * Initializes the array for a job i.e data import job. Adds some defaults.
-* The full array is added too in the csv2post_form_createdataimportjob() function.
+* The full array is added to in the csv2post_form_createdataimportjob() function.
 * All files and their headers are added.
 * 
 * @param string $jobname
@@ -650,7 +649,7 @@ function csv2post_create_jobarray($jobname,$code){
 }
 
 /**
-* Adds a job table too the job tables array record in wordpress options table
+* Adds a job table to the job tables array record in wordpress options table
 * @uses csv2post_update_option_jobtables_array() which uses update_option()
 */
 function csv2post_add_jobtable($new_jobtable){
@@ -681,7 +680,7 @@ function csv2post_calculate_dataimportjob_progress_percentage($jobcode){
 
 /**
 * Checks if a $_POST submission has requested specific template for editing.
-* If no request, will return empty array and values to indicate too other functions that they should return null values. 
+* If no request, will return empty array and values to indicate to other functions that they should return null values. 
 */
 function csv2post_get_template_bypostrequest(){
 
@@ -913,7 +912,7 @@ function csv2post_admin_triggered_newcsvfilescheck(){
 
                         // display notice about a newer csv file being detected
                         if(isset($csv2post_adm_set['admintriggers']['newcsvfiles']['display']) && $csv2post_adm_set['admintriggers']['newcsvfiles']['display'] == 1){
-                            wtgcore_notice('An updated CSV file has been detected. Your file named
+                            csv2post_notice('An updated CSV file has been detected. Your file named
                             <strong>'.$csvfile_name.'</strong> had a modified date of <strong>'.$csvfile_profilemodified_date.'</strong> and it is now 
                             <strong>'.$csvfile_currentmodified_date.'</strong>. 
                             <p>Your data import job named <strong>'.$job_array['name'].'</strong> (code:'.$key.') has been

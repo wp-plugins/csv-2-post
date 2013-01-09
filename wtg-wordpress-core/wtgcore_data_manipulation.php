@@ -1,7 +1,7 @@
 <?php
-# RENAME THIS FILE TOO csv2post_strings
+# RENAME THIS FILE TO csv2post_strings
 /**
-* Compares giving possible/expected prepend (needle) characters too haystack string and determines if the
+* Compares giving possible/expected prepend (needle) characters to haystack string and determines if the
 * needle exists at the beginning of the haystack.
 * 
 * @param mixed $h
@@ -29,6 +29,19 @@ function csv2post_STRINGS_strtotime($date_string,$format = 'UK'){
         return strtotime($date_string);    
     }    
 }  
+
+/**
+* Determines if a string is alphanumeric (English characters) or not
+*/
+function csv2post_STRINGS_is_alphanumeric($string,$minimum_length = 1,$maximum_length = 99){
+    
+    if (preg_match('/^[A-Z0-9]{'.$minimum_length.','.$maximum_length.'}$/i', $string)) {
+        return true;
+    } else {
+        return false;
+    }    
+    
+}
                 
 /**
 * Converts Special Characters Using Correct Encoding Values For Content
@@ -36,7 +49,7 @@ function csv2post_STRINGS_strtotime($date_string,$format = 'UK'){
 * @param string $content
 * @return string
 */
-function wtgcore_encoding_clean_string($content) {
+function csv2post_encoding_clean_string($content) {
     global $csv2post_wtgcore_o42chars;
 
     if ( strtoupper( get_option('blog_charset' )) == 'UTF-8') {
@@ -81,7 +94,7 @@ $csv2post_wtgcore_o42chars['feed'] = array(
 * @param string $title
 * @return string
 */
-function csv2post_wtgcore_encoding_clean_permalinks($title){
+function csv2post_encoding_clean_permalinks($title){
     global $csv2post_wtgcore_o42chars;
     
     if ( seems_utf8($title) ) {
@@ -96,7 +109,7 @@ function csv2post_wtgcore_encoding_clean_permalinks($title){
     return $title;
 }
 
-function csv2post_wtgcore_remove_last_comma($s){
+function csv2post_remove_last_comma($s){
     return substr_replace($s, '', -1);     
 }
 ?>

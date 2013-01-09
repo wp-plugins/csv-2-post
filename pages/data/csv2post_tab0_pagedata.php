@@ -11,7 +11,7 @@ $panel_array['panel_url'] = 'http://www.csv2post.com/feature-guides/csv-file-upl
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialoguebox_title'] = 'Upload CSV File';
+$jsform_set['dialogbox_title'] = 'Upload CSV File';
 $jsform_set['noticebox_content'] = 'You are about to upload a CSV file, it will overwrite any existing CSV file with the same name. Do you want to upload the file now?';?>
 <?php csv2post_panel_header( $panel_array );?>
   
@@ -24,13 +24,13 @@ $jsform_set['noticebox_content'] = 'You are about to upload a CSV file, it will 
         </div>
           
         <?php
-        // add the javascript that will handle our form action, prevent submission and display dialogue box
+        // add the javascript that will handle our form action, prevent submission and display dialog box
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         ?>
         
         <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">
         <input type="hidden" id="csv2post_post_uploadcsvfile" name="csv2post_post_uploadcsvfile" value="true">
-		
+        
     </form>
 
     <?php csv2post_jquery_form_prompt($jsform_set);?>
@@ -52,7 +52,7 @@ for accurate results you should enter the values manually.');
 // <form> values, seperate from panel value
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialoguebox_title'] = 'Create Data Import Job';
+$jsform_set['dialogbox_title'] = 'Create Data Import Job';
 $jsform_set['noticebox_content'] = 'Do you want to continue creating a new Data Import Job? <p>Please note that this
 action will not import data. You must begin data importing on the Import tab.</p>';
 // create nonce - done in csv2post_ajax_is_dataimportjobname_used
@@ -89,7 +89,7 @@ $nonce = wp_create_nonce( "csv2post_referer_" . $panel_array['panel_name'] );
 
             if(usr.length >= 4){
                 
-                // remove any status display by adding blank value too html
+                // remove any status display by adding blank value to html
                 $("#csv2post_status_<?php echo $jsform_set['form_id'];?>").html('');
                                                  
                                        
@@ -132,8 +132,8 @@ $nonce = wp_create_nonce( "csv2post_referer_" . $panel_array['panel_name'] );
     <p><?php csv2post_display_csvfiles_fornewdataimportjob(); ?></p>
     
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -156,10 +156,10 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 // <form> values, seperate from panel value
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialoguebox_title'] = 'Delete Selected Jobs';
+$jsform_set['dialogbox_title'] = 'Delete Selected Jobs';
 $jsform_set['noticebox_content'] = 'You are about to delete select data import jobs, are you sure you want to continue?';
 // TODO: LOWPRIORITY, replace table using data table script
-// TODO: LOWPRIORITY, update dialogue content with a list of the selected jobs
+// TODO: LOWPRIORITY, update dialog content with a list of the selected jobs
 ?>
 
 <?php csv2post_panel_header( $panel_array );?>
@@ -173,8 +173,8 @@ $jsform_set['noticebox_content'] = 'You are about to delete select data import j
     <?php csv2post_list_dataimportjobs();?>
 
             <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -217,7 +217,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 // <form> values, seperate from panel value
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialoguebox_title'] = 'Test CSV File';
+$jsform_set['dialogbox_title'] = 'Test CSV File';
 $jsform_set['noticebox_content'] = 'Do you want to run the full series of tests on the selected file? <p>The plugin will run a series of tests that could use your servers full processing time depending on how large your file is. Please keep this in mind, if you experience problems you may want to run tests on a smaller version of your file as a first step. Please create a support ticket (full users) or forum thread (free users) if you do experience problems so that I can investigate possible improvements.</p>';
 /**
 * TODO:LOWPRIORITY,would it work to add a test that checks every row and every data value counting total number of columns then output exact row numbers where possible issues detected?
@@ -248,8 +248,8 @@ $jsform_set['noticebox_content'] = 'Do you want to run the full series of tests 
     </div>
     
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -270,7 +270,7 @@ $panel_array['panel_help'] = __('Refreshing the browser will show the latest sta
 $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialoguebox_title'] = 'Delete CSV File';
+$jsform_set['dialogbox_title'] = 'Delete CSV File';
 $jsform_set['noticebox_content'] = 'You are about to delete the selected CSV file. If it is in use by a Data Import Job or a project, CSV 2 POST will prevent the deletion. Do you wish to continue?';?>
 <?php csv2post_panel_header( $panel_array );?>
  
@@ -283,8 +283,8 @@ $jsform_set['noticebox_content'] = 'You are about to delete the selected CSV fil
     <?php csv2post_csv_files_list();?>
 
       <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -309,7 +309,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);?>
     
     <?php
     if($usedcsvfile_count == 0){
-        echo wtgcore_notice('You do not have any data import jobs and so no CSV files are in use either.','info','Small',false,'','return');
+        echo csv2post_notice('You do not have any data import jobs and so no CSV files are in use either.','info','Small',false,'','return');
     }?>
      
 <?php csv2post_panel_footer();?> 

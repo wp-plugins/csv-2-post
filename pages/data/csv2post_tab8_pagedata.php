@@ -1,6 +1,6 @@
 <?php 
 /*
-echo wtgcore_notice('This is screen allows us to not only carry out an initial data import but we can also
+echo csv2post_notice('This is screen allows us to not only carry out an initial data import but we can also
 update our data with it. Use this screen instead of the Basic Import screen if you plan to run updates. It allows 
 us to select an ID column so that a relationship exists between CSV file rows and existing database records. There is
 no other way to update data, sometime of unique ID value is always required.
@@ -18,7 +18,7 @@ action is required after data is imported or updated if you want the data to be 
 #                                                                                #
 ##################################################################################
 if(!isset($csv2post_dataimportjobs_array) || !is_array($csv2post_dataimportjobs_array) || count($csv2post_dataimportjobs_array) == 0){
-    echo wtgcore_notice('You do not have any Data Import jobs, please create one on the Start screen','info','Small','','','return');    
+    echo csv2post_notice('You do not have any Data Import jobs, please create one on the Start screen','info','Small','','','return');    
 }else{
 
     // foreach job
@@ -37,7 +37,7 @@ if(!isset($csv2post_dataimportjobs_array) || !is_array($csv2post_dataimportjobs_
         // Form Settings - create the array that is passed to jQuery form functions
         $jsform_set_override = array();
         $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-        $jsform_set['dialoguebox_title'] = 'Import Data';
+        $jsform_set['dialogbox_title'] = 'Import Data';
         $jsform_set['noticebox_content'] = 'You are about to import data from your CSV file. Data updating will also be done if your CSV file has been updated. Do you wish to continue?';
         
         csv2post_panel_header( $panel_array );?>
@@ -148,8 +148,8 @@ if(!isset($csv2post_dataimportjobs_array) || !is_array($csv2post_dataimportjobs_
         ### That we zero exists as the counter/stat
                            
 
-        // add js for dialogue on form submission and the dialogue <div> itself
-        if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+        // add js for dialog on form submission and the dialog <div> itself
+        if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
             csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
             csv2post_jquery_form_prompt($jsform_set);
         }
@@ -232,7 +232,7 @@ if(!isset($csv2post_dataimportjobs_array) || !is_array($csv2post_dataimportjobs_
             <tr><td>Duplicates Found: </td><td>'.$job_array['stats'][$csv_filename]['duplicates'].'</td></tr>                                                                                    
             </table>';
 
-            echo wtgcore_notice($message,$state,'Small',$csv_filename,'','return');
+            echo csv2post_notice($message,$state,'Small',$csv_filename,'','return');
         } 
 
         csv2post_panel_footer(); 

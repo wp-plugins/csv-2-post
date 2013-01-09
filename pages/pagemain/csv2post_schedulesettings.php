@@ -4,13 +4,13 @@ $panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab
 $panel_array['panel_name'] = 'scheduletimes';// slug to act as a name and part of the panel ID 
 $panel_array['panel_title'] = __('Schedule Times *global panel*');// user seen panel header text 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_intro'] = __('Green indicates posts will be created on that day or time');
-$panel_array['panel_help'] = __('A simple approach to controlling when your projects drip feeding is allowed to happen. These settings/times are global and effect all projects with drip feeding applied above.');
+$panel_array['panel_intro'] = __('Green indicates automated events will happen on that day or time i.e. posts created, data imported');
+$panel_array['panel_help'] = __('The schedule system automates more than just post creation but the popular requirement is to auto-blog posts and pages. These settings/times are global and effect all projects with drip feeding applied above.');
 $panel_array['help_button'] = csv2post_helpbutton_text(false,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);   
-$jsform_set['dialoguebox_title'] = 'Saving Schedule Times';
+$jsform_set['dialogbox_title'] = 'Saving Schedule Times';
 $jsform_set['noticebox_content'] = 'You are about to change the schedule times, do you want to continue?';
 // TODO: LOWPRIORITY, add a checkbox to allow user to save design for the mapping approach
 ?>
@@ -78,8 +78,8 @@ $jsform_set['noticebox_content'] = 'You are about to change the schedule times, 
     </div>  
                        
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -101,7 +101,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialoguebox_title'] = 'Save Drip Feeding Limits';
+$jsform_set['dialogbox_title'] = 'Save Drip Feeding Limits';
 $jsform_set['noticebox_content'] = 'These are global settings and will take effect on all projects straight away. Do you wish to continue?';
 ?>
 <?php csv2post_panel_header( $panel_array );?>
@@ -167,8 +167,8 @@ $jsform_set['noticebox_content'] = 'These are global settings and will take effe
     </div>
     
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -191,7 +191,7 @@ $panel_array['panel_url'] = 'http://www.csv2post.com/hacking/event-types';
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialoguebox_title'] = 'Save Event Types';
+$jsform_set['dialogbox_title'] = 'Save Event Types';
 $jsform_set['noticebox_content'] = 'You are about to change the permitted event types to be run as part of the automated schedule system, do you want to continue?';
 ?>
 <?php csv2post_panel_header( $panel_array );?>
@@ -210,7 +210,7 @@ $jsform_set['noticebox_content'] = 'You are about to change the permitted event 
     });
     </script>                
     <div id="csv2post_focus_eventtype_postcreation">
-        <?php 
+        <?php         
         $default = true;
         foreach($csv2post_schedule_array['eventtypes'] as $eventtype => $eventtype_array){
                       
@@ -319,8 +319,8 @@ $jsform_set['noticebox_content'] = 'You are about to change the permitted event 
     </div>    
 
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }

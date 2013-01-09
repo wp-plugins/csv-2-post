@@ -4,7 +4,7 @@
 * 
 * @param mixed $table_name
 */
-function wtgcore_csvfile_download_export_databasettable($table_name){
+function csv2post_csvfile_download_export_databasettable($table_name){
  
     global $wpdb;
 
@@ -25,7 +25,7 @@ function wtgcore_csvfile_download_export_databasettable($table_name){
     
     # GET FIELDS VALUES WITH LAST COMMA EXCLUDED
     foreach($result as $row){
-        echo 'TEST';
+        
         for($j = 0; $j < $fieldsCount; $j++){
             if($j == 0) $fields .= "\n"; # FORCE NEW LINE IF LOOP COMPLETE
             $value = str_replace(array("\n", "\n\r", "\r\n", "\r"), "\t", $row->$each_field[$j]); # REPLACE NEW LINE WITH TAB

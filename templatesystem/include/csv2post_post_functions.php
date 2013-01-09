@@ -65,13 +65,13 @@ function csv2post_create_posts_basic($project_code,$request_method){
     #                                                                          #
     ############################################################################
     $project_array = csv2post_get_project_array($project_code);
-    
+
     // get data - if no data we return now
     $records = csv2post_sql_query_unusedrecords_singletable($project_array['tables'][0]);
 
     if(!$records){
         if($request_method == 'manual'){
-            wtgcore_notice('No posts were created as your project does not have any unused records. No project statistics were changed either.','info','Large','No Posts Created','','echo');    
+            csv2post_notice('No posts were created as your project does not have any unused records. No project statistics were changed either.','info','Large','No Posts Created','','echo');    
         }else{
             ### TODO:MEDIUMPRIORITY, log this event when log system complete
         }
@@ -172,7 +172,7 @@ function csv2post_create_posts_basic($project_code,$request_method){
             // if a small number of posts being created, output a notice, this is allowed with basic function
             // as it is only called using forms, not automation
             if($posts_target < 3){
-                wtgcore_notice('Draft post could not be created, post creation failed when using one of your records, this must be investigated.','error','Large','Post Creation Failed','','echo');    
+                csv2post_notice('Draft post could not be created, post creation failed when using one of your records, this must be investigated.','error','Large','Post Creation Failed','','echo');    
             } 
         }else{
             // update project table
@@ -537,7 +537,7 @@ function csv2post_post_poststatus_calculate( $project_array,$my_post ){
     $timenow = strtotime( date("Y-m-d H:i:s") );
     $timeset = strtotime( $my_post['post_date'] );
     
-    // add 10 seconds too $timenow, no point in setting a post for future if its only to be publish moments later
+    // add 10 seconds to $timenow, no point in setting a post for future if its only to be publish moments later
     $timenow = $timenow + 10;
     
     // if posts time is greater than current
@@ -613,16 +613,20 @@ function csv2post_post_generate_tags_premade($my_post,$record_array,$project_cod
 
 /**
 * Inserts a new content template as post type wtgcsvcontent
+* 
+* @param mixed $content
+* @param mixed $title technical the post title but we refer to it as the content templates name
+* @return int|WP_Error
 */
-function csv2post_insert_post_contenttemplate(){
+function csv2post_insert_post_contenttemplate($content,$title){
     // no ID exists, create a new template
     $post = array(
       'comment_status' => 'closed',
       'ping_status' => 'closed',
       'post_author' => get_current_user_id(),
-      'post_content' => $_POST['csv2post_wysiwyg_editor'],
+      'post_content' => $content,
       'post_status' => 'publish', 
-      'post_title' => $_POST['csv2post_templatename'],
+      'post_title' => $title,
       'post_type' => 'wtgcsvcontent'
     );  
                 

@@ -242,23 +242,1195 @@ if($cont){
     $cont = csv2post_form_save_admin_triggered_automaton();
     
     // Save form settings
-    $cont = csv2post_form_save_formsettings();      
+    $cont = csv2post_form_save_formsettings(); 
+    
+    // Save screen permissions settings
+    $cont = csv2post_form_save_screenpermissionssettings();
+    
+    // Save page permissions settings
+    $cont = csv2post_form_save_pagepermissionssettings(); 
+    
+    // Reset Easy CSV Importer Session
+    $cont = csv2post_form_reseteci();            
 }    
     
-// rare used forms      
+// Other
 if($cont){
     $cont = csv2post_form_changetheme();  
     $cont = csv2post_form_createcontentfolder();
-    $cont = csv2post_form_deletecontentfolder();    
+    $cont = csv2post_form_deletecontentfolder(); 
+    
+    // Delete persistent notice
+    $cont = csv2post_form_delete_persistentnotice();   
 }
+
+// Easy CSV Importer - Free
+if($cont){
+    
+    // Step 18: Create Posts
+    $cont = csv2post_form_ECI_free_step18_createposts();
+    
+    // Step 17: Post Types
+    $cont = csv2post_form_ECI_free_step17_posttypes();
+    
+    // Step 16: Theme Support
+    $cont = csv2post_form_ECI_free_step16_themesupport();    
+    
+    // Step 15: Authors
+    $cont = csv2post_form_ECI_free_step15_authors(); 
+
+    // Step 14: Text Spinning
+    $cont = csv2post_form_ECI_free_step14_textspinning();
+
+    // Step 13: Tags
+    $cont = csv2post_form_ECI_free_step13_tags();
+
+    // Step 12: Images
+    $cont = csv2post_form_ECI_free_step12_images();
+
+    // Step 11: Post Update Options
+    $cont = csv2post_form_ECI_free_step11_postupdateoptions();
+
+    // Step 10: Categories
+    $cont = csv2post_form_ECI_free_step10_categories();
+
+    // Step 9: Custom Fields
+    $cont = csv2post_form_ECI_free_step9_customfields(); 
+
+    // Step 8: Post Dates
+    $cont = csv2post_form_ECI_free_step8_postdates(); 
+
+    // Step 7: Post Status
+    $cont = csv2post_form_ECI_free_step7_poststatus(); 
+
+    // Step 6: SEO
+    $cont = csv2post_form_ECI_free_step6_seo(); 
+
+    // Step 5: Title Template
+    $cont = csv2post_form_ECI_free_step5_titletemplate();
+
+    // Step 4: Content Template
+    $cont = csv2post_form_ECI_free_step4_contenttemplate();
+
+    // Step 3: Import Date
+    $cont = csv2post_form_ECI_free_step3_importdate();
+
+    // Step 2: User Confirms CSV File Format
+    $cont = csv2post_form_ECI_free_step2_confirmformat();
+    
+    // Step 1: Upload CSV File (also updates the ECI session array)
+    $cont = csv2post_form_ECI_free_step1_uploadcsvfile();
+            
+}
+
+// Easy CSV Importer - Paid
+if($cont){
+
+    // Step 18: Create Posts
+    $cont = csv2post_form_ECI_paid_step18_createposts();
+    
+    // Step 17: Post Types 
+    $cont = csv2post_form_ECI_paid_step17_posttypes();
+    
+    // Step 16: Theme Support
+    $cont = csv2post_form_ECI_paid_step16_themesupport();    
+    
+    // Step 15: Authors
+    $cont = csv2post_form_ECI_paid_step15_authors(); 
+
+    // Step 14: Text Spinning
+    $cont = csv2post_form_ECI_paid_step14_textspinning();
+
+    // Step 13: Tags
+    $cont = csv2post_form_ECI_paid_step13_tags();
+
+    // Step 12: Images
+    $cont = csv2post_form_ECI_paid_step12_images();
+
+    // Step 11: Post Update Options
+    $cont = csv2post_form_ECI_paid_step11_postupdateoptions();
+
+    // Step 10: Categories
+    $cont = csv2post_form_ECI_paid_step10_categories();
+
+    // Step 9: Custom Fields
+    $cont = csv2post_form_ECI_paid_step9_customfields(); 
+
+    // Step 8: Post Dates
+    $cont = csv2post_form_ECI_paid_step8_postdates(); 
+
+    // Step 7: Post Types
+    $cont = csv2post_form_ECI_paid_step7_poststatus(); 
+
+    // Step 6: SEO
+    $cont = csv2post_form_ECI_paid_step6_seo(); 
+
+    // Step 5: Title Template
+    $cont = csv2post_form_ECI_paid_step5_titletemplate();
+
+    // Step 4: Content Template
+    $cont = csv2post_form_ECI_paid_step4_contenttemplate();
+
+    // Step 3: Import Date
+    $cont = csv2post_form_ECI_paid_step3_importdate();
+
+    // Step 2: User Confirms CSV File Format
+    $cont = csv2post_form_ECI_paid_step2_confirmformat();
+    
+    // Step 1: Upload CSV File (also updates the ECI session array)
+    $cont = csv2post_form_ECI_paid_step1_uploadcsvfile();
+            
+}
+
+// Update Page
+if($cont){ 
+    csv2post_form_plugin_update();
+}
+
+#################################################
+#                                               #
+#      EASY CSV IMPORTER - PAID FUNCTIONS       #
+#                                               #
+#################################################
+function csv2post_form_ECI_paid_step18_createposts(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+
+        $csv2post_ecisession_array['nextstep'] = 17;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+        
+        return false;
+    }else{
+        return true;
+    }     
+} 
+
+function csv2post_form_ECI_paid_step17_posttypes(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+   
+        
+        $csv2post_ecisession_array['nextstep'] = 18;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+        
+        return false;
+    }else{
+        return true;
+    }     
+} 
+       
+function csv2post_form_ECI_paid_step16_themesupport(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+
+
+        
+        $csv2post_ecisession_array['nextstep'] = 16;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+        
+        return false;
+    }else{
+        return true;
+    }     
+} 
+
+function csv2post_form_ECI_paid_step15_authors(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+    
+        $csv2post_ecisession_array['nextstep'] = 15;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+        
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+function csv2post_form_ECI_paid_step14_textspinning(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+
+
+        $csv2post_ecisession_array['nextstep'] = 14;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+        
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+function csv2post_form_ECI_paid_step13_tags(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+  
+        $csv2post_ecisession_array['nextstep'] = 13;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+        
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+function csv2post_form_ECI_paid_step12_images(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+  
+        $csv2post_ecisession_array['nextstep'] = 12;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+        
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+function csv2post_form_ECI_paid_step11_postupdateoptions(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+   
+        
+        $csv2post_ecisession_array['nextstep'] = 11;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+        
+        return false;
+    }else{
+        return true;
+    }     
+}
+    
+function csv2post_form_ECI_paid_step10_categories(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+
+
+        $csv2post_ecisession_array['nextstep'] = 10;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+        
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+function csv2post_form_ECI_paid_step9_customfields(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+
+        $csv2post_ecisession_array['nextstep'] = 9;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+        
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+function csv2post_form_ECI_paid_step8_postdates(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+
+
+        $csv2post_ecisession_array['nextstep'] = 9;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+        
+        return false;
+    }else{
+        return true;
+    }     
+}
+ 
+function csv2post_form_ECI_paid_step7_poststatus(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+
+        $csv2post_ecisession_array['nextstep'] = 8;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+        
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+function csv2post_form_ECI_paid_step6_seo(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+
+        $csv2post_ecisession_array['nextstep'] = 7;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+        
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+function csv2post_form_ECI_paid_step5_titletemplate(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+ 
+        
+        $csv2post_ecisession_array['nextstep'] = 6;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+        
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+function csv2post_form_ECI_paid_step4_contenttemplate(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+
+        $csv2post_ecisession_array['nextstep'] = 5;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+        
+        return false;
+    }else{
+        return true;
+    }     
+}
+    
+
+function csv2post_form_ECI_paid_step3_importdate(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+
+        
+        $csv2post_ecisession_array['nextstep'] = 4;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+        
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+// Easy CSV Importer - Step 2 (in code it is zero) - Confirm Format 
+function csv2post_form_ECI_paid_step2_confirmformat(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile'){
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+
+
+        $csv2post_ecisession_array['nextstep'] = 3;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+        
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+// Easy CSV Importer - Step 1 (in code it is zero) - Upload CSV File
+function csv2post_form_ECI_paid_step1_uploadcsvfile(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+
+        
+        $csv2post_ecisession_array['nextstep'] = 2;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+
+        return false;
+    }else{
+        return true;
+    }     
+}
+    
+#################################################
+#                                               #
+#      EASY CSV IMPORTER - FREE FUNCTIONS       #
+#                                               #
+#################################################
+function csv2post_form_ECI_free_step18_createposts(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreecreateposts' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        global $csv2post_currentproject_code,$csv2post_project_array;
+        
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+
+        // update the ECI session array
+//$csv2post_ecisession_array['nextstep'] = 19;
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array); 
+                
+        // free edition processes all records at once, $_POST['csv2post_postsamount'] will not be set   
+        $post_id = csv2post_create_posts_basic($csv2post_currentproject_code,'manual');
+        if($post_id){
+            // no false returned (false indicates a failure)
+            // $post_id will be the last post ID created
+            csv2post_notice_postresult('success','Posts Created','Post creation went smoothly, no 
+            problems were detected. The last post ID created was <strong>'.$post_id.'</strong>.');
+            ### TODO:LOWPRIORITY, add link and url to last created post to the output  
+        }else{
+           // must be a failure, if multiple posts were requests the failure is big enough to output it to the user
+           csv2post_notice_postresult('warning','Problem Detected','A problem was detected during 
+           the post creation process. The severity can only be established by checking logs and 
+           any posts created or expected to have been created. Feel free to contact the plugins 
+           team for free help.');
+        }    
+        
+        return false;
+    }else{
+        return true;
+    }     
+} 
+                       
+function csv2post_form_ECI_free_step17_posttypes(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeposttypes' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+        
+        global $csv2post_project_array,$csv2post_currentproject_code;
+        $csv2post_project_array['defaultposttype'] = $_POST['csv2post_radio_defaultpostype'];
+        csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array); 
+            
+        // update the ECI session array
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+        $csv2post_ecisession_array['nextstep'] = 18;
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+        
+        csv2post_notice_postresult('success','Post Type Saved','Your post type has been saved.');
+        
+        return false;
+    }else{
+        return true;
+    }     
+} 
+       
+function csv2post_form_ECI_free_step16_themesupport(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+        // not in free edition
+        return false;
+    }else{
+        return true;
+    }     
+} 
+
+function csv2post_form_ECI_free_step15_authors(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreedefaultauthor' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+        global $csv2post_project_array,$csv2post_currentproject_code;
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+
+        $csv2post_project_array['authors']['defaultauthor'] = $_POST['csv2post_ecifreedefaultauthor_select'];
+                
+        csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array); 
+
+        $csv2post_ecisession_array['nextstep'] = 17;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+        
+        csv2post_notice_postresult('success','Default Author Saved','A default author has been saved');
+        
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+function csv2post_form_ECI_free_step14_textspinning(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+        // not currently in free edition
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+function csv2post_form_ECI_free_step13_tags(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreetags' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+                
+        if($_POST['csv2post_eci_freetags_methods'] == 'no'){
+            // nothing needs to be done
+            csv2post_notice_postresult('success','No Featured Images Wanted','You opted to not use featured images in your posts.');    
+        }else{
+            
+            global $csv2post_project_array,$csv2post_currentproject_code;
+            
+            $csv2post_project_array['tags']['default']['table'] = 'csv2post_' . $csv2post_ecisession_array['dijcode'];
+            $csv2post_project_array['tags']['default']['column'] = $_POST['csv2post_eci_freetags_methods'];                       
+            $csv2post_project_array['tags']['method'] = 'premade'; 
+            
+            csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);                
+            
+            csv2post_notice_postresult('success','Tags Configured','Your tags data will be added to your posts providing your posts.');    
+        }
+
+        $csv2post_ecisession_array['nextstep'] = 15;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+        
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+function csv2post_form_ECI_free_step12_images(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeimages' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+      
+        if($_POST['csv2post_eci_freefeaturedimages_methods'] == 'no'){
+            // nothing needs to be done
+            csv2post_notice_postresult('success','No Featured Images Wanted','You opted to not use featured images in your posts.');    
+        }else{
+            
+            global $csv2post_project_array,$csv2post_currentproject_code;
+
+            $csv2post_project_array['images']['featuredimage']['table'] = 'csv2post_' . $csv2post_ecisession_array['dijcode'];            
+            $csv2post_project_array['images']['featuredimage']['column'] = $_POST['csv2post_csvfileheader_eci_freefeaturedimages_WTGTestB'];
+            
+            csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);                
+            
+            csv2post_notice_postresult('success','Featured Images Setup','Your posts will have featured images providing the image URL are valid.');    
+        }
+
+        $csv2post_ecisession_array['nextstep'] = 13;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);    
+        
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+function csv2post_form_ECI_free_step11_postupdateoptions(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreenotpermittedinfreeedition' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+        // not part of free edition
+        return false;
+    }else{
+        return true;
+    }     
+}
+    
+function csv2post_form_ECI_free_step10_categories(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreecategories' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        global $csv2post_currentproject_code,$csv2post_project_array; 
+        
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+        
+        $csv2post_project_array['categories']['default'] = $_POST['csv2post_createcategorymappingecifreecategory_select'];
+
+        csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);        
+                    
+        $csv2post_ecisession_array['nextstep'] = 12;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+        
+        csv2post_notice_postresult('success','Category Saved','You have set a default category, the category ID is '.$_POST['csv2post_createcategorymappingecifreecategory_select'].'.');
+        
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+function csv2post_form_ECI_free_step9_customfields(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreecustomfields' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        global $csv2post_currentproject_code,$csv2post_project_array;
+        
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+
+        // get last array key for current custom fields if they exist
+        if(isset($csv2post_project_array['custom_fields']['basic'])){
+            $last_array_key = csv2post_get_array_nextkey($csv2post_project_array['custom_fields']['basic']);
+        }else{
+            $last_array_key = 0;
+        }
+           
+        // loop through headers
+        $job_headers_array = csv2post_get_dataimportjob_headers_singlefile($csv2post_ecisession_array['dijcode'],$csv2post_ecisession_array['filename']);
+        foreach($job_headers_array as $key => $header){
+
+            $csv2post_project_array['custom_fields']['basic'][$last_array_key]['table_name'] = 'csv2post_' . $csv2post_ecisession_array['dijcode'];                
+            $csv2post_project_array['custom_fields']['basic'][$last_array_key]['column_name'] = $header['sql'];
+            $csv2post_project_array['custom_fields']['basic'][$last_array_key]['meta_key'] = $_POST['csv2post_ecifree_cf_'.$key];
+            ++$last_array_key;
+        }           
+
+        // update project option         
+        csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
+
+        // update the ECI session array
+        $csv2post_ecisession_array['nextstep'] = 10;
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+        
+        csv2post_notice_postresult('success','Custom Fields Saved','Your custom field settings have been saved.');
+        
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+function csv2post_form_ECI_free_step8_postdates(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreepostdates' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        global $csv2post_currentproject_code,$csv2post_project_array;
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+        $file = $csv2post_ecisession_array['filenamenoext'];
+        
+        if($_POST['csv2post_eci_freedates_methods'] == 'default'){
+            
+            unset($csv2post_project_array['dates']['currentmethod']);
+             
+        }elseif($_POST['csv2post_eci_freedates_methods'] == 'data'){
+            
+            $csv2post_project_array['dates']['date_column']['table_name'] = 'csv2post_' . $csv2post_ecisession_array['dijcode'];          
+            $csv2post_project_array['dates']['date_column']['column_name'] = $_POST['csv2post_csvfileheader_eci_freedates_' . $file];
+            $csv2post_project_array['dates']['currentmethod'] = 'data';
+             
+        }else{
+            unset($csv2post_project_array['dates']['currentmethod']);    
+        }  
+   
+        ### TODO:MEDIUMPRIORITY, test a date value from users data, also consider a tool for converting dates to require format
+        csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
+
+        // update the ECI session array              
+        $csv2post_ecisession_array['nextstep'] = 9;
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);
+        
+        csv2post_notice_postresult('success','Data Method Saved','Your selected date method has been saved.');     
+        
+        return false;
+    }else{
+        return true;
+    }     
+}
+ 
+function csv2post_form_ECI_free_step7_poststatus(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreepoststatus' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+        global $csv2post_project_array;
+        
+        if(!isset($_POST['csv2post_radio_poststatus'])){
+            $status = 'publish';
+        }else{
+            $status = $_POST['csv2post_radio_poststatus'];
+        }
+        
+        $csv2post_project_array['poststatus'] = $_POST['csv2post_radio_poststatus'];
+        csv2post_update_option_postcreationproject('freeproject',$csv2post_project_array);
+        
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+        $csv2post_ecisession_array['nextstep'] = 8;
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+
+        csv2post_notice_postresult('success','Post Status Saved','All your post status will be set to ' . $status . '.');
+        
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+function csv2post_form_ECI_free_step6_seo(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+        // currently not in free edition, feel free to hack and let us know what you do so we know what abilities users would like put here
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+function csv2post_form_ECI_free_step5_titletemplate(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreesetuptitletemplate' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+        
+        $file = $csv2post_ecisession_array['filenamenoext'];
+        
+        csv2post_insert_titletemplate($file . ' ' . csv2post_date(),'#'.$_POST['csv2post_csvfileheader_eci_pair_description_'.$file]);
+        
+        $csv2post_ecisession_array['nextstep'] = 7;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+
+        csv2post_notice_postresult('success','Title Template Created','A new title template was created.');
+        
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+function csv2post_form_ECI_free_step4_contenttemplate(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreesetupcontenttemplate' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+
+        $file = $csv2post_ecisession_array['filenamenoext'];
+                
+        $free_content_template = 'x-DESCRIPTION-x<a href="x-LINK-x"><img class="alignleft size-thumbnail wp-image-12" title="" src="x-IMAGE-x" alt="" width="150" height="150" /></a>'; 
+        
+        // replace tokens in our inline template with new tokens
+        # TODO:MEDIUMPRIORITY, add validation by testing values from a row, warn user but do not break the progress
+        $free_content_template = str_replace('x-DESCRIPTION-x','#'.$_POST['csv2post_csvfileheader_eci_pair_description_'.$file],$free_content_template);
+        $free_content_template = str_replace('x-IMAGE-x','#'.$_POST['csv2post_csvfileheader_eci_pair_image_'.$file],$free_content_template);
+        $free_content_template = str_replace('x-LINK-x','#'.$_POST['csv2post_csvfileheader_eci_pair_link_'.$file],$free_content_template);
+                
+        csv2post_insert_post_contenttemplate($free_content_template,$file . ' ' . csv2post_date());
+  
+        $csv2post_ecisession_array['nextstep'] = 5;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+
+        return false;
+    }else{
+        return true;
+    }     
+}
+    
+function csv2post_form_ECI_free_step3_importdate(){
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeimportdata' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
+        global $csv2post_is_free;
+        
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+        
+        $job_code = $csv2post_ecisession_array['dijcode'];
+        $file_name = $csv2post_ecisession_array['filename'];
+  
+        // perform data import
+        $overall_result = 'success';
+        $dataimportjob_array = csv2post_data_import_from_csvfile_basic($file_name,'csv2post_'.$job_code,9999999,$job_code);
+        
+        // determine new $overall_result and apply styling to the main notice to suit it
+        if($dataimportjob_array == false){
+            csv2post_notice_postresult('error','Fault','There was a problem importing
+            data, please seek support from the plugin author.');
+            return false;
+        }
+        
+        $intromes = '';
+
+        // display result    
+        csv2post_notice( '<h4>Data Import Result<h4>'.$intromes.'
+        '.csv2post_notice( 'New Records: '.$dataimportjob_array["stats"]["lastevent"]['inserted'],'success','Small',false,'www.csv2post.com/notifications/new-records-count','return').'
+        '.csv2post_notice( 'Void Records: '.$dataimportjob_array["stats"]["lastevent"]['void'],'info','Small',false,'www.csv2post.com/notifications/void-records-counter','return').'
+        '.csv2post_notice( 'Dropped Rows: '.$dataimportjob_array["stats"]["lastevent"]['dropped'],'warning','Small',false,'www.csv2post.com/notifications/dropped-rows-counter','return').'
+        '.csv2post_notice( 'Rows Processed: '.$dataimportjob_array["stats"]["lastevent"]['processed'],'info','Small',false,'www.csv2post.com/notifications/rows-processed-counter','return').'         
+        ',$overall_result,'Extra','','','echo'); 
+
+        $csv2post_ecisession_array['nextstep'] = 4;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);
+                        
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+// Easy CSV Importer - Step 2 (in code it is zero) - Confirm Format 
+function csv2post_form_ECI_free_step2_confirmformat(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeconfirmformat'){
+        
+        $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
+        
+        // set full filename
+        $filename = $csv2post_ecisession_array['filename'];
+
+        $file = $csv2post_ecisession_array['filenamenoext'];
+                                       
+        // if user did not enter field count
+        if(!isset($_POST['csv2post_csvfile_fieldcount_' . $file]) || $_POST['csv2post_csvfile_fieldcount_' . $file] == ''){
+            csv2post_notice_postresult('error','Column/Field Number Required','You did not enter a value for the number of columns your CSV file has.');
+            return;
+        }
+                
+        // if user did not select separator
+        if(!isset($_POST['csv2post_newjob_separators' . $file])){
+            csv2post_notice_postresult('error','No Separator Selected','Please select the separator/delimiter.');
+            return;
+        }
+        
+        // if user did not select quote
+        if(!isset($_POST['csv2post_newjob_quote' . $file])){
+            csv2post_notice_postresult('error','No Quote Selected','Please select the quote used in your CSV file.');
+            return;
+        }            
+
+        $importjobname_validate_result = csv2post_validate_dataimportjob_name($file);
+        if(!$importjobname_validate_result){
+            csv2post_notice_postresult('error','Invalid Data Import Job Name','This job name has been determined as not suitable:'.$file.'. Please report this, we can make modifications to get around the problem quickly.');
+            return;
+        }
+        
+        // generate job code (used to name database table and option record for job history) 
+        $code = csv2post_create_code(6); 
+
+        // create an array for the job, to be stored in an option record of its own
+        $jobarray = csv2post_create_jobarray($file,$code);
+        $jobarray['jobname'] = $file;
+
+        // free edition does not allow multiple files                
+        $jobarray['filegrouping'] = 'single';
+                         
+        // add the file with the $fileid as key, $fileid is simple integer number beginning from 1
+        $jobarray['files'][1] = $filename;
+
+        // add separator
+        $jobarray[$filename]['separator'] = $_POST['csv2post_newjob_separators' . $file];        
+       
+        // add quote
+        if($_POST['csv2post_newjob_quote' . $file] == 'doublequote'){
+            $jobarray[$filename]['quote'] = '"';    
+        }elseif($_POST['csv2post_newjob_quote' . $file] == 'singlequote'){
+            $jobarray[$filename]['quote'] = "'";
+        }
+
+        // add number of fields/columns
+        $jobarray[$filename]['fields'] = $_POST['csv2post_csvfile_fieldcount_'.$file];    
+       
+        // add job stats for the file, required for multiple file jobs
+        $jobarray['stats'][$filename]['progress'] = 0;
+        $jobarray['stats'][$filename]['inserted'] = 0;    
+        $jobarray['stats'][$filename]['updated'] = 0;
+        $jobarray['stats'][$filename]['deleted'] = 0;
+        $jobarray['stats'][$filename]['void'] = 0;    
+        $jobarray['stats'][$filename]['dropped'] = 0;    
+        $jobarray['stats'][$filename]['duplicates'] = 0;                    
+        $jobarray['stats'][$filename]['rows'] = csv2post_count_csvfilerows($filename);                    
+
+        // also add an array of each files headers with the file as key
+        $jobarray[$filename]['headers'] = csv2post_get_file_headers_formatted($filename,1,$jobarray[$filename]['separator'],$jobarray[$filename]['quote'],$jobarray[$filename]['fields']);
+         
+        // set total rows
+        $jobarray['totalrows'] = $jobarray['stats'][$filename]['rows'];
+  
+        $result = csv2post_save_dataimportjob($jobarray,$code);
+        if(!$result){
+            csv2post_notice_postresult('error','Failure','Could not save new Data Import Job, please report this.');
+            return;        
+        }
+                   
+        // set global $csv2post_currentjob_code as new code and set global $csv2post_job_array
+        global $csv2post_currentjob_code,$csv2post_job_array;
+        $csv2post_currentjob_code = $code;
+        $csv2post_job_array = $jobarray;
+                    
+        // create a database table - multiple file jobs are put into a single table, column names are giving appended values to prevent conflict with shared names    
+        $createtable_result = csv2post_create_dataimportjob_table($code,'single');
+        if(!$createtable_result){
+            csv2post_notice_postresult('error','Failure','Your data import database table 
+            could not be created, this is required for importing your data to before using 
+            it to create posts. Please seek help from the plugin author.');
+            return;       
+        }
+   
+        // update csv2post_current_job option record
+        csv2post_update_option_currentjob_code($code);
+                        
+        // update the Data Import Jobs Array (the list of all job ID)
+        global $csv2post_dataimportjobs_array;
+                        
+        // if data import jobs array is not already set then this must be the first job - set it as an array
+        if(!is_array($csv2post_dataimportjobs_array)){
+            $csv2post_dataimportjobs_array = array();    
+        }
+
+        // add job to the array that only holds a list of jobs not job statistics
+        csv2post_add_dataimportjob_to_list($code,$file);
+
+        // set last step as 9 (by default we use start by zero allows us to confirm start was done)
+        $csv2post_ecisession_array['nextstep'] = 3;
+        $csv2post_ecisession_array['dijcode'] = $code;// add data import job code 
+        $csv2post_ecisession_array['jobname'] = $file;
+
+        #################################################
+        #                                               #
+        #        CREATE POST CREATION PROJECT           #
+        #                                               #
+        #################################################
+        global $csv2post_currentproject_code;
+
+        // reset the project table
+        csv2post_sql_reset_project_table($filename,true);
+  
+        // free edition will submit selected database table as string, not array, make array for rest of plugins use
+        $tables_array = array($filename);// we add the single table name to an array in free edition                                
+          
+        // in free edition we automatically delete the existing csv2post_freeproject table
+        csv2post_drop_dataimportjob_table('csv2post_freeproject');
+                       
+        // create project function will return project code on success
+        csv2post_create_post_creation_project($file . ' ' . csv2post_date() ,$tables_array,'defaultorder');
+
+        // now set the new project as the Current Project ($csv2post_currentproject_code)               
+        $csv2post_currentproject_code = $code;
+        csv2post_update_currentproject($code);
+
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);
+                
+        csv2post_notice_postresult('success','Project Created','A data 
+        import job was created for managing your data. A post creation 
+        project was created for managing your post creation.');
+
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+// Easy CSV Importer - Step 1 (in code it is zero) - Upload CSV File
+function csv2post_form_ECI_free_step1_uploadcsvfile(){
+    if(isset($_POST['csv2post_post_eciuploadcsvfile']) && $_POST['csv2post_post_eciuploadcsvfile'] == true){
+        global $csv2post_plugintitle;
+        
+        $upload = $_FILES['file'];
+        
+        // ensure user uploaded a .csv file
+        if(!strstr($upload['name'],'.csv')){
+            csv2post_notice('Sorry but '.$csv2post_plugintitle.' only accepts CSV 
+            files with .csv extension right now.','error','Large','File Extension Not Allowed','','echo');
+            return false;
+        }        
+        
+        // check error value
+        if($upload['error'] != 0){
+            csv2post_notice('Could not upload file please contact us for support and 
+            give error code: ' . $upload['error'],'error','Large','Upload Failed');
+            return false;// not returning false due to failure, only returning false to indicate end of processing            
+        }        
+        
+        // ensure file destination exists
+        $open_result = opendir( WTG_C2P_CONTENTFOLDER_DIR );
+        if(!$open_result){
+            csv2post_notice('File was not uploaded. Could not open the destination folder. 
+            The folder is named wpcsvimportercontent and should be in the wp-content 
+            directory. Please fix this before trying again.','error','Large','File Not Upload');
+            return false;
+        }
+
+        // first reset ECI session array
+        $csv2post_eci_session_array = array();
+        $csv2post_eci_session_array['arrayupdated'] = time();
+        $csv2post_eci_session_array['filename'] = $upload['name'];
+
+        // check if filename already exists in destination - we will let the user know they wrote over an existing file
+        $target_file_path =  WTG_C2P_CONTENTFOLDER_DIR . '/' . $upload['name'];
+        $target_file_path_exists = file_exists( $target_file_path );
+        if($target_file_path_exists){
+            
+            $csv2post_eci_session_array['filereplaced'] = true;
+            
+            // get existing files datestamp - we use it to ensure the new file is newer/changed and trigger data update
+            $oldtime = filemtime( $target_file_path );
+                    
+            // delete the existing file
+            unlink( $target_file_path );
+            
+            if ( file_exists( $target_file_path )){
+                
+                csv2post_notice('The name of your file being uploaded already exists in the target 
+                folder. '.$csv2post_plugintitle.' could not remove the existing file, but it should have. 
+                It may be because the existing file is in use, please investigate this then try again if 
+                required. If some sort of permissions problem is causing this, you may delete the existing 
+                file using FTP also.','error','Large','Existing File Not Removed'); 
+                   
+                // return now due to not being able to remove the existing file
+                return false;
+            }
+            
+            // file must not exist, unlink was success, let user know this was done
+            csv2post_notice('The file name being uploaded existed already. The existing file was replaced.','info','Large','File Replaced');        
+        }else{
+            $csv2post_eci_session_array['filereplaced'] = false;
+        }
+
+        // now move temp file into target path
+        $move_result = move_uploaded_file( $upload['tmp_name'], $target_file_path );
+        
+        // did the move fail
+        if(!$move_result){
+            csv2post_notice('Failed to upload file, there was a problem moving the temporary file into the target directory, please investigate this issue.','error','Large','Upload Failed');
+            return false;
+        }
+        
+        // check that file is now in place
+        if(!file_exists($target_file_path)){
+            csv2post_notice('The server confirmed that the file was uploaded and put into the target directory but it does not appear to be there. Please report this problem.','error','Large','Uploaded File Missing');
+            return;
+        }
+        
+        // we use the files name without extension a lot so we will store it now 
+        $csv2post_eci_session_array['filenamenoext'] = str_replace('.csv','',$upload['name']); 
+        
+        // set last step as 9 (by default we use start by zero allows us to confirm start was done)
+        $csv2post_eci_session_array['nextstep'] = 2;
+        
+        // update the ECI session array
+        csv2post_option('csv2post_ecisession','update',$csv2post_eci_session_array);
+        
+        // upload is a success
+        csv2post_notice('CSV file has been uploaded, please proceed to the next step.','success','Large','CSV File Uploaded');
+
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+function csv2post_form_delete_persistentnotice(){
+    if(isset($_POST['csv2post_post_deletenotice']) && $_POST['csv2post_post_deletenotice'] == true){
+         
+        global $csv2post_persistent_array;
+
+        foreach($csv2post_persistent_array['notifications'] as $key => $notice){
+            if($notice['id'] == $_POST['csv2post_post_deletenotice_id']){
+                unset($csv2post_persistent_array['notifications'][$key]);
+            }            
+        }
+        
+        csv2post_option('csv2post_notifications','update',$csv2post_persistent_array);        
+                  
+        return false;
+    }else{
+        return true;
+    }     
+}
+
+function csv2post_form_save_screenpermissionssettings(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'screenpermissions'){
+        
+        global $csv2post_mpt_arr;
+
+        // loop through tabs, this is the same loop build as on the capabilities interface itself
+        $menu_id = 0;
+        foreach($csv2post_mpt_arr['menu'] as $page_name => $page_array){
+
+            foreach($page_array['tabs'] as $key => $tab_array){
+                
+                if(isset($tab_array['display']) && $tab_array['display'] != false){
+                                        
+                    // is post value set for current tab
+                    if(isset($_POST['csv2post_capabilitiesmenu_'.$page_name.'_'.$key.''])){
+         
+                        // update capability setting for screen
+                        $csv2post_mpt_arr['menu'][$page_name]['tabs'][$key]['permissions']['customcapability'] = $_POST['csv2post_capabilitiesmenu_'.$page_name.'_'.$key.''];
+                    }
+
+                    ++$menu_id; 
+                }        
+            }
+        }        
+
+        csv2post_option('csv2post_tabmenu','update',$csv2post_mpt_arr);
+
+        csv2post_notice_postresult('success','Screen Permissions Saved','Your saved screen permissions
+        may hide or display screens for users. We recommend that you access your blog using applicable 
+        user accounts to test your new permissions.');
+        
+        return false;
+    }else{
+        return true;
+    }       
+} 
+
+function csv2post_form_save_pagepermissionssettings(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'pagepermissions'){
+
+        global $csv2post_mpt_arr;
+
+        foreach($csv2post_mpt_arr as $page_name => $page_array){
+            
+            if(isset($_POST['csv2post_capabilitiesmenu_'.$page_name.'_99'])){
+                $csv2post_mpt_arr['menu'][$page_name]['permissions']['customcapability'] = $_POST['csv2post_capabilitiesmenu_'.$page_name.'_99'];    
+            }
+ 
+        }        
+
+        csv2post_option('csv2post_tabmenu','update',$csv2post_mpt_arr); 
+        
+        csv2post_notice_postresult('success','Page Permissions Saved','Your saved page permissions
+        may hide or display the plugins pages for users. We recommend that you access your blog using applicable 
+        user accounts to test your new permissions.');
+                
+        return false;
+    }else{
+        return true;
+    }       
+}  
 
 function csv2post_form_save_formsettings(){
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'formsettings'){
 
         global $csv2post_adm_set;
-        $csv2post_adm_set['interface']['forms']['dialogue']['status'] = $_POST['csv2post_radiogroup_dialogue'];
+
+        $csv2post_adm_set['interface']['forms']['dialog']['status'] = $_POST['csv2post_radiogroup_dialog'];
         csv2post_update_option_adminsettings($csv2post_adm_set);
-        wtgcore_n_postresult('success','Form Settings Saved','Your form settings have been saved.');
+        csv2post_notice_postresult('success','Form Settings Saved','Your form settings have been saved.');
         
         return false;
     }else{
@@ -279,7 +1451,7 @@ function csv2post_form_save_reporting_settings(){
         
         csv2post_update_option_adminsettings($csv2post_adm_set);
         
-        wtgcore_n_postresult('success','Report Settings Saved','Your reporting settings have been saved. Please remember that
+        csv2post_notice_postresult('success','Report Settings Saved','Your reporting settings have been saved. Please remember that
         reporting can help us provide support when you experience a fault or just require some advice 
         about your use of the plugin.');
         
@@ -302,7 +1474,7 @@ function csv2post_form_save_encoding_settings(){
 
         csv2post_update_option_adminsettings($csv2post_adm_set);
         
-        wtgcore_notice('Encoding settings have been saved. We recommend that you run a test
+        csv2post_notice('Encoding settings have been saved. We recommend that you run a test
         before doing a lot of data import or activating automatic data importing on the Schedule System.'
         ,'success','Large','Encoding Settings Saved','','echo');
         
@@ -326,7 +1498,7 @@ function csv2post_form_save_admin_triggered_automaton(){
         
         csv2post_update_option_adminsettings($csv2post_adm_set);
         
-        wtgcore_notice('Please remember that some actions triggered are also triggered by the Schedule System when visitors come to your blog.
+        csv2post_notice('Please remember that some actions triggered are also triggered by the Schedule System when visitors come to your blog.
         These admin trigger settings related only to logged in administrators.','success','Large','Admin Triggered Automation Settings Saved','','echo');
         
         return false;
@@ -414,7 +1586,7 @@ function csv2post_form_save_advanced_seo_options(){
         if(isset($_POST['csv2post_seo_titlekey_advanced']) && $_POST['csv2post_seo_titlekey_advanced'] != '' && is_string($_POST['csv2post_seo_titlekey_advanced'])){
             $csv2post_project_array['seo']['advanced']['title_key'] = $_POST['csv2post_seo_titlekey_advanced'];
             if(!isset($_POST['csv2post_seo_title_advanced'])){
-                wtgcore_notice('No SEO title template was selected and it is required if you want your posts
+                csv2post_notice('No SEO title template was selected and it is required if you want your posts
                 to have meta title values.','error','Large','Please Select Title Template','','echo');
             }     
         }
@@ -422,7 +1594,7 @@ function csv2post_form_save_advanced_seo_options(){
         if(isset($_POST['csv2post_seo_title_advanced']) && $_POST['csv2post_seo_title_advanced'] != '' && is_numeric($_POST['csv2post_seo_title_advanced'])){
             $csv2post_project_array['seo']['advanced']['title_template'] = $_POST['csv2post_seo_title_advanced'];     
             if(!isset($_POST['csv2post_seo_titlekey_advanced'])){
-                wtgcore_notice('You selected a title template but did not select your SEO plugin that will be handling
+                csv2post_notice('You selected a title template but did not select your SEO plugin that will be handling
                 your meta titles. You must select the SEO plugin so that the proper meta key is used.','error','Large','Please Select Title Plugin','','echo');
             }        
         }        
@@ -431,7 +1603,7 @@ function csv2post_form_save_advanced_seo_options(){
         if(isset($_POST['csv2post_seo_descriptionkey_advanced']) && $_POST['csv2post_seo_descriptionkey_advanced'] != '' && is_string($_POST['csv2post_seo_descriptionkey_advanced'])){
             $csv2post_project_array['seo']['advanced']['description_key'] = $_POST['csv2post_seo_descriptionkey_advanced'];
             if(!isset($_POST['csv2post_seo_description_advanced'])){
-                wtgcore_notice('No SEO description template was selected and it is required if you want your posts
+                csv2post_notice('No SEO description template was selected and it is required if you want your posts
                 to have meta description values.','error','Large','Please Select Description Template','','echo');
             }     
         }
@@ -439,7 +1611,7 @@ function csv2post_form_save_advanced_seo_options(){
         if(isset($_POST['csv2post_seo_description_advanced']) && $_POST['csv2post_seo_description_advanced'] != '' && is_numeric($_POST['csv2post_seo_description_advanced'])){
             $csv2post_project_array['seo']['advanced']['description_template'] = $_POST['csv2post_seo_description_advanced'];     
             if(!isset($_POST['csv2post_seo_descriptionkey_advanced'])){
-                wtgcore_notice('You selected a description template but did not select your SEO plugin that will be handling
+                csv2post_notice('You selected a description template but did not select your SEO plugin that will be handling
                 your meta description. You must select the SEO plugin so that the proper meta key is used.','error','Large','Please Select Description Plugin','','echo');
             }        
         }         
@@ -448,7 +1620,7 @@ function csv2post_form_save_advanced_seo_options(){
         if(isset($_POST['csv2post_seo_keywordskey_advanced']) && $_POST['csv2post_seo_keywordskey_advanced'] != '' && is_string($_POST['csv2post_seo_keywordskey_advanced'])){
             $csv2post_project_array['seo']['advanced']['keywords_key'] = $_POST['csv2post_seo_keywordskey_advanced'];
             if(!isset($_POST['csv2post_seo_keywords_advanced'])){
-                wtgcore_notice('No SEO keywords template was selected and it is required if you want your posts
+                csv2post_notice('No SEO keywords template was selected and it is required if you want your posts
                 to have meta keywords values.','error','Large','Please Select Keywords Template','','echo');
             }     
         }
@@ -456,14 +1628,14 @@ function csv2post_form_save_advanced_seo_options(){
         if(isset($_POST['csv2post_seo_keywords_advanced']) && $_POST['csv2post_seo_keywords_advanced'] != '' && is_numeric($_POST['csv2post_seo_keywords_advanced'])){
             $csv2post_project_array['seo']['advanced']['keywords_template'] = $_POST['csv2post_seo_keywords_advanced'];     
             if(!isset($_POST['csv2post_seo_keywordskey_advanced'])){
-                wtgcore_notice('You selected a keywords template but did not select your SEO plugin that will be handling
+                csv2post_notice('You selected a keywords template but did not select your SEO plugin that will be handling
                 your meta keywords. You must select the SEO plugin so that the proper meta key is used.','error','Large','Please Select Keywords Plugin','','echo');
             }        
         }          
           
         // update $csv2post_project_array 
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
-        wtgcore_notice('Advanced SEO options have been saved.','success','Large','SEO Options Saved','','echo',false,false); 
+        csv2post_notice('Advanced SEO options have been saved.','success','Large','SEO Options Saved','','echo',false,false); 
                                  
         return false;
     }else{
@@ -480,7 +1652,7 @@ function csv2post_form_save_extensionsettings(){
         // save extension status
         update_option('csv2post_extensions',$_POST['csv2post_radiogroup_extensionstatus']);
 
-        wtgcore_notice('Extension settings have been saved. If you have an extension present you may need to click on another Wordpress administration screen to refresh the menu and get access to any changes.','success','Large','Extension Settings Saved','','echo');
+        csv2post_notice('Extension settings have been saved. If you have an extension present you may need to click on another Wordpress administration screen to refresh the menu and get access to any changes.','success','Large','Extension Settings Saved','','echo');
         
         return false;
     }else{
@@ -497,7 +1669,7 @@ function csv2post_form_tabletotable_delete(){
          
         // if no pairs selected
         if(!isset($_POST['csv2post_pairs']) || !is_array($_POST['csv2post_pairs'])){
-            wtgcore_notice('You did not select a pair of tables to be deleted, please try again.','error','Large','No Pairs Deleted','','echo');
+            csv2post_notice('You did not select a pair of tables to be deleted, please try again.','error','Large','No Pairs Deleted','','echo');
         }
         
         // get table to table array
@@ -534,14 +1706,14 @@ function csv2post_form_tabletotable_configure(){
     
         // ensure we have valid result
         if(!is_array($t2_names_array) || !is_array($t2_names_array)){
-            wtgcore_notice('There was a problem querying the column names for your destination table
+            csv2post_notice('There was a problem querying the column names for your destination table
             name '.$t2.'. Please report this notice.','error','Large','Fault Detected','','echo');
             return false;
         }
         
         // ensure key column selected for premium users
         if(!$csv2post_is_free && !isset($_POST['csv2post_idcolumn'])){
-            wtgcore_notice('You did not select an ID/Key Column. This is required to ensure existing
+            csv2post_notice('You did not select an ID/Key Column. This is required to ensure existing
             records are updated rather than risk duplicate records being created. Please
             try again.','error','Large','No ID/Key Column Selected','','echo'); 
             return false;   
@@ -587,7 +1759,7 @@ function csv2post_form_tabletotable_configure(){
 
         // if $key_matched = false then user did not select a key column that has also been paired, required to ensure column is in the queries
         if(!$key_matched){
-            wtgcore_notice('Your ID/Key column selection is not a column you
+            csv2post_notice('Your ID/Key column selection is not a column you
             paired. Please pair your ID column so that the plugin knows what ID/Key value
             to compare in both tables.','error','Large','ID/Key Column Not Paired','','echo');
             return false;
@@ -596,7 +1768,7 @@ function csv2post_form_tabletotable_configure(){
                   
         csv2post_update_option_tabletotable($table2table_array);               
 
-        wtgcore_notice('Table To Table column relationships has been saved. If you want to change your selections you must
+        csv2post_notice('Table To Table column relationships has been saved. If you want to change your selections you must
         delete the pair and re-make it.
         <p>Please scroll down to the Table Pairs panel again and complete the process by clicking on the Submit
         button which will then transfer data from your first table to your destination table based on the pairing you
@@ -624,7 +1796,7 @@ function csv2post_form_tabletotable_transfer(){
         // get table to table array
         $tabletotable_array = csv2post_get_option_tabletotable_array();
         if(!isset($tabletotable_array) || !is_array($tabletotable_array)){
-            wtgcore_notice('A problem was detected when retrieving the Table to Table array, please report this.','error','Large','Problem Detected','','return');
+            csv2post_notice('A problem was detected when retrieving the Table to Table array, please report this.','error','Large','Problem Detected','','return');
             return false;    
         }   
         
@@ -669,7 +1841,7 @@ function csv2post_form_tabletotable_transfer(){
             csv2post_sql_tabletotable_transfer_updatemethod_advanced($d_table,$s_table,$d_columns,$s_columns,$idcolumn_d,$idcolumn_s);
         }
 
-        wtgcore_notice('Table to Table process has complete.','success','Large','Table To Table Transfer Complete','','echo');
+        csv2post_notice('Table to Table process has complete.','success','Large','Table To Table Transfer Complete','','echo');
           
         return false;
     }else{
@@ -687,20 +1859,20 @@ function csv2post_form_tabletotable_pair(){
         // if user selected the same two tables
         if(isset($_POST['wtgpt_tabletotable_tableone']) && isset($_POST['wtgpt_tabletotable_tabletwo'])
         && $_POST['wtgpt_tabletotable_tableone'] == $_POST['wtgpt_tabletotable_tabletwo']){
-            wtgcore_notice('You selected the same table in both menus. You must select two different tables. One
+            csv2post_notice('You selected the same table in both menus. You must select two different tables. One
             which acts as the source of data and one where you would like data to be imported into.','error',
             'Large','Same Table Selected Twice','','echo');
             return false;    
         }
         
         // display notice for each table
-        wtgcore_notice('You selected table named ' . $_POST['wtgpt_tabletotable_tableone'] .' as your first table.','info','Small','Table One: ','','echo');
-        wtgcore_notice('You selected table named ' . $_POST['wtgpt_tabletotable_tabletwo'] .' as your second table.','info','Small','Table Two: ','','echo');
+        csv2post_notice('You selected table named ' . $_POST['wtgpt_tabletotable_tableone'] .' as your first table.','info','Small','Table One: ','','echo');
+        csv2post_notice('You selected table named ' . $_POST['wtgpt_tabletotable_tabletwo'] .' as your second table.','info','Small','Table Two: ','','echo');
         
         // does the pair already exist
         $pair_exists = csv2post_tabletotable_does_pair_exist($_POST['wtgpt_tabletotable_tableone'],$_POST['wtgpt_tabletotable_tabletwo']);
         if($pair_exists){
-            wtgcore_notice('The two tables you selected are already setup as a pair. Your existing pair will have
+            csv2post_notice('The two tables you selected are already setup as a pair. Your existing pair will have
             a panel in which you can initiate the transfer of data. Delete the existing pairing to restart the
             table to table data transfer.','warning','Large','Pairing Exists','','echo');
             return false;    
@@ -709,7 +1881,7 @@ function csv2post_form_tabletotable_pair(){
         // add new pair to the table to table array
         csv2post_tabletotable_add_pair($_POST['wtgpt_tabletotable_tableone'],$_POST['wtgpt_tabletotable_tabletwo']);
                 
-        wtgcore_notice('You have created a pair of tables for transferring data. A new panel will appear on the
+        csv2post_notice('You have created a pair of tables for transferring data. A new panel will appear on the
         Table To Table screen which is your next step. Please find that panel now and complete the form in it.',
         'success','Large','Table To Table Pair Created','','echo'); 
         
@@ -730,20 +1902,20 @@ function csv2post_form_upload_csv_file(){
         $upload = $_FILES['file'];  
 
         if(!strstr($upload['name'],'.csv')){
-            wtgcore_notice('Sorry but '.$csv2post_plugintitle.' only accepts CSV files with .csv extension right now.','error','Large','File Extension Not Allowed','','echo');
+            csv2post_notice('Sorry but '.$csv2post_plugintitle.' only accepts CSV files with .csv extension right now.','error','Large','File Extension Not Allowed','','echo');
             return false;
         }
         
         // check error
         if($upload['error'] != 0){
-            wtgcore_notice('Could not upload file, error code: ' . $upload['error'],'error','Large','Upload Failed');
+            csv2post_notice('Could not upload file, error code: ' . $upload['error'],'error','Large','Upload Failed');
             return false;// not returning false due to failure, only returning false to indicate end of processing            
         }     
         
         // ensure file destination exists
         $open_result = opendir( WTG_C2P_CONTENTFOLDER_DIR );
         if(!$open_result){
-            wtgcore_notice('File was not uploaded. Could not open the destination folder. The folder is named wpcsvimportercontent and should be in the wp-content directory. Please fix this before trying again.','error','Large','File Not Upload');
+            csv2post_notice('File was not uploaded. Could not open the destination folder. The folder is named wpcsvimportercontent and should be in the wp-content directory. Please fix this before trying again.','error','Large','File Not Upload');
             return false;
         }
 
@@ -758,13 +1930,13 @@ function csv2post_form_upload_csv_file(){
             unlink( $target_file_path );
             
             if ( file_exists( $target_file_path )){
-                wtgcore_notice('The name of your file being uploaded already exists in the target folder. '.$csv2post_plugintitle.' could not remove the existing file, but it should have. It may be because the existing file is in use, please investigate this then try again if required. If some sort of permissions problem is causing this, you may delete the existing file using FTP also.','error','Large','Existing File Not Removed');    
+                csv2post_notice('The name of your file being uploaded already exists in the target folder. '.$csv2post_plugintitle.' could not remove the existing file, but it should have. It may be because the existing file is in use, please investigate this then try again if required. If some sort of permissions problem is causing this, you may delete the existing file using FTP also.','error','Large','Existing File Not Removed');    
                 // return now due to not being able to remove the existing file
                 return false;
             }
             
             // file must not exist, unlink was success, let user know this was done
-            wtgcore_notice('The file name being uploaded existed already. The existing file was replaced.','info','Large','File Replaced');        
+            csv2post_notice('The file name being uploaded existed already. The existing file was replaced.','info','Large','File Replaced');        
         }
         
         // now move temp file into target path
@@ -772,18 +1944,18 @@ function csv2post_form_upload_csv_file(){
         
         // did the move fail
         if(!$move_result){
-            wtgcore_notice('Failed to upload file, there was a problem moving the temporary file into the target directory, please investigate this issue.','error','Large','Upload Failed');
+            csv2post_notice('Failed to upload file, there was a problem moving the temporary file into the target directory, please investigate this issue.','error','Large','Upload Failed');
             return false;
         }
         
         // check that file is now in place
         if(!file_exists($target_file_path)){
-            wtgcore_notice('The server confirmed that the file was uploaded and put into the target directory but it does not appear to be there. Please report this problem.','error','Large','Uploaded File Missing');
+            csv2post_notice('The server confirmed that the file was uploaded and put into the target directory but it does not appear to be there. Please report this problem.','error','Large','Uploaded File Missing');
             return;
         }
         
         // upload is a success
-        wtgcore_notice('CSV file has been uploaded, you should now create a Data Import Job and select your new uploaded file.','success','Large','CSV File Uploaded');
+        csv2post_notice('CSV file has been uploaded, you should now create a Data Import Job and select your new uploaded file.','success','Large','CSV File Uploaded');
 
         return false;
     }else{
@@ -810,7 +1982,7 @@ function csv2post_form_uninstallplugin_partial(){
                     // if table still in use
                     if(isset($csv2post_dataimportjobs_array[$code])){
                         
-                        wtgcore_notice('Table '.$table_name.' is still used by Data Import Job named '.$csv2post_dataimportjobs_array[$code]['name'].'.','error','Tiny','Cannot Delete Table','','echo');
+                        csv2post_notice('Table '.$table_name.' is still used by Data Import Job named '.$csv2post_dataimportjobs_array[$code]['name'].'.','error','Tiny','Cannot Delete Table','','echo');
                         return false;
                         
                     }else{
@@ -818,7 +1990,7 @@ function csv2post_form_uninstallplugin_partial(){
                         // drop table
                         csv2post_drop_dataimportjob_table($table_name);
                         
-                        wtgcore_notice('Table ' . $table_name . ' was deleted.','success','Tiny','Table Deleted','','echo'); 
+                        csv2post_notice('Table ' . $table_name . ' was deleted.','success','Tiny','Table Deleted','','echo'); 
                     } 
                 }
             }
@@ -832,10 +2004,10 @@ function csv2post_form_uninstallplugin_partial(){
                     
                     // if file is in use
                     if($file_is_in_use){
-                        wtgcore_notice('The file named ' . $csv_file_name .' is in use, cannot delete.','error','Tiny','File In Use','','echo');
+                        csv2post_notice('The file named ' . $csv_file_name .' is in use, cannot delete.','error','Tiny','File In Use','','echo');
                     }else{
                         unlink(WTG_C2P_CONTENTFOLDER_DIR . '/' . $csv_file_name); 
-                        wtgcore_notice( $csv_file_name .' Deleted','success','Tiny','','','echo');
+                        csv2post_notice( $csv_file_name .' Deleted','success','Tiny','','','echo');
                     }
                                             
                 }      
@@ -847,9 +2019,9 @@ function csv2post_form_uninstallplugin_partial(){
                     // currently only have one folder so we will use a specific function   
                     $result = csv2post_delete_contentfolder(WTG_C2P_CONTENTFOLDER_DIR,false);
                     if($result){
-                        wtgcore_notice('Folder and its contents deleted.','success','Tiny','Folder ' . $o,'','echo');   
+                        csv2post_notice('Folder and its contents deleted.','success','Tiny','Folder ' . $o,'','echo');   
                     }else{
-                        wtgcore_notice('Folder named '.$o.' could not be deleted, it could be a permissions issue.','error','Small','Folder Not Deleted','','echo');    
+                        csv2post_notice('Folder named '.$o.' could not be deleted, it could be a permissions issue.','error','Small','Folder Not Deleted','','echo');    
                     }
                 }      
             }            
@@ -858,12 +2030,12 @@ function csv2post_form_uninstallplugin_partial(){
             if(isset($_POST['csv2post_deleteoptions_array'])){
                 foreach($_POST['csv2post_deleteoptions_array'] as $k => $o){
                     delete_option($o);
-                    wtgcore_notice('Option record ' . $o . ' has been deleted.','success','Tiny','Option Record Deleted','','echo');    
+                    csv2post_notice('Option record ' . $o . ' has been deleted.','success','Tiny','Option Record Deleted','','echo');    
                 }      
             }
                              
         }else{
-            wtgcore_notice(__('You do not have the required permissions to un-install '.$csv2post_plugintitle.'. The Wordpress role required is delete_plugins, usually granted to Administrators.'), 'warning', 'Large','No Permission To Uninstall ' . $csv2post_plugintitle,'','echo');
+            csv2post_notice(__('You do not have the required permissions to un-install '.$csv2post_plugintitle.'. The Wordpress role required is delete_plugins, usually granted to Administrators.'), 'warning', 'Large','No Permission To Uninstall ' . $csv2post_plugintitle,'','echo');
             return false;
         }
         
@@ -884,7 +2056,7 @@ function csv2post_form_importdata_advanced(){
                    
         // if job code not in $_POST
         if(!isset($_POST['csv2post_importdatarequest_jobcode']) || $_POST['csv2post_importdatarequest_jobcode'] == NULL || !is_string($_POST['csv2post_importdatarequest_jobcode'])){
-            wtgcore_notice('A data import job code was not found in the submitted form data, no import could be started.','error','Large','No Job Code Submitted','','echo');
+            csv2post_notice('A data import job code was not found in the submitted form data, no import could be started.','error','Large','No Job Code Submitted','','echo');
             return false;
         }
         
@@ -896,7 +2068,7 @@ function csv2post_form_importdata_advanced(){
         
         // if no csv file value in $_POST
         if(!isset($_POST['csv2post_importselection_csvfiles'])){
-            wtgcore_notice('No CSV file name could be found in the submitted post data, no import could be carried out.','error','Large','No CSV Filename Found','','echo');    
+            csv2post_notice('No CSV file name could be found in the submitted post data, no import could be carried out.','error','Large','No CSV Filename Found','','echo');    
             return false;
         }
         
@@ -912,7 +2084,7 @@ function csv2post_form_importdata_advanced(){
 
         // if ID column not set
         if(!isset($_POST[$id_menu_name]) || empty($_POST[$id_menu_name])){
-           wtgcore_notice('You have not selected the ID column for your CSV file named '.$file_name.'.
+           csv2post_notice('You have not selected the ID column for your CSV file named '.$file_name.'.
            The ID column should have unique ID data which is used to link CSV file rows with records you
            have already imported. The only other method for updating is Default Order, which does not work
            if even a single row has been added or removed from the CSV file. That methodi is not recommended.',
@@ -947,7 +2119,7 @@ function csv2post_form_importdata_advanced(){
         if($csv2post_is_free){
             $row_number = 9999999;    
         }elseif(!isset($_POST['csv2post_dataimport_rownumber_'.$job_code]) || !is_numeric($_POST['csv2post_dataimport_rownumber_'.$job_code])){
-            wtgcore_notice('No row number for import was submitted so only 1 record will be imported from '.$file_name.'.csv.','warning','Large','No Rows Number Submitted','','echo');    
+            csv2post_notice('No row number for import was submitted so only 1 record will be imported from '.$file_name.'.csv.','warning','Large','No Rows Number Submitted','','echo');    
         }elseif(isset($_POST['csv2post_dataimport_rownumber_'.$job_code]) && is_numeric($_POST['csv2post_dataimport_rownumber_'.$job_code])){
             $row_number = $_POST['csv2post_dataimport_rownumber_'.$job_code];        
         }
@@ -972,13 +2144,13 @@ function csv2post_form_importdata_advanced(){
 
         // display result 
         ### TODO:HIGHPRIORITY,complete the notification pages for these notice boxes   
-        wtgcore_notice( '<h4>Data Import Result<h4>'.$intromes.'
-        '.wtgcore_notice( 'New Records: '.$dataimportjob_array["stats"]["lastevent"]['inserted'],'success','Small',false,'http://www.csv2post.com/notifications/new-records-count','return').'
-        '.wtgcore_notice( 'Updated Records: '.$dataimportjob_array["stats"]["lastevent"]['updated'],'success','Small',false,'http://www.csv2post.com/notifications/updated-records-count','return').'        
-        '.wtgcore_notice( 'Void Records: '.$dataimportjob_array["stats"]["lastevent"]['void'],'info','Small',false,'http://www.csv2post.com/notifications/void-records-counter','return').'
-        '.wtgcore_notice( 'Dropped Rows: '.$dataimportjob_array["stats"]["lastevent"]['dropped'],'warning','Small',false,'http://www.csv2post.com/notifications/dropped-rows-counter','return').'
-        '.wtgcore_notice( 'Rows Processed: '.$dataimportjob_array["stats"]["lastevent"]['processed'],'info','Small',false,'http://www.csv2post.com/notifications/rows-processed-counter','return').'     
-        '.wtgcore_notice( 'Job Progress: '.$dataimportjob_array["stats"]["allevents"]['progress'],'info','Small',false,'http://www.csv2post.com/notifications/job-progress-counter','return').'    
+        csv2post_notice( '<h4>Data Import Result<h4>'.$intromes.'
+        '.csv2post_notice( 'New Records: '.$dataimportjob_array["stats"]["lastevent"]['inserted'],'success','Small',false,'http://www.csv2post.com/notifications/new-records-count','return').'
+        '.csv2post_notice( 'Updated Records: '.$dataimportjob_array["stats"]["lastevent"]['updated'],'success','Small',false,'http://www.csv2post.com/notifications/updated-records-count','return').'        
+        '.csv2post_notice( 'Void Records: '.$dataimportjob_array["stats"]["lastevent"]['void'],'info','Small',false,'http://www.csv2post.com/notifications/void-records-counter','return').'
+        '.csv2post_notice( 'Dropped Rows: '.$dataimportjob_array["stats"]["lastevent"]['dropped'],'warning','Small',false,'http://www.csv2post.com/notifications/dropped-rows-counter','return').'
+        '.csv2post_notice( 'Rows Processed: '.$dataimportjob_array["stats"]["lastevent"]['processed'],'info','Small',false,'http://www.csv2post.com/notifications/rows-processed-counter','return').'     
+        '.csv2post_notice( 'Job Progress: '.$dataimportjob_array["stats"]["allevents"]['progress'],'info','Small',false,'http://www.csv2post.com/notifications/job-progress-counter','return').'    
         ',$overall_result,'Extra','','','echo'); 
 
         return false;
@@ -997,7 +2169,7 @@ function csv2post_form_save_createusers_postproject(){
 
         // if email column not submitted
         if(!isset($_POST['csv2post_createusers_emailcolumn'])){
-            wtgcore_notice('Email address data is always required for creating Wordpress users. Please select your email address column.',
+            csv2post_notice('Email address data is always required for creating Wordpress users. Please select your email address column.',
             'error','Large','No Email Data Selected','','echo');
             return false; 
         }
@@ -1023,7 +2195,7 @@ function csv2post_form_save_createusers_postproject(){
             
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
 
-        wtgcore_notice('Yourates.',
+        csv2post_notice('Yourates.',
         'success','Large','Answers Saved','','echo');
            
         return false;
@@ -1051,7 +2223,7 @@ function csv2post_form_save_easyconfigurationquestions(){
         
         csv2post_update_option_adminsettings($csv2post_adm_set);
    
-        wtgcore_notice('Your answers for the Easy Configuration Questions have been saved. Please remember
+        csv2post_notice('Your answers for the Easy Configuration Questions have been saved. Please remember
         that this may hide features, display new features or change the way a feature operates.',
         'success','Large','Answers Saved','','echo');
            
@@ -1069,7 +2241,7 @@ function csv2post_form_delete_flags(){
 
         // if no flags selected
         if(!isset($_POST['csv2post_delete_flag'])){
-            wtgcore_notice('No flags were selected, please select the flags you would like to delete.','error','Large','No Flags Selected','','echo');    
+            csv2post_notice('No flags were selected, please select the flags you would like to delete.','error','Large','No Flags Selected','','echo');    
             return false;
         }
         
@@ -1078,7 +2250,7 @@ function csv2post_form_delete_flags(){
             delete_meta($metaid);        
         }
 
-        wtgcore_notice('All selected flags deleted','success','Large','Flags Deleted','','echo');#
+        csv2post_notice('All selected flags deleted','success','Large','Flags Deleted','','echo');#
         
         return false;
     }else{
@@ -1094,7 +2266,7 @@ function csv2post_form_delete_csvfile(){
         
         // if no csv file selected
         if(!isset($_POST['csv2post_delete_csvfiles']) || count($_POST['csv2post_delete_csvfiles']) == 0){
-            wtgcore_notice('No CSV files were selected, please try again.','error','Large','No CSV File Selected','','echo');
+            csv2post_notice('No CSV files were selected, please try again.','error','Large','No CSV File Selected','','echo');
             return false;
         }
 
@@ -1106,10 +2278,10 @@ function csv2post_form_delete_csvfile(){
             
             // if file is in use
             if($file_is_in_use){
-                wtgcore_notice('The file named ' . $csv_file_name .' is in use. Please delete any data import job or project using the file before attempting to delete it.','warning','Small','File In Use','','echo');
+                csv2post_notice('The file named ' . $csv_file_name .' is in use. Please delete any data import job or project using the file before attempting to delete it.','warning','Small','File In Use','','echo');
             }else{
                 unlink(WTG_C2P_CONTENTFOLDER_DIR . '/' . $csv_file_name); 
-                wtgcore_notice( $csv_file_name .' Deleted','success','Small','','','echo');
+                csv2post_notice( $csv_file_name .' Deleted','success','Small','','','echo');
             }
         }
 
@@ -1136,7 +2308,7 @@ function csv2post_form_featuredimage(){
         
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array); 
 
-        wtgcore_notice('Your featured image column has been saved.','success','Large','Featured Images','','echo');
+        csv2post_notice('Your featured image column has been saved.','success','Large','Featured Images','','echo');
                  
         return false;
     }else{
@@ -1155,7 +2327,7 @@ function csv2post_form_undo_posts(){
         
         // if no range selected
         if(!isset($_POST['csv2post_undo'])){
-            wtgcore_notice('You did not select the range/group of posts you would like to undo.',
+            csv2post_notice('You did not select the range/group of posts you would like to undo.',
             'error','Large','No Range Selected','','echo');
             return false;
         }
@@ -1167,7 +2339,7 @@ function csv2post_form_undo_posts(){
         || $_POST['csv2post_undo'] == 'last24hours'){
             $postscreated = csv2post_does_project_have_posts($csv2post_currentproject_code);
             if(!$postscreated){
-                wtgcore_notice('The current project does not have any posts according to the projects main table',
+                csv2post_notice('The current project does not have any posts according to the projects main table',
                 'error','Large','No Posts','','echo');
                 return false;        
             } 
@@ -1183,11 +2355,11 @@ function csv2post_form_undo_posts(){
                 $plural = '';    
             }
             
-            wtgcore_notice('You deleted ' . $number_of_posts_deleted .' posts. The post ID have also been removed from their
+            csv2post_notice('You deleted ' . $number_of_posts_deleted .' posts. The post ID have also been removed from their
             project table so that the records are ready to use again.'
             ,'success','Large',$number_of_posts_deleted . " Post".$plural." Deleted",'','echo'); 
         }else{
-            wtgcore_notice('No posts were deleted as there are no post ID in the project tables checked.',
+            csv2post_notice('No posts were deleted as there are no post ID in the project tables checked.',
             'info','Large','No Posts Deleted','','echo');
         }        
            
@@ -1208,7 +2380,7 @@ function csv2post_form_save_globalupdatesettings(){
         if(isset($_POST['csv2post_globalpostupdatesettings_constantupdating_content'])){
             // if value is 1 then use is activing constant post content updating
             if($_POST['csv2post_globalpostupdatesettings_constantupdating_content'] == 1){
-                wtgcore_notice('Constant post content updating has been activated. '.$csv2post_plugintitle.' will now do more
+                csv2post_notice('Constant post content updating has been activated. '.$csv2post_plugintitle.' will now do more
                 processing to ensure posts are updated quickly. Rather than following the schedule.',
                 'success','Large','Constant Content Updating Activated','','echo');
                 $csv2post_schedule_array['constantupdating']['content'] = true;    
@@ -1216,7 +2388,7 @@ function csv2post_form_save_globalupdatesettings(){
                 // user wants constant updating off so we remove the setting to make the array as small as possible
                 if(isset($csv2post_schedule_array['constantupdating']['content'])){
                     unset($csv2post_schedule_array['constantupdating']['content']);
-                    wtgcore_notice('Constant post content updating has been disabled. '.$csv2post_plugintitle.' will now
+                    csv2post_notice('Constant post content updating has been disabled. '.$csv2post_plugintitle.' will now
                     update posts based on the schedule, if the schedule has been configured and project
                     update settings saved. Otherwise no post content updating will be carried out.',
                     'success','Large','Constant Content Updating Disabled','','echo');
@@ -1240,7 +2412,7 @@ function csv2post_form_save_default_author(){
         global $csv2post_project_array,$csv2post_currentproject_code;
 
         if($_POST['csv2post_defaultauthor_select'] == 'notselected' || !is_numeric($_POST['csv2post_defaultauthor_select'])){
-            wtgcore_notice('You did not select an author, please try again.','error','Large','No Author Selected','','echo');
+            csv2post_notice('You did not select an author, please try again.','error','Large','No Author Selected','','echo');
             return false;
         }
         
@@ -1248,7 +2420,7 @@ function csv2post_form_save_default_author(){
                 
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array); 
 
-        wtgcore_notice('Your default author has been saved.','success','Large','Default Author Saved','','echo');
+        csv2post_notice('Your default author has been saved.','success','Large','Default Author Saved','','echo');
          
         return false;
     }else{
@@ -1265,10 +2437,10 @@ function csv2post_form_save_ultimatetaxonomymanager_categories(){
         
         // get and loop through ultimate taxonomy manager taxonomy fields 
         ### TODO:LOWPRIORITY, change this to only cycle through category related custom fields and do the same with the interface in categories screen        
-        $catfields = csv2post_sql_ultimatetaxonomymanager_taxonomyfield();### TODO:LOWPRIORITY, change this too a function that gets category related custom fields only
+        $catfields = csv2post_sql_ultimatetaxonomymanager_taxonomyfield();### TODO:LOWPRIORITY, change this to a function that gets category related custom fields only
         if(!$catfields){
             
-            echo wtgcore_notice('You do not appear to have used Ultimate Taxonomy Manager to create any custom taxonomy fields yet.','info','Large','No Custom Taxonomy Fields','','return');
+            echo csv2post_notice('You do not appear to have used Ultimate Taxonomy Manager to create any custom taxonomy fields yet.','info','Large','No Custom Taxonomy Fields','','return');
             return false;
             
         }else{    
@@ -1293,7 +2465,7 @@ function csv2post_form_save_ultimatetaxonomymanager_categories(){
         
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array); 
 
-        wtgcore_notice('You have saved category taxonomy settings for using with Ultimate Taxonomy Manager plugin.',
+        csv2post_notice('You have saved category taxonomy settings for using with Ultimate Taxonomy Manager plugin.',
         'success','Large','Ultimate Taxonomy Manager Category Settings Saved','','echo');
         
         return false;
@@ -1318,7 +2490,7 @@ function csv2post_form_save_title_data_column(){
 
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
         
-        wtgcore_notice('The column holding post titles data has been saved. The plugin will only use this
+        csv2post_notice('The column holding post titles data has been saved. The plugin will only use this
         column and will not use any title templates you may have setup.','success','Large','Post Titles Column Saved','','echo');
                 
         return false;
@@ -1336,20 +2508,20 @@ function csv2post_form_update_post(){
          
         // if post id not set
         if(!isset($_POST['csv2post_update_post_with_id'])){
-            wtgcore_notice('You did not enter a post ID. You must enter the ID for the post you want to apply updating too.','error','Large','No Post ID','','echo');
+            csv2post_notice('You did not enter a post ID. You must enter the ID for the post you want to apply updating too.','error','Large','No Post ID','','echo');
             return false;
         }
         
         // if post id value is not numeric
         if(!is_numeric($_POST['csv2post_update_post_with_id'])){
-            wtgcore_notice('You appear to have submitted an invalid post ID value. It must be a number/numeric value only.','error','Large','Not A Numberic Value','','echo');
+            csv2post_notice('You appear to have submitted an invalid post ID value. It must be a number/numeric value only.','error','Large','Not A Numberic Value','','echo');
             return false;    
         }
         
         // if post does not exist
         $the_post = get_post( $_POST['csv2post_update_post_with_id'], ARRAY_A );
         if(!$the_post){
-            wtgcore_notice('There is no post with the ID you submitted.','warning','Large','No Matching Post','','echo');
+            csv2post_notice('There is no post with the ID you submitted.','warning','Large','No Matching Post','','echo');
             return false;
         }
         
@@ -1358,7 +2530,7 @@ function csv2post_form_update_post(){
         
         // if not a csv2post created post
         if(!$project_code){
-            wtgcore_notice('The post ID you submitted does not belong to a post created using '.$csv2post_plugintitle.'. 
+            csv2post_notice('The post ID you submitted does not belong to a post created using '.$csv2post_plugintitle.'. 
             There are advanced functions to adopt none '.$csv2post_plugintitle.' created posts that this plugin can manage them,
             please search the plugins website for more information.','info','Large','Not A '.$csv2post_plugintitle.' Post','','echo');
             return false;    
@@ -1369,7 +2541,7 @@ function csv2post_form_update_post(){
         
         // if no project data
         if(!$project_array){
-            wtgcore_notice('It appears that the project data for the post you have submitted no longer exists. A
+            csv2post_notice('It appears that the project data for the post you have submitted no longer exists. A
             user of '.$csv2post_plugintitle.' must have deleted the project that created the post. Updating cannot be done by
             '.$csv2post_plugintitle.' in this way. You may be able to use another project to adopt the post if the posts
             data is still stored in the original project database table.','info','Large','No Project Data','','echo');
@@ -1378,7 +2550,7 @@ function csv2post_form_update_post(){
         
         // if projects maintable value not set
         if(!isset($project_array['maintable'])){
-            wtgcore_notice('Your projects main database table value could not be found. Without it there is no
+            csv2post_notice('Your projects main database table value could not be found. Without it there is no
             way to determine what database table holds the record used to create your post with ID '.$_POST['csv2post_update_post_with_id'].'.
             Please report this event.','success','Large','Database Table Unknown','','echo');
             return false;    
@@ -1386,7 +2558,7 @@ function csv2post_form_update_post(){
         
         // if maintable does not exist
         if(!csv2post_does_table_exist($project_array['maintable'])){
-            wtgcore_notice('Your projects main database table does not seem to exist anymore. Is it possible
+            csv2post_notice('Your projects main database table does not seem to exist anymore. Is it possible
             that you have deleted it? The table would hold the record used to create your post, without it
             no update can be performed.
             
@@ -1402,14 +2574,14 @@ function csv2post_form_update_post(){
         $post_record = csv2post_sql_get_posts_record($project_array['maintable'],$_POST['csv2post_update_post_with_id']);
 
         if(!$post_record){
-            wtgcore_notice('The record that was used to create your post no longer exists in the project database table.','error','Large','Record No Longer Exists','','echo');
+            csv2post_notice('The record that was used to create your post no longer exists in the project database table.','error','Large','Record No Longer Exists','','echo');
             return false;
         }
         
         // if record id held in post does not retrieve a record (this confirms both record id in post is right and exists)
         $record_id = get_post_meta($_POST['csv2post_update_post_with_id'], 'csv2post_record_id', true); 
         if($record_id == false){
-            wtgcore_notice('The giving post does not have its record ID stored in meta. '.$csv2post_plugintitle.' stores the
+            csv2post_notice('The giving post does not have its record ID stored in meta. '.$csv2post_plugintitle.' stores the
             record ID in meta to aid validation of the correct data record to be used for updating.'
             ,'error','Large','No Record ID','','echo');
             return false;
@@ -1418,7 +2590,7 @@ function csv2post_form_update_post(){
         // now update post
         csv2post_post_updatepost($_POST['csv2post_update_post_with_id'],$record_id,$project_code);
         
-        wtgcore_notice('Your post with ID:'.$_POST['csv2post_update_post_with_id'].' has been updated.','success','Large','Post '.$_POST['csv2post_update_post_with_id'].' Updated','','echo');
+        csv2post_notice('Your post with ID:'.$_POST['csv2post_update_post_with_id'].' has been updated.','success','Large','Post '.$_POST['csv2post_update_post_with_id'].' Updated','','echo');
                 
         return false;
     }else{
@@ -1440,7 +2612,7 @@ function csv2post_form_create_categories(){
             csv2post_create_categories_basic();
         }
         
-        wtgcore_notice('Category creation has finished. This notification does not take the 
+        csv2post_notice('Category creation has finished. This notification does not take the 
         result into account, it is only to let you know that processing categories has ended.',
         'info','Large','Category Creation Ended','','echo');
                 
@@ -1459,7 +2631,7 @@ function csv2post_form_importdata(){
         
         // if job code not in $_POST
         if(!isset($_POST['csv2post_importdatarequest_jobcode']) || $_POST['csv2post_importdatarequest_jobcode'] == NULL || !is_string($_POST['csv2post_importdatarequest_jobcode'])){
-            wtgcore_notice('A data import job code was not found in the submitted form data, no import could be started.','error','Large','No Job Code Submitted','','echo');
+            csv2post_notice('A data import job code was not found in the submitted form data, no import could be started.','error','Large','No Job Code Submitted','','echo');
             return false;
         }
         
@@ -1467,7 +2639,7 @@ function csv2post_form_importdata(){
         
         // if no csv file value in $_POST
         if(!isset($_POST['csv2post_importselection_csvfiles'])){
-            wtgcore_notice('No CSV file name could be found in the submitted post data, no import could be carried out.','error','Large','No CSV Filename Found','','echo');    
+            csv2post_notice('No CSV file name could be found in the submitted post data, no import could be carried out.','error','Large','No CSV Filename Found','','echo');    
             return false;
         }
         
@@ -1479,7 +2651,7 @@ function csv2post_form_importdata(){
         if($csv2post_is_free){
             $row_number = 9999999;    
         }elseif(!isset($_POST['csv2post_dataimport_rownumber_'.$job_code]) || !is_numeric($_POST['csv2post_dataimport_rownumber_'.$job_code])){
-            wtgcore_notice('No row number for import was submitted so only 1 record will be imported from '.$file_name.'.csv.','warning','Large','No Rows Number Submitted','','echo');    
+            csv2post_notice('No row number for import was submitted so only 1 record will be imported from '.$file_name.'.csv.','warning','Large','No Rows Number Submitted','','echo');    
         }elseif(isset($_POST['csv2post_dataimport_rownumber_'.$job_code]) && is_numeric($_POST['csv2post_dataimport_rownumber_'.$job_code])){
             $row_number = $_POST['csv2post_dataimport_rownumber_'.$job_code];        
         }
@@ -1501,12 +2673,12 @@ function csv2post_form_importdata(){
         }
         
         // display result    
-        wtgcore_notice( '<h4>Data Import Result<h4>'.$intromes.'
-        '.wtgcore_notice( 'New Records: '.$dataimportjob_array["stats"]["lastevent"]['inserted'],'success','Small',false,'www.csv2post.com/notifications/new-records-count','return').'
-        '.wtgcore_notice( 'Void Records: '.$dataimportjob_array["stats"]["lastevent"]['void'],'info','Small',false,'www.csv2post.com/notifications/void-records-counter','return').'
-        '.wtgcore_notice( 'Dropped Rows: '.$dataimportjob_array["stats"]["lastevent"]['dropped'],'warning','Small',false,'www.csv2post.com/notifications/dropped-rows-counter','return').'
-        '.wtgcore_notice( 'Rows Processed: '.$dataimportjob_array["stats"]["lastevent"]['processed'],'info','Small',false,'www.csv2post.com/notifications/rows-processed-counter','return').'     
-        '.wtgcore_notice( 'Job Progress: '.$dataimportjob_array["stats"]["allevents"]['progress'],'info','Small',false,'www.csv2post.com/notifications/job-progress-counter','return').'    
+        csv2post_notice( '<h4>Data Import Result<h4>'.$intromes.'
+        '.csv2post_notice( 'New Records: '.$dataimportjob_array["stats"]["lastevent"]['inserted'],'success','Small',false,'www.csv2post.com/notifications/new-records-count','return').'
+        '.csv2post_notice( 'Void Records: '.$dataimportjob_array["stats"]["lastevent"]['void'],'info','Small',false,'www.csv2post.com/notifications/void-records-counter','return').'
+        '.csv2post_notice( 'Dropped Rows: '.$dataimportjob_array["stats"]["lastevent"]['dropped'],'warning','Small',false,'www.csv2post.com/notifications/dropped-rows-counter','return').'
+        '.csv2post_notice( 'Rows Processed: '.$dataimportjob_array["stats"]["lastevent"]['processed'],'info','Small',false,'www.csv2post.com/notifications/rows-processed-counter','return').'     
+        '.csv2post_notice( 'Job Progress: '.$dataimportjob_array["stats"]["allevents"]['progress'],'info','Small',false,'www.csv2post.com/notifications/job-progress-counter','return').'    
         ',$overall_result,'Extra','','','echo'); 
 
         return false;
@@ -1530,20 +2702,20 @@ function csv2post_form_delete_randomadvanced_shortcoderules(){
                     }        
                 }
                 csv2post_update_option_textspin($csv2post_textspin_array);
-                wtgcore_notice('All selected advanced random value shortcode rules have been deleted.','success','Large','Shortcode Rules Deleted','','echo');
+                csv2post_notice('All selected advanced random value shortcode rules have been deleted.','success','Large','Shortcode Rules Deleted','','echo');
                 return false;    
             }else{
                 if(isset($csv2post_textspin_array['randomvalue'][ $_POST['csv2post_shortcodeadvanced_delete'] ])){
                     unset($csv2post_textspin_array['randomvalue'][ $_POST['csv2post_shortcodeadvanced_delete'] ]);
                     csv2post_update_option_textspin($csv2post_textspin_array);
-                    wtgcore_notice('The selected advanced random value shortcode rule has been deleted.','success','Large','Shortcode Rules Deleted','','echo');
+                    csv2post_notice('The selected advanced random value shortcode rule has been deleted.','success','Large','Shortcode Rules Deleted','','echo');
                     return false;
                 }    
             }    
         }
         
         // we do a return on success - arriving here means no shortcode rules were deleted
-        wtgcore_notice('No shortcode rules have been deleted, please try again then seek support.','error','Large','Shortcode Rules Not deleted','','echo');
+        csv2post_notice('No shortcode rules have been deleted, please try again then seek support.','error','Large','Shortcode Rules Not deleted','','echo');
         return false;
     }else{
         return true;
@@ -1558,7 +2730,7 @@ function csv2post_form_save_htmlshortcode(){
         
         // error if name not entered
         if(!isset($_POST['csv2post_shortcodename']) || $_POST['csv2post_shortcodename'] == '' || $_POST['csv2post_shortcodename'] == ' '){
-            wtgcore_notice('You did not enter a shortcode name, please enter a name that will help you remember what values you have setup.','error','Large','No Shortcode Name Submitted','','echo',false);    
+            csv2post_notice('You did not enter a shortcode name, please enter a name that will help you remember what values you have setup.','error','Large','No Shortcode Name Submitted','','echo',false);    
             return false;// stops further post processing
         }
         
@@ -1571,14 +2743,14 @@ function csv2post_form_save_htmlshortcode(){
         }
         
         if($values_set < 2){
-            wtgcore_notice('You must enter at least two values. Please populate two or more of the text fields.','error','Large','More Values Required','','echo');
+            csv2post_notice('You must enter at least two values. Please populate two or more of the text fields.','error','Large','More Values Required','','echo');
             return false;// stops further post processing
         }
         
         // if name already exists
         global $csv2post_textspin_array;
         if(isset($csv2post_textspin_array['randomvalue'][ $_POST['csv2post_shortcodename'] ])){
-            wtgcore_notice('The shortcode name you submitted already exists, please use a different name or delete the existing shortcode.','warning','Large','Shortcode Name Exists Already','','echo');
+            csv2post_notice('The shortcode name you submitted already exists, please use a different name or delete the existing shortcode.','warning','Large','Shortcode Name Exists Already','','echo');
             return false;
         }
                 
@@ -1592,7 +2764,7 @@ function csv2post_form_save_htmlshortcode(){
         
         csv2post_update_option_textspin($csv2post_textspin_array);      
 
-        wtgcore_notice('You saved a new Random Value Shortcode named ' . $_POST['csv2post_shortcodename'] . '. You
+        csv2post_notice('You saved a new Random Value Shortcode named ' . $_POST['csv2post_shortcodename'] . '. You
         can use this shortcode by copying and pasting this bold text: <br />
         <strong>[csv2post_random_advanced name="'.$_POST['csv2post_shortcodename'].'"]</strong>','success','Large','Random Value Shortcode Created','','echo');
 
@@ -1609,7 +2781,7 @@ function csv2post_form_save_multiplefilesproject(){
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'multipletableproject'){
         global $csv2post_project_array,$csv2post_currentproject_code,$csv2post_plugintitle;
         
-        // ensure there are not too many "notrequired" values submitted
+        // ensure there are not to many "notrequired" values submitted
         foreach($csv2post_project_array['tables'] as $key => $table_name){
             
             // set tables own key column
@@ -1639,7 +2811,7 @@ function csv2post_form_save_multiplefilesproject(){
         // update $csv2post_project_array
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);        
              
-        wtgcore_notice('Your configuration for the current multiple files project has been saved. 
+        csv2post_notice('Your configuration for the current multiple files project has been saved. 
         If done properly the relationship setup should allow '.$csv2post_plugintitle.' to query records 
         properly during post creation.','success','Large','Multiple Files Project','','echo');
         
@@ -1668,7 +2840,7 @@ function csv2post_form_save_eventtypes(){
         
         csv2post_update_option_schedule_array($csv2post_schedule_array);
         
-        wtgcore_notice('Schedule event types have been saved, the changes will have an effect on the types of events run, straight away.','success','Large','Schedule Event Types Saved','','echo');
+        csv2post_notice('Schedule event types have been saved, the changes will have an effect on the types of events run, straight away.','success','Large','Schedule Event Types Saved','','echo');
         return false;
     }else{
         return true;
@@ -1735,7 +2907,7 @@ function csv2post_form_save_tag_rules(){
 
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
         
-        wtgcore_notice('Tag rules have been saved.','success','Large','Tag Rules/Settings Saved','','echo');
+        csv2post_notice('Tag rules have been saved.','success','Large','Tag Rules/Settings Saved','','echo');
                 
         return false;
     }else{
@@ -1752,7 +2924,7 @@ function csv2post_form_save_tag_generator_settings(){
         global $csv2post_project_array,$csv2post_currentproject_code,$csv2post_plugintitle;
       
         if(!isset($_POST["csv2post_taggenerator_columns"])){
-            wtgcore_notice('No columns were selected. You must select data columns that hold suitable values for generating tags with.','error','Large','Please Select Columns','','echo');    
+            csv2post_notice('No columns were selected. You must select data columns that hold suitable values for generating tags with.','error','Large','Please Select Columns','','echo');    
             return false;
         }
         
@@ -1766,7 +2938,7 @@ function csv2post_form_save_tag_generator_settings(){
         
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
         
-        wtgcore_notice('Tag generator settings have been saved and '.$csv2post_plugintitle.' will generator tags from your selected columns for all posts.','success','Large','Tag Generator Settings Saved','','echo');
+        csv2post_notice('Tag generator settings have been saved and '.$csv2post_plugintitle.' will generator tags from your selected columns for all posts.','success','Large','Tag Generator Settings Saved','','echo');
         
         return false;
     }else{
@@ -1785,7 +2957,7 @@ function csv2post_form_set_datemethod_default(){
                 
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
         
-        wtgcore_notice('The current projects publish dates will be controlled by Wordpress default.','success','Large','Publish Date Method Reset','','echo');      
+        csv2post_notice('The current projects publish dates will be controlled by Wordpress default.','success','Large','Publish Date Method Reset','','echo');      
   
         return false;
     }else{
@@ -1800,7 +2972,7 @@ function csv2post_form_drop_database_tables(){
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'data' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'createddatabasetableslist'){
 
         if(!isset($_POST["csv2post_table_array"])){
-            wtgcore_notice('You did not select any database tables. Check the boxes for the tables you want to delete.','warning','Large','No Tables Deleted','','echo');
+            csv2post_notice('You did not select any database tables. Check the boxes for the tables you want to delete.','warning','Large','No Tables Deleted','','echo');
             return false;
         }else{
             
@@ -1812,12 +2984,12 @@ function csv2post_form_drop_database_tables(){
                 $code = str_replace('csv2post_','',$table_name);   
                 
                 if(isset($csv2post_dataimportjobs_array[$code])){
-                    wtgcore_notice('Table named '.$table_name.' is still used by Data Import Job named '.$csv2post_dataimportjobs_array[$code]['name'].'. Please delete the job first then delete the database table.','warning','Large','Cannot Delete ' . $table_name,'','echo');
+                    csv2post_notice('Table named '.$table_name.' is still used by Data Import Job named '.$csv2post_dataimportjobs_array[$code]['name'].'. Please delete the job first then delete the database table.','warning','Large','Cannot Delete ' . $table_name,'','echo');
                 }else{
                     
                     csv2post_drop_dataimportjob_table($table_name); 
                                             
-                    wtgcore_notice('','success','Small','Database Table Deleted: '.$table_name,'','echo');
+                    csv2post_notice('','success','Small','Database Table Deleted: '.$table_name,'','echo');
                 }  
             }
         }
@@ -1840,7 +3012,7 @@ function csv2post_form_delete_basiccustomfields(){
                 
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
         
-        wtgcore_notice('You have deleted a basic custom field rule, one less meta value will be added to all posts from here on in this project.','success','Large','Basic Custom Field Rule Deleted','','echo');      
+        csv2post_notice('You have deleted a basic custom field rule, one less meta value will be added to all posts from here on in this project.','success','Large','Basic Custom Field Rule Deleted','','echo');      
 
         return false;
     }else{
@@ -1860,7 +3032,7 @@ function csv2post_form_delete_advancedcustomfields(){
                 
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
         
-        wtgcore_notice('You have deleted an advanced custom field rule, one less meta value will be added to all posts from here on in this project.','success','Large','Advanced Custom Field Rule Deleted','','echo');      
+        csv2post_notice('You have deleted an advanced custom field rule, one less meta value will be added to all posts from here on in this project.','success','Large','Advanced Custom Field Rule Deleted','','echo');      
 
         return false;
     }else{
@@ -1878,7 +3050,7 @@ function csv2post_form_save_incrementalpublishdate_settings(){
    
         // do not allow save if free edition (bypassing this will cause problems during post creation)
         if($csv2post_is_free){
-            wtgcore_notice('The data method you submitted can only be used in the paid editions advanced post creation scripts. Your post publish dates will always default to the current time and date when they are created.','warning','Large','Date Method Not Available','','echo');
+            csv2post_notice('The data method you submitted can only be used in the paid editions advanced post creation scripts. Your post publish dates will always default to the current time and date when they are created.','warning','Large','Date Method Not Available','','echo');
             return false;
         }
         
@@ -1893,7 +3065,7 @@ function csv2post_form_save_incrementalpublishdate_settings(){
         
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
         
-        wtgcore_notice('Increment publish date settings have been saved. This method of applying publish dates has also been activated. Submit another form if you do not want to activate the incremental publish date method.','success','Large','Incremental Publish Date Settings Saved','','echo');      
+        csv2post_notice('Increment publish date settings have been saved. This method of applying publish dates has also been activated. Submit another form if you do not want to activate the incremental publish date method.','success','Large','Incremental Publish Date Settings Saved','','echo');      
 
         return false;
     }else{
@@ -1911,7 +3083,7 @@ function csv2post_form_save_randompublishdate_settings(){
       
         // do not allow save if free edition (bypassing this will cause problems during post creation)
         if($csv2post_is_free){
-            wtgcore_notice('The data method you submitted can only be used in the paid editions advanced post creation scripts. Your post publish dates will always default to the current time and date when they are created.','warning','Large','Date Method Not Available','','echo');
+            csv2post_notice('The data method you submitted can only be used in the paid editions advanced post creation scripts. Your post publish dates will always default to the current time and date when they are created.','warning','Large','Date Method Not Available','','echo');
             return false;
         }
               
@@ -1921,7 +3093,7 @@ function csv2post_form_save_randompublishdate_settings(){
 
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
         
-        wtgcore_notice('Random publish date settings have been saved. This method of applying publish dates has also been activated. Submit another form if you do not want to activate the random publish date method.','success','Large','Random Publish Date Settings Saved','','echo');      
+        csv2post_notice('Random publish date settings have been saved. This method of applying publish dates has also been activated. Submit another form if you do not want to activate the random publish date method.','success','Large','Random Publish Date Settings Saved','','echo');      
   
         return false;
     }else{
@@ -1957,7 +3129,7 @@ function csv2post_form_save_category_mapping(){
  
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
         
-        wtgcore_notice('Your category mapping has been saved','success','Large','Category Mapping Saved','','echo');
+        csv2post_notice('Your category mapping has been saved','success','Large','Category Mapping Saved','','echo');
 
         return false;
     }else{
@@ -1974,11 +3146,11 @@ function csv2post_form_save_categories_advanced(){
         
         // ensure the previous column has been selected for every column user submits
         $required_column_missing = false;// set to true if a required column has not been selected
-        $required_column_level = false;// change too level 1,2,3 or 4 to indicate which column has not been selected but should be
+        $required_column_level = false;// change to level 1,2,3 or 4 to indicate which column has not been selected but should be
         
         // check for level 1 - always required
         if( $_POST['csv2post_categorylevel1_advanced'] == 'notselected' ){
-            wtgcore_notice('You did not select a level one data table and column, you must always use level one if you want to create categories using this panel.','error','Large','Level One Not Selected');
+            csv2post_notice('You did not select a level one data table and column, you must always use level one if you want to create categories using this panel.','error','Large','Level One Not Selected');
             return false;//discontinue post function processing
         }
         
@@ -2003,7 +3175,7 @@ function csv2post_form_save_categories_advanced(){
         // only continue if all required columns have been selected
         if($required_column_missing){
             $column_above_missing_level = $required_column_level + 1;
-            wtgcore_notice('You did not appear to select all required columns. You selected a column for category level '.$column_above_missing_level.' but did not select one for category level '.$required_column_level.'. You must select category columns in order as displayed i.e. use 1,2 and 3 for three levels not 1,2 and 4.','error','Large','Missing Category Column Selection');
+            csv2post_notice('You did not appear to select all required columns. You selected a column for category level '.$column_above_missing_level.' but did not select one for category level '.$required_column_level.'. You must select category columns in order as displayed i.e. use 1,2 and 3 for three levels not 1,2 and 4.','error','Large','Missing Category Column Selection');
             return false;// discontinues post functions processing        
         }else{
     
@@ -2065,7 +3237,7 @@ function csv2post_form_save_categories_advanced(){
             // update project option         
             csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
             
-            wtgcore_notice('Your advanced category configuration has been saved and categories will be created during post creation. Posts will be assigned to their proper category.','success','Large','Standard Category Settings Saved');    
+            csv2post_notice('Your advanced category configuration has been saved and categories will be created during post creation. Posts will be assigned to their proper category.','success','Large','Standard Category Settings Saved');    
 
         }
 
@@ -2086,7 +3258,7 @@ function csv2post_form_save_default_category(){
 
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
         
-        wtgcore_notice('Your default category has been saved','success','Large','Default Category Saved','','echo');
+        csv2post_notice('Your default category has been saved','success','Large','Default Category Saved','','echo');
 
         return false;
     }else{
@@ -2106,7 +3278,7 @@ function csv2post_form_save_default_tags_column(){
         $csv2post_project_array['tags']['method'] = 'premade';
         
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
-        wtgcore_notice('Your default tags column has been saved and if the tags are formatted as required by Wordpress they will be added to your posts.','success','Large','Default Tags Column Saved');    
+        csv2post_notice('Your default tags column has been saved and if the tags are formatted as required by Wordpress they will be added to your posts.','success','Large','Default Tags Column Saved');    
                  
         return false;
     }else{
@@ -2140,13 +3312,13 @@ function csv2post_form_start_post_creation(){
             
             // no false returned (false indicates a failure)
             // $post_id will be the last post ID created
-            wtgcore_notice('Post creation went smoothly, no problems were detected. The last post ID created was <strong>'.$post_id.'</strong>.','success','Large','Post Creation Complete','','echo');
-            ### TODO:LOWPRIORITY, add link and url too last created post to the output
+            csv2post_notice('Post creation went smoothly, no problems were detected. The last post ID created was <strong>'.$post_id.'</strong>.','success','Large','Post Creation Complete','','echo');
+            ### TODO:LOWPRIORITY, add link and url to last created post to the output
                 
         }else{
            
            // must be a failure, if multiple posts were requests the failure is big enough to output it to the user
-           wtgcore_notice('A problem was detected during the post creation process. The severity can only be established by checking logs and any posts created or expected to have been created.','error','Large','Problem Detected During Post Creation','','echo');
+           csv2post_notice('A problem was detected during the post creation process. The severity can only be established by checking logs and any posts created or expected to have been created.','error','Large','Problem Detected During Post Creation','','echo');
         
         }
          
@@ -2184,7 +3356,7 @@ function csv2post_form_save_schedulelimits(){
         
         csv2post_update_option_schedule_array($csv2post_schedule_array);
         
-        wtgcore_notice('Your drip-feed limits have been set and will take effect on all projects right now.','success','Large','Drip-Feeding Limits Saved');        
+        csv2post_notice('Your drip-feed limits have been set and will take effect on all projects right now.','success','Large','Drip-Feeding Limits Saved');        
         
         return false;
     }else{
@@ -2227,7 +3399,7 @@ function csv2post_form_save_scheduletimes_global(){
                
         } 
         
-        // loop through all hours and add each one too the array, any not in array will not be permitted                              
+        // loop through all hours and add each one to the array, any not in array will not be permitted                              
         if(isset($_POST['csv2post_schedulehour_list'])){
             
             foreach($_POST['csv2post_schedulehour_list'] as $key => $submitted_hour){
@@ -2238,7 +3410,7 @@ function csv2post_form_save_scheduletimes_global(){
 
         csv2post_update_option_schedule_array($csv2post_schedule_array);
         
-        wtgcore_notice('You permitted days and hours for scheduled drip-feeding have been saved.','success','Large','Schedule Times Saved');
+        csv2post_notice('Your permitted days and hours for the automation scheduled have been saved.','success','Large','Schedule Times Saved');
 
         return false;
     }else{
@@ -2271,7 +3443,7 @@ function csv2post_form_save_dripfeedprojects_switch(){
         
         csv2post_update_option_postcreationproject_list($csv2post_projectslist_array);
         
-        wtgcore_notice('Drip feed settings have been saved.','success','Large','Drip Feed Settings Saved');
+        csv2post_notice('Drip feed settings have been saved.','success','Large','Drip Feed Settings Saved');
         
         return false;
     }else{
@@ -2295,7 +3467,7 @@ function csv2post_form_save_projectupdatesettings(){
         // update project option         
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
 
-        wtgcore_notice('Your post content updating settings have been saved and will take effect straight away.','success','Large','Content Updating Settings Saved');    
+        csv2post_notice('Your post content updating settings have been saved and will take effect straight away.','success','Large','Content Updating Settings Saved');    
                 
         return false;
     }else{
@@ -2312,11 +3484,11 @@ function csv2post_form_save_categories_standard(){
 
         // ensure the previous column has been selected for every column user submits
         $required_column_missing = false;// set to true if a required column has not been selected
-        $required_column_level = false;// change too level 1,2,3 or 4 to indicate which column has not been selected but should be
+        $required_column_level = false;// change to level 1,2,3 or 4 to indicate which column has not been selected but should be
         
         // check for level 1 - always required
         if( $_POST['csv2post_categorylevel1_select_columnandtable'] == 'notselected' ){
-            wtgcore_notice('You did not select a level one data table and column, you must always use level one if you want to create categories using this panel.','error','Large','Level One Not Selected');
+            csv2post_notice('You did not select a level one data table and column, you must always use level one if you want to create categories using this panel.','error','Large','Level One Not Selected');
             return false;//discontinue post function processing
         }
         
@@ -2341,7 +3513,7 @@ function csv2post_form_save_categories_standard(){
         // only continue if all required columns have been selected
         if($required_column_missing){
             $column_above_missing_level = $required_column_level + 1;
-            wtgcore_notice('You did not appear to select all required columns. You selected a column for category level '.$column_above_missing_level.' but did not select one for category level '.$required_column_level.'. You must select category columns in order as displayed i.e. use 1,2 and 3 for three levels not 1,2 and 4.','error','Large','Missing Category Column Selection');
+            csv2post_notice('You did not appear to select all required columns. You selected a column for category level '.$column_above_missing_level.' but did not select one for category level '.$required_column_level.'. You must select category columns in order as displayed i.e. use 1,2 and 3 for three levels not 1,2 and 4.','error','Large','Missing Category Column Selection');
             return false;// discontinues post functions processing        
         }else{
     
@@ -2378,7 +3550,7 @@ function csv2post_form_save_categories_standard(){
             // update project option         
             csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
             
-            wtgcore_notice('Your basic type category configuration has been saved and categories will be created during post creation. Posts will be assigned to their proper category.','success','Large','Standard Category Settings Saved');    
+            csv2post_notice('Your basic type category configuration has been saved and categories will be created during post creation. Posts will be assigned to their proper category.','success','Large','Standard Category Settings Saved');    
 
         }
             
@@ -2398,7 +3570,7 @@ function csv2post_form_add_basic_custom_field(){
         // ensure meta-key was entered ### TODO:LOWPRIORITY, validate meta-key
         if(!isset($_POST['csv2post_key'])){
         
-            wtgcore_notice('You did not enter a meta-key for your custom field rule, please try again.','error','Large','No Meta-Key Entered');
+            csv2post_notice('You did not enter a meta-key for your custom field rule, please try again.','error','Large','No Meta-Key Entered');
             
         }else{ 
             
@@ -2420,7 +3592,7 @@ function csv2post_form_add_basic_custom_field(){
             // update project option         
             csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
 
-            wtgcore_notice('Your your basic custom field rule has been saved and another meta value will be added to all posts created in this project.','success','Large','Basic Custom Field Rule Saved');    
+            csv2post_notice('Your your basic custom field rule has been saved and another meta value will be added to all posts created in this project.','success','Large','Basic Custom Field Rule Saved');    
         }    
 
         return false;
@@ -2439,10 +3611,10 @@ function csv2post_form_add_advanced_custom_field(){
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'createadvancedcustomfieldrules'){
 
         if($csv2post_is_free){
-            wtgcore_notice('Advanced custom fields are not supported in the free edition. The advanced scripts required to process them are only provided in the paid edition and are supported with it.','warning','Large','Paid Edition Only','','echo');        
+            csv2post_notice('Advanced custom fields are not supported in the free edition. The advanced scripts required to process them are only provided in the paid edition and are supported with it.','warning','Large','Paid Edition Only','','echo');        
         }elseif(!isset($_POST['csv2post_key'])){
             // ensure meta-key was entered
-            wtgcore_notice('You did not enter a meta-key for your custom field rule, please try again.','error','Large','No Meta-Key Entered');
+            csv2post_notice('You did not enter a meta-key for your custom field rule, please try again.','error','Large','No Meta-Key Entered');
         }else{ 
             
             // extract table name and column name from the string which holds both of them
@@ -2470,7 +3642,7 @@ function csv2post_form_add_advanced_custom_field(){
             // update project option         
             csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
 
-            wtgcore_notice('Your your advanced post-meta/custom-field rule has been saved and another meta value will be added to all posts created in this project.','success','Large','Date Column Saved');    
+            csv2post_notice('Your your advanced post-meta/custom-field rule has been saved and another meta value will be added to all posts created in this project.','success','Large','Date Column Saved');    
         }    
 
         return false;
@@ -2493,7 +3665,7 @@ function csv2post_form_update_datecolumn(){
         // check if the submitted column is the same as already set - first check if the values have been set before
         if(isset($csv2post_project_array['dates']['date_column']['table_name']) && isset($csv2post_project_array['dates']['date_column']['column_name'])){
             if($csv2post_project_array['dates']['date_column']['table_name'] == $table_name && $csv2post_project_array['dates']['date_column']['column_name'] == $column_name){
-                wtgcore_notice('You selected the same database table and column as already saved. No changes were required.','warning','Large','No Changes Required');    
+                csv2post_notice('You selected the same database table and column as already saved. No changes were required.','warning','Large','No Changes Required');    
             }    
         }
         
@@ -2505,7 +3677,7 @@ function csv2post_form_update_datecolumn(){
         // update project option         
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
 
-        wtgcore_notice('Your date column has been saved and posts publish date will be set using your data.','success','Large','Date Column Saved');    
+        csv2post_notice('Your date column has been saved and posts publish date will be set using your data.','success','Large','Date Column Saved');    
 
         return false;
     }else{
@@ -2523,7 +3695,7 @@ function csv2post_form_save_posttype_condition_byvalue(){
         // ensure trigger value has been entered, currently a text box, eventually it will be a menu and always set so this step can be removed
         // TODO: LOWPRIORITY, when trigger value is set using menu, remove this step (add menu of selected columns unique values using ajax)
         if( !isset($_POST['csv2post_dynamicposttype_text_trigger']) ){
-            wtgcore_notice('You must enter a trigger value. A trigger value is the value that will cause a different content template design to be used in a post rather than the default.','error','Large','Could Not Save New Rule');    
+            csv2post_notice('You must enter a trigger value. A trigger value is the value that will cause a different content template design to be used in a post rather than the default.','error','Large','Could Not Save New Rule');    
         }else{
         
             global $csv2post_currentproject_code,$csv2post_project_array;
@@ -2545,7 +3717,7 @@ function csv2post_form_save_posttype_condition_byvalue(){
             
             csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
 
-            wtgcore_notice('Your new rule for applying post type based on a specific value has been saved.','success','Large','Content Template Rule Saved');    
+            csv2post_notice('Your new rule for applying post type based on a specific value has been saved.','success','Large','Content Template Rule Saved');    
         }
         
         return false;
@@ -2562,11 +3734,11 @@ function csv2post_form_update_defaultposttype(){
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'defaultposttype'){
    
         if( $_POST['csv2post_defaultpostype_original'] == $_POST['csv2post_radio_defaultpostype']){
-            wtgcore_notice('You appear to have selected the post type that is already set as your projects default, no changes were required.','info','Large','No Changes Required');    
+            csv2post_notice('You appear to have selected the post type that is already set as your projects default, no changes were required.','info','Large','No Changes Required');    
         }else{
             $csv2post_project_array['defaultposttype'] = $_POST['csv2post_radio_defaultpostype'];
             csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array); 
-            wtgcore_notice('Your projects default post type is now '.$csv2post_project_array['defaultposttype'].' and all posts created from here on will be this type.','success','Large','Default Post Type Changed');    
+            csv2post_notice('Your projects default post type is now '.$csv2post_project_array['defaultposttype'].' and all posts created from here on will be this type.','success','Large','Default Post Type Changed');    
         }
 
         return false;
@@ -2583,7 +3755,7 @@ function csv2post_form_update_titletemplates(){
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'edittitletemplates'){
  
         if( !isset($_POST['csv2post_titletemplate_total']) || $_POST['csv2post_titletemplate_total'] == 0){
-            wtgcore_notice('No changes have been made as you do not appear to have any title templates. You must use the Create Title Template panel before using the update feature.','warning','Large','No Changes Made');
+            csv2post_notice('No changes have been made as you do not appear to have any title templates. You must use the Create Title Template panel before using the update feature.','warning','Large','No Changes Made');
             return false;
         }
         
@@ -2602,11 +3774,11 @@ function csv2post_form_update_titletemplates(){
                 // Update the post into the database
                 $update_result = wp_update_post( $my_post ); 
                 if( csv2post_is_WP_Error($update_result)){
-                    wtgcore_notice('Wordpress function wp_update_post returns a Wordpress error (WP_Error). This should not happen even if an update was not carried out due to no changes made, that would return 0. Please report this issue. The post ID (custom post type wtgcsvtitle) is '.$_POST['csv2post_titletemplate_postid_'.$i].' and is a Title Template.','error','Large','Error Updating Title Template Named ' . $_POST['csv2post_titletemplate_posttitle_'.$i]);
+                    csv2post_notice('Wordpress function wp_update_post returns a Wordpress error (WP_Error). This should not happen even if an update was not carried out due to no changes made, that would return 0. Please report this issue. The post ID (custom post type wtgcsvtitle) is '.$_POST['csv2post_titletemplate_postid_'.$i].' and is a Title Template.','error','Large','Error Updating Title Template Named ' . $_POST['csv2post_titletemplate_posttitle_'.$i]);
                 }elseif( $update_result == 0){
-                    wtgcore_notice('Wordpress function wp_update_post returned 0, meaning no update was required as no changes were made. This should not happen, the plugin is meant to avoid attempting an update if the user has not edited a Title Template. Please report this issue.','error','Large','Possible Error Updating Template Title Named ' . $_POST['csv2post_titletemplate_posttitle_'.$i]);                    
+                    csv2post_notice('Wordpress function wp_update_post returned 0, meaning no update was required as no changes were made. This should not happen, the plugin is meant to avoid attempting an update if the user has not edited a Title Template. Please report this issue.','error','Large','Possible Error Updating Template Title Named ' . $_POST['csv2post_titletemplate_posttitle_'.$i]);                    
                 }else{
-                    wtgcore_notice('Wordpress function wp_update_post updated your Title Template named '.$_POST['csv2post_titletemplate_posttitle_'.$i].' and all projects using the template will continue to use the updated version.','success','Large','Title Template Updated');
+                    csv2post_notice('Wordpress function wp_update_post updated your Title Template named '.$_POST['csv2post_titletemplate_posttitle_'.$i].' and all projects using the template will continue to use the updated version.','success','Large','Title Template Updated');
                 }               
             }
         }
@@ -2626,20 +3798,20 @@ function csv2post_form_insert_title_template(){
  
         // validate template name
         if(!isset($_POST['csv2post_titletemplate_name']) || $_POST['csv2post_titletemplate_name'] == null || $_POST['csv2post_titletemplate_name'] == ' '){
-            wtgcore_notice('Please enter a name for your title template so that you can identify it properly','error','Large','Content Template Name Required');        
+            csv2post_notice('Please enter a name for your title template so that you can identify it properly','error','Large','Content Template Name Required');        
             return false;// tells this file that $_POST processing is complete
         }
 
         // validate template design
         if(!isset($_POST['csv2post_titletemplate_title']) || $_POST['csv2post_titletemplate_title'] == null || $_POST['csv2post_titletemplate_title'] == ' '){
-            wtgcore_notice('Please enter a title template design, you must use column replacement tokens for it to work','error','Large','Content Template Name Required');        
+            csv2post_notice('Please enter a title template design, you must use column replacement tokens for it to work','error','Large','Content Template Name Required');        
             return false;// tells this file that $_POST processing is complete
         }
          
         // save title template
         $save_result = csv2post_insert_titletemplate($_POST['csv2post_titletemplate_name'],$_POST['csv2post_titletemplate_title']);
         if(csv2post_is_WP_Error($save_result)){
-            wtgcore_notice('No changes were saved, you did not appear to make new changes before your submission','warning','Large','No Changes Made');    
+            csv2post_notice('No changes were saved, you did not appear to make new changes before your submission','warning','Large','No Changes Made');    
         }else{
                      
             // if current project does not yet have a default content template
@@ -2654,7 +3826,7 @@ function csv2post_form_insert_title_template(){
                 $setasdefault = ' and it has been set as your current projects default title template.';
             }
                 
-            wtgcore_notice('Your new title template has been saved'.$setasdefault.'.','success','Large','New Title Template Saved');
+            csv2post_notice('Your new title template has been saved'.$setasdefault.'.','success','Large','New Title Template Saved');
         }
               
         return false;
@@ -2674,10 +3846,10 @@ function csv2post_form_change_default_contenttemplate(){
         $template_id = csv2post_STRINGS_get_between_two_values('(',')',$_POST['csv2post_templatename_and_id']);        
 
         if(!is_numeric($template_id)){
-            wtgcore_notice('The template ID could not be extracted from the submission, please try again then report this issue.','error','Large','Error Saving Default Content Template');
+            csv2post_notice('The template ID could not be extracted from the submission, please try again then report this issue.','error','Large','Error Saving Default Content Template');
         }else{
             csv2post_update_default_contenttemplate($csv2post_currentproject_code,$template_id);
-            wtgcore_notice('The template you selected has been saved as your current projects default template design.','success','Large','Default Content Template Saved');
+            csv2post_notice('The template you selected has been saved as your current projects default template design.','success','Large','Default Content Template Saved');
         }
         
         return false;
@@ -2694,10 +3866,10 @@ function csv2post_form_change_default_titletemplate(){
         $template_id = csv2post_STRINGS_get_between_two_values('(',')',$_POST['csv2post_templatename_and_id']);        
 
         if(!is_numeric($template_id)){
-            wtgcore_notice('The title template ID (also post id) could not be extracted from the submission, please try again then report this issue.','error','Large','Error Saving Default Title Template');
+            csv2post_notice('The title template ID (also post id) could not be extracted from the submission, please try again then report this issue.','error','Large','Error Saving Default Title Template');
         }else{
             csv2post_update_default_titletemplate($csv2post_currentproject_code,$template_id);
-            wtgcore_notice('The title template you selected has been saved as your current projects default template design.','success','Large','Default Title Template Saved');
+            csv2post_notice('The title template you selected has been saved as your current projects default template design.','success','Large','Default Title Template Saved');
         }
         
         return false;
@@ -2714,10 +3886,10 @@ function csv2post_form_change_default_excerpttemplate(){
         $template_id = csv2post_STRINGS_get_between_two_values('(',')',$_POST['csv2post_templatename_and_id']);        
 
         if(!is_numeric($template_id)){
-            wtgcore_notice('The excerpt template ID could not be extracted from the submission, please try again then report this issue.','error','Large','Error Saving Default Excerpt Template');
+            csv2post_notice('The excerpt template ID could not be extracted from the submission, please try again then report this issue.','error','Large','Error Saving Default Excerpt Template');
         }else{
             csv2post_update_default_excerpttemplate($csv2post_currentproject_code,$template_id);
-            wtgcore_notice('The excerpt template you selected has been saved as your current projects default excerpt template design.','success','Large','Default Excerpt Template Saved');
+            csv2post_notice('The excerpt template you selected has been saved as your current projects default excerpt template design.','success','Large','Default Excerpt Template Saved');
         }
         
         return false;
@@ -2736,7 +3908,7 @@ function csv2post_form_save_contenttemplatedesign_condition_byvalue(){
         // ensure trigger value has been entered, currently a text box, eventually it will be a menu and always set so this step can be removed
         // TODO: LOWPRIORITY, when trigger value is set using menu, remove this step
         if( !isset($_POST['csv2post_dynamiccontentdesignrules_text_triggervalue']) ){
-            wtgcore_notice('You must enter a trigger value. A trigger value is the value that will cause a different content template design to be used in a post rather than the default.','error','Large','Could Not Save New Rule');
+            csv2post_notice('You must enter a trigger value. A trigger value is the value that will cause a different content template design to be used in a post rather than the default.','error','Large','Could Not Save New Rule');
         }else{
         
             // check if we already have template rules by value saved, count how many we have for applying array key value
@@ -2756,7 +3928,7 @@ function csv2post_form_save_contenttemplatedesign_condition_byvalue(){
             
             csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
 
-            wtgcore_notice('Your new rule for applying content has been saved and all records with the giving trigger value will use the selected template design.','success','Large','Content Template Rule Saved');    
+            csv2post_notice('Your new rule for applying content has been saved and all records with the giving trigger value will use the selected template design.','success','Large','Content Template Rule Saved');    
         }
         
         return false;
@@ -2771,7 +3943,7 @@ function csv2post_form_save_contenttemplatedesign_condition_byvalue(){
 * @todo LOWPRIORITY, consider using custom taxonomies (categories) for applying template types
 */
 function csv2post_form_save_contenttemplate(){  
-    global $csv2post_currentproject_code;// TODO ADD THIS TOO POST IN CUSTOM FIELD
+    global $csv2post_currentproject_code;// TODO ADD THIS TO POST IN CUSTOM FIELD
     
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'templateeditor'){
         
@@ -2811,10 +3983,10 @@ function csv2post_form_save_contenttemplate(){
               
         if($create_new_wtgcsvtemplate_post){   
                   
-            $wpinsertpost_result = csv2post_insert_post_contenttemplate();// returns post ID
+            $wpinsertpost_result = csv2post_insert_post_contenttemplate($_POST['csv2post_wysiwyg_editor'],$_POST['csv2post_templatename']);// returns post ID
               
             if(!$wpinsertpost_result || csv2post_is_WP_Error($wpinsertpost_result) || $wpinsertpost_result == 0 ){
-                wtgcore_notice('Could not create new content template design. It requires the insertion of a new post record but Wordpress returned an error. Please try again then report further problems.','error','Large','Could Not Save Template');
+                csv2post_notice('Could not create new content template design. It requires the insertion of a new post record but Wordpress returned an error. Please try again then report further problems.','error','Large','Could Not Save Template');
             }elseif(is_numeric($wpinsertpost_result)){
                 
                 // link the template to the project by adding csv2post_project_id custom meta field 
@@ -2875,7 +4047,7 @@ function csv2post_form_save_contenttemplate(){
                     $setasdefault = ' and it has been set as your current projects default content template.';
                 }
                                 
-                wtgcore_notice('Your new content template has been saved'.$setasdefault.'. You can select it in your projects settings and edit it using the same editor as you created it with.','success','Large','New Template Saved');
+                csv2post_notice('Your new content template has been saved'.$setasdefault.'. You can select it in your projects settings and edit it using the same editor as you created it with.','success','Large','New Template Saved');
             }            
         }
         
@@ -2892,10 +4064,10 @@ function csv2post_form_change_current_project(){
     global $csv2post_currentproject_code;
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'selectcurrentproject'){
         if( $_POST['csv2post_radio_projectcode'] == $csv2post_currentproject_code){
-            wtgcore_notice('You submitted the same project as the one already set as your Current Project. No changes were made.','info','Large','No Changes Made');    
+            csv2post_notice('You submitted the same project as the one already set as your Current Project. No changes were made.','info','Large','No Changes Made');    
         }else{
             csv2post_update_currentproject($_POST['csv2post_radio_projectcode']);
-            wtgcore_notice('Your current project has been changed and you will not be working on project '.$_POST['csv2post_radio_projectcode'].'.','success','Large','Project Changed');            
+            csv2post_notice('Your current project has been changed and you will not be working on project '.$_POST['csv2post_radio_projectcode'].'.','success','Large','Project Changed');            
         }
         return false;
     }else{
@@ -2911,7 +4083,7 @@ function csv2post_form_delete_post_creation_projects(){
         global $csv2post_is_free,$csv2post_currentproject_code;
         
         if(!$csv2post_is_free && !isset($_POST['csv2post_projectcodes_array'])){
-            wtgcore_notice('You did not appear to select any projects, no projects have been deleted.','info','Large','No Projects Deleted');    
+            csv2post_notice('You did not appear to select any projects, no projects have been deleted.','info','Large','No Projects Deleted');    
         }else{
             
             if($csv2post_is_free){
@@ -2920,7 +4092,7 @@ function csv2post_form_delete_post_creation_projects(){
                 // Do not try to get around this limitation, required functions for later processes are not included with the free download
                 csv2post_delete_postcreationproject($csv2post_currentproject_code);
                 csv2post_delete_option_currentprojectcode();
-                wtgcore_notice('Your project with code '.$csv2post_currentproject_code.' has been deleted.','success','Large','Project ('.$csv2post_currentproject_code.') Deleted');                
+                csv2post_notice('Your project with code '.$csv2post_currentproject_code.' has been deleted.','success','Large','Project ('.$csv2post_currentproject_code.') Deleted');                
 
             }else{
                 
@@ -2932,7 +4104,7 @@ function csv2post_form_delete_post_creation_projects(){
                     }
                     
                     csv2post_delete_postcreationproject($project_code);
-                    wtgcore_notice('Your project with code '.$project_code.' has been deleted.','success','Large','Project '.$project_code.' Deleted');    
+                    csv2post_notice('Your project with code '.$project_code.' has been deleted.','success','Large','Project '.$project_code.' Deleted');    
                 }
                 
             }
@@ -2954,13 +4126,13 @@ function csv2post_form_create_post_creation_project(){
         
         // if no project name
         if(!isset($_POST['csv2post_projectname_name']) || $_POST['csv2post_projectname_name'] == NULL || $_POST['csv2post_projectname_name'] == '' || $_POST['csv2post_projectname_name'] == ' '){
-            wtgcore_notice('No project name was entered, please try again','error','Large','Project Name Required','','echo');    
+            csv2post_notice('No project name was entered, please try again','error','Large','Project Name Required','','echo');    
             return false;
         }
         
         // if no database table selected
         if(!isset($_POST['csv2post_databasetables_array'])){
-            wtgcore_notice('You did not appear to select any database tables for taking data from and putting into posts. Project was not created.','info','Large','Database Table Selection Required','','echo');    
+            csv2post_notice('You did not appear to select any database tables for taking data from and putting into posts. Project was not created.','info','Large','Database Table Selection Required','','echo');    
             return false;
         }else{
             
@@ -2978,7 +4150,7 @@ function csv2post_form_create_post_creation_project(){
                     }
     
                     csv2post_sql_reset_project_table($_POST['csv2post_databasetables_resettable_array'],$reset_posts);
-                    wtgcore_notice('The table named '.$_POST['csv2post_databasetables_resettable_array'].' was reset as requested.','success','Large','Table Reset','','echo');                    
+                    csv2post_notice('The table named '.$_POST['csv2post_databasetables_resettable_array'].' was reset as requested.','success','Large','Table Reset','','echo');                    
                 
                 }else{
                     foreach($_POST['csv2post_databasetables_resettable_array'] as $key => $table_name){
@@ -2994,7 +4166,7 @@ function csv2post_form_create_post_creation_project(){
                         }
                         
                         csv2post_sql_reset_project_record($table_name,$reset_posts);
-                        wtgcore_notice('The table named '.$table_name.' was reset as requested.','success','Large','Table Reset','','echo');    
+                        csv2post_notice('The table named '.$table_name.' was reset as requested.','success','Large','Table Reset','','echo');    
                     }  
                 } 
             }
@@ -3022,13 +4194,13 @@ function csv2post_form_create_post_creation_project(){
                 csv2post_update_currentproject($createproject_result_code);
                 
                 // do notification
-                wtgcore_notice('Your new Post Creation Project has been made. Please click on the Content Designs tab and create your main content layout for this project or select an existing one.','success','Large','Post Creation Project Created');
+                csv2post_notice('Your new Post Creation Project has been made. Please click on the Content Designs tab and create your main content layout for this project or select an existing one.','success','Large','Post Creation Project Created');
             
                 // display next step message
                 if(!$csv2post_is_free){
                     $table_count = count($_POST['csv2post_databasetables_array']);
                     if($table_count != 1){
-                        wtgcore_notice('You must now complete the Multiple Tables Project panel on the Projects screen.','step','Large','Next Step','','echo');    
+                        csv2post_notice('You must now complete the Multiple Tables Project panel on the Projects screen.','step','Large','Next Step','','echo');    
                     }
                 }
             
@@ -3036,11 +4208,11 @@ function csv2post_form_create_post_creation_project(){
                 
                 if($csv2post_is_free){
                 
-                    wtgcore_notice('You appear to have already created your project. The free edition allows one project at a time, please complete your post creation then delete the project. You may then create another project with a new database table that holds different data.','warning','Large','Post Creation Project Not Created','','echo');    
+                    csv2post_notice('You appear to have already created your project. The free edition allows one project at a time, please complete your post creation then delete the project. You may then create another project with a new database table that holds different data.','warning','Large','Post Creation Project Not Created','','echo');    
                
                 }else{
                     
-                    wtgcore_notice('A problem was detected when making the new Post Creation Project. It is recommended that you attempt to make the project again and report this problem if it continues to happen.','error','Large','Post Creation Project Not Created');    
+                    csv2post_notice('A problem was detected when making the new Post Creation Project. It is recommended that you attempt to make the project again and report this problem if it continues to happen.','error','Large','Post Creation Project Not Created');    
                 
                 }
             }  
@@ -3057,7 +4229,7 @@ function csv2post_form_create_post_creation_project(){
 function csv2post_form_delete_dataimportjobs(){
     if(isset( $_POST[WTG_C2P_ABB.'hidden_pageid'] ) && $_POST[WTG_C2P_ABB.'hidden_pageid'] == 'data' && isset($_POST[WTG_C2P_ABB.'hidden_panel_name']) && $_POST[WTG_C2P_ABB.'hidden_panel_name'] == 'deletedataimportjob'){
         if(!isset($_POST['csv2post_jobcode_array'])){
-            wtgcore_notice('You did not appear to select any data import jobs for deletion, no changes have been made.','info','Small');    
+            csv2post_notice('You did not appear to select any data import jobs for deletion, no changes have been made.','info','Small');    
         }else{
             global $csv2post_currentjob_code;
             
@@ -3088,7 +4260,7 @@ function csv2post_form_createdataimportjob(){
         
         // warn user when they do not submit parts of the profile
         if(!isset($_POST['csv2post_jobname_name'])){
-            wtgcore_notice('You did not enter a Job Name, please try again.','error','Large','No Job Name Entered','','echo');
+            csv2post_notice('You did not enter a Job Name, please try again.','error','Large','No Job Name Entered','','echo');
             return false;    
         }
     
@@ -3100,19 +4272,19 @@ function csv2post_form_createdataimportjob(){
                                        
                 // if user did not enter field count
                 if(!isset($_POST['csv2post_csvfile_fieldcount_' . $filename]) || $_POST['csv2post_csvfile_fieldcount_' . $filename] == ''){
-                    wtgcore_notice('You did not enter your CSV file column/field number. '.$csv2post_plugintitle.' will attempt to 
+                    csv2post_notice('You did not enter your CSV file column/field number. '.$csv2post_plugintitle.' will attempt to 
                     count them but if you experience problems please enter the number manually.','warning','Large','Column Count Not Entered','','echo');    
                 }
                 
                 // if user did not select separator
                 if(!isset($_POST['csv2post_newjob_separators' . $filename])){
-                    wtgcore_notice('You never selected a separator. The plugin will attempt to guess it but if you
+                    csv2post_notice('You never selected a separator. The plugin will attempt to guess it but if you
                     experience problems you should select it manually.','warning','Large','No Separator Selected','','echo');
                 }
                 
                 // if user did not select quote
                 if(!isset($_POST['csv2post_newjob_quote' . $filename])){
-                    wtgcore_notice('You never selected a quote. The plugin will attempt to guess it but if you
+                    csv2post_notice('You never selected a quote. The plugin will attempt to guess it but if you
                     experience problems please select it manually.','warning','Large','No Quote Selected','','echo');
                 }            
             }      
@@ -3156,7 +4328,7 @@ function csv2post_form_createdataimportjob(){
                 // count files, counter acts as file id within the job array, it is also appended to column names 
                 $fileid = 1;
                  
-                // add each csv file too the jobarray
+                // add each csv file to the jobarray
                 // we add more default stats here, while we are doing the                            
                 foreach($_POST['csv2post_newjob_included_csvfiles'] as $key => $csvfile_name){
                     
@@ -3221,12 +4393,15 @@ function csv2post_form_createdataimportjob(){
                     $csv2post_currentjob_code = $code;
                     $csv2post_job_array = $jobarray;
                     
+                    // in free edition we automatically delete the existing csv2post_freeproject table
+                    csv2post_drop_dataimportjob_table('csv2post_freeproject');
+                    
                     // create a database table - multiple file jobs are put into a single table, column names are giving appended values to prevent conflict with shared names    
                     $createtable_result = csv2post_create_dataimportjob_table($code,$job_file_group);
 
                     if(!$createtable_result){
                         $functionoutcome = false;
-                        $extendednotice .= wtgcore_notice('The data import jobs database table could not be created, it is required for storing your data and was to be named csv2post_'.$code.'. Please try again then seek support.','warning','Extra','','','return');        
+                        $extendednotice .= csv2post_notice('The data import jobs database table could not be created, it is required for storing your data and was to be named csv2post_'.$code.'. Please try again then seek support.','warning','Extra','','','return');        
                     }else{
                         
                         // update csv2post_current_job option record
@@ -3244,20 +4419,20 @@ function csv2post_form_createdataimportjob(){
                         csv2post_add_dataimportjob_to_list($code,$_POST['csv2post_jobname_name']);
                         
                         $functionoutcome = true;
-                        $extendednotice .= wtgcore_notice('A new database table named csv2post_' . $code.' was created for storing your data for the new Data Import Job.','info','Extra','','','return');    
+                        $extendednotice .= csv2post_notice('A new database table named csv2post_' . $code.' was created for storing your data for the new Data Import Job.','info','Extra','','','return');    
                     
                     }
                 }else{
                     $functionoutcome = false;
-                    $extendednotice .= wtgcore_notice('Could not create data import task, reason unknown. Please try again then report this problem if it continues.','warning','Extra','','','return');                    
+                    $extendednotice .= csv2post_notice('Could not create data import task, reason unknown. Please try again then report this problem if it continues.','warning','Extra','','','return');                    
                 }
             }else{
                 $functionoutcome = false;
-                $extendednotice .= wtgcore_notice('You did not appear to select any CSV files for your new Data Import Job. Please try again.','warning','Extra','','','return');
+                $extendednotice .= csv2post_notice('You did not appear to select any CSV files for your new Data Import Job. Please try again.','warning','Extra','','','return');
             }
         }else{
             $functionoutcome = false;
-            $extendednotice .= wtgcore_notice('Your Data Import Job name is invalid, please do not include special characters or use more than 30 characters.','info','Extra','','','return');
+            $extendednotice .= csv2post_notice('Your Data Import Job name is invalid, please do not include special characters or use more than 30 characters.','info','Extra','','','return');
         }
         
         // decide the initial notice
@@ -3267,17 +4442,17 @@ function csv2post_form_createdataimportjob(){
             $initialnotice = 'Sorry your new data import job named '.$_POST['csv2post_jobname_name'].' was NOT created, a problem was detected. More details should be provided below this message.';
         }
         
-        // undo changes that were made too the blog despite an overall fail
-        ### TODO:MEDIUMPRIORITY, remove database table and job entry too the job array if an overall failure is reached
+        // undo changes that were made to the blog despite an overall fail
+        ### TODO:MEDIUMPRIORITY, remove database table and job entry to the job array if an overall failure is reached
         
         // display result
-        wtgcore_notice('<h4>Create New Data Import Job Result</h4>' . $initialnotice . $extendednotice);
+        csv2post_notice('<h4>Create New Data Import Job Result</h4>' . $initialnotice . $extendednotice);
 
         if($functionoutcome){
             if($csv2post_is_free){
-                wtgcore_notice('You should now click on the Basic Import screen and begin importing your data.','step','Large','Next Step',false,'echo');    
+                csv2post_notice('You should now click on the Basic Import screen and begin importing your data.','step','Large','Next Step',false,'echo');    
             }else{
-                wtgcore_notice('You should now click on the Advanced Import screen and begin importing your data manually or
+                csv2post_notice('You should now click on the Advanced Import screen and begin importing your data manually or
                 configure the plugins Schedule Settings to import data automatically.','step','Large','Next Step',false,'echo');                
             }        
         }
@@ -3330,15 +4505,15 @@ function csv2post_form_test_csvfile(){
         }
                     
         if(!$separators_match){            
-            wtgcore_notice('Separator values from all methods used to establish the correct character, including the 
+            csv2post_notice('Separator values from all methods used to establish the correct character, including the 
             separator you submitted (if any), do not match each other. This is very common when working with CSV files.
              You may always need to use manual separator options. This message is to make you aware that
              not all methods of reading CSV files will work with your file.','warning','Large','Test 6: Compare Separator Sources','','echo');    
         }else{
-            wtgcore_notice('Separator values from all methods used to establish the correct character, including the separator you submitted (if any), do not match each other. This is very common when working with CSV files. You may always need to use manual separator options.','warning','Large','Test 6: Compare Separator Sources','','echo');            
+            csv2post_notice('Separator values from all methods used to establish the correct character, including the separator you submitted (if any), do not match each other. This is very common when working with CSV files. You may always need to use manual separator options.','warning','Large','Test 6: Compare Separator Sources','','echo');            
         }
         
-        wtgcore_notice('
+        csv2post_notice('
         <p>A well created CSV file can get a positive/tick notification for each test but it is not required. The
         tests do not decide if you can use the plugin or not, they help to determine what methods should be used for
         handling your file.</p>
@@ -3390,7 +4565,7 @@ function csv2post_form_installplugin(){
         global $csv2post_plugintitle;
         
         if(!current_user_can('activate_plugins')){
-            wtgcore_notice(__('You do not have the required permissions to activate '.$csv2post_plugintitle.'. The Wordpress role required is activate_plugins, usually granted to Administrators.'), 'warning', 'Large', false);
+            csv2post_notice(__('You do not have the required permissions to activate '.$csv2post_plugintitle.'. The Wordpress role required is activate_plugins, usually granted to Administrators.'), 'warning', 'Large', false);
         }else{                  
             csv2post_process_full_install();                
         }
@@ -3407,21 +4582,21 @@ function csv2post_form_installplugin(){
 function csv2post_form_logfileinstallation(){
     if(isset($_POST[WTG_C2P_ABB.'createlogfile'])){
 
-        $logfileexists_result = wtgcore_logfile_exists($_POST[WTG_C2P_ABB.'logtype']);
+        $logfileexists_result = csv2post_logfile_exists($_POST[WTG_C2P_ABB.'logtype']);
         if($logfileexists_result){
-            wtgcore_notice(__('The '.ucfirst($_POST[WTG_C2P_ABB.'logtype']).' log file already exists, no changes have been made too your blog.'),'info','Extra',ucfirst($_POST[WTG_C2P_ABB.'logtype']).' Log File Exists');
+            csv2post_notice(__('The '.ucfirst($_POST[WTG_C2P_ABB.'logtype']).' log file already exists, no changes have been made to your blog.'),'info','Extra',ucfirst($_POST[WTG_C2P_ABB.'logtype']).' Log File Exists');
         }else{
-             $createlogfile_result = wtgcore_create_logfile($_POST[WTG_C2P_ABB.'logtype']);
+             $createlogfile_result = csv2post_create_logfile($_POST[WTG_C2P_ABB.'logtype']);
              if($createlogfile_result){
                 
-                 wtgcore_notice(__('The '.ucfirst($_POST[WTG_C2P_ABB.'logtype']).' log file was created, please now ensure logging for this file is active.'),'success','Extra',ucfirst($_POST[WTG_C2P_ABB.'logtype']).' Log File Created');
+                 csv2post_notice(__('The '.ucfirst($_POST[WTG_C2P_ABB.'logtype']).' log file was created, please now ensure logging for this file is active.'),'success','Extra',ucfirst($_POST[WTG_C2P_ABB.'logtype']).' Log File Created');
 
                 // also activate log file
-                wtgcore_activate_logfile($_POST[WTG_C2P_ABB.'logtype']);
-                wtgcore_notice(__('The '.ucfirst($_POST[WTG_C2P_ABB.'logtype']).' log file has been activated.'),'success','Extra',ucfirst($_POST[WTG_C2P_ABB.'logtype']).' Log File Activated');
+                csv2post_activate_logfile($_POST[WTG_C2P_ABB.'logtype']);
+                csv2post_notice(__('The '.ucfirst($_POST[WTG_C2P_ABB.'logtype']).' log file has been activated.'),'success','Extra',ucfirst($_POST[WTG_C2P_ABB.'logtype']).' Log File Activated');
                                       
              }else{
-                wtgcore_notice(__('The '.ucfirst($_POST[WTG_C2P_ABB.'logtype']).' log could not be created, please check the plugins FAQ for help on what to do next.'),'error','Extra',ucfirst($_POST[WTG_C2P_ABB.'logtype']).' Log File Creation Failed');              
+                csv2post_notice(__('The '.ucfirst($_POST[WTG_C2P_ABB.'logtype']).' log could not be created, please check the plugins FAQ for help on what to do next.'),'error','Extra',ucfirst($_POST[WTG_C2P_ABB.'logtype']).' Log File Creation Failed');              
              }
         }
         
@@ -3440,23 +4615,23 @@ function csv2post_form_deletelogfile(){
     if(isset($_POST['csv2post_deletelogfile'])){ 
         
         // check if log file exists
-        $logfileexists_result = wtgcore_logfile_exists($_POST[WTG_C2P_ABB.'logtype']);
+        $logfileexists_result = csv2post_logfile_exists($_POST[WTG_C2P_ABB.'logtype']);
         
         if(!$logfileexists_result){  
-            wtgcore_notice(__('The '.ucfirst($_POST[WTG_C2P_ABB.'logtype']).' log file could not be located, no changes have been made.'),'info','Extra',ucfirst($_POST[WTG_C2P_ABB.'logtype']).' Log File Not Found');
+            csv2post_notice(__('The '.ucfirst($_POST[WTG_C2P_ABB.'logtype']).' log file could not be located, no changes have been made.'),'info','Extra',ucfirst($_POST[WTG_C2P_ABB.'logtype']).' Log File Not Found');
         }else{
             
-             $deletelogfile_result = wtgcore_delete_logfile($_POST['csv2post_logtype']);
+             $deletelogfile_result = csv2post_delete_logfile($_POST['csv2post_logtype']);
                                      
              if($deletelogfile_result){
                 
                 // disable the log file in settings
-                wtgcore_disable_logfile($_POST[WTG_C2P_ABB.'logtype']);
+                csv2post_disable_logfile($_POST[WTG_C2P_ABB.'logtype']);
              
-                wtgcore_notice(__('The '.ucfirst($_POST[WTG_C2P_ABB.'logtype']).' log file was deleted, please now ensure logging for this file is disabled or it may be re-created.'),'success','Extra',ucfirst($_POST[WTG_C2P_ABB.'logtype']).' Log File Removed');
+                csv2post_notice(__('The '.ucfirst($_POST[WTG_C2P_ABB.'logtype']).' log file was deleted, please now ensure logging for this file is disabled or it may be re-created.'),'success','Extra',ucfirst($_POST[WTG_C2P_ABB.'logtype']).' Log File Removed');
              
              }else{
-                wtgcore_notice(__('The '.ucfirst($_POST[WTG_C2P_ABB.'logtype']).' log could not be deleted, reason unknown. Please try again, ensure the log exists then seek support.'),'error','Extra',ucfirst($_POST[WTG_C2P_ABB.'logtype']).' Log File Not Removed');
+                csv2post_notice(__('The '.ucfirst($_POST[WTG_C2P_ABB.'logtype']).' log could not be deleted, reason unknown. Please try again, ensure the log exists then seek support.'),'error','Extra',ucfirst($_POST[WTG_C2P_ABB.'logtype']).' Log File Not Removed');
              }
         } 
 
@@ -3471,9 +4646,9 @@ function csv2post_form_deletelogfile(){
 */
 function csv2post_form_disablelogfile(){
     if(isset($_POST[WTG_C2P_ABB.'disablelogfile'])){
-        $logfile_result = wtgcore_disable_logfile($_POST[WTG_C2P_ABB.'logtype']);
+        $logfile_result = csv2post_disable_logfile($_POST[WTG_C2P_ABB.'logtype']);
         if($logfile_result){
-            wtgcore_notice(__('The '.ucfirst($_POST[WTG_C2P_ABB.'logtype']).' log file has been Disabled.'),'success','Extra',ucfirst($_POST[WTG_C2P_ABB.'logtype']).' Log File Disabled');
+            csv2post_notice(__('The '.ucfirst($_POST[WTG_C2P_ABB.'logtype']).' log file has been Disabled.'),'success','Extra',ucfirst($_POST[WTG_C2P_ABB.'logtype']).' Log File Disabled');
         }
        return false;// return false to stop all further post validation function calls        
     }else{
@@ -3486,8 +4661,8 @@ function csv2post_form_disablelogfile(){
 */
 function csv2post_form_activatelogfile(){
     if(isset($_POST[WTG_C2P_ABB.'activatelogfile'])){
-        wtgcore_activate_logfile($_POST[WTG_C2P_ABB.'logtype']);
-        wtgcore_notice(__('The '.ucfirst($_POST[WTG_C2P_ABB.'logtype']).' log file has been activated.'),'success','Extra',ucfirst($_POST[WTG_C2P_ABB.'logtype']).' Log File Activated');
+        csv2post_activate_logfile($_POST[WTG_C2P_ABB.'logtype']);
+        csv2post_notice(__('The '.ucfirst($_POST[WTG_C2P_ABB.'logtype']).' log file has been activated.'),'success','Extra',ucfirst($_POST[WTG_C2P_ABB.'logtype']).' Log File Activated');
         return false;         
     }else{
         return true;
@@ -3499,23 +4674,23 @@ function csv2post_form_activatelogfile(){
 */
 function csv2post_form_viewlogfile(){
     if(isset($_POST[WTG_C2P_ABB.'viewlogfile'])){?> 
-        <div id="<?php echo WTG_C2P_ABB;?>dialogueoutcome" title="<?php ucfirst($_POST[WTG_C2P_ABB.'logtype']);?> Log File Activated">
+        <div id="<?php echo WTG_C2P_ABB;?>dialogoutcome" title="<?php ucfirst($_POST[WTG_C2P_ABB.'logtype']);?> Log File Activated">
             <?php 
-            wtgcore_notice(__('the '.$_POST[WTG_C2P_ABB.'logtype'].' log file has been retrieved and displayed below.'),'success','Small',ucfirst($_POST[WTG_C2P_ABB.'logtype']).' Log: ');
+            csv2post_notice(__('the '.$_POST[WTG_C2P_ABB.'logtype'].' log file has been retrieved and displayed below.'),'success','Small',ucfirst($_POST[WTG_C2P_ABB.'logtype']).' Log: ');
             
             // create array of key words to filter entries from the general log
             $install_filter_array = array();
             $install_filter_array['logfile'] = $_POST[WTG_C2P_ABB.'logtype'];// use logfile to open specific log file
             $install_filter_array['action'] = 'install';// use this action for uninstall,reinstall etc
             $install_filter_array['priority'] = 'all';// all (default),low,high,critical
-            // add panel details too array, used for forms in notices       
+            // add panel details to array, used for forms in notices       
             $install_filter_array['panel_title'] = 'View '.ucfirst($_POST[WTG_C2P_ABB.'logtype']).' Log File';            
             $install_filter_array['panel_name'] = WTG_C2P_ABB.'postsubmit_viewlogfile';
             $install_filter_array['panel_number'] = '1';  
                                                  
             csv2post_viewhistory($install_filter_array); ?>
         </div><?php
-        csv2post_jquerydialogue_results();  
+        csv2post_jquerydialog_results();  
         
        // return false to stop all further post validation function calls
        return false;// must go inside $_POST validation, not at end of function         
@@ -3551,7 +4726,7 @@ function csv2post_form_contactformsubmission(){
         <strong>Contact Methods:</strong> stringreplace_contactmethods <br />
         <strong>Contact Methods:</strong> stringreplace_contactmethods <br />'; 
         
-        // add $_POST values too email template
+        // add $_POST values to email template
         if(isset($_POST['multiselect_'.WTG_C2P_ABB.'contactmethods'])){
             // loop through contact methods and create comma seperated list    
         }
@@ -3600,7 +4775,7 @@ function csv2post_form_contactformsubmission(){
         
         // output result if $failed so far
         if($failed == true){
-            wtgcore_notice('Contact attempt failed. This has happened because '.$failurereason);
+            csv2post_notice('Contact attempt failed. This has happened because '.$failurereason);
         }
         
         ######################################## Contact method for gold users only
@@ -3630,7 +4805,7 @@ function csv2post_form_contactformsubmission(){
                         $email_list_start .= '<li>You had the None option selected, no login details or sensitive data will be sent to the Ticket Web Service</li>';                                
                     }else{
 
-                        // do SOAP call too WebTechGlobal Ticket Web Service and create ticket
+                        // do SOAP call to WebTechGlobal Ticket Web Service and create ticket
                         $ticket_array = array();
                         
                         if(in_array('admin',$_POST['multiselect_csv2post_contactinclude'])){
@@ -3722,16 +4897,16 @@ function csv2post_form_hidetab(){
              
         if($csv2post_mpt_arr_updateresult){
 
-            $tabscreen_name = $csv2post_mpt_arr[ $_POST[WTG_C2P_ABB . 'hidden_pageid'] ]['tabs'][ $_POST[WTG_C2P_ABB . 'hidden_tabnumber'] ]['label'];
+            $tabscreen_name = $csv2post_mpt_arr['menu'][ $_POST[WTG_C2P_ABB . 'hidden_pageid'] ]['tabs'][ $_POST[WTG_C2P_ABB . 'hidden_tabnumber'] ]['label'];
             
-            $tabscreen_pagename = $csv2post_mpt_arr[ $_POST[WTG_C2P_ABB . 'hidden_pageid'] ]['menu'];             
+            $tabscreen_pagename = $csv2post_mpt_arr['menu'][ $_POST[WTG_C2P_ABB . 'hidden_pageid'] ]['menu'];             
 
-            wtgcore_notice('You have hidden the tab for '.$tabscreen_name.' on the '.$tabscreen_pagename.' page. You can display it again on the Settings page.','success','Extra');
+            csv2post_notice('You have hidden the tab for '.$tabscreen_name.' on the '.$tabscreen_pagename.' page. You can display it again on the Settings page.','success','Extra');
             
                     ### @todo LOW PRIORITY log this change
         }else{
             
-            wtgcore_notice('Failed to hide the tab, please report this issue if it continues to happen.','error','Extra');
+            csv2post_notice('Failed to hide the tab, please report this issue if it continues to happen.','error','Extra');
             ### @todo LOW PRIORITY log this as error
         }              
         
@@ -3755,7 +4930,7 @@ function csv2post_form_tabdisplay(){
 
         // loop through page array
         // we need to get the page id first, in the example it is main
-        foreach($csv2post_mpt_arr as $pageid => $pagearray){
+        foreach($csv2post_mpt_arr['menu'] as $pageid => $pagearray){
 
             $tabcounter = 0;
 
@@ -3765,11 +4940,11 @@ function csv2post_form_tabdisplay(){
                  
                     if( $_POST['radio_'.$tab['slug']] == $tab['slug'].'_show' ){
                         
-                        $csv2post_mpt_arr[ $pageid ]['tabs'][ $tabcounter ]['display'] = true;
+                        $csv2post_mpt_arr['menu'][ $pageid ]['tabs'][ $tabcounter ]['display'] = true;
                                  
                     }elseif($_POST['radio_'.$tab['slug']] == $tab['slug'].'_hide'){
                         
-                        $csv2post_mpt_arr[ $pageid ]['tabs'][ $tabcounter ]['display'] = false;                        
+                        $csv2post_mpt_arr['menu'][ $pageid ]['tabs'][ $tabcounter ]['display'] = false;                        
                     }
                       
                 }
@@ -3777,10 +4952,10 @@ function csv2post_form_tabdisplay(){
                 ++$tabcounter;   
             }
         }
-
+        
         $update_tabmenu_result = csv2post_update_tabmenu($csv2post_mpt_arr);
           
-        wtgcore_notice('Tab settings have been saved. The plugins interface may change as a result of the new settings.','success','Extra','');
+        csv2post_notice('Tab settings have been saved. The plugins interface may change as a result of the new settings.','success','Extra','');
               
         return false;// must go inside $_POST validation, not at end of function         
     }else{
@@ -3795,10 +4970,10 @@ function csv2post_form_changetheme(){
         
         $themeupdate_result = update_option(WTG_C2P_ABB.'theme',$_POST['radio']);?>
         
-        <div id="<?php echo WTG_C2P_ABB;?>dialogueoutcome" title="Theme Changed">
-        <?php  wtgcore_notice(__('Your new theme selection for '.$csv2post_plugintitle.' will take effect when you refresh the page.'),'success','Extra','Plugin Theme Changed');?>
+        <div id="<?php echo WTG_C2P_ABB;?>dialogoutcome" title="Theme Changed">
+        <?php  csv2post_notice(__('Your new theme selection for '.$csv2post_plugintitle.' will take effect when you refresh the page.'),'success','Extra','Plugin Theme Changed');?>
         </div><?php
-        csv2post_jquerydialogue_results();    
+        csv2post_jquerydialog_results();    
         
         // return false to stop all further post validation function calls
         return false;// must go inside $_POST validation, not at end of function         
@@ -3827,8 +5002,8 @@ function csv2post_form_createfolder($path,$chmod = 0755){
  * Processes FREE Reinstalls of the plugin, does output (submitted form has optional checkbox inputs to include or exclude specific parts)
  */
 function csv2post_process_free_reinstall(){    
-    csv2post_jquerydialogue_results();?>
-    <div id="<?php echo WTG_C2P_ABB;?>dialogueoutcome" title="Outcome For <?php echo $_POST[WTG_C2P_ABB.'hidden_panel_title'];?>">
+    csv2post_jquerydialog_results();?>
+    <div id="<?php echo WTG_C2P_ABB;?>dialogoutcome" title="Outcome For <?php echo $_POST[WTG_C2P_ABB.'hidden_panel_title'];?>">
         <?php //  ######   @todo    $reinstall_result = ;//?>
     </div><?php
 }
@@ -3837,8 +5012,8 @@ function csv2post_process_free_reinstall(){
  * Processes FULL Reinstalls of the plugin, does output (submitted form has optional checkbox inputs to include or exclude specific parts)
  */
 function csv2post_process_full_reinstall(){    
-    csv2post_jquerydialogue_results();?>
-    <div id="<?php echo WTG_C2P_ABB;?>dialogueoutcome" title="Outcome For <?php echo $_POST[WTG_C2P_ABB.'hidden_panel_title'];?>">
+    csv2post_jquerydialog_results();?>
+    <div id="<?php echo WTG_C2P_ABB;?>dialogoutcome" title="Outcome For <?php echo $_POST[WTG_C2P_ABB.'hidden_panel_title'];?>">
         <?php //  ######   @todo    $reinstall_result = ;//?>
     </div><?php
 }
@@ -3847,8 +5022,8 @@ function csv2post_process_full_reinstall(){
  * Processes FREE Uninstalls the plugin, does output  (submitted form has optional checkbox inputs to include or exclude specific parts)
  */
 function csv2post_process_free_uninstall(){            
-    csv2post_jquerydialogue_results(csv2post_link_toadmin(WTG_C2P_ABB.'install'),'Click Here');?>
-    <div id="<?php echo WTG_C2P_ABB;?>dialogueoutcome" title="Outcome For <?php echo $_POST[WTG_C2P_ABB.'hidden_panel_title'];?>">
+    csv2post_jquerydialog_results(csv2post_link_toadmin(WTG_C2P_ABB.'install'),'Click Here');?>
+    <div id="<?php echo WTG_C2P_ABB;?>dialogoutcome" title="Outcome For <?php echo $_POST[WTG_C2P_ABB.'hidden_panel_title'];?>">
         <?php csv2post_uninstall();?>
     </div><?php
 }
@@ -3857,8 +5032,8 @@ function csv2post_process_free_uninstall(){
  * Processes Uninstalls the plugin, does output  (submitted form has optional checkbox inputs to include or exclude specific parts)
  */
 function csv2post_process_full_uninstall(){           
-    csv2post_jquerydialogue_results(csv2post_link_toadmin(WTG_C2P_ABB.'install'),'Click Here');?>
-    <div id="csv2post_dialogueoutcome" title="Outcome For <?php echo $_POST[WTG_C2P_ABB.'hidden_panel_title'];?>">
+    csv2post_jquerydialog_results(csv2post_link_toadmin(WTG_C2P_ABB.'install'),'Click Here');?>
+    <div id="csv2post_dialogoutcome" title="Outcome For <?php echo $_POST[WTG_C2P_ABB.'hidden_panel_title'];?>">
         <?php csv2post_uninstall();?>
     </div><?php
 }
@@ -3868,13 +5043,53 @@ function csv2post_process_full_uninstall(){
  */
 function csv2post_process_full_install(){
     global $csv2post_plugintitle;?>
-    <div id="csv2post_dialogueoutcome" title="Outcome For <?php echo $_POST['csv2post_hidden_panel_title'];?>">
+    <div id="csv2post_dialogoutcome" title="Outcome For <?php echo $_POST['csv2post_hidden_panel_title'];?>">
         <p>Welcome to the <?php echo $csv2post_plugintitle;?> import plugin for Wordpress. Installation results are below, please
         report any notifications that are not green (green notifications equal 100% success). Please click
         Continue. You will be taking to the Easy Configuration Questions screen. The questions act like settings,
         allowing <?php echo $csv2post_plugintitle;?> to adapt to your needs by hiding or displaying features.</p>
       <?php csv2post_install();?>     
     </div><?php
-   csv2post_jquerydialogue_results(csv2post_link_toadmin('csv2post','#tabs-0'),'Continue');
+   csv2post_jquerydialog_results(csv2post_link_toadmin('csv2post','#tabs-0'),'Continue');
 }
+
+/**
+* Reset Easy CSV Importer session array 
+*/
+function csv2post_form_reseteci(){
+    if(isset( $_POST[WTG_C2P_ABB.'hidden_pageid'] ) && $_POST[WTG_C2P_ABB.'hidden_pageid'] == 'main' && isset($_POST[WTG_C2P_ABB.'hidden_panel_name']) && $_POST[WTG_C2P_ABB.'hidden_panel_name'] == 'ecireset'){
+
+        csv2post_INSTALL_ecisession();
+        
+        csv2post_notice_postresult('success','Easy CSV Importer Reset','You can now start with Step One of the Easy CSV Importer system.');
+        
+        return false;
+    }else{
+        return true;
+    }     
+}  
+
+function csv2post_form_plugin_update(){
+    if(isset( $_POST['csv2post_plugin_update_now'] ) && $_POST['csv2post_plugin_update_now'] == 'a43bt7695c34'){
+
+        // re-install tab menu
+        csv2post_INSTALL_tabmenu_settings();
+        
+        // re-install admin settings
+        csv2post_INSTALL_admin_settings();
+        
+        // update locally stored version number
+        global $csv2post_currentversion;
+        update_option('csv2post_installedversion',$csv2post_currentversion);        
+        update_option('csv2post_installeddate',time()); 
+
+        csv2post_notice_postresult('success','Plugin Update Complete','Please have a browse over all of the
+        plugins screens, ensure key settings are as you need them and where applicable check the front-end of 
+        your blog to ensure nothing has gone wrong.');
+
+        return false;
+    }else{
+        return true;
+    }     
+}   
 ?>

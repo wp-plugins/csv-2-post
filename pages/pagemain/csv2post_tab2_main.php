@@ -66,7 +66,7 @@ to make posts. It also does not assume the user wants to use all the data, strai
 statistics such as the number of posts created, the number of records user and much more. This is the only professional
 way to truly track the status of a project, especially when we consider that servers occasionally put a stop to any
 processing. Post Creation Projects allow us to create small amounts of posts at a time (I call these events) and the plugin
-will keep track of far on it is in regards too your data.</p>
+will keep track of far on it is in regards to your data.</p>
 
 <p>Many users look at the panels and all the features then say something to me like "I just want to import my data and
 make posts". CSV 2 POST will allow you to do just that and there is no need to use most of the features

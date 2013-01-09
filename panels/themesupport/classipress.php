@@ -10,7 +10,7 @@ if(!isset($csv2post_project_array['defaultposttype']) || isset($csv2post_project
     }else{
         $post_type_is = $csv2post_project_array['defaultposttype'];
     }
-    echo wtgcore_notice('Your default post type for the current project is '.$post_type_is.'.
+    echo csv2post_notice('Your default post type for the current project is '.$post_type_is.'.
     You will need to change it to "ad_listing" which is the ClassiPress custom post type.',
     'error','Tiny','','','return');
 }

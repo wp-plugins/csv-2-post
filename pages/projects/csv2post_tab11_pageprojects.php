@@ -1,12 +1,12 @@
 <?php
 if(isset($csv2post_project_array['tags']['method'])){
     if($csv2post_project_array['tags']['method'] == 'generator'){
-        echo wtgcore_notice('Tags settings in use is the "Generate Tags" method','info','Tiny','','','return');
+        echo csv2post_notice('Tags settings in use is the "Generate Tags" method','info','Tiny','','','return');
     }elseif($csv2post_project_array['tags']['method'] == 'premade'){
-        echo wtgcore_notice('Tags settings in use is the "Pre-made Tags" method','info','Tiny','','','return');
+        echo csv2post_notice('Tags settings in use is the "Pre-made Tags" method','info','Tiny','','','return');
     }
 }else{
-    echo wtgcore_notice('You have not yet set tag settings saved.','warning','Tiny','','','return');    
+    echo csv2post_notice('You have not yet set tag settings saved.','warning','Tiny','','','return');    
 }
 ?>
 
@@ -22,10 +22,10 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);     
-$jsform_set['dialoguebox_title'] = 'Save Default Tags Column';
+$jsform_set['dialogbox_title'] = 'Save Default Tags Column';
 $jsform_set['noticebox_content'] = 'Posts created from here on will use the data in the selected column as tags, do you wish to continue?';
 // TODO: MEDIUMPRIORITY, add ajax for adding and deleting tags
-// TODO: LOWPRIORITY, add this panel too main settings to apply a global default to all projects, this panel will start by using those settings on first use?>
+// TODO: LOWPRIORITY, add this panel to main settings to apply a global default to all projects, this panel will start by using those settings on first use?>
 <?php csv2post_panel_header( $panel_array );?>
 
     <?php 
@@ -64,8 +64,8 @@ $jsform_set['noticebox_content'] = 'Posts created from here on will use the data
     </script>
          
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -88,10 +88,10 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);     
-$jsform_set['dialoguebox_title'] = 'Save Your Generate Tags Settings';
+$jsform_set['dialogbox_title'] = 'Save Your Generate Tags Settings';
 $jsform_set['noticebox_content'] = 'Saving these settings will activate advanced tag generation which will be giving priority over pre-made tags data setting.';
 // TODO: MEDIUMPRIORITY, add ajax for adding and deleting tags
-// TODO: LOWPRIORITY, add this panel too main settings to apply a global default to all projects, this panel will start by using those settings on first use?>
+// TODO: LOWPRIORITY, add this panel to main settings to apply a global default to all projects, this panel will start by using those settings on first use?>
 <?php csv2post_panel_header( $panel_array );?>
 
     <?php 
@@ -163,8 +163,8 @@ $jsform_set['noticebox_content'] = 'Saving these settings will activate advanced
     </p>        
                      
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -188,10 +188,10 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);     
-$jsform_set['dialoguebox_title'] = 'Save Tag Rules';
+$jsform_set['dialogbox_title'] = 'Save Tag Rules';
 $jsform_set['noticebox_content'] = 'Your changes will effect all posts created from here on, do you wish to continue?';
 // TODO: MEDIUMPRIORITY, add ajax for adding and deleting tags
-// TODO: LOWPRIORITY, add this panel too main settings to apply a global default to all projects, this panel will start by using those settings on first use?>
+// TODO: LOWPRIORITY, add this panel to main settings to apply a global default to all projects, this panel will start by using those settings on first use?>
 <?php csv2post_panel_header( $panel_array );?>
 
     <?php 
@@ -285,8 +285,8 @@ $jsform_set['noticebox_content'] = 'Your changes will effect all posts created f
     <?php }?>
 
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }

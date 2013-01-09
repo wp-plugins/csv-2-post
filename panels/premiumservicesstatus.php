@@ -21,7 +21,7 @@ $panel_array['panel_help'] = __('Settings which effect posts (that includes page
 
         <?php
         if(!$csv2post_is_installed){
-            wtgcore_notice(__('You must fully install the plugin before it can check the status of your premium services. Please check the 
+            csv2post_notice(__('You must fully install the plugin before it can check the status of your premium services. Please check the 
             installation status screen, a part of your installation may be missing.'), 'info', 'Extra', false);
         }else{?>
             <div class="csv2post_boxintro_div">
@@ -92,7 +92,7 @@ $panel_array['panel_help'] = __('Settings which effect posts (that includes page
                 // add wtg hidden form values (for debugging)
                 csv2post_hidden_form_values($panel_array['tabnumber'],$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
                    
-                // add end of form - dialogue box does not need to be within the <form>
+                // add end of form - dialog box does not need to be within the <form>
                 csv2post_formend_standard('Submit',$jsform_set['form_id']);?>                
 
             </div>

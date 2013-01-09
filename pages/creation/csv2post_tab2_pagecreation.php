@@ -15,7 +15,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);   
-$jsform_set['dialoguebox_title'] = 'Save Global Post Updating Settings';
+$jsform_set['dialogbox_title'] = 'Save Global Post Updating Settings';
 $jsform_set['noticebox_content'] = 'Your new post updating settings will apply to all of your projects, do you wish to continue?';
 ?>
     <?php csv2post_panel_header( $panel_array );?>
@@ -47,8 +47,8 @@ $jsform_set['noticebox_content'] = 'Your new post updating settings will apply t
     </div>
 
     <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -74,10 +74,10 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);   
-$jsform_set['dialoguebox_title'] = 'Updating Post';
+$jsform_set['dialogbox_title'] = 'Updating Post';
 $jsform_set['noticebox_content'] = 'You are about to manually updating a single post based on your projects settings. Custom fields, SEO data and other meta data may be changed. Do you want to continue?';
 // TODO: LOWPRIORITY, add a checkbox to allow user to save design for the mapping approach
-// TODO: LOWPRIORITY, add the search box ability too the selectables lists
+// TODO: LOWPRIORITY, add the search box ability to the selectables lists
 ?>
     <?php csv2post_panel_header( $panel_array );?>
 
@@ -91,8 +91,8 @@ $jsform_set['noticebox_content'] = 'You are about to manually updating a single 
     <br />
 
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }

@@ -1,15 +1,66 @@
 <?php
 /**
-* Determines if dialogue should be displayed or not for the giving panel when user submits form
+* Determines if dialog should be displayed or not for the giving panel when user submits form
 * 
 * @todo currently only works with global setting and not individual panel configuration 
 */
-function csv2post_SETTINGS_form_submit_dialogue($panel_array){
+function csv2post_SETTINGS_form_submit_dialog($panel_array){
     global $csv2post_adm_set;
-    if(isset($csv2post_adm_set['interface']['forms']['dialogue']['status']) && $csv2post_adm_set['interface']['forms']['dialogue']['status'] == 'display' || !isset($csv2post_adm_set['interface']['forms']['dialogue']['status'])){
+
+    // coded ['dialoguedisplay'] over-rides users settings, used for when dialog box would be almost pointless
+    // this will be used a lot until dialog notices display a summary of the users selection, not yet added
+    if(isset($panel_array['dialogdisplay']) && $panel_array['dialogdisplay'] == 'no'){ 
+        return false;
+    }
+        
+    if(isset($csv2post_adm_set['interface']['forms']['dialog']['status']) && $csv2post_adm_set['interface']['forms']['dialog']['status'] == 'display' || !isset($csv2post_adm_set['interface']['forms']['dialog']['status'])){
         return true;
     } 
     return false;       
+}
+
+/**
+* Decides a tab screens required capability in order for dashboard visitor to view it
+* 
+* @param mixed $page_name the array key for pages
+* @param mixed $tab_key the array key for tabs within a page
+*/
+function csv2post_SETTINGS_get_tab_capability($page_name,$tab_key,$default = false){
+    global $csv2post_mpt_arr;
+    $codedefault = 'activate_plugins';
+    if(isset($csv2post_mpt_arr['menu'][$page_name]['tabs'][$tab_key]['permissions']['customcapability']) && !$default){
+        return $csv2post_mpt_arr['menu'][$page_name]['tabs'][$tab_key]['permissions']['customcapability'];    
+    }else{ 
+        if(isset($csv2post_mpt_arr['menu'][$page_name]['tabs'][$tab_key]['permissions']['defaultcapability'])){
+            return $csv2post_mpt_arr['menu'][$page_name]['tabs'][$tab_key]['permissions']['defaultcapability'];    
+        }else{
+            return $codedefault;    
+        }                    
+    }
+    return $codedefault;   
+}
+
+function csv2post_SETTINGS_get_page_capability($page_name,$default = false){
+    global $csv2post_mpt_arr;
+    $thisdefault = 'update_core';
+    if(!isset($csv2post_mpt_arr['menu'][$page_name]['permissions']['customcapability']) || $default == true){
+        if(!isset($csv2post_mpt_arr['menu'][$page_name]['permissions']['defaultcapability'])){
+            return $thisdefault;    
+        }else{
+            return $csv2post_mpt_arr['menu'][$page_name]['permissions']['defaultcapability'];    
+        }
+    }else{
+        return $csv2post_mpt_arr['menu'][$page_name]['permissions']['customcapability'];  
+    }
+    return $thisdefault;   
+}
+
+function csv2post_SETTINGS_get_eciarray(){
+    return maybe_unserialize(csv2post_option('csv2post_ecisession','get'));
+}
+
+function csv2post_SETTING_get_version(){
+    return get_option('csv2post_installedversion');    
 }
          
 /**
@@ -27,6 +78,7 @@ function csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_numbe
     $panel_array['panel_help'] = __('Default panel help text please change it');
     $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
     $panel_array['form_button'] = 'Submit';
+    $panel_array['dialogdisplay'] = 'yes';// yes or no - this value when used over-rides the global setting for hiding all dialogue
     return $panel_array;   
 }
 ?>

@@ -1,8 +1,8 @@
 <?php
 if(!isset($csv2post_project_array['categories'])){ 
-    echo wtgcore_notice('No categories setup, all posts will be assigned to your blogs default','warning','Tiny','','','return');
+    echo csv2post_notice('No categories setup, all posts will be assigned to your blogs default','warning','Tiny','','','return');
 }else{
-    echo wtgcore_notice('Category settings have been saved for your project.','success','Tiny','','','return');
+    echo csv2post_notice('Category settings have been saved for your project.','success','Tiny','','','return');
 }    
 ?>
 
@@ -18,7 +18,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);               
-$jsform_set['dialoguebox_title'] = 'Save Default Category';
+$jsform_set['dialogbox_title'] = 'Save Default Category';
 $jsform_set['noticebox_content'] = 'Do you want to save a default category now?';
 ### TODO:HIGHPRIORITY, add default category option ?>
 <?php csv2post_panel_header( $panel_array );?>
@@ -55,8 +55,8 @@ $jsform_set['noticebox_content'] = 'Do you want to save a default category now?'
     <br />
        
        <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -78,7 +78,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);               
-$jsform_set['dialoguebox_title'] = 'Saving Category Columns';
+$jsform_set['dialogbox_title'] = 'Saving Category Columns';
 $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpress database before running category creation. Would you like to save your category setup now?';
 ### TODO:HIGHPRIORITY, add default category option ?>
 <?php csv2post_panel_header( $panel_array );?>
@@ -231,8 +231,8 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
     <?php }?>
                    
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -250,13 +250,13 @@ $panel_array['panel_name'] = 'advancedcategories';// slug to act as a name and p
 $panel_array['panel_title'] = __('Set Advanced Categories');// user seen panel header text 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Take full control of category creation with more advanced category creation features');
-$panel_array['panel_help'] = __('If you require a category description or mapping too existing categories rather than creating or only creating new categories, you will need to use this panel
+$panel_array['panel_help'] = __('If you require a category description or mapping to existing categories rather than creating or only creating new categories, you will need to use this panel
 . The plugin will need to do more during category creation, please keep this in mind when running post creation events.');
 $panel_array['help_button'] = csv2post_helpbutton_text(true,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);               
-$jsform_set['dialoguebox_title'] = 'Saving Advanced Categories';
+$jsform_set['dialogbox_title'] = 'Saving Advanced Categories';
 $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpress database before running category creation. Would you like to save your category setup now?';
 ### TODO:HIGHPRIORITY, add default category option ?>
 <?php csv2post_panel_header( $panel_array );?>
@@ -534,8 +534,8 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
     </div>
         
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -557,13 +557,13 @@ $panel_array['panel_intro'] = __('Setup taxonomies for the Ultimate Taxonomy Man
 $panel_array['panel_help'] = __('If you are seeing this panel you must have the Ultimate Taxonomy Manager plugin
 activated in your Wordpress blog. This panel allows you to fulfill the requirements of this plugin by selecting
 a column of data for each custom taxonomy. It is specifically designed for custom fields created for categories
-in relation too the categories you have setup in this plugin. If you do not setup categories using this plugin,
+in relation to the categories you have setup in this plugin. If you do not setup categories using this plugin,
 do not use this feature. Let us know if you require the need to use content templates for populating values with.');
 $panel_array['help_button'] = csv2post_helpbutton_text(true,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);               
-$jsform_set['dialoguebox_title'] = 'Saving Ultimate Taxonomy Manager Category Custom Fields';
+$jsform_set['dialogbox_title'] = 'Saving Ultimate Taxonomy Manager Category Custom Fields';
 $jsform_set['noticebox_content'] = 'Do you want to continue saving?';
 ### TODO:HIGHPRIORITY, add default category option ?>
 <?php csv2post_panel_header( $panel_array );?>
@@ -576,10 +576,10 @@ $jsform_set['noticebox_content'] = 'Do you want to continue saving?';
     
         <?php
         // get ultimate taxonomy manager custom taxonomies
-        $catfields = csv2post_sql_ultimatetaxonomymanager_taxonomyfield();### TODO:LOWPRIORITY, change this too a function that gets category related custom fields only
+        $catfields = csv2post_sql_ultimatetaxonomymanager_taxonomyfield();### TODO:LOWPRIORITY, change this to a function that gets category related custom fields only
         if(!$catfields){
             
-            echo wtgcore_notice('You do not appear to have used Ultimate Taxonomy Manager to create any custom taxonomy fields yet.','info','Large','No Custom Taxonomy Fields','','return');
+            echo csv2post_notice('You do not appear to have used Ultimate Taxonomy Manager to create any custom taxonomy fields yet.','info','Large','No Custom Taxonomy Fields','','return');
            
         }else{?>
            
@@ -635,8 +635,8 @@ $jsform_set['noticebox_content'] = 'Do you want to continue saving?';
         ?>
         
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -660,7 +660,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);               
-$jsform_set['dialoguebox_title'] = 'Save Category Mapping Rules';
+$jsform_set['dialogbox_title'] = 'Save Category Mapping Rules';
 $jsform_set['noticebox_content'] = 'Do you want to save category mapping rules now?';
 ### TODO:HIGHPRIORITY, add default category option ?>
 <?php csv2post_panel_header( $panel_array );?>
@@ -779,8 +779,8 @@ $jsform_set['noticebox_content'] = 'Do you want to save category mapping rules n
     <br />
        
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }

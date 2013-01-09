@@ -14,7 +14,7 @@ foreach($csv2post_file_profiles as $csvfile_name => $profile){
     // Form Settings - create the array that is passed to jQuery form functions
     $jsform_set_override = array();
     $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);               
-    $jsform_set['dialoguebox_title'] = 'Dele';
+    $jsform_set['dialogbox_title'] = 'Dele';
     $jsform_set['noticebox_content'] = 'Dect?';
     // TODO:MEDIUMPRIORITY,add option for default value for null data or option for custom field not to be added at all
     ?>
@@ -34,10 +34,10 @@ foreach($csv2post_file_profiles as $csvfile_name => $profile){
         <br />
         
         <?php
-        // add the javascript that will handle our form action, prevent submission and display dialogue box
+        // add the javascript that will handle our form action, prevent submission and display dialog box
         //csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
 
-        // add end of form - dialogue box does not need to be within the <form>
+        // add end of form - dialog box does not need to be within the <form>
         //csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
 
         <?php //csv2post_jquery_form_prompt($jsform_set);?>

@@ -1,8 +1,8 @@
 <?php
 if(!isset($csv2post_project_array['custom_fields'])){
-    echo wtgcore_notice('No post meta (custom fields) have been saved.','warning','Tiny','','','return');
+    echo csv2post_notice('No post meta (custom fields) have been saved.','warning','Tiny','','','return');
 }else{
-    echo wtgcore_notice('You have saved post meta settings (custom fields) for this project.','info','Tiny','','','return');
+    echo csv2post_notice('You have saved post meta settings (custom fields) for this project.','info','Tiny','','','return');
 }
 ?>
 
@@ -19,7 +19,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);               
-$jsform_set['dialoguebox_title'] = 'Save Custom Field Rule';
+$jsform_set['dialogbox_title'] = 'Save Custom Field Rule';
 $jsform_set['noticebox_content'] = 'Do you want to save your new custom field rule and put the selected data into your entered meta-key?';
 // TODO:MEDIUMPRIORITY,add option for default value for null data or option for custom field not to be added at all
 ?>
@@ -52,10 +52,10 @@ $jsform_set['noticebox_content'] = 'Do you want to save your new custom field ru
     <br />
     
     <?php
-    // add the javascript that will handle our form action, prevent submission and display dialogue box
+    // add the javascript that will handle our form action, prevent submission and display dialog box
     csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
 
-    // add end of form - dialogue box does not need to be within the <form>
+    // add end of form - dialog box does not need to be within the <form>
     csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
 
     <?php csv2post_jquery_form_prompt($jsform_set);?>
@@ -74,7 +74,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);               
-$jsform_set['dialoguebox_title'] = 'Delete Custom Field Rule';
+$jsform_set['dialogbox_title'] = 'Delete Custom Field Rule';
 $jsform_set['noticebox_content'] = 'Do you want to delete your custom field rule and discontinue the meta-key plus value being added to posts created by this project?';
 // TODO:MEDIUMPRIORITY,add option for default value for null data or option for custom field not to be added at all
 ?>
@@ -89,10 +89,10 @@ $jsform_set['noticebox_content'] = 'Do you want to delete your custom field rule
     <?php csv2post_table_customfield_rules_basic(); ?>
 
     <?php
-    // add the javascript that will handle our form action, prevent submission and display dialogue box
+    // add the javascript that will handle our form action, prevent submission and display dialog box
     csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
 
-    // add end of form - dialogue box does not need to be within the <form>
+    // add end of form - dialog box does not need to be within the <form>
     csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
 
     <?php csv2post_jquery_form_prompt($jsform_set);?>
@@ -112,7 +112,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);               
-$jsform_set['dialoguebox_title'] = 'Save Advanced Custom Field Rule';
+$jsform_set['dialogbox_title'] = 'Save Advanced Custom Field Rule';
 $jsform_set['noticebox_content'] = 'Do you want to save your new custom field rule and put the selected data into your entered meta-key?';
 ### TODO:MEDIUMPRIORITY,add option for default value for null data or option for custom field not to be added at all
 ?>
@@ -174,10 +174,10 @@ $jsform_set['noticebox_content'] = 'Do you want to save your new custom field ru
     </div>
         
     <?php
-    // add the javascript that will handle our form action, prevent submission and display dialogue box
+    // add the javascript that will handle our form action, prevent submission and display dialog box
     csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
 
-    // add end of form - dialogue box does not need to be within the <form>
+    // add end of form - dialog box does not need to be within the <form>
     csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
 
     <?php csv2post_jquery_form_prompt($jsform_set);?>
@@ -186,7 +186,7 @@ $jsform_set['noticebox_content'] = 'Do you want to save your new custom field ru
 }?>
 
 <?php 
-### TODO:HIGHPRIORITY, ClassiPress panel listing all keys and options for adding data too them
+### TODO:HIGHPRIORITY, ClassiPress panel listing all keys and options for adding data to them
 ### TODO:HIGHPRIORITY, ShopperPress panel listing all keys
 ### TODO:LOWPRIORITY, panel for submitting a list of keys for a giving theme name via web service
 ?>
@@ -204,7 +204,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);               
-$jsform_set['dialoguebox_title'] = 'Delete Custom Field Rule';
+$jsform_set['dialogbox_title'] = 'Delete Custom Field Rule';
 $jsform_set['noticebox_content'] = 'Do you want to delete your custom field rule and discontinue the meta-key plus value being added to posts created by this project?';
 // TODO:MEDIUMPRIORITY,add option for default value for null data or option for custom field not to be added at all
 ?>
@@ -219,8 +219,8 @@ $jsform_set['noticebox_content'] = 'Do you want to delete your custom field rule
     <?php csv2post_table_customfield_rules_advanced(); ?>
 
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }

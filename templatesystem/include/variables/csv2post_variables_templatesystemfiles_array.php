@@ -9,11 +9,6 @@
 #                                                              #
 ################################################################
 $csv2post_templatesystem_files = array();
-// csv2post_load_initialplugin_configuration.php
-$csv2post_templatesystem_files[23]['path'] = '/';
-$csv2post_templatesystem_files[23]['name'] = WTG_C2P_ABB . 'load_initialplugin_configuration';
-$csv2post_templatesystem_files[23]['extension'] = 'php';
-$csv2post_templatesystem_files[23]['level'] = 0;
 // css folder
 $csv2post_templatesystem_files[0]['path'] = '/';// path within templatesystem folder, can be null
 $csv2post_templatesystem_files[0]['name'] = 'css';// name of file with extension removed OR folder name

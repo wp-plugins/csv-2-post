@@ -20,7 +20,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
             
             ### TODO:HIGHPRIORITY, use csv2post_was_installed to create a more dynamic message
             ### can we change the boxes displayed for each option, like a warning of some sort
-            wtgcore_notice(__('This plugin has not been installed, please use the First-Time Install feature above to begin using it.'), 'info', 'Extra', false);
+            csv2post_notice(__('This plugin has not been installed, please use the First-Time Install feature above to begin using it.'), 'info', 'Extra', false);
         
         }else{?>
             <div class="<?php echo WTG_C2P_ABB;?>boxintro_div">
@@ -33,7 +33,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
                     $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);                    
                     // make require alterations to form settings
                     $jsform_set['has_options'] = true;// true or false (controls output of selected settings
-                    $jsform_set['dialoguebox_title'] = 'Un-Installing '.$csv2post_plugintitle;
+                    $jsform_set['dialogbox_title'] = 'Un-Installing '.$csv2post_plugintitle;
                     // wtg notice box display
                     $jsform_set['noticebox_content'] = 'Do you want to un-install the selected items?';
                     ?>
@@ -61,8 +61,8 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
                     <?php csv2post_list_optionrecordtrace(true,'Tiny'); ?>                    
                                                   
                      <?php 
-                    // add js for dialogue on form submission and the dialogue <div> itself
-                    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+                    // add js for dialog on form submission and the dialog <div> itself
+                    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
                         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
                         csv2post_jquery_form_prompt($jsform_set);
                     }

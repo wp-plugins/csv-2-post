@@ -26,17 +26,17 @@ foreach($seo_plugins_array as $seo_plugin_id => $seo_plugin){
 }
      
 if(!$seo_plugin_installed){
-    echo wtgcore_notice('No known SEO plugin was detected in your blog. To help us improve integration pease let us know what SEO
+    echo csv2post_notice('No known SEO plugin was detected in your blog. To help us improve integration pease let us know what SEO
     plugin you are using. This does not mean CSV 2 POST does not work with your plugin. It means
     there are no features to make it even easier.','info','Tiny','','','return',true);
 }else{
-    echo wtgcore_notice('CSV 2 POST has detected '.$seo_plugins_array[$seo_plugin_id]['name'].' is installed and active.','info','Tiny','','','return');
+    echo csv2post_notice('CSV 2 POST has detected '.$seo_plugins_array[$seo_plugin_id]['name'].' is installed and active.','info','Tiny','','','return');
 }
 
 if(!isset($csv2post_project_array['seo']['basic']['title_key'])
 && !isset($csv2post_project_array['seo']['basic']['description_key'])
 && !isset($csv2post_project_array['seo']['basic']['keywords_key'])){
-    echo wtgcore_notice('Basic SEO settings have not been saved yet.','warning','Tiny','','','return');
+    echo csv2post_notice('Basic SEO settings have not been saved yet.','warning','Tiny','','','return');
     $basic_seo_not_saved = true;    
 } 
 ?>
@@ -53,9 +53,9 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);     
-$jsform_set['dialoguebox_title'] = 'Save Basic SEO Options';
+$jsform_set['dialogbox_title'] = 'Save Basic SEO Options';
 $jsform_set['noticebox_content'] = 'These options will add meta values to your posts to work with your SEO plugin. Do you wish to continue?';
-// TODO:LOWPRIORITY, add column replacement tokens too a dialogue window and button and do the same for other panels that require them?>
+// TODO:LOWPRIORITY, add column replacement tokens to a dialog window and button and do the same for other panels that require them?>
 <?php csv2post_panel_header( $panel_array );?>
 
     <?php 
@@ -67,7 +67,7 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
     <?php 
     // if basic seo has not been saved and we have a supported plugin active display a message letting user know we filled the form out for them
     if(isset($basic_seo_not_saved) && $basic_seo_not_saved == true && $seo_plugin_installed){
-        echo wtgcore_notice('How good are we! We have filled out the form form you, all you need to do is select
+        echo csv2post_notice('How good are we! We have filled out the form form you, all you need to do is select
         the data columns for each field and submit.','success','Tiny','','','return');
     }
     ?>
@@ -154,8 +154,8 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
     <br />
         
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -179,7 +179,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);     
-$jsform_set['dialoguebox_title'] = 'Save Advanced SEO Options';
+$jsform_set['dialogbox_title'] = 'Save Advanced SEO Options';
 $jsform_set['noticebox_content'] = 'These options will add meta values to your posts to work with your SEO plugin. Do you wish to continue?';
 // TODO:MEDIUMPRIORITY, consider transferring template into project array to avoid quering post during post creation, we could store projects using a template in post meta, when post edited we can update the project arrays
 ?>
@@ -349,9 +349,9 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
     
     <br />    
 
-     <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    <?php 
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -376,7 +376,7 @@ if($csv2post_is_dev){
 
     <?php
     if(!isset($csv2post_project_array['seo'])){
-        echo '<p>No [seo] array found, your project is not prepared for adding seo meta values too your posts</p>';
+        echo '<p>No [seo] array found, your project is not prepared for adding seo meta values to your posts</p>';
     }else{ 
         csv2post_var_dump($csv2post_project_array['seo']);
     }?>

@@ -1,4 +1,9 @@
 <?php
+###############################################################
+#                                                             #
+#      SCHEDULE ARRAY - MUST BE INSTALLED AND RECORD USED     #
+#                                                             #
+###############################################################
 $csv2post_schedule_array = array();
 // history
 $csv2post_schedule_array['history']['lastreturnreason'] = 'None';

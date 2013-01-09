@@ -1,8 +1,8 @@
 <?php 
 if(!isset($csv2post_project_array['default_contenttemplate_id'])){
-    echo wtgcore_notice('You have not selected a content template yet, this is a requirement for all projects.','warning','Tiny','','','return');
+    echo csv2post_notice('You have not selected a content template yet, this is a requirement for all projects.','warning','Tiny','','','return');
 }else{
-    echo wtgcore_notice('Your project has a content template setup.','success','Tiny','','','return');
+    echo csv2post_notice('Your project has a content template setup.','success','Tiny','','','return');
 }
 ?>
 
@@ -121,7 +121,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);   
-$jsform_set['dialoguebox_title'] = 'Saving Content Design';
+$jsform_set['dialogbox_title'] = 'Saving Content Design';
 $jsform_set['noticebox_content'] = 'You are about to create or update a content template design, click submit if you would like to continue?';         
 // get request template design, if none request will return empty array
 $templatedesign_array = csv2post_get_template_bypostrequest();?>
@@ -145,14 +145,23 @@ $templatedesign_array = csv2post_get_template_bypostrequest();?>
     
     Design Name: <input type="text" name="csv2post_templatename" size="50" value="<?php echo $templatedesign_array['template_name'];?>" /> 
     Design ID: <input type="text" name="csv2post_templateid" size="5" value="<?php echo $templatedesign_array['template_id'];?>" readonly />
+    
+    <?php 
+    csv2post_n_incontent('This panel is going through some changes at the moment and our previous
+    WYSIWYG editor has been removed. Please paste
+    your tokens into the text area below, submit and finish your template by accessing it in the
+    "Content Template" menu which you will find in the main menu under Pages.','info','Small','Why no WYSIWYG editor?');
+    ?>
                                         
     <div id="poststuff">
-        <?php the_editor($templatedesign_array['template_content'],'csv2post_wysiwyg_editor','', false);?>
+        <textarea rows="10" cols="80" name="csv2post_wysiwyg_editor">
+        <?php echo $templatedesign_array['template_content'];?>
+        </textarea>
     </div>
-
-     <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+               
+    <?php 
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -175,7 +184,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);   
-$jsform_set['dialoguebox_title'] = 'Saving New Content Template Rule';
+$jsform_set['dialogbox_title'] = 'Saving New Content Template Rule';
 $jsform_set['noticebox_content'] = 'You are about to setup a new condition for applying different template designs during post creation, do you wish to save now?';?>
 <?php csv2post_panel_header( $panel_array );?>
 
@@ -226,8 +235,8 @@ $jsform_set['noticebox_content'] = 'You are about to setup a new condition for a
     <?php csv2post_display_templatedesignrules_byvalue_table(); ?>      
 
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }

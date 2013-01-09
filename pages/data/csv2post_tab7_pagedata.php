@@ -10,7 +10,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(true,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);               
-$jsform_set['dialoguebox_title'] = 'Perform Basic Data Search';
+$jsform_set['dialogbox_title'] = 'Perform Basic Data Search';
 $jsform_set['noticebox_content'] = 'Please be aware that the number of records you have in your data will determine how long the search will take. Would you like to continue?';?>
 <?php csv2post_panel_header( $panel_array );?> 
 
@@ -42,8 +42,8 @@ $jsform_set['noticebox_content'] = 'Please be aware that the number of records y
     <p>This feature is expected to be added during the second half of 2012</p>
 
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -65,7 +65,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(true,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);               
-$jsform_set['dialoguebox_title'] = 'Perform Advanced Data Search';
+$jsform_set['dialogbox_title'] = 'Perform Advanced Data Search';
 $jsform_set['noticebox_content'] = 'Please be aware that the number of records you have in your data will determine how long the search will take. Would you like to continue?';?>
 <?php csv2post_panel_header( $panel_array );?> 
 
@@ -99,8 +99,8 @@ $jsform_set['noticebox_content'] = 'Please be aware that the number of records y
     <p>This feature is expected to be added during the second half of 2012</p>
 
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }

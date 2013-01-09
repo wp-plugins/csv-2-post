@@ -1,1 +1,1 @@
-<?php wtgcore_log_display('posts');?>   
+<?php csv2post_log_display('posts');?>   

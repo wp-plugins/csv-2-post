@@ -54,7 +54,7 @@ $csv2post_supported_themes[$st]['keys']['cp_total_count']['required'] = false;
 
 // get then display current theme
 $blogtheme = get_current_theme();
-echo wtgcore_notice($blogtheme,'success','Tiny','Theme Detected: ','','return');
+echo csv2post_notice($blogtheme,'success','Tiny','Theme Detected: ','','return');
 
 // does plugin provide extra/easier support for the active theme?
 $theme_support_extra = false;
@@ -66,7 +66,7 @@ foreach($csv2post_supported_themes as $key => $theme){
 }
 
 if(!$theme_support_extra){
-    echo wtgcore_notice('CSV 2 POST works with any theme in the standard way most plugins do. This page offers 
+    echo csv2post_notice('CSV 2 POST works with any theme in the standard way most plugins do. This page offers 
     extra support for known
     themes i.e. it knows what custom field keys are required and the data requirement for each
     custom field value. Your Wordpress theme does not currently have extra support on this page. Let us know
@@ -125,12 +125,12 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);?>
         
         // display status for current custom field key ($cfkey)
         if($cfset){
-            echo wtgcore_notice($cfkey . ': Ready','success','Tiny','Set and ready','','return');
+            echo csv2post_notice($cfkey . ': Ready','success','Tiny','Set and ready','','return');
         }else{
             if($field['required']){
-                echo wtgcore_notice($cfkey . ': Not Setup - Required','error','Tiny','Set and ready','','return');
+                echo csv2post_notice($cfkey . ': Not Setup - Required','error','Tiny','Set and ready','','return');
             }else{
-                echo wtgcore_notice($cfkey . ': Not Setup - Optional','warning','Tiny','Set and ready','','return');
+                echo csv2post_notice($cfkey . ': Not Setup - Optional','warning','Tiny','Set and ready','','return');
             }
         } 
     }

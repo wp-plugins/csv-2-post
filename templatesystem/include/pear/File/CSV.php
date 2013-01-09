@@ -41,7 +41,7 @@ require_once 'File.php';
 *
 * Known Bugs:
 * (they has been analyzed but for the moment the impact in the speed for
-*  properly handle this uncommon cases is too high and won't be supported)
+*  properly handle this uncommon cases is to high and won't be supported)
 *  - A field which is composed only by a single quoted separator (ie -> ;";";)
 *    is not handled properly
 *  - When there is exactly one field minus than the expected number and there

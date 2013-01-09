@@ -19,7 +19,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(true,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);       
-$jsform_set['dialoguebox_title'] = 'Save Replace Value Rule';
+$jsform_set['dialogbox_title'] = 'Save Replace Value Rule';
 $jsform_set['noticebox_content'] = 'This rule will replace the specified value in your data before it is used in posts. Do you wish to continue and create the new value relace rule?';?>
 <?php csv2post_panel_header( $panel_array );?> 
 
@@ -67,8 +67,8 @@ $jsform_set['noticebox_content'] = 'This rule will replace the specified value i
     </table>    
 
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -90,7 +90,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(true,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);       
-$jsform_set['dialoguebox_title'] = 'Save Modify Value Rule';
+$jsform_set['dialogbox_title'] = 'Save Modify Value Rule';
 $jsform_set['noticebox_content'] = 'Do you want to continue saving a new modify value rule?';?>
 <?php csv2post_panel_header( $panel_array );?> 
 
@@ -136,8 +136,8 @@ $jsform_set['noticebox_content'] = 'Do you want to continue saving a new modify 
     </table>  
 
       <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -160,7 +160,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(true,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);       
-$jsform_set['dialoguebox_title'] = 'Save Discard Record Rule';
+$jsform_set['dialogbox_title'] = 'Save Discard Record Rule';
 $jsform_set['noticebox_content'] = 'This feature can void or actually delete records so they are never used. Are you sure you want to continue and save the new rule?';?>
 <?php csv2post_panel_header( $panel_array );?> 
 
@@ -206,8 +206,8 @@ $jsform_set['noticebox_content'] = 'This feature can void or actually delete rec
     </table>                 
 
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }

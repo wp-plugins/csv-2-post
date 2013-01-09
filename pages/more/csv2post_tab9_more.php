@@ -99,7 +99,7 @@ $panel_array['panel_help'] = __('Settings which effect posts (that includes page
             
             <p><strong>Warning: this contact form is not complete, the security features explained are not active. They were require extensive testing and the Web Services are also being improved to handle
             requests from this form. Everything will be sent by email until further notice. If you do not understand the form
-            below please send your enquiry too webmaster@webtechglobal.co.uk. </strong></p>
+            below please send your enquiry to webmaster@webtechglobal.co.uk. </strong></p>
             
             <?php ### @todo adapt the help box to suit the specific reason for contact 
             csv2post_helpbutton_closebox($panel_array);?>
@@ -117,9 +117,9 @@ $panel_array['panel_help'] = __('Settings which effect posts (that includes page
             $jsform_set['panelnumber'] = $panel_array['panel_number'];
             $jsform_set['panel_name'] = $panel_array['panel_name'];
             $jsform_set['panel_title'] = $panel_array['panel_title'];
-            // dialogue box, javascript
-            $jsform_set['dialoguebox_id'] = $jsform_set['panel_name'].$jsform_set['panelnumber'];
-            $jsform_set['dialoguebox_title'] = 'Send Communication';
+            // dialog box, javascript
+            $jsform_set['dialogbox_id'] = $jsform_set['panel_name'].$jsform_set['panelnumber'];
+            $jsform_set['dialogbox_title'] = 'Send Communication';
             // wtg notice box display
             $jsform_set['noticebox_content'] = 'Do you want to continue sending your communication?';
             // form related
@@ -309,7 +309,7 @@ $panel_array['panel_help'] = __('Settings which effect posts (that includes page
             
             <?php 
             ### @todo user jquery to allow user to add as many link fields as they need
-            ### @todo validate links, still send them but also add note too output to let user know 
+            ### @todo validate links, still send them but also add note to output to let user know 
             ?>
             
             <p><label for="<?php echo WTG_C2P_ABB;?>linkone">Link 1:</label><input type="text" name="<?php echo WTG_C2P_ABB;?>linkone" id="<?php echo WTG_C2P_ABB;?>linkone" value="" size="60" /></p>
@@ -319,10 +319,10 @@ $panel_array['panel_help'] = __('Settings which effect posts (that includes page
             <p><label for="<?php echo WTG_C2P_ABB;?>linkone">Link 3:</label><input type="text" name="<?php echo WTG_C2P_ABB;?>linkthree" id="<?php echo WTG_C2P_ABB;?>linkthree" value="" size="60" /></p>                 
                                 
             <?php
-            // add the javascript that will handle our form action, prevent submission and display dialogue box
+            // add the javascript that will handle our form action, prevent submission and display dialog box
             csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
 
-            // add end of form - dialogue box does not need to be within the <form>
+            // add end of form - dialog box does not need to be within the <form>
             csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
 
             <?php csv2post_jquery_form_prompt($jsform_set);?>

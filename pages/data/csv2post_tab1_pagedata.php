@@ -9,7 +9,7 @@
 #  The purpose is for debugging during form submission and doing import while
 #  Wordpress is loading, closest to the state the blog would be in during automation. 
 $method = 'post';// post or ajax
-### TODO:MEDIUMPRIORITY, WARNING, the ajax method may be bugged, use post method until fully tested, pay attention too the filemtime function
+### TODO:MEDIUMPRIORITY, WARNING, the ajax method may be bugged, use post method until fully tested, pay attention to the filemtime function
 if($method == 'ajax'){
     if(isset($csv2post_dataimportjobs_array)){
         foreach( $csv2post_dataimportjobs_array as $jobcode => $job ){
@@ -144,7 +144,7 @@ if($method == 'ajax'){
     
     // ensure we have a valid array with a data import job in $csv2post_dataimportjobs_array
     if(!isset($csv2post_dataimportjobs_array) || !is_array($csv2post_dataimportjobs_array) || count($csv2post_dataimportjobs_array) == 0){
-        echo wtgcore_notice('You do not have any Data Import jobs, please create one on the Start screen','info','Small','','','return');    
+        echo csv2post_notice('You do not have any Data Import jobs, please create one on the Start screen','info','Small','','','return');    
     }else{
 
         // foreach job
@@ -163,7 +163,7 @@ if($method == 'ajax'){
             // Form Settings - create the array that is passed to jQuery form functions
             $jsform_set_override = array();
             $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-            $jsform_set['dialoguebox_title'] = 'Import Data';
+            $jsform_set['dialogbox_title'] = 'Import Data';
             $jsform_set['noticebox_content'] = 'You are about to import data from your CSV file, do you wish to continue?';
             
             csv2post_panel_header( $panel_array );?>
@@ -239,8 +239,8 @@ if($method == 'ajax'){
             ### That we zero exists as the counter/stat
                                
 
-            // add js for dialogue on form submission and the dialogue <div> itself
-            if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+            // add js for dialog on form submission and the dialog <div> itself
+            if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
                 csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
                 csv2post_jquery_form_prompt($jsform_set);
             }
@@ -322,7 +322,7 @@ if($method == 'ajax'){
                 <tr><td>Duplicates Found: </td><td>'.$job_array['stats'][$csv_filename]['duplicates'].'</td></tr>                                                                                    
                 </table>';
 
-                echo wtgcore_notice($message,$state,'Small',$csv_filename,'','return');
+                echo csv2post_notice($message,$state,'Small',$csv_filename,'','return');
             } 
   
             csv2post_panel_footer(); 

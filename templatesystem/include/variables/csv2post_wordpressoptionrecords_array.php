@@ -4,6 +4,12 @@
 ####                          WORDPRESS OPTIONS RECORD ARRAY                              ####
 ####                                                                                      ####
 ##############################################################################################
+
+# TODO:HIGHPRIORITY, add all option records to the array and modify them on following rules
+# 1. New value for value source i.e URL to file holding array
+# 2. Value to indicate if option should be added on installation or not
+# 3. Make use of the ['public'] value on the re-install screen but also change ['public'] 
+
 $total_option_records = 0;// used to count total options and assign count to label
 $csv2post_options_array = array();
 ++$total_option_records;
@@ -35,16 +41,6 @@ $csv2post_options_array[WTG_C2P_ABB.'adminset']['inputtype'] = 'hidden';
 $csv2post_options_array[WTG_C2P_ABB.'adminset']['defaultvalue'] = 'NA';// NA if not applicable i.e. the default value is generated in the script
 $csv2post_options_array[WTG_C2P_ABB.'adminset']['public'] = 'true';// boolean, false indicates users are not to be made aware of this option because it is more for development use
 $csv2post_options_array[WTG_C2P_ABB.'adminset']['required'] = 'true';// some option arrays may be optional, if that is the case true will avoid installation status checks returning false
-# public settings
-++$total_option_records;
-$csv2post_options_array[WTG_C2P_ABB.'publicset']['datatype'] = 'array';// array,boolean,string etc
-$csv2post_options_array[WTG_C2P_ABB.'publicset']['purpose'] = 'Settings that effect the public side such as widgets or even automated processing when any visitor opens a page.';
-$csv2post_options_array[WTG_C2P_ABB.'publicset']['label'] = 'Option Record '.$total_option_records;
-$csv2post_options_array[WTG_C2P_ABB.'publicset']['name'] = 'Public Settings';
-$csv2post_options_array[WTG_C2P_ABB.'publicset']['inputtype'] = 'hidden';
-$csv2post_options_array[WTG_C2P_ABB.'publicset']['defaultvalue'] = 'NA';// NA if not applicable i.e. the default value is generated in the script   
-$csv2post_options_array[WTG_C2P_ABB.'publicset']['public'] = 'true';// boolean, false indicates users are not to be made aware of this option because it is more for development use
-$csv2post_options_array[WTG_C2P_ABB.'publicset']['required'] = 'true';// some option arrays may be optional, if that is the case true will avoid installation status checks returning false
 # last known installed version, used to track the gap between old and new versions ($csv2post_currentversion)
 ++$total_option_records;
 $csv2post_options_array[WTG_C2P_ABB.'installedversion']['datatype'] = 'string';
@@ -65,7 +61,7 @@ $csv2post_options_array[WTG_C2P_ABB.'installeddate']['inputtype'] = 'hidden';
 $csv2post_options_array[WTG_C2P_ABB.'installeddate']['defaultvalue'] = time();
 $csv2post_options_array[WTG_C2P_ABB.'installeddate']['public'] = 'false';
 $csv2post_options_array[WTG_C2P_ABB.'installeddate']['required'] = 'true';
-# wordpress activation date (time()), only use is to determine when user first added plugin too Wordpress
+# wordpress activation date (time()), only use is to determine when user first added plugin to Wordpress
 ++$total_option_records;
 $csv2post_options_array[WTG_C2P_ABB.'activationdate']['datatype'] = 'integer';
 $csv2post_options_array[WTG_C2P_ABB.'activationdate']['purpose'] = 'Date last full installation was run';

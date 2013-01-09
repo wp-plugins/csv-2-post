@@ -35,7 +35,7 @@ $csv2post_logfiles_array['data']['headers']['sqlquery']['label'] = 'SQL Query';
 $csv2post_logfiles_array['automation']['headers']['action']['label'] = 'Action';// intended action or reason for the processing/event
 $csv2post_logfiles_array['automation']['headers']['outcome']['label'] = 'Outcome';// for user: the action only, not the reason
 $csv2post_logfiles_array['automation']['headers']['trigger']['label'] = 'Trigger Type';// schedule, hook (action hooks such as text spinning could be considered automation), cron, url, user (i.e. user does something that triggers background processing) 
-$csv2post_logfiles_array['automation']['headers']['line']['label'] = 'Line';// __LINE__
+$csv2post_logfiles_array['automation']['headers']['line']['label'] = 'Code Line';// __LINE__
 $csv2post_logfiles_array['automation']['headers']['file']['label'] = 'File';// __FILE__
 $csv2post_logfiles_array['automation']['headers']['function']['label'] = 'Function';// __FUNCTION__
 

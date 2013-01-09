@@ -1,6 +1,6 @@
 <?php             
 if(count($csv2post_projectslist_array) == 0){
-    echo wtgcore_notice('Start here on this screen if you want to create posts. You need to create a project, then continue by clicking on the other tabs above.','warning','Tiny','','','return');
+    echo csv2post_notice('Start here on this screen if you want to create posts. You need to create a project, then continue by clicking on the other tabs above.','warning','Tiny','','','return');
 }
 
 if(!$csv2post_is_free){         
@@ -15,7 +15,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,true);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialoguebox_title'] = 'Change Your Current Project';
+$jsform_set['dialogbox_title'] = 'Change Your Current Project';
 $jsform_set['noticebox_content'] = 'You are about to change your current project, all forms will now offer changes for your new current project.';?>
 
 <?php csv2post_panel_header( $panel_array );?>
@@ -56,8 +56,8 @@ $jsform_set['noticebox_content'] = 'You are about to change your current project
     </div>           
 
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -76,7 +76,7 @@ $panel_array['panel_title'] = __('Create Post Creation Project');// user seen pa
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_intro'] = __('Make a post creation project that makes use of one or more database tables');
 $panel_array['panel_help'] = __('Create a new project for creating posts. This should be done after you have 
-imported your data too your Wordpress database or already have a suitable table holding your data. 
+imported your data to your Wordpress database or already have a suitable table holding your data. 
 CSV 2 POST allows us to use multiple database tables in a single project. You can make use of columns from 
 one table and some columns from a totally different table. More tables equals more work for Wordpress so 
 please only added essential tables. If you do not select a table created by CSV 2 POST, one will be created 
@@ -84,14 +84,14 @@ for tracking project progress and acting as a link between all other tables. Thi
 comes into play. This is a very advanced feature and will no doubt need more development over 2012 to suit 
 everyones needs so please contact us if your unsure. If you use multiple tables, you have further configuration 
 to do in the Multiple Table Project panel. This panel offers the ability to reset a used project table and to
-delete posts as part of the reset process. You can only reset posts related too a table if the table is also
+delete posts as part of the reset process. You can only reset posts related to a table if the table is also
 selected for reset, this is a safety measure and the alternative is not usually a requirement.');
 $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 $panel_array['panel_url'] = 'http://www.csv2post.com/feature-guides/create-post-creation-project';
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialoguebox_title'] = 'Create Post Creation Project';
+$jsform_set['dialogbox_title'] = 'Create Post Creation Project';
 $jsform_set['noticebox_content'] = 'Do you want to continue creating a new Post Creation Project? <p>Please note after submitting this form you will need to configure your project settings and tell the plugin exactly how you want your posts to be.</p>';
 // create nonce - done in csv2post_ajax_is_dataimportjobname_used
 $nonce = wp_create_nonce( "csv2post_referer_createproject_checkprojectname" );
@@ -124,7 +124,7 @@ $nonce = wp_create_nonce( "csv2post_referer_createproject_checkprojectname" );
 
             if(usr.length >= 4){
                 
-                // remove any status display by adding blank value too html
+                // remove any status display by adding blank value to html
                 $("#csv2post_status_<?php echo $jsform_set['form_id'];?>").html('');
                                                                         
                 jQuery.ajax({
@@ -204,8 +204,8 @@ $nonce = wp_create_nonce( "csv2post_referer_createproject_checkprojectname" );
     </div>
         
      <?php 
-    // add js for dialogue on form submission and the dialogue <div> itself
-    if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
@@ -229,7 +229,7 @@ if(!$csv2post_is_free){
     // Form Settings - create the array that is passed to jQuery form functions
     $jsform_set_override = array();
     $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-    $jsform_set['dialoguebox_title'] = 'Save Multiple Table Configuration';
+    $jsform_set['dialogbox_title'] = 'Save Multiple Table Configuration';
     $jsform_set['noticebox_content'] = 'You are about to save your projects multiple table configuration, getting this wrong will not create the posts you need, please backup your database if you are unsure about your choices. Do you wish to continue saving now?';?>
     <?php csv2post_panel_header( $panel_array );?>
 
@@ -282,8 +282,8 @@ if(!$csv2post_is_free){
             echo '</table>';
 
 
-            // add js for dialogue on form submission and the dialogue <div> itself
-            if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+            // add js for dialog on form submission and the dialog <div> itself
+            if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
                 csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
                 csv2post_jquery_form_prompt($jsform_set);
             }
@@ -304,7 +304,7 @@ if(!$csv2post_is_free){
 
     $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
     $panel_array['panel_intro'] = __('Your current post creation projects, both drip-feed and manual');
-    $panel_array['panel_help'] = __('All your post creation projects are listed here. You must not delete a project if you plan to update data in the Wordpress database that is related too posts in any way. The project configuration data includes history/statistical values that may be required for future changes too posts created by the project.');
+    $panel_array['panel_help'] = __('All your post creation projects are listed here. You must not delete a project if you plan to update data in the Wordpress database that is related to posts in any way. The project configuration data includes history/statistical values that may be required for future changes to posts created by the project.');
     $panel_array['help_button'] = csv2post_helpbutton_text(false,true);?>
     <?php csv2post_panel_header( $panel_array );?>
         <?php csv2post_postcreationproject_table();?>
@@ -323,7 +323,7 @@ $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialoguebox_title'] = 'Delete Project';
+$jsform_set['dialogbox_title'] = 'Delete Project';
 $jsform_set['noticebox_content'] = 'Are you sure you want to delete the selected post creation projects?';?>
 <?php csv2post_panel_header( $panel_array );?>
 
@@ -366,8 +366,8 @@ $jsform_set['noticebox_content'] = 'Are you sure you want to delete the selected
         }
         
 
-        // add js for dialogue on form submission and the dialogue <div> itself
-        if(csv2post_SETTINGS_form_submit_dialogue($panel_array)){
+        // add js for dialog on form submission and the dialog <div> itself
+        if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
             csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
             csv2post_jquery_form_prompt($jsform_set);
         }
