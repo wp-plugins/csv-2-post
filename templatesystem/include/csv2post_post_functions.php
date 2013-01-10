@@ -440,7 +440,7 @@ function csv2post_categorysetup_basicscript_normalcategories($r,$project_array){
 */
 function csv2post_create_post_creation_project($project_name,$projecttables_array,$mapping_method){
     global $csv2post_is_free,$csv2post_project_array;
-    
+               
     // initialize a new post creation project array
     $csv2post_project_array = csv2post_initialize_postcreationproject_array($project_name);
 

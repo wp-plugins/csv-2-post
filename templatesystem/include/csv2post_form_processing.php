@@ -1090,7 +1090,7 @@ function csv2post_form_ECI_free_step3_importdate(){
         return true;
     }     
 }
-
+                          
 // Easy CSV Importer - Step 2 (in code it is zero) - Confirm Format 
 function csv2post_form_ECI_free_step2_confirmformat(){
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeconfirmformat'){
@@ -1217,14 +1217,11 @@ function csv2post_form_ECI_free_step2_confirmformat(){
         // reset the project table
         csv2post_sql_reset_project_table($filename,true);
   
-        // free edition will submit selected database table as string, not array, make array for rest of plugins use
-        $tables_array = array($filename);// we add the single table name to an array in free edition                                
-          
         // in free edition we automatically delete the existing csv2post_freeproject table
         csv2post_drop_dataimportjob_table('csv2post_freeproject');
-                       
+
         // create project function will return project code on success
-        csv2post_create_post_creation_project($file . ' ' . csv2post_date() ,$tables_array,'defaultorder');
+        csv2post_create_post_creation_project($file . ' ' . csv2post_date() ,array('csv2post_'.$code),'defaultorder');
 
         // now set the new project as the Current Project ($csv2post_currentproject_code)               
         $csv2post_currentproject_code = $code;

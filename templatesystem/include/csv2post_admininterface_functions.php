@@ -54,13 +54,6 @@ function csv2post_admin_menu(){
 
         }// end page loop
    }
-   
-    ###############################################################
-    #                                                             #
-    #    PRINT SCRIPT FUNCTIONS CALLED WITHIN VARIOUS SCREENS     #
-    #                                                             #
-    ###############################################################
-    add_action( 'wp_print_scripts', 'csv2post_print_admin_scripts' );   
 }
 
 /**

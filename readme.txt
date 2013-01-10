@@ -96,7 +96,22 @@ first plugin was created in 2009 and was halted pending re-development.
 6. You can use up to 3 columns of data to create 3 levels of categories.
  
 == Changelog ==
-
+= 6.7.5 =
+* From The Developers
+    * This release is for fixing a couple of issues discovered today
+* New Features
+    * Assets folder and plugin page banner added (for Wordpress.org) 
+* Support Changes
+    * 
+* Fixes
+    * Media manager now opens 
+    * Easy CSV Importer no longer has error at end and fails to create posts           
+* Feature Changes
+    * 
+* Technical Changes
+    * Moved wp_print_scripts from end of csv2post_admin_menu() to csv2post.php in order to finish the approach of loading scripts on CSV 2 POST pages only and preventing conflict causing media loader to stop working
+    * csv2post_form_ECI_free_step2_confirmformat() now adds correct table name to the project array, was adding file name rather than csv2post_$code
+    
 = 6.7.4 =
 * From The Developers
     * Hope everyone has a Happy 2013 and we wish you all success in your Wordpress ventures

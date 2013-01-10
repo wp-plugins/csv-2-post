@@ -1963,6 +1963,6 @@ function csv2post_is_plugin_page($page){
     
     // we have two approaches to use. We could loop through page array and check slug values.
     // instead we will just check for "csv2post" within the string, that should be suitable and faster
-    return strstr($page,'csv2post');    
+    return strstr($page,'csv2post');  
 }
 ?>

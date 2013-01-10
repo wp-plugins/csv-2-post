@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: CSV 2 POST
-Version: 6.7.4
+Version: 6.7.5
 Plugin URI: http://www.csv2post.com
 Description: CSV 2 POST released 2012 by Zara Walsh and Ryan Bayne
 Author: Zara Walsh
@@ -30,7 +30,7 @@ This license does not apply to the paid edition which is bundled with a seperate
 // package variables 
 $csv2post_debug_mode = false;// boolean true or false 
 $csv2post_is_dev = false;// boolean, true displays more panels with even more data i.e. array dumps
-$csv2post_currentversion = '6.7.4';
+$csv2post_currentversion = '6.7.5';
 $csv2post_is_free_override = true;// change to true for free edition setup when fulledition folder present
                  
 // other variables required on installation or loading
@@ -264,6 +264,14 @@ if(!$csv2post_is_free){
         add_shortcode( 'csv2post_random_advanced', 'csv2post_shortcode_textspinning_randomadvanced' );    
     }
 }
+
+#############################################################################################################
+####                                                                                                        #
+####                         ADMIN THAT COMES LAST AND ALWAYS APPLYS                                        #
+####   i.e. most of our jQuery UI is for our own interface, no need to load the scripts on other pages      #
+####                                                                                                        #
+#############################################################################################################
+add_action('admin_menu','csv2post_admin_menu');// main navigation 
     
 #############################################################################################################
 ####                                                                                                        #
@@ -281,16 +289,17 @@ if(is_admin() && isset($_GET['page']) && csv2post_is_plugin_page($_GET['page']))
      
     add_action('init','csv2post_export_singlesqltable_as_csvfile');// export CSV file request by $_POST
 
+    ###############################################################
+    #                                                             #
+    #    PRINT SCRIPT FUNCTIONS CALLED WITHIN VARIOUS SCREENS     #
+    #                                                             #
+    ###############################################################
+    add_action( 'wp_print_scripts', 'csv2post_print_admin_scripts' );
+        
 }else{// default to public side script and css
     csv2post_script('public');
     csv2post_css('public');    
 }    
 
-#############################################################################################################
-####                                                                                                        #
-####                         ADMIN THAT COMES LAST AND ALWAYS APPLYS                                    #
-####   i.e. most of our jQuery UI is for our own interface, no need to load the scripts on other pages      #
-####                                                                                                        #
-#############################################################################################################
-add_action('admin_menu','csv2post_admin_menu');// main navigation            
+           
 ?>
