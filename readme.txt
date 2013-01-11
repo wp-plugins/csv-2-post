@@ -95,7 +95,25 @@ first plugin was created in 2009 and was halted pending re-development.
 5. This screenshot shows "Basic Custom Field Rules", paid edition has advanced features but most users require the basic form which allows you to create post meta with any data.
 6. You can use up to 3 columns of data to create 3 levels of categories.
  
+== Upgrade Notice ==
+
+= 6.7.5 =
+* This version fixes a conflict with the Wordpress media manager on all pages, possible only in or worse in Wordpress 3.5
+
 == Changelog ==
+= 6.7.6 =
+* From The Developers
+    * Ironing out some issues with version 6.7.4 hence .5 and .6 coming so quickly. There was a lot of changes in that version.
+    * Also trying to get the plugins page on Wordpress.org to show our new banner, hopefully this version triggers it to display.* New Features
+* Support Changes
+    * 
+* Fixes
+    * Two errors fixed which were causing some tabs to stop working         
+* Feature Changes
+    * 
+* Technical Changes
+    * 
+    
 = 6.7.5 =
 * From The Developers
     * This release is for fixing a couple of issues discovered today

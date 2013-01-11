@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: CSV 2 POST
-Version: 6.7.5
+Version: 6.7.6
 Plugin URI: http://www.csv2post.com
 Description: CSV 2 POST released 2012 by Zara Walsh and Ryan Bayne
 Author: Zara Walsh
@@ -30,8 +30,8 @@ This license does not apply to the paid edition which is bundled with a seperate
 // package variables 
 $csv2post_debug_mode = false;// boolean true or false 
 $csv2post_is_dev = false;// boolean, true displays more panels with even more data i.e. array dumps
-$csv2post_currentversion = '6.7.5';
-$csv2post_is_free_override = true;// change to true for free edition setup when fulledition folder present
+$csv2post_currentversion = '6.7.6';
+$csv2post_is_free_override = false;// change to true for free edition setup when fulledition folder present
                  
 // other variables required on installation or loading
 ### TODO:HIGHPRIORITY, some these should be constants 
@@ -40,7 +40,7 @@ $csv2post_php_version_minimum = '5.2.1';// minimum version required for plugin t
 $csv2post_plugintitle = 'CSV 2 POST';// requires so that extensions can re-brand the plugin
 $csv2post_pluginname = 'csv2post';// should not be used to make up paths
 $csv2post_homeslug = $csv2post_pluginname;// @todo page slug for plugin main page used in building menus
-$csv2post_isbeingactivated = false;
+$csv2post_isbeingactivated = false;// changed to true during activation, used to avoid certain processing especially the schedule and automation system
 $csv2post_disableapicalls = 0;// 1 = yes, disable all api calls 0 allows api calls
 $csv2post_is_event = false;// when true, an event is running or has ran, used to avoid over processing 
 $csv2post_csvmethod = 1;// 0=PEAR CSV 1=fget/fgetcsv only         
@@ -299,7 +299,5 @@ if(is_admin() && isset($_GET['page']) && csv2post_is_plugin_page($_GET['page']))
 }else{// default to public side script and css
     csv2post_script('public');
     csv2post_css('public');    
-}    
-
-           
+}       
 ?>

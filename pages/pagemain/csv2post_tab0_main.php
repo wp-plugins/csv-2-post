@@ -1,4 +1,13 @@
 <?php
+if(!$csv2post_is_free){
+    csv2post_n_incontent('The Easy CSV Importer is currently in the free edition and acts as a very basic but
+    quick importer. The paid version of this screen requires more work and will be more advanced than what is 
+    provided in the free edition while still being simplified compared to the rest of the plugins interface. It
+    will be complete very soon as it is high priority.
+    Thank you for your patience.','info','Large','ECI Beta (paid version) In Development');
+    return;    
+}
+
 ### TODO:LOWPRIORTY, persistent notice here added on installation, will require notice tracking, explain that ECI is a simplified and optional interface with a more advanced but sandbox approach in the rest of the plugin.
 ++$panel_number;// increase panel counter so this panel has unique ID
 $panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);

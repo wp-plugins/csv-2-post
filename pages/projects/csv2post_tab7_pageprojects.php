@@ -670,30 +670,7 @@ $jsform_set['noticebox_content'] = 'Do you want to save category mapping rules n
     csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');
     csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
     ?>
-    
-    <?php 
-    function csv2post_display_categories_menu($increment){?>
-     
-        <select name="csv2post_createcategorymapping<?php echo $increment;?>_select" id="csv2post_createcategorymapping<?php echo $increment;?>_select_id" class="csv2post_multiselect_menu">
-                  
-            <option value="notselected">Not Selected</option> 
-                    
-            <?php csv2post_display_categories_options($current_value);?>
-                                                                                                                                 
-        </select>  
-          
-        <script>
-        $("#csv2post_createcategorymapping<?php echo $increment;?>_select_id").multiselect({
-           multiple: false,
-           header: "Select Category",
-           noneSelectedText: "Select Category",
-           selectedList: 1
-        });
-        </script><?php    
-        return '';
-    }
-    ?>
-    
+       
     <?php
     // we need to loop 5 times, once for each level
     $levels_looped = 0;// used in hidden input

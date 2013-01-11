@@ -4,34 +4,34 @@
 */
 function csv2post_menu_should_tab_be_displayed($page,$tab){
     global $csv2post_mpt_arr,$csv2post_is_free;
-    
+
     // if screen not active
     if(isset($csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['active']) && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['active'] == false){
         return false;
     }    
-    
+
     // if user does not want screen displays
-    if($csv2post_mpt_arr['menu'][$page]['tabs'][ $tab ]['display'] == false){
+    if(isset($csv2post_mpt_arr['menu'][$page]['tabs'][ $tab ]['display']) && $csv2post_mpt_arr['menu'][$page]['tabs'][ $tab ]['display'] == false){  
         return false;    
     }
-    
+                 
     // if package is not set return true and display page. This will only effect users who upgrade but do not re-install menu
     // the ['package'] value was added 5th January 2013, we will be forcing a re-install of the menu in version 6.7.4
-    if(!isset($csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'])){
+    if(!isset($csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'])){      
         return true;
     }
-        
+                 
     // if package is free and screen is free OR if package is not free and screen is not free = return false
     if($csv2post_is_free && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'] == 'free'  
-    || !$csv2post_is_free && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'] == 'paid'){
+    || !$csv2post_is_free && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'] == 'paid'){   
         return true;
     }
 
     // if package is not free and screen is free = return true
-    if(!$csv2post_is_free && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'] == 'free'){
+    if(!$csv2post_is_free && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'] == 'free'){   
         return true;
     }   
-    
+                 
     return false;      
 }
 

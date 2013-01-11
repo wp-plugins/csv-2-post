@@ -136,7 +136,6 @@ function csv2post_navigation_jquery($thepagekey){
     </script>
                 
     <div id="csv2post_maintabs">
-
     <?php 
     ##########################################################
     #                                                        #
@@ -170,15 +169,13 @@ function csv2post_navigation_jquery($thepagekey){
 
     // loop through tabs - held in menu pages tabs array 
     foreach($csv2post_mpt_arr['menu'][$thepagekey]['tabs'] as $tab=>$values){
-
+                   
         $pageslug = $csv2post_mpt_arr['menu'][$thepagekey]['slug'];
         $tabslug = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['slug'];
         $tablabel = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['label'];   
                                  
         if( csv2post_menu_should_tab_be_displayed($thepagekey,$tab) ){
-
-            // TODO:LOWPRIORITY, if( $csv2post_is_activated == 'true' ){    if not fully installed it will be dealt with on status screen
-
+               
             // install menu is handled different
             if($thepagekey == 'install' ){ 
              
@@ -199,7 +196,7 @@ function csv2post_navigation_jquery($thepagekey){
                     }            
                 }
                 
-            }else{
+            }else{  
                 // default menu build approach
                 echo '<li><a href="'.csv2post_create_adminurl($pageslug,'').'#tabs-'.$tab.'">' . $tablabel . '</a></li>';                                
             }
@@ -1424,7 +1421,7 @@ function csv2post_get_files_age($time){
     
     return '1 Day, 1 Hour, 1 Min, 1 Sec';   
 }
-
+    
 /**
 * Displays a table of all data import jobs. Includes a checkbox column for deleting data import jobs.
 * 
@@ -3887,7 +3884,6 @@ function csv2post_display_categories_menu($increment){?>
     });
     </script><?php    
 }
-  
 
 /**
 * Displays a table of data from giving table name

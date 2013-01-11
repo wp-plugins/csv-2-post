@@ -146,7 +146,7 @@ $templatedesign_array = csv2post_get_template_bypostrequest();?>
     Design Name: <input type="text" name="csv2post_templatename" size="50" value="<?php echo $templatedesign_array['template_name'];?>" /> 
     Design ID: <input type="text" name="csv2post_templateid" size="5" value="<?php echo $templatedesign_array['template_id'];?>" readonly />
     
-    <?php 
+    <?php                   
     csv2post_n_incontent('This panel is going through some changes at the moment and our previous
     WYSIWYG editor has been removed. Please paste
     your tokens into the text area below, submit and finish your template by accessing it in the
