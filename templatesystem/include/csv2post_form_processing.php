@@ -1016,7 +1016,7 @@ function csv2post_form_ECI_free_step5_titletemplate(){
             return false;
         }
         
-        
+        csv2post_update_default_titletemplate($csv2post_currentproject_code,$template_id);
         
         $csv2post_ecisession_array['nextstep'] = 7;
         
