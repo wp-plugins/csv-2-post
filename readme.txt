@@ -101,18 +101,35 @@ first plugin was created in 2009 and was halted pending re-development.
 * This version fixes a conflict with the Wordpress media manager on all pages, possible only in or worse in Wordpress 3.5
 
 == Changelog ==
+
+= 6.7.7 =
+* From The Developers
+    * Released 12th January 2012
+* Support Changes
+    * None
+* Fixes
+    * Form submission is now processed using a function called by add_action('admin_init','csv2post_include_form_processing_php'). csv2post_include_form_processing_php() had been moved to csv2post.php just the other day but at the point of processing not all of Wordpress has loaded and some errors occured including when creating content templates.  
+    * ECI: new content template is now setup as the projects default content template, fixing the issue with empty content during post creation
+    * ECI: new title template is now setup as the projects default title template, fixing the issue with empty content during post creation                
+* Feature Changes
+    * ECI: part one notice now explains to the user that they should complete the ECI process now before working on other data import jobs if they intend to finish their current ECI project. This is required due to the "Current Default Data Import Job" or "Current Default Data Import Project" which the plugin stores in order to configure the interface per project and avoid the user needing to switch between them.
+    * ECI: added notice confirming content template created or not on failure
+* Technical Changes
+    * csv2post_include_form_processing_php() moved from page load functions to csv2post.php in attempt to processing post submission earlier and improve the loaded page based on changes made during processing.
+    * csv2post_save_dataimportjob() now updates the global $csv2post_currentjob_code, when the job is saved 
+
 = 6.7.6 =
 * From The Developers
     * Ironing out some issues with version 6.7.4 hence .5 and .6 coming so quickly. There was a lot of changes in that version.
     * Also trying to get the plugins page on Wordpress.org to show our new banner, hopefully this version triggers it to display.* New Features
 * Support Changes
-    * 
+    * None
 * Fixes
     * Two errors fixed which were causing some tabs to stop working         
 * Feature Changes
-    * 
+    * None 
 * Technical Changes
-    * 
+    * None
     
 = 6.7.5 =
 * From The Developers
@@ -120,12 +137,12 @@ first plugin was created in 2009 and was halted pending re-development.
 * New Features
     * Assets folder and plugin page banner added (for Wordpress.org) 
 * Support Changes
-    * 
+    * None
 * Fixes
     * Media manager now opens 
     * Easy CSV Importer no longer has error at end and fails to create posts           
 * Feature Changes
-    * 
+    * None
 * Technical Changes
     * Moved wp_print_scripts from end of csv2post_admin_menu() to csv2post.php in order to finish the approach of loading scripts on CSV 2 POST pages only and preventing conflict causing media loader to stop working
     * csv2post_form_ECI_free_step2_confirmformat() now adds correct table name to the project array, was adding file name rather than csv2post_$code

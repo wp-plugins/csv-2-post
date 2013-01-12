@@ -1622,13 +1622,16 @@ function csv2post_get_dataimportjob_headers_singlefile($jobcode,$csvfile_name){
 * @param string $code
 * @returns boolean, true if success or false if failed
 */
-function csv2post_save_dataimportjob($jobarray,$code){
+function csv2post_save_dataimportjob($jobarray,$code){            
     $jobarray_seralized = maybe_serialize($jobarray);
     $result = update_option('csv2post_' . $code,$jobarray_seralized);
     $wperror_result = csv2post_is_WP_Error($result);
     if($wperror_result){
         return false;
     }else{
+        // update current job code
+        global $csv2post_currentjob_code;
+        $csv2post_currentjob_code = $code;
         return true;
     }
 } 

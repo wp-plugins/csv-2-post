@@ -1,10 +1,10 @@
 <?php
-function csv2post_page_toppage(){csv2post_include_form_processing_php();require_once( WTG_C2P_DIR.'pages/pagemain/csv2post_main.php' );}
-function csv2post_page_data(){csv2post_include_form_processing_php();require_once( WTG_C2P_DIR.'pages/data/csv2post_main_data.php' );}
-function csv2post_page_projects(){csv2post_include_form_processing_php();require_once( WTG_C2P_DIR.'pages/projects/csv2post_main_projects.php' );}                
-function csv2post_page_creation(){csv2post_include_form_processing_php();require_once( WTG_C2P_DIR.'pages/creation/csv2post_main_creation.php' );}
-function csv2post_page_install(){csv2post_include_form_processing_php();require_once( WTG_C2P_DIR.'pages/install/csv2post_main_install.php' );}
-function csv2post_page_more(){csv2post_include_form_processing_php();require_once( WTG_C2P_DIR.'pages/more/csv2post_main_more.php' );}
+function csv2post_page_toppage(){require_once( WTG_C2P_DIR.'pages/pagemain/csv2post_main.php' );}
+function csv2post_page_data(){require_once( WTG_C2P_DIR.'pages/data/csv2post_main_data.php' );}
+function csv2post_page_projects(){require_once( WTG_C2P_DIR.'pages/projects/csv2post_main_projects.php' );}                
+function csv2post_page_creation(){require_once( WTG_C2P_DIR.'pages/creation/csv2post_main_creation.php' );}
+function csv2post_page_install(){require_once( WTG_C2P_DIR.'pages/install/csv2post_main_install.php' );}
+function csv2post_page_more(){require_once( WTG_C2P_DIR.'pages/more/csv2post_main_more.php' );}
 
 /**
 * Wordpress navigation menu

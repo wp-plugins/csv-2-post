@@ -1002,11 +1002,21 @@ function csv2post_form_ECI_free_step6_seo(){
 function csv2post_form_ECI_free_step5_titletemplate(){
     if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreesetuptitletemplate' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
 
+        global $csv2post_currentproject_code;
+        
         $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
         
         $file = $csv2post_ecisession_array['filenamenoext'];
         
-        csv2post_insert_titletemplate($file . ' ' . csv2post_date(),'#'.$_POST['csv2post_csvfileheader_eci_pair_description_'.$file]);
+        $template_id = csv2post_insert_titletemplate($file . ' ' . csv2post_date(),'#'.$_POST['csv2post_csvfileheader_eci_pair_description_'.$file]);
+        
+        if(!is_numeric($template_id)){
+            csv2post_notice_postresult('error','Title Template Not Created','A new title template could not be created. Please report
+            this issue and get help before continuing.');
+            return false;
+        }
+        
+        
         
         $csv2post_ecisession_array['nextstep'] = 7;
         
@@ -1024,6 +1034,8 @@ function csv2post_form_ECI_free_step5_titletemplate(){
 function csv2post_form_ECI_free_step4_contenttemplate(){
     if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreesetupcontenttemplate' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
 
+        global $csv2post_currentproject_code;
+        
         $csv2post_ecisession_array = csv2post_SETTINGS_get_eciarray();
 
         $file = $csv2post_ecisession_array['filenamenoext'];
@@ -1036,13 +1048,25 @@ function csv2post_form_ECI_free_step4_contenttemplate(){
         $free_content_template = str_replace('x-IMAGE-x','#'.$_POST['csv2post_csvfileheader_eci_pair_image_'.$file],$free_content_template);
         $free_content_template = str_replace('x-LINK-x','#'.$_POST['csv2post_csvfileheader_eci_pair_link_'.$file],$free_content_template);
                 
-        csv2post_insert_post_contenttemplate($free_content_template,$file . ' ' . csv2post_date());
+        $template_id = csv2post_insert_post_contenttemplate($free_content_template,$file . ' ' . csv2post_date());
   
+        if(!is_numeric($template_id)){
+            csv2post_notice_postresult('error','Content Template Not Created','A new content template could not be created. Please report
+            this issue and get help before continuing.');
+            return false;
+        }
+        
+        csv2post_update_default_contenttemplate($csv2post_currentproject_code,$template_id); 
+         
         $csv2post_ecisession_array['nextstep'] = 5;
         
         // update the ECI session array
         csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
 
+        csv2post_notice_postresult('error','Content Template Created','A new content template was created
+        and set as your projects default template. You may edit the template under Content Templates in the
+        main Wordpress menu, it is a post type.');
+            
         return false;
     }else{
         return true;
@@ -1331,7 +1355,11 @@ function csv2post_form_ECI_free_step1_uploadcsvfile(){
         csv2post_option('csv2post_ecisession','update',$csv2post_eci_session_array);
         
         // upload is a success
-        csv2post_notice('CSV file has been uploaded, please proceed to the next step.','success','Large','CSV File Uploaded');
+        csv2post_notice('CSV file has been uploaded, you can proceed to the next step. <br /><br />Please note
+        that you cannot move between this ECI screen and other screens in order to work with multiple
+        Data Import Jobs or Post Creation Projects. You must complete the ECI process and only then 
+        use other screens to work on different projects. You can ignore this message if you have no
+        intention of working with multiple Data Import Jobs or do not use the other screens.','success','Large','CSV File Uploaded');
 
         return false;
     }else{

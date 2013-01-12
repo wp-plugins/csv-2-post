@@ -191,6 +191,8 @@ function csv2post_create_posts_basic($project_code,$request_method){
             csv2post_post_add_metadata_basic_seo($project_code,$record_array,$my_post['ID']);
         }                                  
 
+        var_dump($my_post['ID']);
+        
         // put the post id into variable for returning as the $my_post object is destroyed
         $post_id = $my_post['ID'];
         
