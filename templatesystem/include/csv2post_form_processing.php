@@ -130,8 +130,8 @@ if($cont){
     // Save tag creation rules
     $cont = csv2post_form_save_tag_rules();
     
-    // Save a new HTML shortcode - this one offers a shortcode showing shortcode name (no need for user to enter values in shortcode)
-    $cont = csv2post_form_save_htmlshortcode();
+    // Save a new spinner (text spin)
+    $cont = csv2post_form_save_textspinner();
     
     // Deletes random advanced shortcode rules
     $cont = csv2post_form_delete_randomadvanced_shortcoderules();
@@ -2722,16 +2722,16 @@ function csv2post_form_delete_randomadvanced_shortcoderules(){
             global $csv2post_textspin_array;
             if(is_array($_POST['csv2post_shortcodeadvanced_delete'])){
                 foreach($_POST['csv2post_shortcodeadvanced_delete'] as $key => $shortcode_name){
-                    if(isset($csv2post_textspin_array['randomvalue'][ $shortcode_name ])){
-                        unset($csv2post_textspin_array['randomvalue'][ $shortcode_name ]);
+                    if(isset($csv2post_textspin_array['spinners'][ $shortcode_name ])){
+                        unset($csv2post_textspin_array['spinners'][ $shortcode_name ]);
                     }        
                 }
                 csv2post_update_option_textspin($csv2post_textspin_array);
                 csv2post_notice('All selected advanced random value shortcode rules have been deleted.','success','Large','Shortcode Rules Deleted','','echo');
                 return false;    
             }else{
-                if(isset($csv2post_textspin_array['randomvalue'][ $_POST['csv2post_shortcodeadvanced_delete'] ])){
-                    unset($csv2post_textspin_array['randomvalue'][ $_POST['csv2post_shortcodeadvanced_delete'] ]);
+                if(isset($csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodeadvanced_delete'] ])){
+                    unset($csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodeadvanced_delete'] ]);
                     csv2post_update_option_textspin($csv2post_textspin_array);
                     csv2post_notice('The selected advanced random value shortcode rule has been deleted.','success','Large','Shortcode Rules Deleted','','echo');
                     return false;
@@ -2748,14 +2748,15 @@ function csv2post_form_delete_randomadvanced_shortcoderules(){
 }  
   
 /**
-* Save a new HTML shortcode - this one offers a shortcode showing shortcode name (no need for user to enter values in shortcode) 
+* Save a new HTML shortcode - this one offers a shortcode showing shortcode name (no need for user to enter values in shortcode)
+* 1. Ignore ['spinners'], both cycled and random is in this node for now
 */
-function csv2post_form_save_htmlshortcode(){
+function csv2post_form_save_textspinner(){
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'createrandomvalueshortcodes'){
         
         // error if name not entered
         if(!isset($_POST['csv2post_shortcodename']) || $_POST['csv2post_shortcodename'] == '' || $_POST['csv2post_shortcodename'] == ' '){
-            csv2post_notice('You did not enter a shortcode name, please enter a name that will help you remember what values you have setup.','error','Large','No Shortcode Name Submitted','','echo',false);    
+            csv2post_notice('You did not enter a spinner name, please enter a name that will help you remember what values you have setup.','error','Large','No Shortcode Name Submitted','','echo',false);    
             return false;// stops further post processing
         }
         
@@ -2774,7 +2775,7 @@ function csv2post_form_save_htmlshortcode(){
         
         // if name already exists
         global $csv2post_textspin_array;
-        if(isset($csv2post_textspin_array['randomvalue'][ $_POST['csv2post_shortcodename'] ])){
+        if(isset($csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ])){
             csv2post_notice('The shortcode name you submitted already exists, please use a different name or delete the existing shortcode.','warning','Large','Shortcode Name Exists Already','','echo');
             return false;
         }
@@ -2783,21 +2784,57 @@ function csv2post_form_save_htmlshortcode(){
         for ($i = 1; $i <= 8; $i++) {
             if(isset($_POST['csv2post_textspin_v' . $i]) && $_POST['csv2post_textspin_v' . $i] != NULL && $_POST['csv2post_textspin_v' . $i] != ''){
                 // dont use for loop $i as key because some values may not be set
-                $csv2post_textspin_array['randomvalue'][ $_POST['csv2post_shortcodename'] ]['values'][] = $_POST['csv2post_textspin_v' . $i];   
+                $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['values'][] = $_POST['csv2post_textspin_v' . $i];   
             }
-        }        
+        } 
         
+        // is a cycle wanted for this spinner rather than randomising
+        $cycle = false;
+        if(isset($_POST['csv2post_radio_spinnercycleswitch']) && $_POST['csv2post_radio_spinnercycleswitch'] == 'on'){
+            $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['cycle']['status'] = true;
+        }
+        
+        // get the spinners delay range
+        $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay'] = false;
+        $min = 0;
+        $max = 0;
+        $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['min'] = 0;
+        $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['max'] = 0;        
+        if(isset($_POST['csv2post_increment_range_spinnerdelay'])){
+            $removed_spaces = str_replace(' ','',$_POST['csv2post_increment_range_spinnerdelay']);
+            $range_array = explode('-',$removed_spaces);
+            
+            csv2post_var_dump($range_array);
+            
+            $min = $range_array[0];
+            $max = $range_array[1];
+            
+            // if the values are zero we do not monitor delay, avoiding a meta value being created per post
+            if($min == 0 && $max == 0){
+                $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['status'] = false;
+                $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['min'] = 0;
+                $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['max'] = 0;    
+            }else{
+                $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['status'] = true;
+                $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['min'] = $min;
+                $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['max'] = $max;
+            }  
+        }
+        
+        // set the spinner type (advanced: has cycle and delay but not nested values)
+        $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['type'] = 'advanced';
+                        
         csv2post_update_option_textspin($csv2post_textspin_array);      
 
-        csv2post_notice('You saved a new Random Value Shortcode named ' . $_POST['csv2post_shortcodename'] . '. You
+        csv2post_notice('You saved a new spinner named ' . $_POST['csv2post_shortcodename'] . '. You
         can use this shortcode by copying and pasting this bold text: <br />
-        <strong>[csv2post_random_advanced name="'.$_POST['csv2post_shortcodename'].'"]</strong>','success','Large','Random Value Shortcode Created','','echo');
+        <strong>[csv2post_spinner_advanced name="'.$_POST['csv2post_shortcodename'].'"]</strong>','success','Large','Spinner Settings Saved','','echo');
 
         return false;
     }else{
         return true;
     }       
-}
+}         
   
 /**
 * Saves Multiple File Project panel - the configuration options that create relationships between tables
@@ -4580,26 +4617,7 @@ function csv2post_form_createcontentfolder(){
     }else{
         return true;
     }    
-} 
-
-/**
-* Install Plugin - initial post submission validation  
-*/
-function csv2post_form_installplugin(){   
-    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'install' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'premiumuseractivation'){
-        global $csv2post_plugintitle;
-        
-        if(!current_user_can('activate_plugins')){
-            csv2post_notice(__('You do not have the required permissions to activate '.$csv2post_plugintitle.'. The Wordpress role required is activate_plugins, usually granted to Administrators.'), 'warning', 'Large', false);
-        }else{                  
-            csv2post_process_full_install();                
-        }
-        
-        return false;
-    }else{
-        return true;
-    }       
-}    
+}  
      
 /**
 * Log File Installation Post Validation
@@ -5064,21 +5082,6 @@ function csv2post_process_full_uninstall(){
 }
 
 /**
- * Processes FULL installation request
- */
-function csv2post_process_full_install(){
-    global $csv2post_plugintitle;?>
-    <div id="csv2post_dialogoutcome" title="Outcome For <?php echo $_POST['csv2post_hidden_panel_title'];?>">
-        <p>Welcome to the <?php echo $csv2post_plugintitle;?> import plugin for Wordpress. Installation results are below, please
-        report any notifications that are not green (green notifications equal 100% success). Please click
-        Continue. You will be taking to the Easy Configuration Questions screen. The questions act like settings,
-        allowing <?php echo $csv2post_plugintitle;?> to adapt to your needs by hiding or displaying features.</p>
-      <?php csv2post_install();?>     
-    </div><?php
-   csv2post_jquerydialog_results(csv2post_link_toadmin('csv2post','#tabs-0'),'Continue');
-}
-
-/**
 * Reset Easy CSV Importer session array 
 */
 function csv2post_form_reseteci(){
@@ -5098,8 +5101,7 @@ function csv2post_form_plugin_update(){
     if(isset( $_POST['csv2post_plugin_update_now'] ) && $_POST['csv2post_plugin_update_now'] == 'a43bt7695c34'){
 
         // re-install tab menu
-        csv2post_INSTALL_tabmenu_settings();
-        
+        csv2post_INSTALL_tabmenu_settings();    
         // re-install admin settings
         csv2post_INSTALL_admin_settings();
         
@@ -5116,5 +5118,28 @@ function csv2post_form_plugin_update(){
     }else{
         return true;
     }     
+}   
+
+
+
+/**
+* Install Plugin - initial post submission validation  
+*/
+function csv2post_form_installplugin(){   
+    if(isset( $_POST['csv2post_plugin_install_now'] ) && $_POST['csv2post_plugin_install_now'] == 'z3sx4bhik970'){
+        global $csv2post_plugintitle;
+        
+        if(!current_user_can('activate_plugins')){
+            csv2post_notice(__('You do not have the required permissions to activate '.$csv2post_plugintitle.'. 
+            The Wordpress role required is activate_plugins, usually granted to Administrators. Please
+            contact your Web Master or contact info@csv2post.com if you feel this is a fault.'), 'warning', 'Large', false);
+        }else{                  
+            csv2post_install();                
+        }
+        
+        return false;
+    }else{
+        return true;
+    }       
 }   
 ?>

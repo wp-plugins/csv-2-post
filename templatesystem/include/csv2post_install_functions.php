@@ -51,7 +51,7 @@ function csv2post_install(){
 
     $minor_fails = 0;// count minor number of failures, if 3 or more then we'll call it a failed install
     $overall_install_result = true;// used to indicate overall result
-     
+
     #################################################
     #                                               #
     #       INSTALL SCHEDULE ARRAY NOTICE ARRAY     #
@@ -62,12 +62,12 @@ function csv2post_install(){
         if( !csv2post_option('csv2post_schedule','add',serialize($csv2post_schedule_array)) ){
              
             // should never happen - csv2post_uninstall() used at the beginning of csv2post_install()
-            echo csv2post_notice('Schedule settings are already installed, no changes were made to those settings.','warning','Tiny',false,'','return');
-            
+            csv2post_notice('Schedule settings are already installed, no changes were made to those settings.','warning','Tiny',false,'','echo');
+
             $overall_install_result = false;          
        
         }else{
-            echo csv2post_notice('Installed the schedule settings','success','Tiny',false,'','return');
+            csv2post_notice('Installed the schedule settings','success','Tiny',false,'','echo');
         }
     }
     
@@ -80,12 +80,12 @@ function csv2post_install(){
     if( !csv2post_option('csv2post_notifications','add',serialize($csv2post_persistent_array)) ){
          
         // should never happen - csv2post_uninstall() used at the beginning of csv2post_install()
-        echo csv2post_notice('Notification settings are already installed, no changes were made to those settings.','warning','Tiny',false,'','return');
+        csv2post_notice('Notification settings are already installed, no changes were made to those settings.','warning','Tiny',false,'','echo');
         
         $overall_install_result = false;          
    
     }else{
-        echo csv2post_notice('Installed the notification settings','success','Tiny',false,'','return');
+        csv2post_notice('Installed the notification settings','success','Tiny',false,'','echo');
     }  
     
     #################################################
@@ -99,12 +99,12 @@ function csv2post_install(){
     if( !csv2post_option('csv2post_ecisession','add',serialize($csv2post_eci_session_array)) ){
          
         // should never happen - csv2post_uninstall() used at the beginning of csv2post_install()
-        echo csv2post_notice('Easy CSV Importer settings are already installed, no changes were made to those settings.','warning','Tiny',false,'','return');
+        csv2post_notice('Easy CSV Importer settings are already installed, no changes were made to those settings.','warning','Tiny',false,'','echo');
         
         $overall_install_result = false;          
    
     }else{
-        echo csv2post_notice('Installed the Easy CSV Importer settings','success','Tiny',false,'','return');
+        csv2post_notice('Installed the Easy CSV Importer settings','success','Tiny',false,'','echo');
     }       
 
     // theme - only change the theme value when it is not set      
@@ -147,10 +147,10 @@ function csv2post_install(){
     }
 
     if($overall_install_result == false){
-        echo csv2post_notice( 'You are attempting to run a First-Time Install but there was a problem. If you have installed the plugin previously, it
-            could be because there is a trace of that installation still in your blog. Please use the Un-Install feature then try again. First-Time
-            Installation is designed only for first time use on a blog unless you have used the Un-Install feature to remove any trace of a previous
-            installation.','error','Large','Installation Problems','','return');
+        csv2post_notice( 'You are attempting to run a First-Time Install but there was a problem. If you have installed the plugin previously, it
+        could be because there is a trace of that installation still in your blog. Please use the Un-Install feature then try again. First-Time
+        Installation is designed only for first time use on a blog unless you have used the Un-Install feature to remove any trace of a previous
+        installation.','error','Large','Installation Problems','','echo');
     }
 
     return $overall_install_result;

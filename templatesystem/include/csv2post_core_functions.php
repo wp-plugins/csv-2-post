@@ -263,12 +263,50 @@ function csv2post_exit_forbidden_request($file = 'Unknown'){
 function csv2post_debugmode(){
     global $csv2post_debug_mode;
     if($csv2post_debug_mode){
-        global $wpdb;
+        //global $wpdb;
         ini_set('display_errors',1);
         error_reporting(E_ALL);
         //$wpdb->show_errors();
         //$wpdb->print_error();
     }
+}
+
+/**
+* Get random values from giving array
+* 
+* @param mixed $array
+* @param mixed $number number of random values to get
+*/
+function csv2post_ARRAYS_random_value($array,$number = 1){
+    $rand_key = array_rand( $array,$number );
+    return $array[ $rand_key ];      
+}
+
+/**
+* Gets the following value that comes after the giving value.
+* Requires a current value for which its key will be established. 
+* Using the key we can establish the next value.
+* 
+* 1. Array keys must be numeric and incremented. If doubt establish another solution. 
+* 
+* @returns false on failure to establish the next value
+*/
+function csv2post_ARRAYS_get_next_value($array,$current_value){
+
+    if(!is_array($array)){return $current_value;}
+    
+    // get the key for the current value
+    $current_value_key = array_search ( $current_value , $array , true );
+    
+    if(!$current_value_key || !is_numeric($current_value_key)){return $current_value;}
+    
+    $next_key = $current_value_key + 1;
+
+    if(!isset($array[$next_key])){
+        return $current_value;    
+    }
+    
+    return $array[$next_key];
 }
 
 /**

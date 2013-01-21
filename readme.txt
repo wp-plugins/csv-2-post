@@ -3,7 +3,7 @@ Contributors: Zara Walsh
 Donate link: http://www.csv2post.com
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Tags: CSV 2 POST, CSV 2 POST Plugin, CSV 2 POST Software, CSV2POST, wordpress data import,wordpress data importer,auto blogging,auto blogger,autoblog,mass create posts,mass post creation,csv file importer,csv file data import,post injection,import spreadsheet,excel file import,excel import,www.csv2post.com,CSV2POST,wordpresscsv import,wordpress import plugin,wordpress data import tool,wordpress data import plugin,wordpress post creation plugin
+Tags: CSV 2 POST, CSV2POST, wordpress data import,wordpress data importer,auto blogging,auto blogger,autoblog,mass create posts,mass post creation,csv file importer,csv file data import,post injection,import spreadsheet,excel file import,excel import,www.csv2post.com,CSV2POST,wordpresscsv import,wordpress import plugin,wordpress data import tool,wordpress data import plugin,wordpress post creation plugin
 Requires at least: 3.3.1
 Tested up to: 3.5.1
 Stable tag: trunk
@@ -102,9 +102,22 @@ first plugin was created in 2009 and was halted pending re-development.
 
 == Changelog ==
 
+= 6.7.8 =
+* From The Developers
+    * Released 21st January 2013
+* Support Changes
+    * None
+* Fixes
+    * None                
+* Feature Changes
+    * Installation process improved
+    * Now using the term "Text Spinners" instead of text spin short-codes or one time spin tokens. All text spinning will start by creating a spinner which we can apply settings too and customize. More features to do that coming.
+* Technical Changes
+    * None
+
 = 6.7.7 =
 * From The Developers
-    * Released 12th January 2012
+    * Released 12th January 2013
 * Support Changes
     * None
 * Fixes

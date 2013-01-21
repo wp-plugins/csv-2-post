@@ -323,7 +323,7 @@ function csv2post_notice($message,$type = 'success',$size = 'Extra',$title = fal
             return csv2post_notice_display($type,$helpurl,$size,$title,$message,$clickable,$persistent);
         }else{
             global $csv2post_notice_array;
-                
+
             // establish next array key
             $next_key = 0;
             if(isset($csv2post_notice_array['notifications'])){

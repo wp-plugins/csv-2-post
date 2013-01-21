@@ -1,20 +1,52 @@
 <?php 
-### TODO:HIGHPRIORITY, move the update process so that it is displayed on any page and page contents hidden
-########################################################
-#                                                      #
-#             PERFORM PLUGIN UPDATE                    #
-#                                                      #
-########################################################
+global $csv2post_adm_set,$csv2post_is_installed,$csv2post_currentversion,$csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$wtgtp_pluginforum,$wtgtp_pluginblog,$csv2post_options_array,$csv2post_nav_type,$csv2post_is_free,$csv2post_theme_array,$csv2post_projectslist_array,$csv2post_schedule_array;
+        
+$installed_version = csv2post_SETTING_get_version();
+                      
+// this switch is set to false when we detect first time install or update is required
 $display_main_screens = true;
-$installed_version = csv2post_SETTING_get_version();                
-global $csv2post_currentversion,$csv2post_is_free;
-if($csv2post_currentversion > $installed_version){ 
 
-    ########################################################
-    #                                                      #
-    #            INITIAL UPDATE OPTIONS DISPLAY            #
-    #                                                      #
-    ########################################################
+########################################################
+#                                                      #
+#     REQUEST USER TO INITIATE FIRST TIME INSTALL      #
+#                                                      #
+########################################################
+if(!$csv2post_is_installed && !isset($_POST['csv2post_plugin_install_now'])){# we do not enter here if installation was submitted, this allows the resulting notices to be displayed under page header else they come before all admin content
+
+    // hide the main screens until update complete
+    $display_main_screens = false;
+    
+    csv2post_n_incontent('Thank you for adding CSV 2 POST to your Wordpress blog.   <br /><br />CSV 2 POST is not a small plugin.
+    It contains self diagnostic functions, monitors itself more than most plugins and has the ability to adapt to
+    every user. All of these things are important to ensure long term auto-blogging is stable,
+    reliable and flexible in terms of making changes long after posts are created. Much of this plugins ability
+    is not obvious, hidden and can be put to use by hacking (we support hacking of the plugin) or request interface changes to make use of code
+    functions that already exist. Please feedback to info@csv2post.com and keep us update on your own project so
+    we know how to make all of this work best for you.<br /><br />
+    <strong>Changes made in your blog will be confirmed after installation. No changes are made that can risk
+    your main Worpress installation and all changes can be reversed.</strong>','info','Large','Welcome');
+        
+    csv2post_jquery_button();?>
+
+    <form class="csv2post_form" method="post" name="csv2post_plugin_install" action="">
+        <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">
+        <input type="hidden" id="csv2post_plugin_install_now" name="csv2post_plugin_install_now" value="z3sx4bhik970">
+
+        <div class="jquerybutton">
+            <button id="csv2post_install_plugin_button">Install CSV 2 POST</button>
+        </div>
+        
+    </form>
+    
+<?php       
+    
+    
+}elseif($csv2post_currentversion > $installed_version){         
+########################################################
+#                                                      #
+#  REQUEST USER TO INITIATE PLUGIN UPDATE IF REQUIRED  #
+#                                                      #
+######################################################## 
     
     // hide the main screens until update complete
     $display_main_screens = false;
@@ -88,9 +120,6 @@ if($display_main_screens){
     #               DISPLAY MAIN SCREENS                   #
     #                                                      #
     ########################################################
- 
-    global $csv2post_adm_set,$csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$wtgtp_pluginforum,$wtgtp_pluginblog,$csv2post_options_array,$csv2post_nav_type,$csv2post_is_free,$csv2post_theme_array,$csv2post_projectslist_array,$csv2post_schedule_array;
-                      
     $pageid = 'main';// used to access variable.php configuration
     $pagefolder = 'pagemain';
 

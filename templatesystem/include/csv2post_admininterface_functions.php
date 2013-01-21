@@ -20,13 +20,20 @@ function csv2post_admin_menu(){
     $installed_version = csv2post_SETTING_get_version();                
     global $csv2post_currentversion;
   
-    if(!$csv2post_is_installed){   
+    if(!$csv2post_is_installed && !isset($_POST['csv2post_plugin_install_now'])){   
        
-        // if plugin not installed (manual action by admin) then display install page csv2post_is_installed set
-        add_menu_page(__('Install',$n.$csv2post_mpt_arr['menu']['install']['slug']), __('CSV 2 POST ' . $csv2post_mpt_arr['menu']['install']['menu'],'install'), 'administrator', $csv2post_mpt_arr['menu']['install']['slug'], 'csv2post_page_install' );
-
-    }elseif($csv2post_currentversion > $installed_version || isset($_POST['csv2post_plugin_update_now']) && $_POST['csv2post_plugin_update_now'] == 'a43bt7695c34'){
-
+        // if plugin not installed
+        add_menu_page(__('Install',$n.'install'), __('CSV 2 POST Install','home'), 'administrator', 'csv2post', 'csv2post_page_toppage' );
+        
+    }elseif(isset($csv2post_currentversion) 
+    && isset($installed_version) 
+    && $installed_version != false
+    && $csv2post_currentversion > $installed_version 
+    && !isset($_POST['csv2post_plugin_update_now'])){
+        
+        // if $installed_version = false it indicates no installation so we should not be displaying an update screen
+        // update screen will be displayed after installation submission if this is not in place
+        
         // main is always set in menu, even in extensions main must exist
         add_menu_page(__('Update',$n.'update'), __('CSV 2 POST Update','home'), 'administrator', 'csv2post', 'csv2post_page_toppage' );
         

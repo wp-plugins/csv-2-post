@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: CSV 2 POST
-Version: 6.7.7
+Version: 6.7.8
 Plugin URI: http://www.csv2post.com
 Description: CSV 2 POST released 2012 by Zara Walsh and Ryan Bayne
 Author: Zara Walsh
@@ -26,11 +26,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 This license does not apply to the paid edition which is bundled with a seperate license file.
 */
-  
+
 // package variables 
 $csv2post_debug_mode = false;// boolean true or false 
 $csv2post_is_dev = false;// boolean, true displays more panels with even more data i.e. array dumps
-$csv2post_currentversion = '6.7.7';
+$csv2post_currentversion = '6.7.8';
 $csv2post_is_free_override = false;// change to true for free edition setup when fulledition folder present
                  
 // other variables required on installation or loading
@@ -78,7 +78,7 @@ if(!defined("WTG_C2P_CONTENTFOLDER_DIR")){define("WTG_C2P_CONTENTFOLDER_DIR",WP_
 if(!defined("WTG_C2P_IMAGEFOLDER_URL")){define("WTG_C2P_IMAGEFOLDER_URL",WP_PLUGIN_URL.'/'.WTG_C2P_FOLDERNAME.'/templatesystem/images/');}// directory path to storage folder inside the wp_content folder 
 if(!defined("WTG_C2P_DATEFORMAT")){define("WTG_C2P_DATEFORMAT",'Y-m-d H:i:s');}
 if(!defined("WTG_C2P_EXTENSIONS")){define("WTG_C2P_EXTENSIONS",get_option('csv2post_extensions'));}
-                                                                           
+                        
 // disable debug mode during Ajax requests or on public side 
 if(!is_admin() || defined('DOING_AJAX') && DOING_AJAX){
     $csv2post_debug_mode = false;
@@ -90,7 +90,7 @@ if(file_exists(WTG_C2P_DIR . 'fulledition') && $csv2post_is_free_override == fal
 }else{
     $csv2post_is_free = true;
 }  
-
+                          
 ##########################################################################################
 #                                                                                        #
 #              INCLUDE WEBTECHGLOBAL WORDPRESS CORE LIBRARY FUNCTION FILES               #
@@ -123,10 +123,10 @@ require_once(WTG_C2P_DIR.'templatesystem/include/csv2post_file_functions.php');/
 require_once(WTG_C2P_DIR.'templatesystem/include/csv2post_post_functions.php');// post creation,update related functions              
 
 $csv2post_adm_set = csv2post_get_option_adminsettings();# installs admin settings record if not yet installed, this will happen on plugin being activated
-
+                    
 // error display variables, variable that displays maximum errors is set in main file 
 csv2post_debugmode();
-            
+                     
 ##########################################################################################
 #                                                                                        #
 #                        INCLUDE FULL EDITION FUNCTION FILES                             #
@@ -187,7 +187,7 @@ if(WTG_C2P_EXTENSIONS != 'disable' && file_exists(WTG_C2P_CONTENTFOLDER_DIR . '/
         include_once(WTG_C2P_CONTENTFOLDER_DIR . '/extensions/ryanair/configuration.php');            
     }
 }
-
+    
 ####################################################################################################
 ####                                                                                            ####
 ####           ADMIN THAT MUST COME FIRST AND IS NOT APPLICABLE TO JUST CSV 2 POST PAGES        ####
@@ -260,8 +260,10 @@ if(!$csv2post_is_free){
     // add less advanced shortcodes, those that use values in shortcode itself
     add_shortcode( 'csv2post_random_basic', 'csv2post_shortcode_textspinning_randombasic' );
     
-    if(isset($csv2post_textspin_array['randomvalue'])){
-        add_shortcode( 'csv2post_random_advanced', 'csv2post_shortcode_textspinning_randomadvanced' );    
+    if(isset($csv2post_textspin_array['spinners'])){
+        add_shortcode( 'csv2post_spinner_advanced', 'csv2post_shortcode_textspinning_advanced' );
+        add_shortcode( 'csv2post_random_advanced', 'csv2post_shortcode_textspinning_randomadvanced' );# depreciated version 6.7.8    
+        add_shortcode( 'csv2post_spinner_nested', 'csv2post_shortcode_textspinner_nested' );
     }
 }
 
