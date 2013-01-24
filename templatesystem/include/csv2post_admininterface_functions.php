@@ -143,32 +143,25 @@ function csv2post_navigation_jquery($thepagekey){
     </script>
                 
     <div id="csv2post_maintabs">
-    <?php 
-    ##########################################################
-    #                                                        #
-    #          ADD HEADERS FIRST not currently in use        #
-    #                                                        #
-    ##########################################################
-    if($csv2post_mpt_arr['menu'][$thepagekey]['headers'] == true){
+        <?php 
+        ##########################################################
+        #                                                        #
+        #          ADD HEADERS FIRST not currently in use        #
+        #                                                        #
+        ##########################################################
+        if($csv2post_mpt_arr['menu'][$thepagekey]['headers'] == true){
 
-        foreach($csv2post_mpt_arr['menu'][$thepagekey]['tabs'] as $tab => $values){
+            foreach($csv2post_mpt_arr['menu'][$thepagekey]['tabs'] as $tab => $values){
 
-            $pageslug = $csv2post_mpt_arr['menu'][$thepagekey]['slug'];
-            $tabslug = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['slug'];
-            $tablabel = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['label'];   
+                $pageslug = $csv2post_mpt_arr['menu'][$thepagekey]['slug'];
+                $tabslug = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['slug'];
+                $tablabel = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['label'];   
 
-            if( csv2post_menu_should_tab_be_displayed($thepagekey,$tab) ){
-                                
-                // install menu is handled different
-                ### ??? is this correct, is the install page key not install rather than 1
-                if($thepagekey == 1){?>
-                    <div id="tabs-<?php echo $tab;?>">
-                        <?php echo $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['label'];?>
-                    </div><?php    
-                }        
-            } 
-        }
-    }?>       
+                if( csv2post_menu_should_tab_be_displayed($thepagekey,$tab) ){
+          
+                } 
+            }
+        }?>       
     
     <?php 
     // begin building menu - controlled by jQuery
@@ -182,31 +175,9 @@ function csv2post_navigation_jquery($thepagekey){
         $tablabel = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['label'];   
                                  
         if( csv2post_menu_should_tab_be_displayed($thepagekey,$tab) ){
-               
-            // install menu is handled different
-            if($thepagekey == 'install' ){ 
-             
-                if( $csv2post_is_installed == 'true' ){                
-                    // do not show installation tab
-                    if($tab != 4){ 
-                        echo '<li><a href="'.csv2post_create_adminurl($pageslug,'').'#tabs-'.$tab.'">'.$tablabel.'</a></li>';       
-                    }
-
-                }else{
-                   
-                    // only show installation tab
-                    if($tab == 4){ 
-                        echo '<li><a href="'.csv2post_create_adminurl($pageslug,'').'#tabs-'.$tab.'">'.$tablabel.'</a></li>';       
-                        ++$tab;
-                        // break the loop to prevent loop through further pages
-                        break;
-                    }            
-                }
-                
-            }else{  
-                // default menu build approach
-                echo '<li><a href="'.csv2post_create_adminurl($pageslug,'').'#tabs-'.$tab.'">' . $tablabel . '</a></li>';                                
-            }
+                    
+            // default menu build approach
+            echo '<li><a href="#tabs-'.$tab.'">' . $tablabel . '</a></li>';                                
         }   
             
     }// for each
@@ -1997,34 +1968,8 @@ function csv2post_navigation_css($thepagekey){
         $tablabel = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['label'];   
         
         if($csv2post_mpt_arr['menu'][ $thepagekey ]['tabs'][ $tab ]['display'] == true){
-
-            // TODO:LOWPRIORITY, if( $csv2post_is_activated == 'true' ){    if not fully installed it will be dealt with on status screen          
-            
-            // install menu is handled different
-            if($thepagekey == 'install' ){ 
-             
-                if( $csv2post_is_installed == 'true' ){                
-                    // do not show installation tab
-                    if($tab != 4){ 
-                        echo '<li><a href="'.csv2post_create_adminurl($pageslug,'').'#tabs-'.$tab.'">'.$tablabel.'</a></li>';       
-                    }
-
-                }else{
-                   
-                    // only show installation tab
-                    if($tab == 4){ 
-                        echo '<li><a href="'.csv2post_create_adminurl($pageslug,'').'#tabs-'.$tab.'">'.$tablabel.'</a></li>';       
-
-                        // break the loop to prevent loop through further pages
-                        break;
-                    }            
-                }
-                
-            }else{
                 // default menu build approach
                 echo '<li><a href="'.csv2post_create_adminurl($pageslug,'').'&tabnumber='.$tab.'">' . $tablabel . '</a></li>';                                
-            }
-            
         } 
     }// for each
     

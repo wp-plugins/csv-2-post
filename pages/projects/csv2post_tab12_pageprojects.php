@@ -47,7 +47,7 @@ $jsform_set['noticebox_content'] = 'Please remember to copy and paste text spinn
     csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
     ?> 
     
-    Shortcode Name: <input type="text" name="csv2post_shortcodename" size="40" value="" />
+    Spinner Name: <input type="text" name="csv2post_shortcodename" size="40" value="" />
     <br /><br />
     Value 1: <input type="text" name="csv2post_textspin_v1" size="60" value="" />
     <br />                
@@ -111,7 +111,22 @@ $jsform_set['noticebox_content'] = 'Please remember to copy and paste text spinn
     <p>
         <input type="text" name="csv2post_increment_range_spinnerdelay" id="csv2post_increment_range_spinnerdelay" style="border:0; color:#f6931f; font-weight:bold;" /> (seconds)
     </p>
-                        
+    
+    <h4>Re-spin Tokens</h4>
+    <p>Tokens insert text to the content in database rather than content having short-codes. CSV 2 POST
+    still allows a re-spin and it is done through the plugins schedule system. If you do not plan to use
+    this spinner in the token form, you can ignore this setting.</p>
+    <script>
+    $(function() {
+        $( "#csv2post_radios_spinnercycle_respintokens" ).buttonset();
+    });
+    </script>
+
+    <div id="csv2post_radios_spinnercycle_respintokens">
+        <input type="radio" id="csv2post_radio_spinner_token_respin_on" name="csv2post_radio_spinner_tokenrespinswitch" value="on" /><label for="csv2post_radio_spinner_token_respin_on">Token Re-Spin On</label>    
+        <input type="radio" id="csv2post_radio_spinner_token_respin_off" name="csv2post_radio_spinner_tokenrespinswitch" value="off" /><label for="csv2post_radio_spinner_token_respin_off">Token Re-Spin Off</label>
+    </div>          
+                       
     <?php 
     // add js for dialog on form submission and the dialog <div> itself
     if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
@@ -169,7 +184,16 @@ $jsform_set['noticebox_content'] = 'Deleting advanced text spin rules that have 
             $the_shortcode = '[csv2post_spinner_advanced name="'.$name.'"]'; 
                         
             // display short-code
-            echo '<tr><td><input type="checkbox" name="csv2post_shortcodeadvanced_delete[]" value="'.$name.'" /></td><td><strong>'.$name.'</strong></td><td><strong>'.$the_shortcode.'</strong></td>';
+            echo '<tr>
+                <td>
+                    <input type="checkbox" name="csv2post_shortcodeadvanced_delete[]" value="'.$name.'" />
+                </td>
+                <td>
+                    <strong>'.$name.'</strong>
+                </td>
+                <td>
+                    <strong>'.$the_shortcode.'</strong>
+                </td>';
             
             echo '<td>';
             
@@ -212,25 +236,45 @@ $jsform_set['noticebox_content'] = 'Deleting advanced text spin rules that have 
 //Your key is 1 Your key is 2 Your key is 34 Your key is 35 Your key is 367 Your key is 368
 ?>
 
+<h1>Using Spinners</h1>
+
 <?php 
+csv2post_n_incontent('Please use a Spinner (token or short-code) once in your content unless your
+happy for the same value to be inserted more than once. Right now CSV 2 POST does not count the number of
+spinner in use and ensure each one spins a different value. This is slightly more complex than most people need
+but less us know if you do need it.','warning','Small','Use Spinners Once');
+
 csv2post_n_incontent('Use the spinner names in the list above to generate random values
 during post creation. This method does not change the value during page refresh like the
 shortcode method does. This inserts a permanent value to your content. <br /><br />
 To do this simply add textspin#NAME#textspin to your content template. Replace "NAME" with the name
-of your shortcode below.','info','Small','One Time Spin Method');
+of your shortcode below.','info','Small','Tokens: One Time Spin Method');
+
+csv2post_n_incontent('Activate the Re-Spin setting when creating a Spinner if you plan to use it as
+a token and want re-spin. You should fully understand the limits of this feature added 21st January 2013
+before using it. Spinners like the token method are normally done once during post creation. A value
+is spun and injected into the posts content. This is the case with our tokens however we also have a system
+in place to re-spin the value. It is not without flaw if not used correctly. All spin values must be unique
+among the full content body, else more than just the original spun text will be replaced during re-spin. 
+Individual words are not usually suitable, even 2-3 words may be problematic. We are considering a way around
+this. Please let us know if you would like this ability to get better.
+<br /><br />
+<strong>Do the same as explained for One Time Spin Method, other than activating the Re-spin setting. The
+difference is that the re-spin setting will cause a meta value (custom field) to be added to your post to track
+the last value spun. Meta key is something like csv2post_spinval_SPINNERNAME.</strong>','info','Small','Tokens: Re-spin Method');
 
 csv2post_n_incontent('In this method we add our randomised values to the short-code
 itself in our content template. This short-code is lighter for Wordpress and CSV 2 POST to handle
 than the advanced method but does not allow the growing range of abilities the
 advanced short-code. If you do not need advanced settings, we recommend this ability which uses
 smaller functions and less processing during spin.<br /><br />
-<strong>Example:</strong> [csv2post_random_basic values="red,blue,green,purple,pink,orange"]','info','Small','Basic Short-Code Method');
+<strong>Example:</strong> [csv2post_random_basic values="red,blue,green,purple,pink,orange"]','info','Small','Short-Codes: Basic Method');
 
 csv2post_n_incontent('This example is much like the example above with the values attribute. However
 this one has the values stored in CSV 2 POST settings and goes fishing there for a random value (or cycled value
 if the setting is applied). This method allows us to edit our values with the change being instant to all
 posts using the short-code.<br /><br />
-<strong>Example: </strong> [csv2post_spinner_advanced name="Colors"]','info','Small','Advanced Short-Code Method');
+<strong>Example: </strong> [csv2post_spinner_advanced name="Colors"]','info','Small','Short-Codes: Advanced Method');
 ?>
 
 <?php

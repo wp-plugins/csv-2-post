@@ -102,6 +102,19 @@ first plugin was created in 2009 and was halted pending re-development.
 
 == Changelog ==
 
+= 6.7.9 =
+* From The Developers
+    * Released 24th January 2013
+* Support Changes
+    * None
+* Fixes
+    * Installation improvements
+    * Menu improvement that fixes a newly introduced bug. Main page tab screens were merged into one. The actual reason why this started happening on the main page and not others is still not known. But it has been fixed. I'm considering a server setting possibly causing tabs to behave differently or certain versions of jQuery UI changing behaviour. Please report any issues found.                
+* Feature Changes
+    * None
+* Technical Changes
+    * None
+    
 = 6.7.8 =
 * From The Developers
     * Released 21st January 2013

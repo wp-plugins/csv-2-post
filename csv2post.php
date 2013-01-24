@@ -1,36 +1,36 @@
 <?php
 /*
 Plugin Name: CSV 2 POST
-Version: 6.7.8
+Version: 6.7.9
 Plugin URI: http://www.csv2post.com
-Description: CSV 2 POST released 2012 by Zara Walsh and Ryan Bayne
+Description: CSV 2 POST released 2012 by Zara Walsh
 Author: Zara Walsh
 Author URI: http://www.csv2post.com
-Free Edition License: GPL v3
 
-CSV 2 POST
-Copyright (C) 20011-2012, Zara Walsh - zara@csv2post.com
+CSV 2 POST GPL v3 (free edition license, ignore for any other edition not downloaded from Wordpress.org)
 
-This program is free software: you can redistribute it and/or modify
+This program is free software downloaded from Wordpress.org: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. This means
+it can be provided for the sole purpose of being developed further
+and we do not promise it is ready for any one persons specific needs.
+See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+See <http://www.gnu.org/licenses/>.
 
-This license does not apply to the paid edition which is bundled with a seperate license file.
+This license does not apply to the paid edition which comes with premium
+services not just software. License and agreement is seperate.
 */
 
 // package variables 
 $csv2post_debug_mode = false;// boolean true or false 
 $csv2post_is_dev = false;// boolean, true displays more panels with even more data i.e. array dumps
-$csv2post_currentversion = '6.7.8';
+$csv2post_currentversion = '6.7.9';
 $csv2post_is_free_override = false;// change to true for free edition setup when fulledition folder present
                  
 // other variables required on installation or loading
@@ -170,7 +170,7 @@ if(is_admin()){
     $csv2post_persistent_array = csv2post_get_option_persistentnotifications_array();// holds interface notices/messages, some temporary, some are persistent 
     $csv2post_mpt_arr = csv2post_get_option_tabmenu();
 }
-          
+                  
 ##########################################################################################
 #                                                                                        #
 #                              LOAD EXTENSION CONFIGURATION                              #
@@ -241,14 +241,31 @@ if(is_admin()){
 #             PUBLIC SIDE HOOKS i.e. post updating and other events           #
 #                                                                             #
 ###############################################################################
-if(!$csv2post_is_free){# if you hack this, you will need to write the require functions
-    // run auto post and data updating events if any are due
-    add_action('init', 'csv2post_event_check');
-    // has user disabled public post updating
+if(!$csv2post_is_free){# if you hack this, you will need to write the required functions
+    add_action('init', 'csv2post_event_check');// part of schedule system in paid edition, run auto post and data updating events if any are due
+    
+    // public post updating
+    /*              REMOVED 21st January 2013. New post parser approach now runs all $post object related filtering
     if(!isset($csv2post_project_array['updating']['content']['settings']['public'])
     || $csv2post_project_array['updating']['content']['settings']['public'] == 'on'){
         add_action('the_posts', 'csv2post_posts_publicupdating' );
     }
+    */
+    
+    // Post Parsing (runs functions that alter content, title etc
+    if(!isset($csv2post_adm_set['postfilter']['status'])
+    || $csv2post_adm_set['postfilter']['status'] == true){
+        
+        /**
+        * This will run by default for now (21st January 2013)
+        * For the sake of performance, we need to only run it when required. So all procedures
+        * included, when activated by user, must also activate the post parser by setting status to true
+        * ### TODO:HIGHPRIORITY, have post parsing off by default and active when user actives post updating or spinner token re-spin
+        * If any other parsing procedures required they will also need to activate post parsing
+        * ### TODO:MEDIUMPRIORITY, create a setting to toggle post parsing, over-riding many other procedures but giving user more control over the plugins activity using a single setting
+        */
+        add_action('the_posts', 'csv2post_post_filter' );
+    }    
 }
                      
 ####################################################
@@ -263,7 +280,6 @@ if(!$csv2post_is_free){
     if(isset($csv2post_textspin_array['spinners'])){
         add_shortcode( 'csv2post_spinner_advanced', 'csv2post_shortcode_textspinning_advanced' );
         add_shortcode( 'csv2post_random_advanced', 'csv2post_shortcode_textspinning_randomadvanced' );# depreciated version 6.7.8    
-        add_shortcode( 'csv2post_spinner_nested', 'csv2post_shortcode_textspinner_nested' );
     }
 }
 

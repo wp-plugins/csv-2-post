@@ -316,7 +316,30 @@ $jsform_set['noticebox_content'] = 'You are about to change the permitted event 
     <div id="csv2post_eventtypeactivation_twitterget">
         <input type="radio" id="csv2post_radio1_eventtypeactivation_twitterget" name="csv2post_eventtypes_twitterget" value="1" <?php if(isset($csv2post_schedule_array['eventtypes']['twitterget']['switch']) && $csv2post_schedule_array['eventtypes']['twitterget']['switch'] == 1){echo 'checked';} ?> /><label for="csv2post_radio1_eventtypeactivation_twitterget">Enabled</label>
         <input type="radio" id="csv2post_radio2_eventtypeactivation_twitterget" name="csv2post_eventtypes_twitterget" value="0" <?php if(isset($csv2post_schedule_array['eventtypes']['twitterget']['switch']) && $csv2post_schedule_array['eventtypes']['twitterget']['switch'] == 0 || !isset($csv2post_schedule_array['eventtypes']['twitterget']['switch'])){echo 'checked';} ?> /><label for="csv2post_radio2_eventtypeactivation_twitterget">Disabled</label>    
+    </div>  
+    
+    <h1>Posts</h1>                                                                                                                            
+    <h4>Post Creation</h4>
+    <script>
+    $(function() {
+        $( "#csv2post_eventtypeactivation_postcreation" ).buttonset();
+    });
+    </script>                
+    <div id="csv2post_eventtypeactivation_postcreation">
+        <input type="radio" id="csv2post_radio1_eventtypeactivation_postcreation" name="csv2post_eventtype_postcreation" value="1" <?php if(isset($csv2post_schedule_array['eventtypes']['postcreation']['switch']) && $csv2post_schedule_array['eventtypes']['postcreation']['switch'] == 1){echo 'checked';} ?> /><label for="csv2post_radio1_eventtypeactivation_postcreation">Enabled</label>
+        <input type="radio" id="csv2post_radio2_eventtypeactivation_postcreation" name="csv2post_eventtype_postcreation" value="0" <?php if(isset($csv2post_schedule_array['eventtypes']['postcreation']['switch']) && $csv2post_schedule_array['eventtypes']['postcreation']['switch'] == 0 || !isset($csv2post_schedule_array['eventtypes']['postcreation']['switch'])){echo 'checked';} ?> /><label for="csv2post_radio2_eventtypeactivation_postcreation">Disabled</label>    
     </div>    
+ 
+    <h4>Spinners (text spinning)</h4>
+    <script>
+    $(function() {
+        $( "#csv2post_eventtypeactivation_respintokens" ).buttonset();
+    });
+    </script>                
+    <div id="csv2post_eventtypeactivation_respintokens">
+        <input type="radio" id="csv2post_radio1_eventtypeactivation_respintokens" name="csv2post_eventtype_respintokens" value="1" <?php if(isset($csv2post_schedule_array['eventtypes']['respintoken']['switch']) && $csv2post_schedule_array['eventtypes']['respintoken']['switch'] == 1){echo 'checked';} ?> /><label for="csv2post_radio1_eventtypeactivation_respintoken">Enabled</label>
+        <input type="radio" id="csv2post_radio2_eventtypeactivation_respintokens" name="csv2post_eventtype_respintokens" value="0" <?php if(isset($csv2post_schedule_array['eventtypes']['respintoken']['switch']) && $csv2post_schedule_array['eventtypes']['respintoken']['switch'] == 0 || !isset($csv2post_schedule_array['eventtypes']['respintoken']['switch'])){echo 'checked';} ?> /><label for="csv2post_radio2_eventtypeactivation_respintoken">Disabled</label>    
+    </div>       
 
      <?php 
     // add js for dialog on form submission and the dialog <div> itself

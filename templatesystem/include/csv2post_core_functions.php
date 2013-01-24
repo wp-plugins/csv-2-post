@@ -287,7 +287,8 @@ function csv2post_ARRAYS_random_value($array,$number = 1){
 * Requires a current value for which its key will be established. 
 * Using the key we can establish the next value.
 * 
-* 1. Array keys must be numeric and incremented. If doubt establish another solution. 
+* 1. Array keys must be numeric and incremented. If doubt establish another solution.
+* 2. Returns random value instead of generating a false return where any issues are found 
 * 
 * @returns false on failure to establish the next value
 */
@@ -298,15 +299,18 @@ function csv2post_ARRAYS_get_next_value($array,$current_value){
     // get the key for the current value
     $current_value_key = array_search ( $current_value , $array , true );
     
-    if(!$current_value_key || !is_numeric($current_value_key)){return $current_value;}
+    // if we cannot find the value in the array (user may have edited it, then return a random value)
+    if(!$current_value_key || !is_numeric($current_value_key)){
+        return csv2post_ARRAYS_random_value($array);
+    }
     
     $next_key = $current_value_key + 1;
 
     if(!isset($array[$next_key])){
-        return $current_value;    
+        return csv2post_ARRAYS_random_value($array);// key is missing so return a random value instead    
     }
     
-    return $array[$next_key];
+    return $current_value_key;
 }
 
 /**

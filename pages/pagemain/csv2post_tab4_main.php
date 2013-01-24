@@ -181,6 +181,107 @@ $jsform_set['noticebox_content'] = 'Please ensure the schedule settings are setu
    
 <?php csv2post_panel_footer();?>
 
+<?php
+++$panel_number;// increase panel counter so this panel has unique ID
+$panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
+$panel_array['panel_name'] = 'publictriggeredautomation';// slug to act as a name and part of the panel ID 
+$panel_array['panel_title'] = __('Public Triggered Automation');// user seen panel header text  
+$panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
+$panel_array['panel_intro'] = __('Settings related to automatic events triggered when public visitors perform certain actions');
+$panel_array['panel_help'] = __('Public triggered automation includes a Post Filter function
+which makes changes to a post before it is opened i.e. updates the post content with a newer record
+or if your using text spinning some text might be re-spun when a user requests to view a post. It is important
+that you have control to switch these of and reduce the activity of CSV 2 POST if the plugin is getting very busy
+which it can if you setup multiple project or create many thousands of posts.');
+$panel_array['help_button'] = csv2post_helpbutton_text(false,false);
+// Form Settings - create the array that is passed to jQuery form functions
+$jsform_set_override = array();
+$jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);     
+$jsform_set['dialogbox_title'] = 'Save Public Automation Settings';
+$jsform_set['noticebox_content'] = 'Public automation means more will happen during a posts loading, please monitor this and help us perfect performance. Do you wish to continue?';?>
+<?php csv2post_panel_header( $panel_array );?>
+
+    <?php 
+    // begin form and add hidden values
+    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');
+    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+    ?>
+
+    <?php ###TODO:MEDIUMPRIORITY, add a global Public Post Updating switch. Right now it is per project ?> 
+
+    <?php ###TODO:LOWPRIORITY, where a setting requires Post Filter to be activated, switch on post filter option automatically on interface i.e. if Spinner Token Re-spin is Enabled we also need Post Filter  ?> 
+    
+    <table class="widefat post fixed">
+        <tr class="first">
+            <td width="200"><strong>Action</strong></td>
+            <td width="200"><strong>Status</strong></td>                                                                                               
+        </tr>
+        <tr>
+            <td>Post Filter</td>        
+            <td>
+
+                <script>
+                    $(function() {
+                        $( "#csv2post_div_<?php echo $panel_array['panel_name'];?>_postfilter" ).buttonset();
+                    });
+                </script>
+
+                <?php 
+                // if is not set ['admintriggers']['newcsvfiles']['status'] then it is enabled by default
+                if(isset($csv2post_adm_set['postfilter']['status']) && $csv2post_adm_set['postfilter']['status'] == true){
+                    $radio1_checked_enabled = 'checked'; 
+                    $radio2_checked_disabled = '';                    
+                }else{
+                    $radio1_checked_enabled = ''; 
+                    $radio2_checked_disabled = 'checked';    
+                }?>
+                <div id="csv2post_div_<?php echo $panel_array['panel_name'];?>_postfilter">
+                    <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_postfilter_enable" name="csv2post_radiogroup_postfilter" value="1" <?php echo $radio1_checked_enabled;?> /><label for="csv2post_<?php echo $panel_array['panel_name'];?>_postfilter_enable">Enable</label>
+                    <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_postfilter_disable" name="csv2post_radiogroup_postfilter" value="0" <?php echo $radio2_checked_disabled;?> /><label for="csv2post_<?php echo $panel_array['panel_name'];?>_postfilter_disable">Disable</label>
+                </div>  
+
+            </td>
+        </tr>        
+        <tr>
+            <td>Spinner Token Re-spin (requires Post Filter)</td>        
+            <td>
+
+                <script>
+                    $(function() {
+                        $( "#csv2post_div_<?php echo $panel_array['panel_name'];?>_spinnertokenrespin" ).buttonset();
+                    });
+                </script>
+
+                <?php 
+                // if is not set ['admintriggers']['newcsvfiles']['status'] then it is enabled by default
+                if(isset($csv2post_adm_set['postfilter']['tokenrespin']['status']) && $csv2post_adm_set['postfilter']['tokenrespin']['status'] == true){
+                    $radio1_checked_enabled = 'checked'; 
+                    $radio2_checked_disabled = '';                    
+                }else{
+                    $radio1_checked_enabled = ''; 
+                    $radio2_checked_disabled = 'checked';    
+                }?>
+                <div id="csv2post_div_<?php echo $panel_array['panel_name'];?>_spinnertokenrespin">
+                    <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_spinnertokenrespin_enable" name="csv2post_radiogroup_spinnertokenrespin" value="1" <?php echo $radio1_checked_enabled;?> /><label for="csv2post_<?php echo $panel_array['panel_name'];?>_spinnertokenrespin_enable">Enable</label>
+                    <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_spinnertokenrespin_disable" name="csv2post_radiogroup_spinnertokenrespin" value="0" <?php echo $radio2_checked_disabled;?> /><label for="csv2post_<?php echo $panel_array['panel_name'];?>_spinnertokenrespin_disable">Disable</label>
+                </div>  
+
+            </td>
+        </tr>
+    </table>
+    
+     <?php 
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_SETTINGS_form_submit_dialog($panel_array)){
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        csv2post_jquery_form_prompt($jsform_set);
+    }
+    ?>
+        
+    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
+   
+<?php csv2post_panel_footer();?>
+
 <?php 
 ++$panel_number;// increase panel counter so this panel has unique ID
 $panel_array = csv2post_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);

@@ -240,7 +240,10 @@ if($cont){
     
     // Save admin triggered automation settings
     $cont = csv2post_form_save_admin_triggered_automaton();
-    
+
+    // Save admin triggered automation settings
+    $cont = csv2post_form_save_public_triggered_automaton(); 
+        
     // Save form settings
     $cont = csv2post_form_save_formsettings(); 
     
@@ -2745,96 +2748,7 @@ function csv2post_form_delete_randomadvanced_shortcoderules(){
     }else{
         return true;
     }       
-}  
-  
-/**
-* Save a new HTML shortcode - this one offers a shortcode showing shortcode name (no need for user to enter values in shortcode)
-* 1. Ignore ['spinners'], both cycled and random is in this node for now
-*/
-function csv2post_form_save_textspinner(){
-    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'createrandomvalueshortcodes'){
-        
-        // error if name not entered
-        if(!isset($_POST['csv2post_shortcodename']) || $_POST['csv2post_shortcodename'] == '' || $_POST['csv2post_shortcodename'] == ' '){
-            csv2post_notice('You did not enter a spinner name, please enter a name that will help you remember what values you have setup.','error','Large','No Shortcode Name Submitted','','echo',false);    
-            return false;// stops further post processing
-        }
-        
-        // ensure at least one value has been set
-        $values_set = 0;
-        for ($i = 1; $i <= 8; $i++) {
-            if(isset($_POST['csv2post_textspin_v' . $i]) && $_POST['csv2post_textspin_v' . $i] != NULL && $_POST['csv2post_textspin_v' . $i] != ''){
-                ++$values_set;    
-            }
-        }
-        
-        if($values_set < 2){
-            csv2post_notice('You must enter at least two values. Please populate two or more of the text fields.','error','Large','More Values Required','','echo');
-            return false;// stops further post processing
-        }
-        
-        // if name already exists
-        global $csv2post_textspin_array;
-        if(isset($csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ])){
-            csv2post_notice('The shortcode name you submitted already exists, please use a different name or delete the existing shortcode.','warning','Large','Shortcode Name Exists Already','','echo');
-            return false;
-        }
-                
-        // cant assume user filled out text fields in order so go through all of them
-        for ($i = 1; $i <= 8; $i++) {
-            if(isset($_POST['csv2post_textspin_v' . $i]) && $_POST['csv2post_textspin_v' . $i] != NULL && $_POST['csv2post_textspin_v' . $i] != ''){
-                // dont use for loop $i as key because some values may not be set
-                $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['values'][] = $_POST['csv2post_textspin_v' . $i];   
-            }
-        } 
-        
-        // is a cycle wanted for this spinner rather than randomising
-        $cycle = false;
-        if(isset($_POST['csv2post_radio_spinnercycleswitch']) && $_POST['csv2post_radio_spinnercycleswitch'] == 'on'){
-            $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['cycle']['status'] = true;
-        }
-        
-        // get the spinners delay range
-        $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay'] = false;
-        $min = 0;
-        $max = 0;
-        $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['min'] = 0;
-        $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['max'] = 0;        
-        if(isset($_POST['csv2post_increment_range_spinnerdelay'])){
-            $removed_spaces = str_replace(' ','',$_POST['csv2post_increment_range_spinnerdelay']);
-            $range_array = explode('-',$removed_spaces);
-            
-            csv2post_var_dump($range_array);
-            
-            $min = $range_array[0];
-            $max = $range_array[1];
-            
-            // if the values are zero we do not monitor delay, avoiding a meta value being created per post
-            if($min == 0 && $max == 0){
-                $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['status'] = false;
-                $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['min'] = 0;
-                $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['max'] = 0;    
-            }else{
-                $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['status'] = true;
-                $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['min'] = $min;
-                $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['max'] = $max;
-            }  
-        }
-        
-        // set the spinner type (advanced: has cycle and delay but not nested values)
-        $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['type'] = 'advanced';
-                        
-        csv2post_update_option_textspin($csv2post_textspin_array);      
-
-        csv2post_notice('You saved a new spinner named ' . $_POST['csv2post_shortcodename'] . '. You
-        can use this shortcode by copying and pasting this bold text: <br />
-        <strong>[csv2post_spinner_advanced name="'.$_POST['csv2post_shortcodename'].'"]</strong>','success','Large','Spinner Settings Saved','','echo');
-
-        return false;
-    }else{
-        return true;
-    }       
-}         
+}        
   
 /**
 * Saves Multiple File Project panel - the configuration options that create relationships between tables
@@ -2879,30 +2793,6 @@ function csv2post_form_save_multiplefilesproject(){
         
         ### TODO:LOWPRIORITY, add tests here if there is data in all of the tables, check that primary key columns have matching data in foreign key columns 
         
-        return false;
-    }else{
-        return true;
-    }          
-} 
-  
-/**
-* Create a data rule for replacing specific values after import 
-*/
-function csv2post_form_save_eventtypes(){
-    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'eventtypes'){
-        global $csv2post_schedule_array;   
-
-        $csv2post_schedule_array['eventtypes']["postcreation"]['switch'] = $_POST["csv2post_eventtype_postcreation"];
-        $csv2post_schedule_array['eventtypes']["postupdate"]['switch'] = $_POST["csv2post_eventtype_postupdate"];
-        $csv2post_schedule_array['eventtypes']["dataimport"]['switch'] = $_POST["csv2post_eventtype_dataimport"];
-        $csv2post_schedule_array['eventtypes']["dataupdate"]['switch'] = $_POST["csv2post_eventtype_dataupdate"];
-        $csv2post_schedule_array['eventtypes']["twittersend"]['switch'] = $_POST["csv2post_eventtype_twittersend"];
-        $csv2post_schedule_array['eventtypes']["twitterupdate"]['switch'] = $_POST["csv2post_eventtype_twitterupdate"];
-        $csv2post_schedule_array['eventtypes']["twitterget"]['switch'] = $_POST["csv2post_eventtypes_twitterget"];
-        
-        csv2post_update_option_schedule_array($csv2post_schedule_array);
-        
-        csv2post_notice('Schedule event types have been saved, the changes will have an effect on the types of events run, straight away.','success','Large','Schedule Event Types Saved','','echo');
         return false;
     }else{
         return true;
@@ -3520,7 +3410,9 @@ function csv2post_form_save_projectupdatesettings(){
     global $csv2post_currentproject_code,$csv2post_project_array;
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'postcontentupdatingsettings'){
 
+        // switch activates for updating via the schedule
         $csv2post_project_array['updating']['content']['settings']['switch'] = $_POST['csv2post_updatesettings_postupdating_switch_inputname'];
+        // public actives for updating when a public visitor opens the post
         $csv2post_project_array['updating']['content']['settings']['public'] = $_POST['csv2post_updatesettings_postupdating_public_inputname'];
         $csv2post_project_array['updating']['content']['settings']['speed'] = $_POST['csv2post_updatesettings_postupdating_speed_inputname'];
         $csv2post_project_array['updating']['content']['settings']['old'] = $_POST['csv2post_updatesettings_postupdating_old_inputname'];
@@ -5142,4 +5034,158 @@ function csv2post_form_installplugin(){
         return true;
     }       
 }   
+
+/**
+* Save a new HTML shortcode - this one offers a shortcode showing shortcode name (no need for user to enter values in shortcode)
+* 1. Ignore ['spinners'], both cycled and random is in this node for now
+*/
+function csv2post_form_save_textspinner(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'createrandomvalueshortcodes'){
+        
+        // error if name not entered
+        if(!isset($_POST['csv2post_shortcodename']) || $_POST['csv2post_shortcodename'] == '' || $_POST['csv2post_shortcodename'] == ' '){
+            csv2post_notice('You did not enter a spinner name, please enter a name that will help you remember what values you have setup.','error','Large','No Shortcode Name Submitted','','echo',false);    
+            return false;// stops further post processing
+        }
+        
+        // ensure at least one value has been set
+        $values_set = 0;
+        for ($i = 1; $i <= 8; $i++) {
+            if(isset($_POST['csv2post_textspin_v' . $i]) && $_POST['csv2post_textspin_v' . $i] != NULL && $_POST['csv2post_textspin_v' . $i] != ''){
+                ++$values_set;    
+            }
+        }
+        
+        if($values_set < 2){
+            csv2post_notice('You must enter at least two values. Please populate two or more of the text fields.','error','Large','More Values Required','','echo');
+            return false;// stops further post processing
+        }
+        
+        // no reason to return, now get required globals
+        global $csv2post_textspin_array,$csv2post_adm_set; 
+        
+        // if name already exists
+        if(isset($csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ])){
+            csv2post_notice('The shortcode name you submitted already exists, please use a different name or delete the existing shortcode.','warning','Large','Shortcode Name Exists Already','','echo');
+            return false;
+        }
+                
+        // cant assume user filled out text fields in order so go through all of them
+        for ($i = 1; $i <= 8; $i++) {
+            if(isset($_POST['csv2post_textspin_v' . $i]) && $_POST['csv2post_textspin_v' . $i] != NULL && $_POST['csv2post_textspin_v' . $i] != ''){
+                // dont use for loop $i as key because some values may not be set
+                $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['values'][] = $_POST['csv2post_textspin_v' . $i];   
+            }
+        } 
+        
+        // is a cycle wanted for this spinner rather than randomising
+        $cycle = false;
+        if(isset($_POST['csv2post_radio_spinnercycleswitch']) && $_POST['csv2post_radio_spinnercycleswitch'] == 'on'){
+            $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['cycle']['status'] = true;
+        }
+        
+        // get the spinners delay range
+        $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay'] = false;
+        $min = 0;
+        $max = 0;
+        $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['min'] = 0;
+        $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['max'] = 0;        
+        if(isset($_POST['csv2post_increment_range_spinnerdelay'])){
+            $removed_spaces = str_replace(' ','',$_POST['csv2post_increment_range_spinnerdelay']);
+            $range_array = explode('-',$removed_spaces);
+
+            $min = $range_array[0];
+            $max = $range_array[1];
+            
+            // if the values are zero we do not monitor delay, avoiding a meta value being created per post
+            if($min == 0 && $max == 0){
+                $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['status'] = false;
+                $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['min'] = 0;
+                $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['max'] = 0;    
+            }else{
+                $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['status'] = true;
+                $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['min'] = $min;
+                $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['delay']['max'] = $max;
+            }  
+        }
+        
+        // save spinner re-spin switch
+        if(isset($_POST['csv2post_radio_spinner_tokenrespinswitch']) && $_POST['csv2post_radio_spinner_tokenrespinswitch'] == 'yes'){
+            
+            // set this spinner for respinning as a token, when the post filter is run this will be checked per spinner
+            // as some spinners may required re-spin and some may not
+            $csv2post_textspin_array['spinners'][ $_POST['csv2post_shortcodename'] ]['respintokens'] = true;
+
+            // activate post parsing status to true and also set token respin to true
+            if(isset($csv2post_adm_set['postfilter']['tokenrespin']) && $csv2post_adm_set['postfilter']['tokenrespin'] != true
+            || isset($csv2post_adm_set['postfilter']['status']) && $csv2post_adm_set['postfilter']['status'] != true){
+                $csv2post_adm_set['postfilter']['tokenrespin'] = true;// activates global setting to include token respin procedure in the post filter function
+                $csv2post_adm_set['postfilter']['status'] = true;// activates the post filter itself which runs various procedures if setup
+                csv2post_notice_postresult('success','Public Triggered Automation Updated','You can
+                find the settings for Public Triggered Automation on the General Settings screen. They have
+                been updated to allow your Spinner Token to be re-spun whenever a post is opened. Delay and
+                cycle will be taking into consideration if in use.');                  
+            }
+            
+            csv2post_update_option_adminsettings($csv2post_adm_set);
+        }
+                        
+        csv2post_update_option_textspin($csv2post_textspin_array);      
+
+        csv2post_notice('You saved a new spinner named ' . $_POST['csv2post_shortcodename'] . '. You
+        can use this shortcode by copying and pasting this bold text: <br />
+        <strong>[csv2post_spinner_advanced name="'.$_POST['csv2post_shortcodename'].'"]</strong>','success','Large','Spinner Settings Saved','','echo');
+
+        return false;
+    }else{
+        return true;
+    }       
+} 
+
+/**
+* Create a data rule for replacing specific values after import 
+*/
+function csv2post_form_save_eventtypes(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'eventtypes'){
+        global $csv2post_schedule_array;   
+
+        $csv2post_schedule_array['eventtypes']["postcreation"]['switch'] = $_POST["csv2post_eventtype_postcreation"];
+        $csv2post_schedule_array['eventtypes']["postupdate"]['switch'] = $_POST["csv2post_eventtype_postupdate"];
+        $csv2post_schedule_array['eventtypes']["dataimport"]['switch'] = $_POST["csv2post_eventtype_dataimport"];
+        $csv2post_schedule_array['eventtypes']["dataupdate"]['switch'] = $_POST["csv2post_eventtype_dataupdate"];
+        $csv2post_schedule_array['eventtypes']["twittersend"]['switch'] = $_POST["csv2post_eventtype_twittersend"];
+        $csv2post_schedule_array['eventtypes']["twitterupdate"]['switch'] = $_POST["csv2post_eventtype_twitterupdate"];
+        $csv2post_schedule_array['eventtypes']["twitterget"]['switch'] = $_POST["csv2post_eventtypes_twitterget"];
+
+        csv2post_update_option_schedule_array($csv2post_schedule_array);
+        
+        csv2post_notice('Schedule event types have been saved, the changes will have an effect on the types of events run, straight away.','success','Large','Schedule Event Types Saved','','echo');
+        return false;
+    }else{
+        return true;
+    }          
+}    
+
+// Save public triggered automation settings
+function csv2post_form_save_public_triggered_automaton(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'admintriggeredautomation'){
+        
+        global $csv2post_adm_set;
+
+        $csv2post_adm_set['postfilter']['status'] = $_POST['csv2post_radiogroup_postfilter'];          
+        $csv2post_adm_set['postfilter']['tokenrespin']['status'] = $_POST['csv2post_radiogroup_spinnertokenrespin'];
+     
+        csv2post_update_option_adminsettings($csv2post_adm_set);
+        
+        csv2post_notice('Your public triggered automation settings have been saved. We recommend that your
+        monitor your blog for sometime and ensuring you are happy with performance.',
+        'success','Large','Public Triggered Automation Settings Saved','','echo');
+        
+        return false;
+    }else{
+        return true;
+    }     
+} 
+                        
+                                    
 ?>
