@@ -55,11 +55,13 @@ $jsform_set['noticebox_content'] = 'Posts created from here on will use the data
     </p>
 
     <script>
-    $("#csv2post_defaulttagsdata_select_columnandtable_formid").multiselect({
-       multiple: false,
-       header: "Select Tags Data Column (table - column)",
-       noneSelectedText: "Select Tags Data Column",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_defaulttagsdata_select_columnandtable_formid").multiselect({
+           multiple: false,
+           header: "Select Tags Data Column (table - column)",
+           noneSelectedText: "Select Tags Data Column",
+           selectedList: 1
+        });
     });
     </script>
          

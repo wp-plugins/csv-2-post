@@ -91,11 +91,13 @@ $jsform_set['noticebox_content'] = 'You are saving your dates column so that pos
     </select>
 
     <script>
-    $("#csv2post_datecolumn_select_columnandtable_formid").multiselect({
-       multiple: false,
-       header: "Select Database Column (table - column)",
-       noneSelectedText: "Select Database Table",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_datecolumn_select_columnandtable_formid").multiselect({
+           multiple: false,
+           header: "Select Database Column (table - column)",
+           noneSelectedText: "Select Database Table",
+           selectedList: 1
+        });
     });
     </script>
     

@@ -109,11 +109,13 @@ if(!isset($csv2post_dataimportjobs_array) || !is_array($csv2post_dataimportjobs_
                         </p>
                         
                         <script>
-                        $("#csv2post_advancedidcolumn_<?php echo $jobcode;?>_<?php echo $fileChunks[0];?>").multiselect({
-                           multiple: false,
-                           header: "Select ID Column",
-                           noneSelectedText: "Select ID Column",
-                           selectedList: 1
+                        $(document).ready( function(){ 
+                            $("#csv2post_advancedidcolumn_<?php echo $jobcode;?>_<?php echo $fileChunks[0];?>").multiselect({
+                               multiple: false,
+                               header: "Select ID Column",
+                               noneSelectedText: "Select ID Column",
+                               selectedList: 1
+                            });
                         });
                         </script>
                         

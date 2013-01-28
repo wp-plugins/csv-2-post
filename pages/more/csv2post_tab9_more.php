@@ -136,7 +136,7 @@ $panel_array['panel_help'] = __('Settings which effect posts (that includes page
 
             <!-- CONTACT METHODS -->
             <script type="text/javascript">
-            $(function(){
+            $(document).ready( function(){ 
                 $("#csv2post_contactmethods").multiselect({
                     selectedList: 10
                 });
@@ -173,7 +173,9 @@ $panel_array['panel_help'] = __('Settings which effect posts (that includes page
             </p>
 
             <script type="text/javascript">
-            $("#csv2post_contactmethods").multiselect().multiselectfilter();
+            $(document).ready( function(){ 
+                $("#csv2post_contactmethods").multiselect().multiselectfilter();
+            });
             </script> 
 
             <?php // CONTACT REASON
@@ -206,7 +208,7 @@ $panel_array['panel_help'] = __('Settings which effect posts (that includes page
             elseif($contactreason == 'providehosting'){$reason_providehosting_selected = 'selected="selected"';}?>
             
             <script type="text/javascript">
-            $(function(){
+            $(document).ready( function(){ 
                 $("#<?php echo WTG_C2P_ABB;?>contactreason").multiselect({
                     selectedList: 10
                 });
@@ -232,12 +234,14 @@ $panel_array['panel_help'] = __('Settings which effect posts (that includes page
             </p>
             
              <script type="text/javascript">
-            $("#<?php echo WTG_C2P_ABB;?>contactreason").multiselect({
-               multiple: false,
-               header: "Select an option",
-               noneSelectedText: "Select an Option",
-               selectedList: 1
-            });
+             $(document).ready( function(){ 
+                $("#<?php echo WTG_C2P_ABB;?>contactreason").multiselect({
+                   multiple: false,
+                   header: "Select an option",
+                   noneSelectedText: "Select an Option",
+                   selectedList: 1
+                });
+             });
             </script>           
             
             <?php // CONTACT PRIORITY
@@ -252,7 +256,7 @@ $panel_array['panel_help'] = __('Settings which effect posts (that includes page
             ?>
             
             <script type="text/javascript">
-            $(function(){
+            $(document).ready( function(){ 
                 $("#<?php echo WTG_C2P_ABB;?>contactinclude").multiselect({
                     selectedList: 10
                 });
@@ -270,13 +274,14 @@ $panel_array['panel_help'] = __('Settings which effect posts (that includes page
             </p>
             
             <script type="text/javascript">
-            $("#<?php echo WTG_C2P_ABB;?>contactinclude").multiselect().multiselectfilter();
+            $(document).ready( function(){ 
+                $("#<?php echo WTG_C2P_ABB;?>contactinclude").multiselect().multiselectfilter();
+            });
             </script>         
-            
-            
+
             <!-- CONTACT PRIORITY START -->
             <script type="text/javascript">
-            $(function(){
+            $(document).ready( function(){ 
                 $("#<?php echo WTG_C2P_ABB;?>contactpriority").multiselect({
                     selectedList: 10
                 });
@@ -292,11 +297,13 @@ $panel_array['panel_help'] = __('Settings which effect posts (that includes page
             </p>               
                         
             <script type="text/javascript">
-            $("#<?php echo WTG_C2P_ABB;?>contactpriority").multiselect({
-               multiple: false,
-               header: "Select an option",
-               noneSelectedText: "Select an Option",
-               selectedList: 1
+            $(document).ready( function(){ 
+                $("#<?php echo WTG_C2P_ABB;?>contactpriority").multiselect({
+                   multiple: false,
+                   header: "Select an option",
+                   noneSelectedText: "Select an Option",
+                   selectedList: 1
+                });
             });
             </script>
             

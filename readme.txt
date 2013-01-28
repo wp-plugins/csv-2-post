@@ -102,6 +102,19 @@ first plugin was created in 2009 and was halted pending re-development.
 
 == Changelog ==
 
+= 6.8.1 =
+* From The Developers
+    * Released 28th January 2013 
+    * Focus has been on stability for Wordpress 3.5. We will now be adding some waited for features.
+* Support Changes
+    * None
+* Fixes
+    * Further fixes to jQuery UI features (interface should be less confusing)              
+* Feature Changes
+    * Version 6.8.0 did not have jQuery UI styling on menu, this version has it again
+* Technical Changes
+    * None
+    
 = 6.8.0 =
 * From The Developers
     * Released 27th January 2013 

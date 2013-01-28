@@ -29,11 +29,13 @@ $jsform_set['noticebox_content'] = 'Your changes will take effect on all posts c
     </p>
     
     <script>
-    $("#csv2post_featuredimage_columnandtable").multiselect({
-       multiple: false,
-       header: "Select Database Column (table - column)",
-       noneSelectedText: "Select Database Table",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_featuredimage_columnandtable").multiselect({
+           multiple: false,
+           header: "Select Database Column (table - column)",
+           noneSelectedText: "Select Database Table",
+           selectedList: 1
+        });
     });
     </script>
     

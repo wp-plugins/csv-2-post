@@ -37,14 +37,12 @@ two tables. Do you wish to continue?';?>
     
     <script>
 	 $(document).ready( function(){
-	     
 	    $("#wtgpt_tabletotable_tableone").multiselect({
 	       multiple: false,
 	       header: "Select a table",
 	       noneSelectedText: "Select a table",
 	       selectedList: 1
 	    });
-    
      });
     </script>
    
@@ -57,14 +55,12 @@ two tables. Do you wish to continue?';?>
     
     <script>
     $(document).ready( function(){  
-	    
 	    $("#wtgpt_tabletotable_tabletwo").multiselect({
 	       multiple: false,
 	       header: "Select a table",
 	       noneSelectedText: "Select a table",
 	       selectedList: 1
 	    });
-    
     });
     </script>
            

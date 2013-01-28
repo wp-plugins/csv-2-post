@@ -30,14 +30,12 @@ $jsform_set['noticebox_content'] = 'Do you want to begin export the selected dat
     
     <script>
     $(document).ready( function(){   
-    
 	    $("#wtgpt_dataexport_selecttables").multiselect({
 	       multiple: false,
 	       header: "Select a table",
 	       noneSelectedText: "Select a table",
 	       selectedList: 1
 	    });
-    
     });
     </script>
            

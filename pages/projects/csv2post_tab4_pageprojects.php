@@ -77,11 +77,13 @@ $jsform_set['noticebox_content'] = 'Do you want to save your new post type rule?
     </p>
 
     <script>
-    $("#csv2post_dynamicposttype_select_columnandtable_formid").multiselect({
-       multiple: false,
-       header: "Select Database Column (table - column)",
-       noneSelectedText: "Select Database Column",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_dynamicposttype_select_columnandtable_formid").multiselect({
+           multiple: false,
+           header: "Select Database Column (table - column)",
+           noneSelectedText: "Select Database Column",
+           selectedList: 1
+        });
     });
     </script>
     
@@ -97,11 +99,13 @@ $jsform_set['noticebox_content'] = 'Do you want to save your new post type rule?
         </select>        
     </p>
     <script>
-    $("#csv2post_dynamicposttype_select_posttype_formid").multiselect({
-       multiple: false,
-       header: "Post Type",
-       noneSelectedText: "Post Type",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_dynamicposttype_select_posttype_formid").multiselect({
+           multiple: false,
+           header: "Post Type",
+           noneSelectedText: "Post Type",
+           selectedList: 1
+        });
     });
     </script>
     

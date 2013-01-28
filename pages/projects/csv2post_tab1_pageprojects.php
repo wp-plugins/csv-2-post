@@ -202,11 +202,13 @@ $jsform_set['noticebox_content'] = 'You are about to setup a new condition for a
     </p>
     
     <script>
-    $("#csv2post_dynamiccontentdesignrules_select_columnandtable_formid").multiselect({
-       multiple: false,
-       header: "Select Database Column (table - column)",
-       noneSelectedText: "Select Database Table",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_dynamiccontentdesignrules_select_columnandtable_formid").multiselect({
+           multiple: false,
+           header: "Select Database Column (table - column)",
+           noneSelectedText: "Select Database Table",
+           selectedList: 1
+        });
     });
     </script>
 
@@ -221,14 +223,16 @@ $jsform_set['noticebox_content'] = 'You are about to setup a new condition for a
             <?php csv2post_display_contenttemplate_menuoptions();?>                                                                                                                     
         </select>        
     </p>
-    
+
     <script>
-    $("#csv2post_dynamiccontentdesignrules_select_template_formid").multiselect({
-       multiple: false,
-       header: "Template",
-       noneSelectedText: "Template",
-       selectedList: 1
-    });
+    $(document).ready( function(){  
+        $("#csv2post_dynamiccontentdesignrules_select_template_formid").multiselect({
+           multiple: false,
+           header: "Template",
+           noneSelectedText: "Template",
+           selectedList: 1
+        });
+    });   
     </script>
 
     <h2>Current Rules</h2>

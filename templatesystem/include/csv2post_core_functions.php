@@ -954,16 +954,6 @@ function csv2post_drop_dataimportjob_table($table_name){
 }
 
 /**
- * Adds a jquery effect submit button, for using in form
- * 
- * @param string $panel_name (original use for in panels,panel name acts as an identifier)
- * @uses csvip_helpbutton function uses jquery script required by this button to have any jquery effect
- */
-function csv2post_formsubmitbutton_jquery($form_name){?>
-    <div class="jquerybutton"><input type="submit" name="<?php echo WTG_C2P_ABB;?><?php echo $form_name;?>_submit" value="Submit"/></div><?php
-}
-
-/**
  * Displays a simple and standard wordpress formatted message, this is not the WTG Notice Boxes function
  * Should only be used in processing functions, not header functions i.e. hooks
  */
@@ -1999,8 +1989,8 @@ function csv2post_print_admin_scripts() {
      $csv2post_js_switch = true;
      if($csv2post_js_switch == true){
 
-        wp_enqueue_script( 'jquery' );  
-        wp_enqueue_script( 'jquery-ui' );
+        wp_enqueue_script('jquery');  
+        wp_enqueue_script('jquery-ui');
         wp_enqueue_script('jquery-ui-widget');
         wp_enqueue_script('jquery-ui-button');
         wp_enqueue_script('jquery-ui-tabs');
@@ -2033,6 +2023,8 @@ function csv2post_print_admin_scripts() {
 /**
  * jQuery script for styling button with roll over effect
  * @see function csv2post_header_page()
+ * 
+ * @todo rename this function to csv2post_JQUERY_javascript_button() and move it to applicable file which also needs to be created
  */
 function csv2post_jquery_button(){?>
     <script>
@@ -2063,5 +2055,17 @@ function csv2post_formend_standard($buttontitle = 'Submit',$buttonid = 'notrequi
     </div>
     
     </form><?php
-}        
+}     
+
+/**
+ * Adds a jquery effect submit button, for using in form
+ * 
+ * @param string $panel_name (original use for in panels,panel name acts as an identifier)
+ * @uses csvip_helpbutton function uses jquery script required by this button to have any jquery effect
+ */
+function csv2post_formsubmitbutton_jquery($form_name){?>
+    <div class="jquerybutton">
+        <input type="submit" name="<?php echo WTG_C2P_ABB;?><?php echo $form_name;?>_submit" value="Submit"/>
+    </div><?php
+}   
 ?>

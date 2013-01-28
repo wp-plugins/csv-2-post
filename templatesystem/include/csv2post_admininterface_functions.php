@@ -480,7 +480,7 @@ function csv2post_easy_configuration_questionlist_demo(){
             if($question['type'] == 'single'){?>
                         
                 <script type="text/javascript">
-                $(function(){
+                $(document).ready( function(){ 
                     $("select#<?php echo 'csv2post_single'.$singles_created;?>").multiselect({
                        // TODO: LOWPRIORITY, get single select working, it still shows checkboxes instead of a radio button approach
                        selectedList: 10,
@@ -511,7 +511,7 @@ function csv2post_easy_configuration_questionlist_demo(){
             }elseif($question['type'] == 'multiple'){?>
                    
                 <script type="text/javascript">
-                $(function(){
+                $(document).ready( function(){ 
                     $("select#<?php echo 'csv2post_multiple'.$multiple_created;?>").multiselect({
                         selectedList: 10,
                         minWidth: 600,
@@ -537,7 +537,9 @@ function csv2post_easy_configuration_questionlist_demo(){
                 </p>','question','Small','','','return');?>
                 
                 <script type="text/javascript">
-                $("select#<?php echo WTG_C2P_ABB.'multiple'.$multiple_created;?>").multiselect().multiselectfilter();
+                $(document).ready( function(){ 
+                    $("select#<?php echo WTG_C2P_ABB.'multiple'.$multiple_created;?>").multiselect().multiselectfilter();
+                });
                 </script>
                 
                 <?php ++$multiple_created;
@@ -1115,12 +1117,10 @@ function csv2post_soap_fault_display($soapcallfunction){
 * @param array $jsform_set_override, (not yet in use) use to customise the return value, not required in most uses
 */
 function csv2post_jqueryform_commonarrayvalues($pageid,$csv2post_tab_number,$panel_number,$panel_name,$panel_title,$jsform_set_override = ''){
-    ### @todo  extract the override values after callign global values
+    ### TODO:MEDIUMPRIORITY  extract the override values after callign global values
     // $jsform_set_override
     // this is so we can pass the override array for custom settings rather than the default
-    
     $jsform_set = array();
-    
     // http://www.webtechglobal.co.uk/blog/wordpress/wtg-plugin-template/wtg-pt-jquery-dialogue-form 
     $jsform_set['pageid'] = $pageid;
     $jsform_set['tab_number'] = $csv2post_tab_number; 
@@ -1134,9 +1134,7 @@ function csv2post_jqueryform_commonarrayvalues($pageid,$csv2post_tab_number,$pan
     $jsform_set['dialogbox_autoresize'] = false;// true or false, overrides width and height 
     // form related
     $jsform_set['form_id'] = csv2post_create_formid($panel_name);
-    $jsform_set['form_name'] = csv2post_create_formname($panel_name);  
-    
-                                              
+    $jsform_set['form_name'] = csv2post_create_formname($panel_name);                                   
     return $jsform_set;
 }
  
@@ -2138,12 +2136,14 @@ function csv2post_display_posttypes_menu_options(){
 * 
 * Use script for jQuery display 
 * <script>
+* $(document).ready( function(){ 
 *    $("#csv2post_customfield_select_columnandtable_formid").multiselect({
 *       multiple: false,
 *       header: "Select Database Column (table - column)",
 *       noneSelectedText: "Select Database Table",
 *       selectedList: 1
 *    });
+* });
 * </script>
 */
 function csv2post_display_project_columnsandtables_menuoptions($project_code,$current_table = 'NOTPROVIDED98723462',$current_column = 'NOTPROVIDED09871237'){
@@ -2321,15 +2321,13 @@ function csv2post_menu_csvfiles($range = 'all',$id = 'noid'){?>
     </p>
     
     <script>
-    $(document).ready( function(){ 
-    
-    $("#csv2post_multiselect<?php echo $id;?>").multiselect({
-       multiple: false,
-       header: "Select CSV File",
-       noneSelectedText: "Select CSV File",
-       selectedList: 1
-    });
-    
+    $(document).ready( function(){     
+        $("#csv2post_multiselect<?php echo $id;?>").multiselect({
+           multiple: false,
+           header: "Select CSV File",
+           noneSelectedText: "Select CSV File",
+           selectedList: 1
+        });
     });
     </script> 
     <?php    
@@ -3297,11 +3295,13 @@ function csv2post_menu_tablecolumns($table_name,$id = ''){?>
     </select>        
 
     <script>
-    $("#csv2post_table_columns_<?php echo $table_name;?><?php echo $id;?>_id").multiselect({
-       multiple: false,
-       header: "Table Columns",
-       noneSelectedText: "Table Columns",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_table_columns_<?php echo $table_name;?><?php echo $id;?>_id").multiselect({
+           multiple: false,
+           header: "Table Columns",
+           noneSelectedText: "Table Columns",
+           selectedList: 1
+        });
     });
     </script><?php    
 }
@@ -3320,11 +3320,13 @@ function csv2post_menu_tablecolumns_multipletableproject($table_name,$current_va
     </select>        
 
     <script>
-    $("#csv2post_multitable_columns_<?php echo $table_name;?>_id").multiselect({
-       multiple: false,
-       header: "Table Columns",
-       noneSelectedText: "Table Columns",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_multitable_columns_<?php echo $table_name;?>_id").multiselect({
+           multiple: false,
+           header: "Table Columns",
+           noneSelectedText: "Table Columns",
+           selectedList: 1
+        });
     });
     </script><?php    
 }
@@ -3404,11 +3406,13 @@ function csv2post_display_menu_keycolumnselection($table_name,$current_table = f
     </select>
 
     <script>
-    $("#csv2post_multitable_pairing_<?php echo $table_name;?>_id").multiselect({
-       multiple: false,
-       header: "Select Database Column (table - column)",
-       noneSelectedText: "Select Database Table",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_multitable_pairing_<?php echo $table_name;?>_id").multiselect({
+           multiple: false,
+           header: "Select Database Column (table - column)",
+           noneSelectedText: "Select Database Table",
+           selectedList: 1
+        });
     });
     </script><?php    
 }
@@ -3462,11 +3466,13 @@ function csv2post_display_designtype_menu($post_id){
         <?php echo $optionmenu;?>
         
         <script>
-        $("#csv2post_select_designtype").multiselect({
-        multiple: true,
-        header: "Select Template Types",
-        noneSelectedText: "Select Template Types",
-        selectedList: 1
+        $(document).ready( function(){ 
+            $("#csv2post_select_designtype").multiselect({
+            multiple: true,
+            header: "Select Template Types",
+            noneSelectedText: "Select Template Types",
+            selectedList: 1
+            });
         });
         </script>
             
@@ -3806,11 +3812,13 @@ function csv2post_menu_csvfile_headers($id,$jobcode,$f){
 
     $menu .= '</select>
     <script>
-    $("#csv2post_csvfileheader_'.$id.'_'.$fc[0].'").multiselect({
-       multiple: false,
-       header: "Select CSV File Header/Column",
-       noneSelectedText: "Select CSV File Header/Column",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_csvfileheader_'.$id.'_'.$fc[0].'").multiselect({
+           multiple: false,
+           header: "Select CSV File Header/Column",
+           noneSelectedText: "Select CSV File Header/Column",
+           selectedList: 1
+        });
     });
     </script>';   
     
@@ -3833,11 +3841,13 @@ function csv2post_display_categories_menu($increment){?>
     </select>  
       
     <script>
-    $("#csv2post_createcategorymapping<?php echo $increment;?>_select_id").multiselect({
-       multiple: false,
-       header: "Select Category",
-       noneSelectedText: "Select Category",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_createcategorymapping<?php echo $increment;?>_select_id").multiselect({
+           multiple: false,
+           header: "Select Category",
+           noneSelectedText: "Select Category",
+           selectedList: 1
+        });
     });
     </script><?php    
 }

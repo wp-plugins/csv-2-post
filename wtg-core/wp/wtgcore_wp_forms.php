@@ -26,11 +26,13 @@ function csv2post_FORM_menu_capabilities($csv2post_ARRAY_capabilities,$page_name
     </select>        
 
     <script>
-    $("#csv2post_capabilitiesmenu_<?php echo $page_name;?>_<?php echo $key;?>").multiselect({
-       multiple: false,
-       header: "Select Required Capability",
-       noneSelectedText: "Select Required Capability",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_capabilitiesmenu_<?php echo $page_name;?>_<?php echo $key;?>").multiselect({
+           multiple: false,
+           header: "Select Required Capability",
+           noneSelectedText: "Select Required Capability",
+           selectedList: 1
+        });
     });
     </script>
     

@@ -41,11 +41,13 @@ $jsform_set['noticebox_content'] = 'Do you want to save your new custom field ru
     </select>
 
     <script>
-    $("#csv2post_customfield_select_columnandtable_formid").multiselect({
-       multiple: false,
-       header: "Select Database Column (table - column)",
-       noneSelectedText: "Select Database Table",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_customfield_select_columnandtable_formid").multiselect({
+           multiple: false,
+           header: "Select Database Column (table - column)",
+           noneSelectedText: "Select Database Table",
+           selectedList: 1
+        });
     });
     </script>
 
@@ -135,11 +137,13 @@ $jsform_set['noticebox_content'] = 'Do you want to save your new custom field ru
     </select>
 
     <script>
-    $("#csv2post_advancedcustomfields_datacolumn").multiselect({
-       multiple: false,
-       header: "Select Database Column",
-       noneSelectedText: "Select Database Table",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_advancedcustomfields_datacolumn").multiselect({
+           multiple: false,
+           header: "Select Database Column",
+           noneSelectedText: "Select Database Table",
+           selectedList: 1
+        });
     });
     </script>
 
@@ -154,11 +158,13 @@ $jsform_set['noticebox_content'] = 'Do you want to save your new custom field ru
     </p>
     
     <script>
-    $("#csv2post_customfields_selecttemplate").multiselect({
-       multiple: false,
-       header: "Template",
-       noneSelectedText: "Template",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_customfields_selecttemplate").multiselect({
+           multiple: false,
+           header: "Template",
+           noneSelectedText: "Template",
+           selectedList: 1
+        });
     });
     </script>    
     

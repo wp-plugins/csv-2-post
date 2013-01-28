@@ -91,11 +91,13 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
     </select>
 
     <script>
-    $("#csv2post_seo_title_id").multiselect({
-       multiple: false,
-       header: "Select Database Column (table - column)",
-       noneSelectedText: "Select Database Table",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_seo_title_id").multiselect({
+           multiple: false,
+           header: "Select Database Column (table - column)",
+           noneSelectedText: "Select Database Table",
+           selectedList: 1
+        });
     });
     </script>
                    
@@ -117,11 +119,13 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
     </select>
 
     <script>
-    $("#csv2post_seo_description_id").multiselect({
-       multiple: false,
-       header: "Select Database Column (table - column)",
-       noneSelectedText: "Select Database Table",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_seo_description_id").multiselect({
+           multiple: false,
+           header: "Select Database Column (table - column)",
+           noneSelectedText: "Select Database Table",
+           selectedList: 1
+        });
     });
     </script>
 
@@ -143,11 +147,13 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
     </select>        
     
     <script>
-    $("#csv2post_seo_keywords_id").multiselect({
-       multiple: false,
-       header: "Select Database Column (table - column)",
-       noneSelectedText: "Select Database Table",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_seo_keywords_id").multiselect({
+           multiple: false,
+           header: "Select Database Column (table - column)",
+           noneSelectedText: "Select Database Table",
+           selectedList: 1
+        });
     });
     </script>
 
@@ -219,11 +225,13 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
         }?>
     </select>
     <script>
-    $("#csv2post_seo_title_advanced_id").multiselect({
-       multiple: false,
-       header: "Select Template",
-       noneSelectedText: "Select Template",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_seo_title_advanced_id").multiselect({
+           multiple: false,
+           header: "Select Template",
+           noneSelectedText: "Select Template",
+           selectedList: 1
+        });
     });
     </script>    
     
@@ -244,11 +252,13 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
         }?>
     </select>
     <script>
-    $("#csv2post_seo_description_advanced_id").multiselect({
-       multiple: false,
-       header: "Select Template",
-       noneSelectedText: "Select Template",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_seo_description_advanced_id").multiselect({
+           multiple: false,
+           header: "Select Template",
+           noneSelectedText: "Select Template",
+           selectedList: 1
+        });
     });
     </script>    
     
@@ -269,11 +279,13 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
         }?>
     </select>
     <script>
-    $("#csv2post_seo_keywords_advanced_id").multiselect({
-       multiple: false,
-       header: "Select Template",
-       noneSelectedText: "Select Template",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_seo_keywords_advanced_id").multiselect({
+           multiple: false,
+           header: "Select Template",
+           noneSelectedText: "Select Template",
+           selectedList: 1
+        });
     });
     </script>     
 
@@ -293,11 +305,13 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
         }?>
     </select>
     <script>
-    $("#csv2post_seo_titlekey_advanced_id").multiselect({
-       multiple: false,
-       header: "Select SEO Plugin",
-       noneSelectedText: "Select SEO Plugin",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_seo_titlekey_advanced_id").multiselect({
+           multiple: false,
+           header: "Select SEO Plugin",
+           noneSelectedText: "Select SEO Plugin",
+           selectedList: 1
+        });
     });
     </script>    
     
@@ -316,11 +330,13 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
         }?>
     </select>
     <script>
-    $("#csv2post_seo_descriptionkey_advanced_id").multiselect({
-       multiple: false,
-       header: "Select SEO Plugin",
-       noneSelectedText: "Select SEO Plugin",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_seo_descriptionkey_advanced_id").multiselect({
+           multiple: false,
+           header: "Select SEO Plugin",
+           noneSelectedText: "Select SEO Plugin",
+           selectedList: 1
+        });
     });
     </script>    
     
@@ -339,11 +355,13 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
         }?>
     </select>                             
     <script>
-    $("#csv2post_seo_keywordskey_advanced_id").multiselect({
-       multiple: false,
-       header: "Select SEO Plugin",
-       noneSelectedText: "Select SEO Plugin",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_seo_keywordskey_advanced_id").multiselect({
+           multiple: false,
+           header: "Select SEO Plugin",
+           noneSelectedText: "Select SEO Plugin",
+           selectedList: 1
+        });
     });
     </script>    
     

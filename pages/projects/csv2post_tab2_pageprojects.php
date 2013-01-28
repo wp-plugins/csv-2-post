@@ -175,11 +175,13 @@ $jsform_set['noticebox_content'] = 'You are saving a column of data to be used a
         </select>
     </p>
     <script>
-    $("#csv2post_titlecolumn_menu").multiselect({
-       multiple: false,
-       header: "Select Database Column (table - column)",
-       noneSelectedText: "Select Database Column",
-       selectedList: 1
+    $(document).ready( function(){ 
+        $("#csv2post_titlecolumn_menu").multiselect({
+           multiple: false,
+           header: "Select Database Column (table - column)",
+           noneSelectedText: "Select Database Column",
+           selectedList: 1
+        });
     });
     </script> 
        
