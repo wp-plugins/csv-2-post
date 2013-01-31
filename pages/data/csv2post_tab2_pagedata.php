@@ -21,25 +21,13 @@ $jsform_set['noticebox_content'] = 'Do you want to begin export the selected dat
     csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
     csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
     ?> 
-    
-    <p>        
-        <select id="wtgpt_dataexport_selecttables" name="wtgpt_exporttable" multiple="no" class="csv2post_multiselect_menu">
-            <?php csv2post_option_items_databasetables();?>
-        </select>
-    </p>
-    
-    <script>
-    $(document).ready( function(){   
-	    $("#wtgpt_dataexport_selecttables").multiselect({
-	       multiple: false,
-	       header: "Select a table",
-	       noneSelectedText: "Select a table",
-	       selectedList: 1
-	    });
-    });
-    </script>
+
+    <select id="wtgpt_dataexport_selecttables" name="wtgpt_exporttable" multiple="no">
+        <?php csv2post_option_items_databasetables();?>
+    </select>
+    <br />
            
-     <?php 
+    <?php 
     // add js for dialog on form submission and the dialog <div> itself
     if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);

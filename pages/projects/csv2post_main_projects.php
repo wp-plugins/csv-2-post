@@ -39,7 +39,7 @@ if($csv2post_nav_type == 'css'){
     // loop through tabs - held in menu pages tabs array
     foreach($csv2post_mpt_arr['menu'][$pageid]['tabs'] as $tab=>$values){
         
-        // chekc if tab is to be displayed, if not, we do not add the div for it    
+        // check if tab is to be displayed, if not, we do not add the div for it    
         if(csv2post_menu_should_tab_be_displayed($pageid,$tab)){
             
             // build form action value, will be appended
@@ -60,7 +60,11 @@ if($csv2post_nav_type == 'css'){
             }
             
             echo '</div>';
-                     
+            
+            // discontinue loop if no projects exist so that only the first screen is displayed
+            if(!isset($csv2post_projectslist_array) || !is_array($csv2post_projectslist_array)){
+                break;
+            }       
         }
     } 
 

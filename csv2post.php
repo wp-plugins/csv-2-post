@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: CSV 2 POST
-Version: 6.8.2
+Version: 6.8.3
 Plugin URI: http://www.csv2post.com
 Description: CSV 2 POST released 2012 by Zara Walsh
 Author: Zara Walsh
@@ -29,8 +29,9 @@ services not just software. License and agreement is seperate.
 
 // package variables 
 $csv2post_debug_mode = false;// boolean true or false 
+if(is_admin() && isset($_GET['csv2postdebug'])){$csv2post_debug_mode = true;}
 $csv2post_is_dev = false;// boolean, true displays more panels with even more data i.e. array dumps
-$csv2post_currentversion = '6.8.2';
+$csv2post_currentversion = '6.8.3';
 $csv2post_is_free_override = false;// change to true for free edition setup when fulledition folder present
                  
 // other variables required on installation or loading
@@ -211,8 +212,6 @@ if(is_admin()){
     
     register_activation_hook( __FILE__ ,'csv2post_register_activation_hook');
 
-    add_action( 'admin_init', 'csv2post_ADDACTION_admin_init_registered_scripts' );
- 
     // content template custom post type
     add_action( 'init', 'csv2post_register_customposttype_contentdesigns' );
     add_action( 'add_meta_boxes', 'csv2post_add_custom_boxes_contenttemplate' );
@@ -303,7 +302,7 @@ if(!$csv2post_is_free){
 ####                                                                                                        #
 #############################################################################################################
 add_action('admin_menu','csv2post_admin_menu');// main navigation 
- 
+
 #############################################################################################################
 ####                                                                                                        #
 ####            ADMIN THAT COMES LAST AND APPLYS TO CSV 2 POST PLUGIN PAGES ONLY                            #
@@ -311,27 +310,29 @@ add_action('admin_menu','csv2post_admin_menu');// main navigation
 ####                                                                                                        #
 ############################################################################################################# 
 if(is_admin() && isset($_GET['page']) && csv2post_is_plugin_page($_GET['page'])){
-    
+
+    // register scripts during admin initial loading
+    add_action( 'admin_init', 'csv2post_ADDACTION_admin_init_registered_scripts' );
+
     // Comprehensive Google Map by Alexander Zagniotov causes a conflict. Removing the action which calls function causing conflict which breaks CSV 2 POST jQuery UI
-    remove_action( 'admin_init', 'cgmp_google_map_admin_add_script' );
-            
-    csv2post_script('admin');// loading admin side script when only viewing CSV 2 POST pages helps to avoid conflicts
+    remove_action( 'admin_init', 'cgmp_google_map_admin_add_script' );# TODO:HIGHPRIORITY, retest as this may no longer be needed
+    
+    // load admin only script files        
+    csv2post_script('admin');
+    
+    // load admin only css
     csv2post_css('admin');
      
     add_action('init','csv2post_export_singlesqltable_as_csvfile');// export CSV file request by $_POST
 
-    ###############################################################
-    #                                                             #
-    #    PRINT SCRIPT FUNCTIONS CALLED WITHIN VARIOUS SCREENS     #
-    #                                                             #
-    ###############################################################
+    // print scripts to page 
     add_action( 'wp_print_scripts', 'csv2post_print_admin_scripts' );
     
     // process form submission - moved to here 11th January 2013
     //csv2post_include_form_processing_php();
     add_action('admin_init','csv2post_include_form_processing_php');
         
-}elseif(!is_admin()){// default to public side script and css
+}elseif(!is_admin()){// default to public side script and css      
     csv2post_script('public');
     csv2post_css('public');    
 }

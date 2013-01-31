@@ -37,18 +37,7 @@ $jsform_set['noticebox_content'] = 'Do you want to save a default author now?';?
         <?php csv2post_display_users_options($current);?>
                                                                                                                              
     </select>  
-      
-    <script>
-    $(document).ready( function(){ 
-        $("#csv2post_defaultauthor_select_id").multiselect({
-           multiple: false,
-           header: "Select Default Author",
-           noneSelectedText: "Select Default Author",
-           selectedList: 1
-        });
-    });
-    </script>
-    
+
     <br />
        
      <?php 
@@ -102,17 +91,7 @@ Wordpress may send emails to every email address used. Do you wish to continue?'
             csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code);
         }?>                                                                                                                     
     </select>
-
-    <script>
-    $(document).ready( function(){ 
-        $("#csv2post_createusers_emailcolumn").multiselect({
-           multiple: false,
-           header: "Select Email Address Column",
-           noneSelectedText: "Select Email Address Table",
-           selectedList: 1
-        });
-    });
-    </script>
+ 
     <br />
     Username Column (optional):
     <select name="csv2post_createusers_usernamecolumn" id="csv2post_createusers_usernamecolumn" class="csv2post_multiselect_menu">
@@ -123,18 +102,7 @@ Wordpress may send emails to every email address used. Do you wish to continue?'
         }else{
             csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code);
         }?>                                                                                                                     
-    </select>
-
-    <script>
-    $(document).ready( function(){ 
-        $("#csv2post_createusers_usernamecolumn").multiselect({
-           multiple: false,
-           header: "Select Username Column",
-           noneSelectedText: "Select Username Table",
-           selectedList: 1
-        });
-    });
-    </script>    
+    </select>  
     
     <br />
        

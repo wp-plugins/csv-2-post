@@ -42,18 +42,7 @@ $jsform_set['noticebox_content'] = 'Do you want to save a default category now?'
         <?php csv2post_display_categories_options($csv2post_project_array['categories']['default']);?>
                                                                                                                              
     </select>  
-      
-    <script>
-    $(document).ready( function(){ 
-        $("#csv2post_defaultcategory_select_id").multiselect({
-           multiple: false,
-           header: "Select Default Category",
-           noneSelectedText: "Select Default Category",
-           selectedList: 1
-        });
-    });
-    </script>
-    
+          
     <br />
        
        <?php 
@@ -102,18 +91,7 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
         }
         ?>                                                                                                                            
     </select>
-    
-    <script>
-    $(document).ready( function(){ 
-        $("#csv2post_categorylevel1_select_columnandtable_objectid").multiselect({
-           multiple: false,
-           header: "Select Level One Categories",
-           noneSelectedText: "Select Level One Categories",
-           selectedList: 1
-        });
-    });
-    </script>
-        
+           
     <br />
         
     <select name="csv2post_categorylevel2_select_columnandtable" id="csv2post_categorylevel2_select_columnandtable_objectid" class="csv2post_multiselect_menu">
@@ -126,18 +104,7 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
         }
         ?>                                                                                                                     
     </select>
-        
-    <script>
-    $(document).ready( function(){ 
-        $("#csv2post_categorylevel2_select_columnandtable_objectid").multiselect({
-           multiple: false,
-           header: "Select Level Two Categories",
-           noneSelectedText: "Select Level Two Categories",
-           selectedList: 1
-        });
-    });
-    </script>
-    
+            
     <br />
         
     <select name="csv2post_categorylevel3_select_columnandtable" id="csv2post_categorylevel3_select_columnandtable_objectid" class="csv2post_multiselect_menu">
@@ -151,17 +118,6 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
         ?>                                                                                                                     
     </select>  
       
-    <script>
-    $(document).ready( function(){ 
-        $("#csv2post_categorylevel3_select_columnandtable_objectid").multiselect({
-           multiple: false,
-           header: "Select Level Three Categories",
-           noneSelectedText: "Select Level Three Categories",
-           selectedList: 1
-        });
-    });
-    </script>
-
     <br />
     
     <?php 
@@ -178,18 +134,7 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
             }
             ?>                                                                                                                     
         </select>  
-          
-        <script>
-        $(document).ready( function(){ 
-            $("#csv2post_categorylevel4_select_columnandtable_objectid").multiselect({
-               multiple: false,
-               header: "Select Level Four Categories",
-               noneSelectedText: "Select Level Four Categories",
-               selectedList: 1
-            });
-        });
-        </script>
-
+  
         <br />
         
         <select name="csv2post_categorylevel5_select_columnandtable" id="csv2post_categorylevel5_select_columnandtable_objectid" class="csv2post_multiselect_menu">
@@ -202,18 +147,7 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
             }
             ?>                                                                                                                     
         </select>  
-          
-        <script>
-        $(document).ready( function(){ 
-            $("#csv2post_categorylevel5_select_columnandtable_objectid").multiselect({
-               multiple: false,
-               header: "Select Level Five Categories",
-               noneSelectedText: "Select Level Five Categories",
-               selectedList: 1
-            });  
-        }); 
-        </script>
-        
+         
         <br />
     <?php }?>
     
@@ -294,17 +228,7 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
                     csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code);            
                 }?>                                                                                                                            
             </select>
-            
-            <script>
-            $(document).ready( function(){ 
-                $("#csv2post_categorylevel1_advanced").multiselect({
-                   multiple: false,
-                   header: "Select Level One Categories",
-                   noneSelectedText: "Select Level One Categories",
-                   selectedList: 1
-                });
-            });
-            </script>
+        
             </td></tr>
             <tr><td>    
             Level 2:</td><td><select name="csv2post_categorylevel2_advanced" id="csv2post_categorylevel2_advanced" class="csv2post_multiselect_menu">
@@ -317,16 +241,6 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
                 }?>                                                                                                                     
             </select>
                 
-            <script>
-            $(document).ready( function(){ 
-                $("#csv2post_categorylevel2_advanced").multiselect({
-                   multiple: false,
-                   header: "Select Level Two Categories",
-                   noneSelectedText: "Select Level Two Categories",
-                   selectedList: 1
-                });
-            });
-            </script>
             </td></tr>
             <tr><td>    
             Level 3:</td><td><select name="csv2post_categorylevel3_advanced" id="csv2post_categorylevel3_advanced" class="csv2post_multiselect_menu">
@@ -338,17 +252,7 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
                     csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code);            
                 }?>                                                                                                                     
             </select>  
-              
-            <script>
-            $(document).ready( function(){ 
-                $("#csv2post_categorylevel3_advanced").multiselect({
-                   multiple: false,
-                   header: "Select Level Three Categories",
-                   noneSelectedText: "Select Level Three Categories",
-                   selectedList: 1
-                });
-            });
-            </script>
+            
             </td></tr>
             <?php ### TODO:LOWPRIORITY remove the 4th and 5th category level from free edition ?>
             <tr><td>
@@ -361,17 +265,7 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
                     csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code);            
                 }?>                                                                                                                     
             </select>  
-              
-            <script>
-            $(document).ready( function(){ 
-                $("#csv2post_categorylevel4_advanced").multiselect({
-                   multiple: false,
-                   header: "Select Level Four Categories",
-                   noneSelectedText: "Select Level Four Categories",
-                   selectedList: 1
-                });
-            });
-            </script>
+
             </td></tr>
             <tr><td>
             Level 5:</td><td><select name="csv2post_categorylevel5_advanced" id="csv2post_categorylevel5_advanced" class="csv2post_multiselect_menu">
@@ -383,17 +277,7 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
                     csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code);            
                 }?>                                                                                                                     
             </select>  
-              
-            <script>
-            $(document).ready( function(){ 
-                $("#csv2post_categorylevel5_advanced ").multiselect({
-                   multiple: false,
-                   header: "Select Level Five Categories",
-                   noneSelectedText: "Select Level Five Categories",
-                   selectedList: 1
-                });
-            });
-            </script>
+            
             </td></tr>
         
         </table>
@@ -421,17 +305,7 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
                     <?php csv2post_display_template_options($current_value,'categorydescription');?>
                                                                                                                                 
                 </select>  
-                  
-                <script>
-                $(document).ready( function(){ 
-                    $("#csv2post_categorylevel1_description ").multiselect({
-                       multiple: false,
-                       header: "Select Level One Template",
-                       noneSelectedText: "Select Level One Template",
-                       selectedList: 1
-                    });
-                });
-                </script>    
+   
                 </td></tr>
 
                 <tr><td>Level 2:</td><td>
@@ -446,17 +320,7 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
                     <?php csv2post_display_template_options($current_value,'categorydescription');?>
                                                                                                                                 
                 </select>  
-                  
-                <script>
-                $(document).ready( function(){ 
-                    $("#csv2post_categorylevel2_description ").multiselect({
-                       multiple: false,
-                       header: "Select Level Two Template",
-                       noneSelectedText: "Select Level Two Template",
-                       selectedList: 1
-                    });
-                });
-                </script>    
+                     
                 </td></tr>
 
                 <tr><td>Level 3:</td><td>
@@ -471,17 +335,7 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
                     <?php csv2post_display_template_options($current_value,'categorydescription');?>
                                                                                                                                 
                 </select>  
-                  
-                <script>
-                $(document).ready( function(){ 
-                    $("#csv2post_categorylevel3_description ").multiselect({
-                       multiple: false,
-                       header: "Select Level Three Template",
-                       noneSelectedText: "Select Level Three Template",
-                       selectedList: 1
-                    });
-                });
-                </script>    
+                     
                 </td></tr>
                 
                 <tr><td>Level 4:</td><td>
@@ -496,17 +350,7 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
                     <?php csv2post_display_template_options($current_value,'categorydescription');?>
                                                                                                                                 
                 </select>  
-                  
-                <script>
-                $(document).ready( function(){ 
-                    $("#csv2post_categorylevel4_description ").multiselect({
-                       multiple: false,
-                       header: "Select Level Four Template",
-                       noneSelectedText: "Select Level Four Template",
-                       selectedList: 1
-                    });
-                });
-                </script>    
+   
                 </td></tr>
                 
                 <tr><td>Level 5:</td><td>
@@ -524,17 +368,7 @@ $jsform_set['noticebox_content'] = 'Please ensure you have backed up your Wordpr
                     <?php csv2post_display_template_options($current_value,'categorydescription');?>
                                                                                                                                 
                 </select>  
-                  
-                <script>
-                $(document).ready( function(){ 
-                    $("#csv2post_categorylevel5_description ").multiselect({
-                       multiple: false,
-                       header: "Select Level Five Template",
-                       noneSelectedText: "Select Level Five Template",
-                       selectedList: 1
-                    });
-                });
-                </script>    
+    
                 </td></tr>
                                             
             </table>
@@ -643,17 +477,7 @@ $jsform_set['noticebox_content'] = 'Do you want to continue saving?';
                                 <?php csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code,$current_table,$current_column); ?>
                                                                                                                                             
                             </select>  
-                              
-                            <script>
-                            $(document).ready( function(){ 
-                                $("#csv2post_utm_categorylevel<?php echo $i;?>_<?php echo $catfield->field_name;?>").multiselect({
-                                   multiple: false,
-                                   header: "Select Level <?php echo $i;?> Template",
-                                   noneSelectedText: "Select Level <?php echo $i;?> Template",
-                                   selectedList: 1
-                                });
-                            });
-                            </script>    
+                                  
                             </td></tr>
                     <?php } ?>
                     </table>
@@ -759,19 +583,7 @@ $jsform_set['noticebox_content'] = 'Do you want to save category mapping rules n
                                 
                         <?php csv2post_display_categories_options($current_value);?>
                                                                                                                                              
-                    </select>  
-                      
-                    <script>
-                    $(document).ready( function(){ 
-                        $("#csv2post_createcategorymapping_lev<?php echo $i;?>_inc<?php echo $increment;?>_select_id").multiselect({
-                           multiple: false,
-                           header: "Select Category",
-                           noneSelectedText: "Select Category",
-                           selectedList: 1
-                        });
-                    });
-                    </script><?php
-
+                    </select><?php
                 }
 
                 echo '</table>';             

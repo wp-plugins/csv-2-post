@@ -107,18 +107,7 @@ if(!isset($csv2post_dataimportjobs_array) || !is_array($csv2post_dataimportjobs_
                                 <?php csv2post_display_headers_menuoptions($job_array[$csv_filename]['headers'],$jobcode);?>
                             </select>
                         </p>
-                        
-                        <script>
-                        $(document).ready( function(){ 
-                            $("#csv2post_advancedidcolumn_<?php echo $jobcode;?>_<?php echo $fileChunks[0];?>").multiselect({
-                               multiple: false,
-                               header: "Select ID Column",
-                               noneSelectedText: "Select ID Column",
-                               selectedList: 1
-                            });
-                        });
-                        </script>
-                        
+
                         <?php                         
                         echo '</td>';?>
 

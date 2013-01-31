@@ -214,7 +214,7 @@ Email: info@csv2post.com
 .infoLarge, .successLarge, .warningLarge, .errorLarge, .validationLarge, 
 .questionLarge, .processingLarge, .restrictedLarge, .stopLarge, .stepLarge {  
 	margin: 10px 0px; /* top and bottom */ 
-	padding: 10px 5px 10px 115px;  
+	padding: 20px 5px 19px 115px;  
 	background-repeat: no-repeat;  
 	background-position: 10px center; 
 	display: block;

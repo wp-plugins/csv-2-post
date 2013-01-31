@@ -201,17 +201,6 @@ $jsform_set['noticebox_content'] = 'You are about to setup a new condition for a
         </select>
     </p>
     
-    <script>
-    $(document).ready( function(){ 
-        $("#csv2post_dynamiccontentdesignrules_select_columnandtable_formid").multiselect({
-           multiple: false,
-           header: "Select Database Column (table - column)",
-           noneSelectedText: "Select Database Table",
-           selectedList: 1
-        });
-    });
-    </script>
-
     <?php //TODO: MEDIUMPRIORITY, change to a menu populated with unique values from selected table, using Ajax ?>
     <p>        
         Trigger Value: <input type="text" name="csv2post_dynamiccontentdesignrules_text_triggervalue" id="csv2post_dynamiccontentdesignrules_text_trigger_formid" value="" />
@@ -223,17 +212,6 @@ $jsform_set['noticebox_content'] = 'You are about to setup a new condition for a
             <?php csv2post_display_contenttemplate_menuoptions();?>                                                                                                                     
         </select>        
     </p>
-
-    <script>
-    $(document).ready( function(){  
-        $("#csv2post_dynamiccontentdesignrules_select_template_formid").multiselect({
-           multiple: false,
-           header: "Template",
-           noneSelectedText: "Template",
-           selectedList: 1
-        });
-    });   
-    </script>
 
     <h2>Current Rules</h2>
     <?php csv2post_display_templatedesignrules_byvalue_table(); ?>      

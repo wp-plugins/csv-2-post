@@ -87,7 +87,7 @@ function csv2post_list_optionrecordtrace($form = false,$size = 'Small',$optionty
 }
 
 function csv2post_navigation_jquery($thepagekey){    
-    global $csv2post_is_activated,$csv2post_is_installed,$csv2post_mpt_arr;?>
+    global $csv2post_is_activated,$csv2post_is_installed,$csv2post_mpt_arr,$csv2post_projectslist_array;?>
 
     <?php 
     // vertical tab menu CSS
@@ -159,7 +159,7 @@ function csv2post_navigation_jquery($thepagekey){
 
                 if( csv2post_menu_should_tab_be_displayed($thepagekey,$tab) ){
           
-                } 
+                }
             }
         }?>       
     
@@ -175,11 +175,21 @@ function csv2post_navigation_jquery($thepagekey){
         $tablabel = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['label'];   
                                  
         if( csv2post_menu_should_tab_be_displayed($thepagekey,$tab) ){
-                    
+        
+            // change label for first time users on
+            if($thepagekey == 'projects' && !isset($csv2post_projectslist_array) || $thepagekey == 'projects' && !is_array($csv2post_projectslist_array)){
+                $tablabel = 'Please create your first Post Creation Project...';
+            }   
+                            
             // default menu build approach
             echo '<li><a href="#tabs-'.$tab.'">' . $tablabel . '</a></li>';                                
-        }   
-            
+        } 
+      
+        // discontinue loop if no projects exist so that only the first screen is displayed
+        if($thepagekey == 'projects' && !isset($csv2post_projectslist_array) || $thepagekey == 'projects' && !is_array($csv2post_projectslist_array)){
+            break;
+        }    
+                            
     }// for each
     
     echo '</ul>';?>    
@@ -477,23 +487,7 @@ function csv2post_easy_configuration_questionlist_demo(){
             
         }else{
                 
-            if($question['type'] == 'single'){?>
-                        
-                <script type="text/javascript">
-                $(document).ready( function(){ 
-                    $("select#<?php echo 'csv2post_single'.$singles_created;?>").multiselect({
-                       // TODO: LOWPRIORITY, get single select working, it still shows checkboxes instead of a radio button approach
-                       selectedList: 10,
-                       minWidth: 600,
-                       multiple: false,
-                       header: "Please select a single option",
-                       noneSelectedText: "Please select a single option",
-                       selectedList: 1   
-                    });
-                });
-                </script>
-
-                <?php
+            if($question['type'] == 'single'){
                 $optionlist = '';
                 foreach($question['answers'] as $key => $optanswer){
                     $optionlist .= '<option value="'.$optanswer['value'].'"> '.$optanswer['text'].' </option> ';     
@@ -508,20 +502,7 @@ function csv2post_easy_configuration_questionlist_demo(){
 
                 <?php ++$singles_created;
                 
-            }elseif($question['type'] == 'multiple'){?>
-                   
-                <script type="text/javascript">
-                $(document).ready( function(){ 
-                    $("select#<?php echo 'csv2post_multiple'.$multiple_created;?>").multiselect({
-                        selectedList: 10,
-                        minWidth: 600,
-                        header: "Please select one or more options",
-                        noneSelectedText: "Please select one or more options",
-                    });
-                });
-                </script>
-
-                <?php 
+            }elseif($question['type'] == 'multiple'){
                 // build list of option values
                 $opt_array = explode(",", $question['answers']);
                 $optionlist = '';
@@ -535,13 +516,7 @@ function csv2post_easy_configuration_questionlist_demo(){
                         '.$optionlist.'
                     </select>
                 </p>','question','Small','','','return');?>
-                
-                <script type="text/javascript">
-                $(document).ready( function(){ 
-                    $("select#<?php echo WTG_C2P_ABB.'multiple'.$multiple_created;?>").multiselect().multiselectfilter();
-                });
-                </script>
-                
+                                
                 <?php ++$multiple_created;
                 
             }elseif($question['type'] == 'text'){?>
@@ -2131,59 +2106,6 @@ function csv2post_display_posttypes_menu_options(){
 }
 
 /**
-* Loops through giving projects tables and prints <option> item for menu for each column header.
-* Table and column are added to value with comma delimeter. Use csv2post_explode_tablecolumn_returnnode to split the submitted value
-* 
-* Use script for jQuery display 
-* <script>
-* $(document).ready( function(){ 
-*    $("#csv2post_customfield_select_columnandtable_formid").multiselect({
-*       multiple: false,
-*       header: "Select Database Column (table - column)",
-*       noneSelectedText: "Select Database Table",
-*       selectedList: 1
-*    });
-* });
-* </script>
-*/
-function csv2post_display_project_columnsandtables_menuoptions($project_code,$current_table = 'NOTPROVIDED98723462',$current_column = 'NOTPROVIDED09871237'){
-    
-    if(!$project_code){
-        echo '<option value="nocurrentproject">No Current Project</option>';        
-    }else{
-
-        global $csv2post_project_array;
-
-        foreach( $csv2post_project_array['tables'] as $key => $table ){
-            $table_columns = csv2post_WP_SQL_get_tablecolumns($table);
-            
-            if($table_columns == false){
-                
-                echo '<option value="fault">Problem Detected In Relation To Table Named: '.$table.'</option>';        
-            
-            }else{
-                while ($row_column = mysql_fetch_row($table_columns)) {
-
-                    // establish selected status for this option
-                    $selected = '';
-                    
-                    ### TODO:MEDIUMPRIORITY change these not provided values all over the plugin
-                    ### we use a random number so that it can never match a users own column name but this approach has not been used everywhere
-                    if($current_table != 'NOTPROVIDED98723462' && $current_column != 'NOTPROVIDED09871237'){
-                        if($current_table == $table && $current_column == $row_column[0]){
-                            $selected = ' selected="selected"';
-                        }    
-                    } 
-                    
-                    // must add table name also to avoid confusion when two or more tables share the same column name               
-                    echo '<option value="'.$table.','.$row_column[0].'"'.$selected.'>' . $table . ' - '.$row_column[0].'</option>'; 
-                }  
-            }                        
-        } 
-    }  
-}
-
-/**
 * Outputs options displaying CSV file headers along side thier database table versions (sql_adapted)
 * 
 * @param mixed $headers
@@ -2314,23 +2236,11 @@ function csv2post_selectables_csvfiles($range = 'all',$id = 'noid'){?>
 */
 function csv2post_menu_csvfiles($range = 'all',$id = 'noid'){?>
     <p>
-        <select id="csv2post_multiselect<?php echo $id;?>" name="<?php echo WTG_C2P_ABB . 'csvfiles_menu';?>" class="csv2post_multiselect_menu">
+        <select id="csv2post_multiselect<?php echo $id;?>" name="<?php echo WTG_C2P_ABB . 'csvfiles_menu';?>">
             <option value="notselected">No File Selected</option>
-            <?php csv2post_option_items_csvfiles('all');?>
+            <?php //csv2post_option_items_csvfiles('all');?>
         </select>
-    </p>
-    
-    <script>
-    $(document).ready( function(){     
-        $("#csv2post_multiselect<?php echo $id;?>").multiselect({
-           multiple: false,
-           header: "Select CSV File",
-           noneSelectedText: "Select CSV File",
-           selectedList: 1
-        });
-    });
-    </script> 
-    <?php    
+    </p><?php    
 }
 
 /**
@@ -3288,22 +3198,10 @@ function csv2post_schedulescreen_notices(){
 * @param string $table_name
 * @param mixed $id used to make ID attribute unique, recommend that it not be a number only if the menu is to be used many times
 */
-function csv2post_menu_tablecolumns($table_name,$id = ''){?>
-            
+function csv2post_menu_tablecolumns($table_name,$id = ''){?>  
     <select name="csv2post_table_columns_<?php echo $table_name;?><?php echo $id;?>" id="csv2post_table_columns_<?php echo $table_name;?><?php echo $id;?>_id" class="csv2post_multiselect_menu">
         <?php csv2post_options_tablecolumns($table_name);?>                                                                                                                     
-    </select>        
-
-    <script>
-    $(document).ready( function(){ 
-        $("#csv2post_table_columns_<?php echo $table_name;?><?php echo $id;?>_id").multiselect({
-           multiple: false,
-           header: "Table Columns",
-           noneSelectedText: "Table Columns",
-           selectedList: 1
-        });
-    });
-    </script><?php    
+    </select><?php    
 }
 
 /**
@@ -3313,22 +3211,10 @@ function csv2post_menu_tablecolumns($table_name,$id = ''){?>
 * @param string $table_name
 */
 function csv2post_menu_tablecolumns_multipletableproject($table_name,$current_value = false){
-    global $csv2post_project_array;?>
-            
+    global $csv2post_project_array;?>         
     <select name="csv2post_multitable_columns_<?php echo $table_name;?>" id="csv2post_multitable_columns_<?php echo $table_name;?>_id" class="csv2post_multiselect_menu">
         <?php csv2post_options_columns($table_name,$current_value);?>                                                                                                                     
-    </select>        
-
-    <script>
-    $(document).ready( function(){ 
-        $("#csv2post_multitable_columns_<?php echo $table_name;?>_id").multiselect({
-           multiple: false,
-           header: "Table Columns",
-           noneSelectedText: "Table Columns",
-           selectedList: 1
-        });
-    });
-    </script><?php    
+    </select><?php    
 }
 
 /**
@@ -3403,18 +3289,7 @@ function csv2post_display_menu_keycolumnselection($table_name,$current_table = f
     <select name="csv2post_multitable_pairing_<?php echo $table_name;?>" id="csv2post_multitable_pairing_<?php echo $table_name;?>_id" class="csv2post_multiselect_menu">
         <option value="notrequired">Not Required</option>
         <?php csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code,$current_table,$current_column);?>                                                                                                                     
-    </select>
-
-    <script>
-    $(document).ready( function(){ 
-        $("#csv2post_multitable_pairing_<?php echo $table_name;?>_id").multiselect({
-           multiple: false,
-           header: "Select Database Column (table - column)",
-           noneSelectedText: "Select Database Table",
-           selectedList: 1
-        });
-    });
-    </script><?php    
+    </select><?php    
 }
 
 /**
@@ -3464,18 +3339,7 @@ function csv2post_display_designtype_menu($post_id){
         <?php $optionmenu .= '</select>';?>
 
         <?php echo $optionmenu;?>
-        
-        <script>
-        $(document).ready( function(){ 
-            $("#csv2post_select_designtype").multiselect({
-            multiple: true,
-            header: "Select Template Types",
-            noneSelectedText: "Select Template Types",
-            selectedList: 1
-            });
-        });
-        </script>
-            
+
     </p>
 <?php 
 }
@@ -3810,17 +3674,7 @@ function csv2post_menu_csvfile_headers($id,$jobcode,$f){
             $menu .= '<option value="'.$c['original'].'">'.$c['original'].'</option>';
         }
 
-    $menu .= '</select>
-    <script>
-    $(document).ready( function(){ 
-        $("#csv2post_csvfileheader_'.$id.'_'.$fc[0].'").multiselect({
-           multiple: false,
-           header: "Select CSV File Header/Column",
-           noneSelectedText: "Select CSV File Header/Column",
-           selectedList: 1
-        });
-    });
-    </script>';   
+    $menu .= '</select>';   
     
     return $menu;   
 }  
@@ -3831,25 +3685,10 @@ function csv2post_menu_csvfile_headers($id,$jobcode,$f){
 * @param mixed $increment
 */
 function csv2post_display_categories_menu($increment){?>
- 
-    <select name="csv2post_createcategorymapping<?php echo $increment;?>_select" id="csv2post_createcategorymapping<?php echo $increment;?>_select_id" class="csv2post_multiselect_menu">
-              
-        <option value="notselected">Not Selected</option> 
-                
-        <?php csv2post_display_categories_options($current_value);?>
-                                                                                                                             
-    </select>  
-      
-    <script>
-    $(document).ready( function(){ 
-        $("#csv2post_createcategorymapping<?php echo $increment;?>_select_id").multiselect({
-           multiple: false,
-           header: "Select Category",
-           noneSelectedText: "Select Category",
-           selectedList: 1
-        });
-    });
-    </script><?php    
+    <select name="csv2post_createcategorymapping<?php echo $increment;?>_select" id="csv2post_createcategorymapping<?php echo $increment;?>_select_id" class="csv2post_multiselect_menu">                               
+        <option value="notselected">Not Selected</option>       
+        <?php csv2post_display_categories_options($current_value);?>                                                                                                                   
+    </select><?php    
 }
 
 /**
@@ -3888,8 +3727,6 @@ function csv2post_display_sample_data($table_name,$limit = 10,$columns = '*'){
             break;
         }
             
-            
-        
     echo '</tr>';
         
         foreach($records as $key => $r){
@@ -3904,5 +3741,98 @@ function csv2post_display_sample_data($table_name,$limit = 10,$columns = '*'){
         }
     
     echo '</table>';           
-}                                                                                                              
+} 
+
+/**
+* Loops through giving projects tables and prints <option> item for menu for each column header.
+* Table and column are added to value with comma delimeter. Use csv2post_explode_tablecolumn_returnnode to split the submitted value
+* 
+* @deprecated 29th January 2013 use csv2post_GUI_menuoptions_project_columnsandtables() instead
+*/
+function csv2post_display_project_columnsandtables_menuoptions($project_code,$current_table = 'NOTPROVIDED98723462',$current_column = 'NOTPROVIDED09871237'){
+    
+    if(!$project_code){
+        echo '<option value="nocurrentproject">No Current Project</option>';        
+    }else{
+
+        global $csv2post_project_array;
+
+        foreach( $csv2post_project_array['tables'] as $key => $table ){
+            $table_columns = csv2post_WP_SQL_get_tablecolumns($table);
+            
+            if($table_columns == false){
+                
+                echo '<option value="fault">Problem Detected In Relation To Table Named: '.$table.'</option>';        
+            
+            }else{
+                while ($row_column = mysql_fetch_row($table_columns)) {
+
+                    // establish selected status for this option
+                    $selected = '';
+                    
+                    ### TODO:MEDIUMPRIORITY change these not provided values all over the plugin
+                    ### we use a random number so that it can never match a users own column name but this approach has not been used everywhere
+                    if($current_table != 'NOTPROVIDED98723462' && $current_column != 'NOTPROVIDED09871237'){
+                        if($current_table == $table && $current_column == $row_column[0]){
+                            $selected = ' selected="selected"';
+                        }    
+                    } 
+                    
+                    // must add table name also to avoid confusion when two or more tables share the same column name               
+                    echo '<option value="'.$table.','.$row_column[0].'"'.$selected.'>' . $table . ' - '.$row_column[0].'</option>'; 
+                }  
+            }                        
+        } 
+    }  
+}
+
+/**
+* Loops through giving projects tables and prints <option> item for menu for each column header.
+* Table and column are added to value with comma delimeter. Use csv2post_explode_tablecolumn_returnnode to split the submitted value
+* 1. Save boolean false when the default form item is submitted
+*/            
+function csv2post_GUI_menuoptions_project_columnsandtables($project_code,$atts){
+    if(!$project_code){
+        echo '<option value="nocurrentproject">No Current Project</option>';        
+    }else{
+
+        global $csv2post_project_array;
+
+        extract( shortcode_atts( array(
+                'table' => false,
+                'column' => false,
+                'usedefault' => true,// boolean, true adds No Selection Made as default option                 
+        ), $atts ) );        
+
+        if($usedefault){
+            echo '<option value="noselectionmade">No Selection Made</option>';
+        }
+        
+        foreach( $csv2post_project_array['tables'] as $key => $t ){
+            $table_columns = csv2post_WP_SQL_get_tablecolumns($t);
+            
+            if($table_columns == false){
+                
+                echo '<option value="noselectionmade">Problem Detected In Relation To Table Named: '.$t.'</option>';        
+            
+            }else{
+                while ($row_column = mysql_fetch_row($table_columns)) {
+
+                    // establish selected status for this option (the default for form menus is false)
+                    if($table != false 
+                    && $table == $t 
+                    && $column != false
+                    && $column == $row_column[0]){
+                        $selected = ' selected="selected"';
+                    }else{
+                        $selected = '';
+                    }    
+ 
+                    // must add table name also to avoid confusion when two or more tables share the same column name               
+                    echo '<option value="'.$t.','.$row_column[0].'"'.$selected.'>' . $t . ' - '.$row_column[0].'</option>'; 
+                }  
+            }                        
+        } 
+    }  
+}                                                                                                             
 ?>

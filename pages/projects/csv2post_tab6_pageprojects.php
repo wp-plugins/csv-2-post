@@ -39,18 +39,7 @@ $jsform_set['noticebox_content'] = 'Do you want to save your new custom field ru
     <select name="csv2post_customfield_select_columnandtable" id="csv2post_customfield_select_columnandtable_formid" class="csv2post_multiselect_menu">
         <?php csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code);?>                                                                                                                     
     </select>
-
-    <script>
-    $(document).ready( function(){ 
-        $("#csv2post_customfield_select_columnandtable_formid").multiselect({
-           multiple: false,
-           header: "Select Database Column (table - column)",
-           noneSelectedText: "Select Database Table",
-           selectedList: 1
-        });
-    });
-    </script>
-
+    
     <br />
     
     <?php
@@ -136,17 +125,6 @@ $jsform_set['noticebox_content'] = 'Do you want to save your new custom field ru
         <?php csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code);?>                                                                                                                     
     </select>
 
-    <script>
-    $(document).ready( function(){ 
-        $("#csv2post_advancedcustomfields_datacolumn").multiselect({
-           multiple: false,
-           header: "Select Database Column",
-           noneSelectedText: "Select Database Table",
-           selectedList: 1
-        });
-    });
-    </script>
-
     <br />
     
     <p>                    
@@ -155,18 +133,7 @@ $jsform_set['noticebox_content'] = 'Do you want to save your new custom field ru
             <option value="notselected">Not Required</option>
             <?php csv2post_display_contenttemplate_menuoptions();?>                                                                                                                     
         </select>        
-    </p>
-    
-    <script>
-    $(document).ready( function(){ 
-        $("#csv2post_customfields_selecttemplate").multiselect({
-           multiple: false,
-           header: "Template",
-           noneSelectedText: "Template",
-           selectedList: 1
-        });
-    });
-    </script>    
+    </p> 
     
     <script>
     $(function() {

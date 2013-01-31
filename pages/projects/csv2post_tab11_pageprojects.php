@@ -53,18 +53,7 @@ $jsform_set['noticebox_content'] = 'Posts created from here on will use the data
             <?php csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code,$table,$column);?>                                                                                                                     
         </select>
     </p>
-
-    <script>
-    $(document).ready( function(){ 
-        $("#csv2post_defaulttagsdata_select_columnandtable_formid").multiselect({
-           multiple: false,
-           header: "Select Tags Data Column (table - column)",
-           noneSelectedText: "Select Tags Data Column",
-           selectedList: 1
-        });
-    });
-    </script>
-         
+             
      <?php 
     // add js for dialog on form submission and the dialog <div> itself
     if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){

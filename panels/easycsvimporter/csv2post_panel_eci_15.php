@@ -43,18 +43,7 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
                 <?php csv2post_display_users_options($current);?>
                                                                                                                                      
             </select>  
-              
-            <script>
-            $(document).ready( function(){ 
-                $("#csv2post_ecifreedefaultauthor_select_id").multiselect({
-                   multiple: false,
-                   header: "Select Default Author",
-                   noneSelectedText: "Select Default Author",
-                   selectedList: 1
-                });
-            });
-            </script>
-            
+                          
             <br />
                     
         <?php 

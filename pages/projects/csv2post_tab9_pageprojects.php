@@ -26,20 +26,7 @@ $jsform_set['noticebox_content'] = 'Your changes will take effect on all posts c
         <select name="csv2post_featuredimage_columnandtable" id="csv2post_featuredimage_columnandtable" class="csv2post_multiselect_menu">
             <?php csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code);?>                                                                                                                     
         </select>
-    </p>
-    
-    <script>
-    $(document).ready( function(){ 
-        $("#csv2post_featuredimage_columnandtable").multiselect({
-           multiple: false,
-           header: "Select Database Column (table - column)",
-           noneSelectedText: "Select Database Table",
-           selectedList: 1
-        });
-    });
-    </script>
-    
-     <?php 
+    </p><?php 
     // add js for dialog on form submission and the dialog <div> itself
     if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);

@@ -174,11 +174,6 @@ $csv2post_templatesystem_files[41]['path'] = '/script/';
 $csv2post_templatesystem_files[41]['name'] = 'jquery-ui';
 $csv2post_templatesystem_files[41]['extension'] = 'js';
 $csv2post_templatesystem_files[41]['level'] = 0;
-// uploader.js
-$csv2post_templatesystem_files[42]['path'] = '/script/';
-$csv2post_templatesystem_files[42]['name'] = 'uploader';
-$csv2post_templatesystem_files[42]['extension'] = 'js';
-$csv2post_templatesystem_files[42]['level'] = 0;
 // csv2post_script_admin_jqueryui.php
 $csv2post_templatesystem_files[43]['path'] = '/script/';
 $csv2post_templatesystem_files[43]['name'] = WTG_C2P_ABB . 'script_admin_jqueryui';

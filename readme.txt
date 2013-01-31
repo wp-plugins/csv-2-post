@@ -102,6 +102,37 @@ first plugin was created in 2009 and was halted pending re-development.
 
 == Changelog ==
 
+= 6.8.3 =
+* From The Developers
+    * Released 31st January 2013
+* Support Changes
+    * None
+* Fixes
+    * jQuery conflicts returned on 29th after a full day of the plugin working normally. No changes were made to jQuery to cause this so the script involved in conflict has been removed. 
+$result	
+* Feature Changes
+    * Form menus are no longer styled using jQuery UI
+    * Some screens and accordian panels are now hidden when no project exists. This is to prevent users from using forms that require a project as it leads to problems.
+	* Renamed accordian panel "Select Current Project" to "Set Current Project"
+	* Improved Large sized notice boxes (icon no longer partly hidden)
+	* New Accordian Panel: Sub-Pages by Permalinks however it is not complete. It will allow sub-pages to be created with up to 3 levels. 
+* Technical Changes
+    * All use of jQuery UI multiselect widget by Eric Hynds removed due to constant conflicts  
+	* New debug ability: add "&csv2postdebug=anyvalue" to the admin URL to display all PHP notices/warnings/errors
+    
+= 6.8.2 =
+* From The Developers
+    * Released 28th January 2013 
+    * Debugging was left activated in the main file. It causes all plugins and themes error to be displayed then is often mistaking for the newly activated plugin to cause the errors where infact this setting just stops them being hidden.
+* Support Changes
+    * None
+* Fixes
+    * None              
+* Feature Changes
+    * None
+* Technical Changes
+    * None
+    
 = 6.8.1 =
 * From The Developers
     * Released 28th January 2013 

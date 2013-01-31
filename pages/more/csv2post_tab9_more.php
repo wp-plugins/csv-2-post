@@ -134,15 +134,6 @@ $panel_array['panel_help'] = __('Settings which effect posts (that includes page
                     
             <input type="hidden" id="<?php echo WTG_C2P_ABB;?>contactreason_frompost" name="<?php echo WTG_C2P_ABB;?>contactreason_frompost" value="<?php echo $contactreason; ?>"> 
 
-            <!-- CONTACT METHODS -->
-            <script type="text/javascript">
-            $(document).ready( function(){ 
-                $("#csv2post_contactmethods").multiselect({
-                    selectedList: 10
-                });
-            });
-            </script>   
-
             <?php // decide default contact method (some are web services only)
             $method_email_selected = '';
             $method_ticket_selected = '';
@@ -171,12 +162,6 @@ $panel_array['panel_help'] = __('Settings which effect posts (that includes page
                     <option value="testimonialservice" disabled="disabled">Testimonial Web Service (not available yet)</option>                     
                 </select>
             </p>
-
-            <script type="text/javascript">
-            $(document).ready( function(){ 
-                $("#csv2post_contactmethods").multiselect().multiselectfilter();
-            });
-            </script> 
 
             <?php // CONTACT REASON
             $reason_pluginhelp_selected = '';
@@ -207,14 +192,6 @@ $panel_array['panel_help'] = __('Settings which effect posts (that includes page
             elseif($contactreason == 'providemysql'){$reason_providemysql_selected = 'selected="selected"';}
             elseif($contactreason == 'providehosting'){$reason_providehosting_selected = 'selected="selected"';}?>
             
-            <script type="text/javascript">
-            $(document).ready( function(){ 
-                $("#<?php echo WTG_C2P_ABB;?>contactreason").multiselect({
-                    selectedList: 10
-                });
-            });
-            </script>                                                                                      
-                 
             <p><label for="<?php echo WTG_C2P_ABB;?>contactreason">Reason For Contact:</label>
                 <select title="Contact Reason" multiple="multiple" name="<?php echo WTG_C2P_ABB;?>contactreason" id="<?php echo WTG_C2P_ABB;?>contactreason" class="csv2post_multiselect_menu">
                     <option value="hire" <?php echo $reason_hire_selected;?>>Hire WebTechGlobal</option>                     
@@ -232,18 +209,7 @@ $panel_array['panel_help'] = __('Settings which effect posts (that includes page
                     <option value="providehosting" <?php echo $reason_providehosting_selected;?>>Provide Hosting</option>                                                 
                 </select>
             </p>
-            
-             <script type="text/javascript">
-             $(document).ready( function(){ 
-                $("#<?php echo WTG_C2P_ABB;?>contactreason").multiselect({
-                   multiple: false,
-                   header: "Select an option",
-                   noneSelectedText: "Select an Option",
-                   selectedList: 1
-                });
-             });
-            </script>           
-            
+
             <?php // CONTACT PRIORITY
             $include_admin_select = '';
             $include_ftp_select = '';
@@ -254,15 +220,7 @@ $panel_array['panel_help'] = __('Settings which effect posts (that includes page
             elseif($contactreason == 'providehosting'){$include_hosting_select = 'selected="selected"';}
             elseif($contactreason == 'providemysql'){$include_mysql_select = 'selected="selected"';}                                    
             ?>
-            
-            <script type="text/javascript">
-            $(document).ready( function(){ 
-                $("#<?php echo WTG_C2P_ABB;?>contactinclude").multiselect({
-                    selectedList: 10
-                });
-            });
-            </script> 
-             
+              
             <p><label for="<?php echo WTG_C2P_ABB;?>contactinclude">Send Sensitive Data:</label>
                 <select title="Basic example" multiple="multiple" name="<?php echo WTG_C2P_ABB;?>contactinclude" id="<?php echo WTG_C2P_ABB;?>contactinclude" class="csv2post_multiselect_menu">                   
                     <option value="admin" <?php echo $include_admin_select;?>>WordpressAdmin Login</option>
@@ -272,21 +230,7 @@ $panel_array['panel_help'] = __('Settings which effect posts (that includes page
                     <option value="none" selected="selected">None</option>  
                 </select>
             </p>
-            
-            <script type="text/javascript">
-            $(document).ready( function(){ 
-                $("#<?php echo WTG_C2P_ABB;?>contactinclude").multiselect().multiselectfilter();
-            });
-            </script>         
-
-            <!-- CONTACT PRIORITY START -->
-            <script type="text/javascript">
-            $(document).ready( function(){ 
-                $("#<?php echo WTG_C2P_ABB;?>contactpriority").multiselect({
-                    selectedList: 10
-                });
-            });
-            </script>  
+ 
                
             <p><label for="<?php echo WTG_C2P_ABB;?>contactpriority">Priority:</label>
                 <select title="Basic example" multiple="multiple" name="<?php echo WTG_C2P_ABB;?>contactpriority" id="<?php echo WTG_C2P_ABB;?>contactpriority" class="csv2post_multiselect_menu">
@@ -295,19 +239,7 @@ $panel_array['panel_help'] = __('Settings which effect posts (that includes page
                     <option value="low">Low</option>                    
                 </select>
             </p>               
-                        
-            <script type="text/javascript">
-            $(document).ready( function(){ 
-                $("#<?php echo WTG_C2P_ABB;?>contactpriority").multiselect({
-                   multiple: false,
-                   header: "Select an option",
-                   noneSelectedText: "Select an Option",
-                   selectedList: 1
-                });
-            });
-            </script>
-            
-            
+
             <!-- REST OF FORM -->            
 
             <p>

@@ -34,17 +34,6 @@ two tables. Do you wish to continue?';?>
             <?php csv2post_tabletotable_option_items_databasetables();?>
         </select>   
     </p>
-    
-    <script>
-	 $(document).ready( function(){
-	    $("#wtgpt_tabletotable_tableone").multiselect({
-	       multiple: false,
-	       header: "Select a table",
-	       noneSelectedText: "Select a table",
-	       selectedList: 1
-	    });
-     });
-    </script>
    
     <p> 
         <label for="csv2post_wtgpt_tabletotable_tabletwo">Destination</label>        
@@ -52,18 +41,7 @@ two tables. Do you wish to continue?';?>
             <?php csv2post_tabletotable_option_items_databasetables();?>
         </select>   
     </p>
-    
-    <script>
-    $(document).ready( function(){  
-	    $("#wtgpt_tabletotable_tabletwo").multiselect({
-	       multiple: false,
-	       header: "Select a table",
-	       noneSelectedText: "Select a table",
-	       selectedList: 1
-	    });
-    });
-    </script>
-           
+              
      <?php 
     // add js for dialog on form submission and the dialog <div> itself
     if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){

@@ -153,6 +153,12 @@ if($cont){
     
     // Save featured image table and column
     $cont = csv2post_form_featuredimage();
+    
+    // Save sub-page by permalinks
+    $cont = csv2post_form_subpage_bypermalinks();
+
+    // save sub-page by grouping 
+    $cont = csv2post_form_subpage_bygrouping();  
 }
 
 // Creation Screen
@@ -3693,6 +3699,11 @@ function csv2post_form_update_defaultposttype(){
             $csv2post_project_array['defaultposttype'] = $_POST['csv2post_radio_defaultpostype'];
             csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array); 
             csv2post_notice('Your projects default post type is now '.$csv2post_project_array['defaultposttype'].' and all posts created from here on will be this type.','success','Large','Default Post Type Changed');    
+            
+            if($csv2post_project_array['defaultposttype'] == 'page'){
+                csv2post_notice_postresult('info','New Panel Available','A new panel is available 
+                on the Post Types screen to you for creating sub-pages.');
+            }
         }
 
         return false;
@@ -4934,7 +4945,7 @@ function csv2post_form_createfolder($path,$chmod = 0755){
 }
 
 /**
- * Processes FREE Reinstalls of the plugin, does output (submitted form has optional checkbox inputs to include or exclude specific parts)
+ * Processes FREE Reinstalls of the plugin, does output (submitted form has optional checkbox inputs to include or exclude specific parts)  
  */
 function csv2post_process_free_reinstall(){    
     csv2post_jquerydialog_results();?>
@@ -5185,7 +5196,112 @@ function csv2post_form_save_public_triggered_automaton(){
     }else{
         return true;
     }     
-} 
+}  
                         
-                                    
+/**
+* Save sub-page by permalinks
+* 
+* @todo LOWPRIORITY, prevent user selecting the same column twice
+*/
+function csv2post_form_subpage_bypermalinks(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'subpagesbypermalinks'){
+        
+        global $csv2post_project_array,$csv2post_currentproject_code;
+                           
+        
+        if($_POST['csv2post_subpage_permalinks_radio'] == 'off'){
+            
+            $csv2post_project_array['subpages']['status'] = false;
+
+            csv2post_notice_postresult('success','Sub-page Grouping Method Disabled','Your post creation
+            will not create sub-pages at all. This action disables all methods. Please submit a sub-page
+            settings form if you still wish to create sub-pages.'); 
+                        
+        }else{
+      
+            $csv2post_project_array['subpages']['parentcolumn']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_subpages_bypermalinks_parent']);
+            $csv2post_project_array['subpages']['parentcolumn']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_subpages_bypermalinks_parent']);            
+                    
+            $csv2post_project_array['subpages']['subone']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_subpages_bypermalinks_sub1']);
+            $csv2post_project_array['subpages']['subone']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_subpages_bypermalinks_sub1']);            
+                         
+            if($_POST['csv2post_subpages_bypermalinks_sub2'] == 'noselectionmade'){
+                $csv2post_project_array['subpages']['subtwo']['table'] = false;
+                $csv2post_project_array['subpages']['subtwo']['column'] = false;                    
+            }else{
+                $csv2post_project_array['subpages']['subtwo']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_subpages_bypermalinks_sub2']);
+                $csv2post_project_array['subpages']['subtwo']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_subpages_bypermalinks_sub2']);                    
+            }
+            
+            // is another method active? If so make user aware that it will be deactivated as only one method can run at a time
+            if(isset($csv2post_project_array['subpages']['status']) && $csv2post_project_array['subpages']['status'] == true){
+                if(isset($csv2post_project_array['subpages']['method']) && $csv2post_project_array['subpages']['method'] != 'permalinks'){
+                    csv2post_notice_postresult('warning','Sub-page Method Changed',
+                    'You already had a sub-page method active but only one method can be used at a time. The
+                    settings saved for your other submitted method will not be used. The grouping method
+                    will now be used for your current project.');    
+                }
+            }
+
+            $csv2post_project_array['subpages']['status'] = true;
+            $csv2post_project_array['subpages']['method'] = 'permalinks';
+
+            csv2post_notice_postresult('success','Sub-page Grouping Method Activated','Your post creation
+            will setup sub-pages providing your data is suitable for the permalink method.');            
+        }
+
+        csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);            
+                        
+        return false;
+    }else{
+        return true;
+    }     
+} 
+
+// save sub-page by grouping 
+function csv2post_form_subpage_bygrouping(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'subpagesbygroupingtwocolumn'){
+
+        global $csv2post_project_array,$csv2post_currentproject_code;
+                          
+        $table_name1 = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_subpages_bygrouping_parent']);
+        $column_name1 = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_subpages_bygrouping_parent']);            
+                
+        $table_name2 = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_subpages_bygrouping_sub1']);
+        $column_name2 = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_subpages_bygrouping_sub1']);            
+                     
+        if(isset($_POST['csv2post_subpages_bygrouping_sub2']) && $_POST['csv2post_subpages_bygrouping_sub2'] != 'noselectionmade'){
+            $table_name3 = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_subpages_bygrouping_sub2']);
+            $column_name3 = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_subpages_bygrouping_sub2']);            
+        }
+        
+        // is another method active? If so make user aware that it will be deactivated as only one method can run at a time
+        if(isset($csv2post_project_array['subpages']['status']) && $csv2post_project_array['subpages']['status'] == true){
+            if(isset($csv2post_project_array['subpages']['method']) && $csv2post_project_array['subpages']['method'] != 'grouping'){
+                csv2post_notice_postresult('warning','Sub-page Method Changed',
+                'You already had a sub-page method active but only one method can be used at a time. The
+                settings saved for your other submitted method will not be used. The grouping method
+                will now be used for your current project.');    
+            }
+        }
+
+        $csv2post_project_array['subpages']['status'] = true;
+        $csv2post_project_array['subpages']['method'] = 'grouping';
+        $csv2post_project_array['subpages']['parentcolumn']['table'] = 'grouping';
+        $csv2post_project_array['subpages']['parentcolumn']['column'] = 'grouping';
+        $csv2post_project_array['subpages']['subone']['table'] = $table_name1;
+        $csv2post_project_array['subpages']['subone']['column'] = $column_name1;
+        $csv2post_project_array['subpages']['subtwo']['table'] = $table_name2;
+        $csv2post_project_array['subpages']['subtwo']['column'] = $column_name2;        
+        
+        csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array); 
+        
+        csv2post_notice_postresult('success','Sub-page Grouping Method Activated','Your post creation
+        will setup sub-pages providing your data is suitable for the grouping method.');
+        
+        return false;
+    }else{
+        return true;
+    }     
+}                                     
 ?>

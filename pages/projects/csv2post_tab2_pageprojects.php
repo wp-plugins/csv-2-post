@@ -174,18 +174,8 @@ $jsform_set['noticebox_content'] = 'You are saving a column of data to be used a
             csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code,$current_table,$current_column);?>                                                                                                                     
         </select>
     </p>
-    <script>
-    $(document).ready( function(){ 
-        $("#csv2post_titlecolumn_menu").multiselect({
-           multiple: false,
-           header: "Select Database Column (table - column)",
-           noneSelectedText: "Select Database Column",
-           selectedList: 1
-        });
-    });
-    </script> 
-       
-     <?php 
+           
+    <?php 
     // add js for dialog on form submission and the dialog <div> itself
     if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);

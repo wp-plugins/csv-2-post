@@ -238,13 +238,12 @@ function csv2post_get_option_tabmenu(){
 
         // load from option array but only return value if its a valid array else we install the admin settings array now        
         $result = csv2post_option('csv2post_tabmenu','get');
-        if(is_array($result)){
+        if(is_array($result) && isset($result['menu'])){# if the new ['menu'] is not in array we re-install
             return $result;
         }else{
             // users wants menu to load from stored option value but it returned an invald value
             return csv2post_INSTALL_tabmenu_settings();# returns the tabmenu array
         }
-        
     }        
 }        
 
@@ -1279,7 +1278,7 @@ function csv2post_explode_tablecolumn_returnnode($delimeter,$returnpart,$string)
 * add new post creation project to data import job array
 * @param mixed $project_code
 * @param mixed $project_name
-* @return bool
+* @return bool          
 */
 function csv2post_update_option_postcreationproject_list_newproject($project_code,$project_name){
     global $csv2post_projectslist_array;
@@ -1925,7 +1924,7 @@ function csv2post_ADDACTION_admin_init_registered_scripts() {
             wp_register_script( 'jquery','http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js');
         }elseif($version == 'latest'){
             wp_register_script('jquery', ("http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"), false, 'latest', false);
-        }
+        }   
   
     wp_deregister_script( 'jquery-ui' );
         //wp_register_script( 'jquery-ui');
@@ -1941,28 +1940,6 @@ function csv2post_ADDACTION_admin_init_registered_scripts() {
     #                        SCRIPTS NOT PACKAGED WITH WORDPRESS                        #
     #                                                                                   #
     #####################################################################################
-    // multiselect (checkbox menus)                                                                    
-    if($version == 'original'){
-        wp_register_script('jquery-multiselect',WTG_C2P_URL.'templatesystem/script/multiselect/src/jquery.multiselect.js',array('jquery', 'jquery.ui.widget' ));
-            // this is a newer version of multiselect download from github
-            //wp_register_script('jquery-multiselect',WTG_C2P_URL.'templatesystem/script/jquery-ui-multiselect-widget-master/src/jquery.multiselect.js',array('jquery', 'jquery.ui.widget' )); 
-    }elseif($version == 'latest'){ 
-        wp_register_script( 'jquery-multiselect', 'https://raw.github.com/ehynds/jquery-ui-multiselect-widget/master/src/jquery.multiselect.js',array('jquery', 'jquery.ui.widget' ));
-    }        
-
-    // multiselect prettify (for the multiselect menu not multiSelect lists)
-    if($version == 'original'){
-        wp_register_script('jquery-multiselect-prettify',WTG_C2P_URL.'templatesystem/script/multiselect/assets/prettify.js',array('jquery'));
-    }elseif($version == 'latest'){ 
-        wp_register_script('jquery-multiselect-prettify',WTG_C2P_URL.'templatesystem/script/multiselect/assets/prettify.js',array('jquery'));
-    }         
-
-    // multiselect menu filter (filter may not be used much until 2013 but the menu is used a lot)
-    if($version == 'original'){
-        wp_register_script('jquery-multiselect-filter',WTG_C2P_URL.'templatesystem/script/multiselect/src/jquery.multiselect.filter.js',array('jquery', 'jquery.ui.widget'));
-    }elseif($version == 'latest'){ 
-        wp_register_script('jquery-multiselect-filter','https://raw.github.com/ehynds/jquery-ui-multiselect-widget/master/src/jquery.multiselect.filter.js',array('jquery'));
-    }    
 
     // multi-select (lists, not the same as multiselect menus)
     if($version == 'original'){
@@ -2003,14 +1980,6 @@ function csv2post_print_admin_scripts() {
         #                        SCRIPTS NOT PACKAGED WITH WORDPRESS                        #
         #                                                                                   #
         #####################################################################################
-        // multiselect (checkbox menus)
-        wp_enqueue_script('jquery-multiselect');
-        
-        // multiselect (theming I think)
-        wp_enqueue_script('jquery-multiselect-prettify');
-                
-        // multiselect menu filter (filter may not be used much until 2013 but the menu is used a lot)
-        wp_enqueue_script('jquery-multiselect-filter');
                 
         // multi-select (side by side selectable style lists, not the same as multiselect menus)
         wp_enqueue_script('jquery-multi-select');

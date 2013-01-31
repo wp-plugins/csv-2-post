@@ -2,73 +2,7 @@
 if(count($csv2post_projectslist_array) == 0){
     echo csv2post_notice('Start here on this screen if you want to create posts. You need to create a project, then continue by clicking on the other tabs above.','warning','Tiny','','','return');
 }
-
-if(!$csv2post_is_free){         
-++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
-$panel_array['panel_name'] = 'selectcurrentproject';// slug to act as a name and part of the panel ID 
-$panel_array['panel_title'] = __('Select Current Project');// user seen panel header text 
-$panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-if($csv2post_is_free){$panel_array['panel_intro'] = __('Full edition allows multiple projects to be created');}else{$panel_array['panel_intro'] = __('You can activate any project to make changes to its configuration');}
-$panel_array['panel_help'] = __('This panel allows you to make any of your projects your Current project. Your current project settings will be displayed in the Your Projects screens. The Your Project screens also allow you to change global settings so take care when making changes if you are running multiple projects.');
-$panel_array['help_button'] = csv2post_helpbutton_text(false,true);
-// Form Settings - create the array that is passed to jQuery form functions
-$jsform_set_override = array();
-$jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialogbox_title'] = 'Change Your Current Project';
-$jsform_set['noticebox_content'] = 'You are about to change your current project, all forms will now offer changes for your new current project.';?>
-
-<?php csv2post_panel_header( $panel_array );?>
-
-    <?php 
-    // begin form and add hidden values
-    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
-    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
-    ?> 
-    
-    <script>
-    $(function() {
-        $( "#csv2post_radios_<?php echo $panel_array['panel_name'];?>" ).buttonset();
-    });
-    </script>
-
-    <div id="csv2post_radios_<?php echo $panel_array['panel_name'];?>">
-        
-        <?php
-        if(!isset($csv2post_projectslist_array) || $csv2post_projectslist_array == false){
-            
-            echo '<strong>You do not have any projects</strong>';
-                
-        }else{
-            
-            $i = 0; 
-            foreach($csv2post_projectslist_array as $project_code => $project ){
-                $checked = '';
-                if($csv2post_currentproject_code == $project_code){
-                    $checked = 'checked="checked"';    
-                }
-                echo '<input type="radio" id="csv2post_radio'.$i.$panel_array['panel_name'].'" name="csv2post_radio_projectcode" value="'.$project_code.'" '.$checked.' /><label for="csv2post_radio'.$i.$panel_array['panel_name'].'">'.$project['name'].'</label>';    
-                ++$i;
-            }
-        }
-        ?>
-        
-    </div>           
-
-     <?php 
-    // add js for dialog on form submission and the dialog <div> itself
-    if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
-        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-        csv2post_jquery_form_prompt($jsform_set);
-    }
-    ?>
-        
-    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
-
-<?php csv2post_panel_footer();
-}?> 
-
-<?php
+ 
 ++$panel_number;// increase panel counter so this panel has unique ID
 $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'createpostcreationproject';// slug to act as a name and part of the panel ID 
@@ -110,7 +44,7 @@ $nonce = wp_create_nonce( "csv2post_referer_createproject_checkprojectname" );
     $projectname_id = 'csv2post_projectname_id_' . $panel_array['panel_name'];
     $projectname_name = 'csv2post_projectname_name_' . $panel_array['panel_name'];?>
     
-    <script  type='text/javascript'>
+    <script type='text/javascript'>
     <!--
     var count = 0;
 
@@ -214,73 +148,225 @@ $nonce = wp_create_nonce( "csv2post_referer_createproject_checkprojectname" );
     <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>            
 
 <?php csv2post_panel_footer();?> 
-    
+   
 <?php
-if(!$csv2post_is_free){
-    ++$panel_number;// increase panel counter so this panel has unique ID
-    $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
-    $panel_array['panel_name'] = 'multipletableproject';// slug to act as a name and part of the panel ID 
-    $panel_array['panel_title'] = __('Multiple Table Project');// user seen panel header text 
-    $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-    $panel_array['panel_intro'] = __('Extended configuration for a multiple table projects');
-    $panel_array['panel_help'] = __('Multiple table projects require the user to tell CSV 2 POST what columns can be used to link the tables together. In database speak, these columns are Primary Key and Foreign Key. The important thing to know is that all tables must be mapped by a key column so they their data is included. Select the column in each table that is that tables primary key. Then in the second menu, select the column that the primary column matches exactly in terms of data (column names can be different). The second selection creates a relationship between the tables. You do not need to select a secondary column for one of the tables, it is recommended that you do this with the table that contains the most important data, the bulk of what will make up posts.');
-    $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
-    $panel_array['panel_url'] = 'http://www.csv2post.com/feature-guides/multiple-table-project-panel';
-    // Form Settings - create the array that is passed to jQuery form functions
-    $jsform_set_override = array();
-    $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-    $jsform_set['dialogbox_title'] = 'Save Multiple Table Configuration';
-    $jsform_set['noticebox_content'] = 'You are about to save your projects multiple table configuration, getting this wrong will not create the posts you need, please backup your database if you are unsure about your choices. Do you wish to continue saving now?';?>
-    <?php csv2post_panel_header( $panel_array );?>
+if(isset($csv2post_projectslist_array) && is_array($csv2post_projectslist_array)){ 
+    if(!$csv2post_is_free){
+                
+        ++$panel_number;// increase panel counter so this panel has unique ID
+        $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
+        $panel_array['panel_name'] = 'selectcurrentproject';// slug to act as a name and part of the panel ID 
+        $panel_array['panel_title'] = __('Set Current Project');// user seen panel header text 
+        $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
+        if($csv2post_is_free){$panel_array['panel_intro'] = __('Full edition allows multiple projects to be created');}else{$panel_array['panel_intro'] = __('You can activate any project to make changes to its configuration');}
+        $panel_array['panel_help'] = __('This panel allows you to make any of your projects your Current project. Your current project settings will be displayed in the Your Projects screens. The Your Project screens also allow you to change global settings so take care when making changes if you are running multiple projects.');
+        $panel_array['help_button'] = csv2post_helpbutton_text(false,true);
+        // Form Settings - create the array that is passed to jQuery form functions
+        $jsform_set_override = array();
+        $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
+        $jsform_set['dialogbox_title'] = 'Change Your Current Project';
+        $jsform_set['noticebox_content'] = 'You are about to change your currently activated project. All project settings will re-load to reflect the newly activated project, please remember this when making changes. Do you wish to continue?';?>
 
-        <?php 
-        // 1.check if project exists 2.check if current project has more than one table
-        if(!isset($csv2post_projectslist_array) || $csv2post_projectslist_array == false){
-            echo '<strong>You do not have any projects</strong>';
-        }elseif( count($csv2post_project_array['tables']) == 1 ){
-            echo '<strong>Your project is not a multiple file project, you do not need to use this panel so its contents have been hidden</strong>';
-        }else{
-            
+        <?php csv2post_panel_header( $panel_array );?>
+
+            <?php 
             // begin form and add hidden values
             csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
             csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
-         
-    
-            echo '<table class="widefat post fixed">';
+            ?> 
             
-            echo '<tr><td width="150"><strong>Project Tables</strong></td><td><strong>Key Column</strong></td><td><strong>Other Tables Key Column</strong></td>';
+            <script>
+            $(function() {
+                $( "#csv2post_radios_<?php echo $panel_array['panel_name'];?>" ).buttonset();
+            });
+            </script>
+
+            <div id="csv2post_radios_<?php echo $panel_array['panel_name'];?>">
+                
+                <?php
+                if(!isset($csv2post_projectslist_array) || $csv2post_projectslist_array == false){
+                    
+                    echo '<strong>You do not have any projects</strong>';
                         
-            foreach( $csv2post_project_array['tables'] as $key => $table_name ){
-                
-                echo '<tr><td>'.$table_name.'</td><td>';
-
-                    // we need to get the current values - lets not assume they are set for the tables we cycle through
-                    $current_value = false;  
-                    if(isset($csv2post_project_array['multipletableproject']['relationships'][$table_name]['primarykey']) && $csv2post_project_array['multipletableproject']['relationships'][$table_name]['primarykey'] != 'notselected'){
-                        $current_value = $csv2post_project_array['multipletableproject']['relationships'][$table_name]['primarykey'];
+                }else{
+                    
+                    $i = 0; 
+                    foreach($csv2post_projectslist_array as $project_code => $project ){
+                        $checked = '';
+                        if($csv2post_currentproject_code == $project_code){
+                            $checked = 'checked="checked"';    
+                        }
+                        echo '<input type="radio" id="csv2post_radio'.$i.$panel_array['panel_name'].'" name="csv2post_radio_projectcode" value="'.$project_code.'" '.$checked.' /><label for="csv2post_radio'.$i.$panel_array['panel_name'].'">'.$project['name'].'</label>';    
+                        ++$i;
                     }
+                }
+                ?>
+                
+            </div>           
 
-                    csv2post_menu_tablecolumns_multipletableproject($table_name,$current_value);
+             <?php 
+            // add js for dialog on form submission and the dialog <div> itself
+            if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
+                csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+                csv2post_jquery_form_prompt($jsform_set);
+            }
+            ?>
                 
-                echo '</td><td>';
-                
-                    // we need to get the current values - lets not assume they are set for the tables we cycle through
-                    $current_table = false;
-                    $current_column = false;  
-                    if( isset( $csv2post_project_array['multipletableproject']['relationships'][$table_name]['foreignkey_table'] ) && $csv2post_project_array['multipletableproject']['relationships'][$table_name]['foreignkey_table'] != 'notselected'
-                    && isset( $csv2post_project_array['multipletableproject']['relationships'][$table_name]['foreignkey_column'] ) && $csv2post_project_array['multipletableproject']['relationships'][$table_name]['foreignkey_column'] != 'notselected' ){
-                       
-                        $current_table = $csv2post_project_array['multipletableproject']['relationships'][$table_name]['foreignkey_table'];
-                        $current_column = $csv2post_project_array['multipletableproject']['relationships'][$table_name]['foreignkey_column'];             
-                    }                
+            <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
 
-                    csv2post_display_menu_keycolumnselection($table_name,$current_table,$current_column);
+        <?php csv2post_panel_footer();
+    }?> 
+    
+    <?php
+    if(!$csv2post_is_free){
+        ++$panel_number;// increase panel counter so this panel has unique ID
+        $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
+        $panel_array['panel_name'] = 'multipletableproject';// slug to act as a name and part of the panel ID 
+        $panel_array['panel_title'] = __('Multiple Table Project');// user seen panel header text 
+        $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
+        $panel_array['panel_intro'] = __('Extended configuration for a multiple table projects');
+        $panel_array['panel_help'] = __('Multiple table projects require the user to tell CSV 2 POST what columns can be used to link the tables together. In database speak, these columns are Primary Key and Foreign Key. The important thing to know is that all tables must be mapped by a key column so they their data is included. Select the column in each table that is that tables primary key. Then in the second menu, select the column that the primary column matches exactly in terms of data (column names can be different). The second selection creates a relationship between the tables. You do not need to select a secondary column for one of the tables, it is recommended that you do this with the table that contains the most important data, the bulk of what will make up posts.');
+        $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
+        $panel_array['panel_url'] = 'http://www.csv2post.com/feature-guides/multiple-table-project-panel';
+        // Form Settings - create the array that is passed to jQuery form functions
+        $jsform_set_override = array();
+        $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
+        $jsform_set['dialogbox_title'] = 'Save Multiple Table Configuration';
+        $jsform_set['noticebox_content'] = 'You are about to save your projects multiple table configuration, getting this wrong will not create the posts you need, please backup your database if you are unsure about your choices. Do you wish to continue saving now?';?>
+        <?php csv2post_panel_header( $panel_array );?>
+
+            <?php 
+            // 1.check if project exists 2.check if current project has more than one table
+            if(!isset($csv2post_projectslist_array) || $csv2post_projectslist_array == false){
+                echo '<strong>You do not have any projects</strong>';
+            }elseif( count($csv2post_project_array['tables']) == 1 ){
+                echo '<strong>Your project is not a multiple file project, you do not need to use this panel so its contents have been hidden</strong>';
+            }else{
                 
-                echo '</td></tr>';       
+                // begin form and add hidden values
+                csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
+                csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+             
+        
+                echo '<table class="widefat post fixed">';
+                
+                echo '<tr><td width="150"><strong>Project Tables</strong></td><td><strong>Key Column</strong></td><td><strong>Other Tables Key Column</strong></td>';
+                            
+                foreach( $csv2post_project_array['tables'] as $key => $table_name ){
+                    
+                    echo '<tr><td>'.$table_name.'</td><td>';
+
+                        // we need to get the current values - lets not assume they are set for the tables we cycle through
+                        $current_value = false;  
+                        if(isset($csv2post_project_array['multipletableproject']['relationships'][$table_name]['primarykey']) && $csv2post_project_array['multipletableproject']['relationships'][$table_name]['primarykey'] != 'notselected'){
+                            $current_value = $csv2post_project_array['multipletableproject']['relationships'][$table_name]['primarykey'];
+                        }
+
+                        csv2post_menu_tablecolumns_multipletableproject($table_name,$current_value);
+                    
+                    echo '</td><td>';
+                    
+                        // we need to get the current values - lets not assume they are set for the tables we cycle through
+                        $current_table = false;
+                        $current_column = false;  
+                        if( isset( $csv2post_project_array['multipletableproject']['relationships'][$table_name]['foreignkey_table'] ) && $csv2post_project_array['multipletableproject']['relationships'][$table_name]['foreignkey_table'] != 'notselected'
+                        && isset( $csv2post_project_array['multipletableproject']['relationships'][$table_name]['foreignkey_column'] ) && $csv2post_project_array['multipletableproject']['relationships'][$table_name]['foreignkey_column'] != 'notselected' ){
+                           
+                            $current_table = $csv2post_project_array['multipletableproject']['relationships'][$table_name]['foreignkey_table'];
+                            $current_column = $csv2post_project_array['multipletableproject']['relationships'][$table_name]['foreignkey_column'];             
+                        }                
+
+                        csv2post_display_menu_keycolumnselection($table_name,$current_table,$current_column);
+                    
+                    echo '</td></tr>';       
+                }
+                
+                echo '</table>';
+
+
+                // add js for dialog on form submission and the dialog <div> itself
+                if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
+                    csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+                    csv2post_jquery_form_prompt($jsform_set);
+                }
+                ?>
+                    
+                <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);    
+            }?>
+
+        <?php csv2post_panel_footer();
+    }?>
+      
+    <?php
+    if(!$csv2post_is_free){
+        ++$panel_number;// increase panel counter so this panel has unique ID
+        $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
+        $panel_array['panel_name'] = 'postcreationprojectlist';// slug to act as a name and part of the panel ID 
+        $panel_array['panel_title'] = __('Post Creation Project List');// user seen panel header text 
+
+        $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
+        $panel_array['panel_intro'] = __('Your current post creation projects, both drip-feed and manual');
+        $panel_array['panel_help'] = __('All your post creation projects are listed here. You must not delete a project if you plan to update data in the Wordpress database that is related to posts in any way. The project configuration data includes history/statistical values that may be required for future changes to posts created by the project.');
+        $panel_array['help_button'] = csv2post_helpbutton_text(false,true);?>
+        <?php csv2post_panel_header( $panel_array );?>
+            <?php csv2post_postcreationproject_table();?>
+        <?php csv2post_panel_footer();
+    }?> 
+
+    <?php
+    ++$panel_number;// increase panel counter so this panel has unique ID
+    $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
+    $panel_array['panel_name'] = 'deleteprojects';// slug to act as a name and part of the panel ID 
+    $panel_array['panel_title'] = __('Delete Project');// user seen panel header text 
+    $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
+    $panel_array['panel_intro'] = __('This panel allows you to delete one or more projects');
+    $panel_array['panel_help'] = __('You can select multiple project to be deleted. This cannot be reversed, please take care when selecting your projects.');
+    $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
+    // Form Settings - create the array that is passed to jQuery form functions
+    $jsform_set_override = array();
+    $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
+    $jsform_set['dialogbox_title'] = 'Delete Project';
+    $jsform_set['noticebox_content'] = 'Are you sure you want to delete the selected post creation projects?';?>
+    <?php csv2post_panel_header( $panel_array );?>
+
+        <?php 
+        // begin form and add hidden values
+        csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
+        csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+        ?> 
+        
+        <?php 
+        if(!isset($csv2post_projectslist_array) || $csv2post_projectslist_array == false){
+            
+            if($csv2post_is_free){
+                echo '<strong>You have not created your project yet, there is nothing to be deleted</strong>';
+            }else{
+                echo '<strong>You do not have any projects</strong>';
+            }
+                
+        }else{
+            
+            if($csv2post_is_free){
+                // display nothing - free edition works with a single project    
+            }else{?>
+                
+                <br />
+                <div id="csv2post-multiselect-createnewproject-div-id">
+                    <select multiple='multiple' id="csv2post_project_listid" class='csv2post_multiselect_projects_deleteprojects' name="csv2post_projectcodes_array[]">
+                        <?php csv2post_option_items_postcreationprojects();?> 
+                    </select>
+                </div> 
+                           
+                <script type="text/javascript">
+                    $(function(){
+                        $('.csv2post_multiselect_projects_deleteprojects').multiSelect({
+                          selectableHeader : '<h3>Projects Available</h3>',
+                          selectedHeader : '<h3>Delete These</h3>'                
+                        });
+                    });
+                </script><?php 
             }
             
-            echo '</table>';
-
 
             // add js for dialog on form submission and the dialog <div> itself
             if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
@@ -293,90 +379,8 @@ if(!$csv2post_is_free){
         }?>
 
     <?php csv2post_panel_footer();
+
 }?>
-  
-<?php
-if(!$csv2post_is_free){
-    ++$panel_number;// increase panel counter so this panel has unique ID
-    $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
-    $panel_array['panel_name'] = 'postcreationprojectlist';// slug to act as a name and part of the panel ID 
-    $panel_array['panel_title'] = __('Post Creation Project List');// user seen panel header text 
-
-    $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-    $panel_array['panel_intro'] = __('Your current post creation projects, both drip-feed and manual');
-    $panel_array['panel_help'] = __('All your post creation projects are listed here. You must not delete a project if you plan to update data in the Wordpress database that is related to posts in any way. The project configuration data includes history/statistical values that may be required for future changes to posts created by the project.');
-    $panel_array['help_button'] = csv2post_helpbutton_text(false,true);?>
-    <?php csv2post_panel_header( $panel_array );?>
-        <?php csv2post_postcreationproject_table();?>
-    <?php csv2post_panel_footer();
-}?> 
-
-<?php
-++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
-$panel_array['panel_name'] = 'deleteprojects';// slug to act as a name and part of the panel ID 
-$panel_array['panel_title'] = __('Delete Project');// user seen panel header text 
-$panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_intro'] = __('This panel allows you to delete one or more projects');
-$panel_array['panel_help'] = __('You can select multiple project to be deleted. This cannot be reversed, please take care when selecting your projects.');
-$panel_array['help_button'] = csv2post_helpbutton_text(false,false);
-// Form Settings - create the array that is passed to jQuery form functions
-$jsform_set_override = array();
-$jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialogbox_title'] = 'Delete Project';
-$jsform_set['noticebox_content'] = 'Are you sure you want to delete the selected post creation projects?';?>
-<?php csv2post_panel_header( $panel_array );?>
-
-    <?php 
-    // begin form and add hidden values
-    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
-    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
-    ?> 
-    
-    <?php 
-    if(!isset($csv2post_projectslist_array) || $csv2post_projectslist_array == false){
-        
-        if($csv2post_is_free){
-            echo '<strong>You have not created your project yet, there is nothing to be deleted</strong>';
-        }else{
-            echo '<strong>You do not have any projects</strong>';
-        }
-            
-    }else{
-        
-        if($csv2post_is_free){
-            // display nothing - free edition works with a single project    
-        }else{?>
-            
-            <br />
-            <div id="csv2post-multiselect-createnewproject-div-id">
-                <select multiple='multiple' id="csv2post_project_listid" class='csv2post_multiselect_projects_deleteprojects' name="csv2post_projectcodes_array[]">
-                    <?php csv2post_option_items_postcreationprojects();?> 
-                </select>
-            </div> 
-                       
-            <script type="text/javascript">
-                $(function(){
-                    $('.csv2post_multiselect_projects_deleteprojects').multiSelect({
-                      selectableHeader : '<h3>Projects Available</h3>',
-                      selectedHeader : '<h3>Delete These</h3>'                
-                    });
-                });
-            </script><?php 
-        }
-        
-
-        // add js for dialog on form submission and the dialog <div> itself
-        if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
-            csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-            csv2post_jquery_form_prompt($jsform_set);
-        }
-        ?>
-            
-        <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);    
-    }?>
-
-<?php csv2post_panel_footer();?>
 
 <?php
 if($csv2post_is_dev && isset($csv2post_projectslist_array)){
