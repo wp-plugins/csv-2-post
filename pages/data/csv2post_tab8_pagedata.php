@@ -20,7 +20,7 @@ action is required after data is imported or updated if you want the data to be 
 if(!isset($csv2post_dataimportjobs_array) || !is_array($csv2post_dataimportjobs_array) || count($csv2post_dataimportjobs_array) == 0){
     echo csv2post_notice('You do not have any Data Import jobs, please create one on the Start screen','info','Small','','','return');    
 }else{
-
+             
     // foreach job
     foreach( $csv2post_dataimportjobs_array as $jobcode => $job ){
 

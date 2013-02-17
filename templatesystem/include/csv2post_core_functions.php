@@ -1,5 +1,22 @@
 <?php
 /**
+* When request will display maximum php errors including Wordpress errors 
+*/
+function csv2post_debugmode(){
+    global $csv2post_debug_mode;
+    if($csv2post_debug_mode){
+        global $wpdb;
+        ini_set('display_errors',1);
+        error_reporting(E_ALL);
+        //add_action( 'all', create_function( '', 'var_dump( current_filter() );' ) );
+        //define( 'SAVEQUERIES', true );
+        //define( 'SCRIPT_DEBUG', true );
+        $wpdb->show_errors();
+        $wpdb->print_error();
+    }
+}
+
+/**
 * Used to determine if a screen is meant to be displayed or not, based on package and settings 
 */
 function csv2post_menu_should_tab_be_displayed($page,$tab){
@@ -123,20 +140,6 @@ function csv2post_plugin_conflict_prevention(){
     }
 
     return $conflict_found;
-}
-
-/**
-* When request will display maximum php errors including Wordpress errors 
-*/
-function csv2post_debugmode(){
-    global $csv2post_debug_mode;
-    if($csv2post_debug_mode){
-        //global $wpdb;
-        ini_set('display_errors',1);
-        error_reporting(E_ALL);
-        //$wpdb->show_errors();
-        //$wpdb->print_error();
-    }
 }
 
 /**
@@ -1309,7 +1312,7 @@ function csv2post_get_option_fileprofiles(){
 * @param mixed $file_profiles_array
 */
 function csv2post_update_option_fileprofiles($file_profiles_array){
-    update_option('csv2post_file_profiles',maybe_serialize($file_profiles_array));           
+    return update_option('csv2post_file_profiles',maybe_serialize($file_profiles_array));           
 }
 
 /**
@@ -1317,11 +1320,7 @@ function csv2post_update_option_fileprofiles($file_profiles_array){
 * @returns false if no option for csv2post_projectslist exists else returns unserialized array 
 */
 function csv2post_get_projectslist(){
-    $get_projectlist_result = get_option('csv2post_projectslist');
-    if(!$get_projectlist_result){
-        return false;
-    }
-    return unserialize(get_option('csv2post_projectslist'));
+    return maybe_unserialize(get_option('csv2post_projectslist'));
 }
 
 /**
@@ -1672,8 +1671,8 @@ function csv2post_is_csvfile_in_use($csv_file_name,$output = true){
 *     
 * @param integer $post_ID
 * @param integer $priority, 1 = low priority (info style notification), 2 = unsure of priority (warning style notification), 3 = high priority (error style notification)
+* @param string $type, keyword to enhance search ability (USED:updatefailure ) 
 * @param string $reason, as much information as required for user to take the required action or know they can delete the flag
-* @param string $type, keyword to enhance search ability (USED:updatefailure )
 */
 function csv2post_flag_post($post_ID,$priority,$type,$reason){
     // if a value is missing return
@@ -1830,8 +1829,8 @@ function csv2post_project_changed($project_code){
     if(isset($csv2post_projectslist_array[$project_code])){
         $csv2post_projectslist_array[$project_code]['modified'] = csv2post_date();
         $csv2post_projectslist_array[$project_code]['updatecomplete'] = false;
+        csv2post_update_option_postcreationproject_list($csv2post_projectslist_array); 
     }
-    csv2post_update_option_postcreationproject_list($csv2post_projectslist_array);
 }
 
 /**
@@ -2036,5 +2035,33 @@ function csv2post_formsubmitbutton_jquery($form_name){?>
     <div class="jquerybutton">
         <input type="submit" name="<?php echo WTG_C2P_ABB;?><?php echo $form_name;?>_submit" value="Submit"/>
     </div><?php
-}   
+} 
+
+/**
+* Establishes categories for post - 2013 method where cat ID are already in records.
+* 
+*/
+function csv2post_post_categories($record_array){
+    global $csv2post_project_array;
+    
+    if(!isset($csv2post_project_array['categories'])){
+        return array(0);
+    }
+
+    // if a default is set and no levels set we can apply the default now
+    if(isset($csv2post_project_array['categories']['default']) && !isset($csv2post_project_array['categories']['level1'])){  
+        return array($csv2post_project_array['categories']['default']);                    
+    }
+
+    // if applydepth = 1 then we apply the last category only, do not append            
+    if(!isset($csv2post_project_array['categories']['applydepth']) || isset($csv2post_project_array['categories']['applydepth']) 
+    && $csv2post_project_array['categories']['applydepth'] == 0){
+        // all cat ID will be applied
+        return array($record_array['csv2post_catid']);  
+    }else{
+        // value of 1 means one category (the last ID)
+        $cat_array = explode(',',$record_array['csv2post_catid']); 
+        return array(end($cat_array));
+    }
+}  
 ?>

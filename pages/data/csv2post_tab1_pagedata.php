@@ -12,6 +12,10 @@ $method = 'post';// post or ajax
 ### TODO:MEDIUMPRIORITY, WARNING, the ajax method may be bugged, use post method until fully tested, pay attention to the filemtime function
 if($method == 'ajax'){
     if(isset($csv2post_dataimportjobs_array)){
+        
+        // reverse order of array so new jobs are at the top
+        $csv2post_dataimportjobs_array = array_reverse($csv2post_dataimportjobs_array);
+                        
         foreach( $csv2post_dataimportjobs_array as $jobcode => $job ){
 
         $job_array = csv2post_get_dataimportjob($jobcode);
@@ -147,6 +151,9 @@ if($method == 'ajax'){
         echo csv2post_notice('You do not have any Data Import jobs, please create one on the Start screen','info','Small','','','return');    
     }else{
 
+        // reverse order of array so new jobs are at the top
+        $csv2post_dataimportjobs_array = array_reverse($csv2post_dataimportjobs_array);
+                        
         // foreach job
         foreach( $csv2post_dataimportjobs_array as $jobcode => $job ){
 

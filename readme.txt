@@ -1,5 +1,5 @@
 === Plugin Name ===
-Contributors: Zara Walsh
+Contributors: Zara Walsh,WebTechGlobal
 Donate link: http://www.csv2post.com
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -101,15 +101,39 @@ first plugin was created in 2009 and was halted pending re-development.
 * This version fixes a conflict with the Wordpress media manager on all pages, possible only in or worse in Wordpress 3.5
 
 == Changelog ==
-
+= 6.8.4 =
+* From The Developers
+    * Released 7th February 2013
+* Fixes
+    * Radio buttons for Last or All categories on Category related accordion panels has been fixed
+    * Category settings save correctly. IF user reduced the number of levels they wish to use, the higher levels were not being unset. This issue was never reported I found it myself.
+* Feature Changes
+	* Old category creation approach removed from interface. One level at a time will be created.
+    * Creation tabs/screens order changed, will now encourage category creation prior to post creation even for schedule projects as it will improve performance during post creation
+    * 'Create Categories' panel renamed to 'Create All Categories'
+    * Attempting to visit pages other than Install or Upgrade while either of these are required will no longer result in seeing "You do not have sufficient permissions to access this page" as the plugin will now re-direct to the page=csv2post URL which is the main page where Install and Upgrade is actioned.
+	* Post Creation Warning: the red notice indicating a fault at the end of post creation even when no fault exists has been changed.
+	* All projects option removed from undo posts form
+    * Extensions are active by default. This will apply to new installations. There is only one extension created at this time though so do not expect much right now.
+    * Default category menu now shows "Wordpress Default Category" on the first item in list
+    * Undo categories panel added
+	* Intro text line removed from accordian panels
+	* New video button will begin appearing on some panels beside the help button
+	* Reversed the order of Data Import Jobs on the Import data screens so that new jobs appear at the top
+* Technical Changes
+    * Applied if($project_code != 'arrayinfo') to various functions. This ensures the arrayinfo node is not treated as a project.
+	* Undo Posts: using the undo posts form will also reset ['subpages']['stage'] if it is set. The stage value keeps track of what stage a sub-page project is at i.e. what level is to be created next.
+* Support Changes
+    * None
+    	
 = 6.8.3 =
 * From The Developers
     * Released 31st January 2013
 * Support Changes
     * None
 * Fixes
-    * jQuery conflicts returned on 29th after a full day of the plugin working normally. No changes were made to jQuery to cause this so the script involved in conflict has been removed. 
-$result	
+    * jQuery conflicts returned on 29th after a full day of the plugin working normally. No changes were made to jQuery to cause this so the script involved in conflict has been removed.
+	* Old installations conflicted with new versions when Updated. This is related to the new menu structure. A workaround has been added and old installations can be Updated.
 * Feature Changes
     * Form menus are no longer styled using jQuery UI
     * Some screens and accordian panels are now hidden when no project exists. This is to prevent users from using forms that require a project as it leads to problems.
@@ -337,8 +361,8 @@ $result
     * csv2post_posts_autoupdate() renamed to csv2post_posts_publicupdating() (this function updates posts as they are opened by visitors)
     * Removed use of csv2post_log from csv2post_install_functions.php
     * Added index.php to all directories to prevent indexing
-    * New updating method by schedule that uses new values in $csv2post_projectlist_array to indicate if a project may have outdated posts
-    * New function csv2post_project_changed($project_code) used to mark a project has updated within $csv2post_projectlist_array
+    * New updating method by schedule that uses new values in $csv2post_projectslist_array to indicate if a project may have outdated posts
+    * New function csv2post_project_changed($project_code) used to mark a project has updated within $csv2post_projectslist_array
     * Changed $.csv2post_schedule_array, each event type now stores the event name and we'll use this for looping and building forms
     * csv2post_notice() was coded to update schedule option record instead of notifications option record, however it has never happened as its not fully in use
     * Use of csv2post_uninstall() removed from csv2post_install(), we will track the versions of records eventually to ensure installation is suitable for plugin version

@@ -47,7 +47,7 @@ function csv2post_diagnostic_custom(){
 function csv2post_install(){
     
     // settings arrays are includes by 
-    global $csv2post_pub_set,$csv2post_mpt_arr,$csv2post_currentversion,$csv2post_is_free;
+    global $csv2post_extension_loaded,$csv2post_pub_set,$csv2post_mpt_arr,$csv2post_currentversion,$csv2post_is_free;
 
     $minor_fails = 0;// count minor number of failures, if 3 or more then we'll call it a failed install
     $overall_install_result = true;// used to indicate overall result
@@ -78,12 +78,9 @@ function csv2post_install(){
     #################################################
     require(WTG_C2P_DIR.'templatesystem/include/variables/csv2post_variables_notices_array.php');
     if( !csv2post_option('csv2post_notifications','add',serialize($csv2post_persistent_array)) ){
-         
         // should never happen - csv2post_uninstall() used at the beginning of csv2post_install()
         csv2post_notice('Notification settings are already installed, no changes were made to those settings.','warning','Tiny',false,'','echo');
-        
         $overall_install_result = false;          
-   
     }else{
         csv2post_notice('Installed the notification settings','success','Tiny',false,'','echo');
     }  
@@ -97,12 +94,9 @@ function csv2post_install(){
     $csv2post_eci_session_array['arrayupdated'] = time();
     $csv2post_eci_session_array['nextstep'] = 1;  
     if( !csv2post_option('csv2post_ecisession','add',serialize($csv2post_eci_session_array)) ){
-         
         // should never happen - csv2post_uninstall() used at the beginning of csv2post_install()
         csv2post_notice('Easy CSV Importer settings are already installed, no changes were made to those settings.','warning','Tiny',false,'','echo');
-        
         $overall_install_result = false;          
-   
     }else{
         csv2post_notice('Installed the Easy CSV Importer settings','success','Tiny',false,'','echo');
     }       
@@ -130,6 +124,9 @@ function csv2post_install(){
     // update the installed date, this includes the installed date of new versions
     update_option('csv2post_installeddate',time());
     
+    // extensions - set extensions active by default (if user adds extension files prior to CSV 2 POST install this avoids no permissions screen showing)
+    update_option('csv2post_extensions','enable');
+    
     // this date never changes, we also want to avoid user deleted it
     csv2post_option('csv2post_activationdate','add',time());### TODO:LOWPRIORITY, hide this option from un-install page, we want this to be included as a trace of previous installation
     
@@ -137,7 +134,7 @@ function csv2post_install(){
     if( defined("WTG_C2P_CONTENTFOLDER_DIR")){$overall_install_result = csv2post_install_contentfolder(WTG_C2P_CONTENTFOLDER_DIR);}
 
     // if extension defined run extension installation functions    
-    if(defined("WTG_C2P_EXT")){  
+    if($csv2post_extension_loaded){  
         csv2post_install_extension();
     }
                 

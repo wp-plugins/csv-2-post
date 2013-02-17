@@ -126,6 +126,32 @@ function csv2post_WP_SQL_update_project_databasetable_applied($post_id,$table_na
     WHERE csv2post_id = '.$post_id.'');   
     return $result;
 }  
+
+/**
+* Function is for use when creating sub-pages
+* 
+* @param mixed $table_name
+* @param mixed $levcol_name column name that holds level numbers
+* @param mixed $level the level to be queried i.e. all level 2 page records
+* @return array
+*/
+function csv2post_WP_SQL_unusedrecords_singletable_subpagelevels($table_name,$levcol_name,$level = 1){
+    global $wpdb,$csv2post_is_free;
+    
+    // ensure user has not manually deleted table 
+    $table_exist = csv2post_WP_SQL_does_table_exist($table_name);
+    if(!$table_exist){
+        ### TODO:HIGHPRIORITY, log this
+        return false;
+    }                          
+
+    return $wpdb->get_results( 'SELECT * 
+    FROM '. $table_name .' 
+    WHERE csv2post_postid 
+    IS NULL OR csv2post_postid = 0
+    AND '.$levcol_name.' = '.$level,ARRAY_A );    
+}                                                                                                                                                                              
+
     
 /**
 * Query a single project table records which have not been used.
@@ -147,7 +173,7 @@ function csv2post_WP_SQL_unusedrecords_singletable($table_name,$posts_target = '
     WHERE csv2post_postid 
     IS NULL OR csv2post_postid = 0 
     LIMIT '. $posts_target,ARRAY_A );    
-}
+}                                                                                                                                                                              
 
 /**
 * Uses get_results and finds all DISTINCT meta_keys, returns the result.
@@ -313,8 +339,6 @@ function csv2post_WP_SQL_update_record( $row, $csvfile_name, $column_total, $job
     return $updatequery_result;
 }
 
-    
-
 /**
 * Query posts by ID 
 */
@@ -345,6 +369,7 @@ function csv2post_WP_SQL_create_dataimportjob_table($jobcode,$job_file_group,$ma
     * csv2post_changed     - latest date that the plugin auto changed or user manually changed values in record
     * csv2post_applied     - last date and time the record was applied to its post
     * csv2post_filetime    - csv file datestamp when record imported, can then be compared against a newer file to trigger updates
+    * csv2post_catid       - categord id i.e. 23,24,25. Added Feb 2013
     * 
     * Update Webpage
     * http://www.csv2post.com/hacking/post-creation-project-database-tables
@@ -362,7 +387,8 @@ function csv2post_WP_SQL_create_dataimportjob_table($jobcode,$job_file_group,$ma
     `csv2post_imported` datetime NOT NULL,
     `csv2post_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `csv2post_changed` datetime NOT NULL,
-    `csv2post_applied` datetime NOT NULL,";
+    `csv2post_applied` datetime NOT NULL,
+    `csv2post_catid` text default NULL,";
 
     // if $maintableonly, request is to build a table with the above columns only for a multi file project
     if($maintableonly == false){                                         
@@ -602,7 +628,7 @@ function csv2post_WP_SQL_select($table_name,$limit = 10,$columns = '*',$where = 
     '. $where .' 
     LIMIT '. $limit,ARRAY_A );
 }
-
+   
 /**
 * Gets posts with the giving meta value
 */
@@ -612,7 +638,7 @@ function csv2post_WP_SQL_get_posts_join_meta($meta_key,$meta_value,$limit = 1,$s
     FROM ".$wpdb->posts." AS wposts
     INNER JOIN ".$wpdb->postmeta." AS wpostmeta
     ON wpostmeta.post_id = wposts.ID
-    AND wpostmeta.meta_key = '".$meta_key."'
+    AND wpostmeta.meta_key = '".$meta_key."'                                                 
     AND wpostmeta.meta_value = '".$meta_value."' 
     ".$where."
     LIMIT ".$limit."";
@@ -630,5 +656,68 @@ function csv2post_WP_SQL_get_posts_oudated($project_modified,$project_code,$limi
     AND (metaupdated.meta_value < '".$project_modified."')
     LIMIT 1";       
     return $wpdb->get_results($q, OBJECT);
+}
+
+/**
+* Gets all categories data for all categories column based on the
+* current projects category settings.
+* 1. Returns every row - must take matching cat names with different parents into consideration
+* 
+* OUTPUT TYPE
+* One of three pre-defined constants. Defaults to OBJECT.
+* OBJECT - result will be output as an object.
+* ARRAY_A - result will be output as an associative array.
+* ARRAY_N - result will be output as a numerically indexed array.
+* 
+* @param mixed $table_name
+* @return array
+*/
+function csv2post_WP_SQL_categoriesdata_onelevel_advanced($table_name,$column_name){
+    global $wpdb,$csv2post_project_array;
+
+    // ensure user has not manually deleted table 
+    $table_exist = csv2post_WP_SQL_does_table_exist($table_name);
+    if(!$table_exist){
+        return false;### TODO:LOWPRIORITY, log this
+    }
+
+    return $wpdb->get_results( 'SELECT '.$column_name.',csv2post_catid,csv2post_id 
+    FROM '.$table_name,ARRAY_A);     
+}
+ 
+/**
+* Update csv2post_catid column.
+* 1. Update with a single category ID if post to be assigned to last category
+* 2. Update with string of ID's if post to have multiple categories
+* 
+* @param mixed $pro_table
+* @param mixed $col_name
+* @param mixed $cat_name 
+* @param mixed $cat_id
+* @param mixed $lev the level being applied, tells script to append or not
+* 
+* @returns number of rows effected
+*/
+function csv2post_WP_SQL_categories_updateIDs($table_name,$cat_IDs,$record_id){
+    global $wpdb; 
+    return $wpdb->query('UPDATE '. $table_name .' 
+    SET csv2post_catid = "'.$cat_IDs.'"
+    WHERE csv2post_id = '.$record_id.'');      
+}
+    
+function csv2post_WP_SQL_categories_resetIDs($table_name,$cat_IDs){
+    global $wpdb; 
+    return $wpdb->query('UPDATE '. $table_name .' 
+    SET csv2post_catid = NULL
+    WHERE csv2post_catid = "'.$cat_IDs.'"');      
+}
+
+/**
+* Select all from csv2post_catid in the giving table
+*/
+function csv2post_WP_SQL_select_catidcolumn($table_name){
+    global $wpdb;  
+    return $wpdb->get_results( 'SELECT csv2post_catid,csv2post_id 
+    FROM '.$table_name,ARRAY_A);      
 }
 ?>

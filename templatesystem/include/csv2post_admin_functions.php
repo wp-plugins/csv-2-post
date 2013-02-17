@@ -14,53 +14,69 @@ function csv2post_delete_project_posts_byrange($project_code,$range){
     $posts_deleted = 0;
     
     foreach($csv2post_projectslist_array as $the_project_code => $project){
-        
-        if($range != 'allprojects' && $project_code == $the_project_code){
-            
-            // get project array
-            $the_project_array = csv2post_get_project_array($the_project_code);
-            
-            // query post ID in project table
-            $record_result = csv2post_WP_SQL_used_records($the_project_array['maintable'],9999999,'csv2post_postid');
-            if($record_result){
-                foreach($record_result as $key => $rec){
-                   
-                   // delete the post
-                   ### TODO:LOWPRIORITY,create a general admin setting for forcing the delete and not putting posts in trash
-                   wp_delete_post($rec['csv2post_postid'],false);
-                   
-                   // update project table
-                   csv2post_WP_SQL_reset_project_record($rec['csv2post_postid'],$the_project_array['maintable']);
-                   
-                   ++$posts_deleted;  
+        if($the_project_code != 'arrayinfo'){
+                     
+            if($range != 'allprojects' && $project_code == $the_project_code){
+                
+                // get project array
+                $the_project_array = csv2post_get_project_array($the_project_code);
+                
+                // query post ID in project table
+                $record_result = csv2post_WP_SQL_used_records($the_project_array['maintable'],9999999,'csv2post_postid');
+                if($record_result){
+                    foreach($record_result as $key => $rec){
+                       
+                       // delete the post
+                       ### TODO:LOWPRIORITY,create a general admin setting for forcing the delete and not putting posts in trash
+                       wp_delete_post($rec['csv2post_postid'],false);
+                       
+                       // update project table
+                       csv2post_WP_SQL_reset_project_record($rec['csv2post_postid'],$the_project_array['maintable']);
+                       
+                       ++$posts_deleted;  
+                    }
                 }
-            }
 
-            return $posts_deleted;
-            
-        }else{
-            
-             // get project array
-            $the_project_array = csv2post_get_project_array($the_project_code);
-            
-            // query post ID in project table
-            $record_result = csv2post_WP_SQL_used_records($the_project_array['maintable'],9999999,'csv2post_postid');
-            if($record_result){
-                foreach($record_result as $key => $rec){
-                   
-                   // delete the post
-                   ### TODO:LOWPRIORITY,create a general admin setting for forcing the delete and not putting posts in trash
-                   wp_delete_post($rec['csv2post_postid'],false);
-                   
-                   // update project table
-                   csv2post_WP_SQL_reset_project_record($rec['csv2post_postid'],$the_project_array['maintable']);
-                   
-                   ++$posts_deleted;  
+                // updated statistics
+                if(isset($the_project_array['stats']['postscreated'])){
+                    $the_project_array['stats']['postscreated'] = $the_project_array['stats']['postscreated'] - $posts_deleted;
                 }
-            }              
+                
+                csv2post_update_option_postcreationproject($project_code,$the_project_array);
+                
+                return $posts_deleted;
+                
+            }elseif($range == 'currentproject'){
+                
+                 // get project array
+                $the_project_array = csv2post_get_project_array($the_project_code);
+                
+                // query post ID in project table
+                $record_result = csv2post_WP_SQL_used_records($the_project_array['maintable'],9999999,'csv2post_postid');
+                if($record_result){
+                    foreach($record_result as $key => $rec){
+                       
+                       // delete the post
+                       ### TODO:LOWPRIORITY,create a general admin setting for forcing the delete and not putting posts in trash
+                       wp_delete_post($rec['csv2post_postid'],false);
+                       
+                       // update project table
+                       csv2post_WP_SQL_reset_project_record($rec['csv2post_postid'],$the_project_array['maintable']);
+                       
+                       ++$posts_deleted;  
+                    }
+                }              
+            }
         }
     }
+
+    // updated statistics
+    if(isset($the_project_array['stats']['postscreated'])){
+        $the_project_array['stats']['postscreated'] = $the_project_array['stats']['postscreated'] - $posts_deleted;
+    }
     
+    csv2post_update_option_postcreationproject($project_code,$the_project_array);
+                    
     return $posts_deleted;  
 }
         
@@ -513,6 +529,7 @@ function csv2post_delete_postcreationproject($project_code,$current_project_code
 * Updates "projectlist" option, requires the array itself to be passed
 */
 function csv2post_update_option_postcreationproject_list($csv2post_projectslist_array){
+    $csv2post_projectslist_array['arrayinfo'] = csv2post_ARRAY_arrayinfo_set(__LINE__,__FUNCTION__,__FILE__,false,false);
     return update_option('csv2post_projectslist',serialize($csv2post_projectslist_array));    
 }
 
@@ -552,7 +569,8 @@ function csv2post_delete_dataimportjob_postrequest($jobcode,$output = true){
     if($deleteoption_result != false){
         if($output){
             csv2post_notice('Data import job named '.$csv2post_dataimportjobs_array[$jobcode]['name'].' has been 
-            deleted.','success','Extra'); 
+            deleted.','success','Extra');
+            csv2post_n_postresult('success','Data Import Job Deleted','Data import job named '.$csv2post_dataimportjobs_array[$jobcode]['name'].' has been deleted.'); 
         }    
     }else{
         if($output){
@@ -910,4 +928,125 @@ function csv2post_files_update_fileprofile($csvfile_name){
     $csv2post_file_profiles[$csvfile_name]['currentmodtime'] = csv2post_files_get_csvfile_filemtime($csvfile_name);
     csv2post_update_option_fileprofiles($csv2post_file_profiles);
 }                         
-?>
+
+/**
+* Parent function for category creation. Calls child functions to perform specific 
+* procedures based on level 
+*/
+function csv2post_WP_CATEGORIES_manuallevels_basic($next_level){
+    global $wpdb,$csv2post_project_array,$csv2post_currentproject_code;
+       
+    $result_array = array();
+
+    $pro_table = csv2post_get_project_maintable($csv2post_currentproject_code);
+    $col_name = $csv2post_project_array['categories']['level'.$next_level]['column'];    
+                           
+    // we get distinct category names for a single level (column)
+    $records = csv2post_WP_SQL_categoriesdata_onelevel_advanced($pro_table,$col_name);
+    
+    if(!$records || !is_array($records)){
+        csv2post_notice_postresult('error','No Records','The query to get data for creating categories has returned false. The plugin authors would be happy to help investigate this.');
+        return;
+    }
+    
+    // count returned values to help diagnose any issues
+    $result_array['procedureinfo']['recordscount'] = count($records);
+    
+    // make new array with values, returned array includes arrays with columns name as keys
+    $category_parent_id = 0;// will be changed only for levels 2,3,4,5 and so on
+    $total_categories_created = 0; 
+    foreach($records as $cat_array => $category){
+
+        // if required split category ID value and use the parent ID for our next level of category
+        if($next_level > 1){
+            $cat_IDs_array = explode(',',$category['csv2post_catid']);
+            // category ID's are stored in order of level so we need the last ID as user creates category levels in order 
+            $category_parent_id = end($cat_IDs_array);
+        }
+
+        $result_array['results'][$next_level][ $category[$col_name] ]['categoryname'] = $category[$col_name];
+        $result_array['results'][$next_level][ $category[$col_name] ]['parentid'] = $category_parent_id;        
+
+        // does category name with this parent exist ?
+        if ( $id = category_exists($category[$col_name], $category_parent_id) ){
+            $new_cat_id = $id;       
+        }else{
+            $new_cat_id = wp_insert_category( array('cat_name' => $category[$col_name], 'category_parent' => $category_parent_id) );     
+            ++$total_categories_created;        
+        }
+        
+        // if level 2,3 append new ID else applye a single ID for level 1  
+        if($next_level == 2 || $next_level == 3){
+            // if applydepth = 1 then we apply the last category only, do not append            
+            if(!isset($csv2post_project_array['categories']['applydepth'])
+            || isset($csv2post_project_array['categories']['applydepth']) && $csv2post_project_array['categories']['applydepth'] == 0){
+                $catd_id_string = $category['csv2post_catid'] . ',' . $new_cat_id;
+            }else{
+                $catd_id_string = $new_cat_id;# value 1 in applydepth = 1 cat ID (will be the last category created for a record)    
+            }
+        }else{
+            $catd_id_string = $new_cat_id;
+        }
+                
+        // add new id to result_array for building an output
+        $result_array['results'][$next_level][ $category[$col_name] ]['categoryid'] = $new_cat_id;
+
+        // update record with our new string of category ID
+        $updated_records_count = csv2post_WP_SQL_categories_updateIDs($pro_table,$catd_id_string,$category['csv2post_id']);
+    }
+    
+    $csv2post_project_array['categories']['level'.$next_level]['complete'] = true;
+
+    csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
+    
+    csv2post_n_postresult('success','Category Creation Complete','Level ' . $next_level .' categories have been complete. Please remember to create your next required level.');  
+}
+
+/**
+* Creates and prepares category descriptions
+* 
+* @param mixed $lev
+* @param mixed $rec_ID
+*/
+function csv2post_WP_CATEGORIES_description( $lev,$rec_ID){
+    global $wpdb,$csv2post_project_array,$csv2post_currentproject_code,$csv2post_is_free;
+    $d = '';
+
+    if(isset($csv2post_project_array['categories']['level'.$lev]['descriptioncolumn'])
+    && isset($csv2post_project_array['categories']['level'.$lev]['descriptiontable'])){
+
+        $v = $wpdb->get_var( $wpdb->prepare( 
+            '
+                SELECT '.$csv2post_project_array['categories']['level'.$lev]['descriptioncolumn'].'
+                FROM '.$csv2post_project_array['categories']['level'.$lev]['descriptiontable'].' 
+                WHERE csv2post_id = %d
+            ', 
+            $rec_ID
+        ) );    
+
+        if(!$v){
+            ### TODO:MEDIUMPRIORITY, log and flag
+            return $d;
+        }elseif(is_string($v)){
+            return $v;            
+        }
+      
+    }elseif(!$csv2post_is_free && isset($csv2post_project_array['categories']['level'.$lev]['description'])){
+        // the ['description'] value holds a content template ID
+        // get the main table, if required we can upgrade this to work better with multiple tables
+        $pro_table = csv2post_get_project_maintable($csv2post_currentproject_code);
+        
+        // query entire record
+        $rec = csv2post_WP_SQL_select($pro_table,1,'*','WHERE csv2post_id = "'.$rec_ID.'"');# returns ARRAY_A
+        if(!$rec){
+            ### TODO:MEDIUMPRIORITY, log this
+            return $d;
+        }else{
+            $d = csv2post_get_template_design($csv2post_project_array['categories']['level'.$actual_level]["description"]); 
+            $d = csv2post_parse_columnreplacement_advanced($rec,$csv2post_project_array,$d);   
+            ### TODO: HIGHPRIORITY, process text spinning              
+        }
+    }
+
+    return $d;
+}?>

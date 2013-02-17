@@ -6,11 +6,11 @@
 * @param mixed $posts_target
 * @param mixed $request_method
 */
-function csv2post_create_posts($project_code,$posts_target,$request_method){
+function csv2post_create_posts($project_code,$posts_target,$request_method,$subpagelevel = false){
     global $csv2post_is_free;
     if(!$csv2post_is_free){
         // paid edition only - circumventing this measure will only cause errors due to key functions not existing in free package
-        return csv2post_create_posts_advanced($project_code,$posts_target,$request_method); 
+        return csv2post_create_posts_advanced($project_code,$posts_target,$request_method,$subpagelevel); 
     }else{
         return csv2post_create_posts_basic($project_code,$request_method); 
     }   
@@ -97,7 +97,6 @@ function csv2post_create_posts_basic($project_code,$request_method){
    
     // initilize variables
     $new_posts = 0;
-    $adopted_posts = 0;
     $void_records = 0;
     $invalid_records = 0;  
     $fault_occured = 0;// counted times the loop cannot finish the whole script   
@@ -108,14 +107,8 @@ function csv2post_create_posts_basic($project_code,$request_method){
         // begin $my_post array, we will udpate it with the draft post details
         $my_post = array();
                               
-        // set $category_array if $project_array['categories']['level1']['table'] is set (get existing, create or a mix of both)
-        $category_array = array();
-        
-        if(isset($project_array['categories']['default']) && is_numeric($project_array['categories']['default'])){
-            $my_post['post_category'] = array($project_array['categories']['default']);        
-        }elseif(isset($project_array['categories']['level1']['table'])){
-            $my_post['post_category'] = csv2post_categorysetup_basicscript_normalcategories($record_array,$project_array);          
-        }
+        // Categories   
+        $my_post['post_category'] = csv2post_post_categories($record_array);
 
         // if post title column set, use that
         if(isset($project_array['posttitles']['column'])){
@@ -175,6 +168,9 @@ function csv2post_create_posts_basic($project_code,$request_method){
                 csv2post_notice('Draft post could not be created, post creation failed when using one of your records, this must be investigated.','error','Large','Post Creation Failed','','echo');    
             } 
         }else{
+            
+            ++$new_posts;
+            
             // update project table
             csv2post_WP_SQL_update_project_databasetable_basic($record_array['csv2post_id'],$my_post['ID'],$project_array['tables'][0]); 
         }                                                                                              
@@ -191,8 +187,6 @@ function csv2post_create_posts_basic($project_code,$request_method){
             csv2post_post_add_metadata_basic_seo($project_code,$record_array,$my_post['ID']);
         }                                  
 
-        var_dump($my_post['ID']);
-        
         // put the post id into variable for returning as the $my_post object is destroyed
         $post_id = $my_post['ID'];
         
@@ -200,6 +194,9 @@ function csv2post_create_posts_basic($project_code,$request_method){
         unset($my_post);
 
     }// end for each record
+    
+    $project_array['stats']['postscreated'] = $project_array['stats']['postscreated'] + $new_posts;
+    csv2post_update_option_postcreationproject($project_code,$project_array);
         
     // clear cache                   
     $wpdb->flush();
@@ -317,120 +314,6 @@ function csv2post_post_default_projectmeta($post_ID,$project_code,$record_id){
 
     ### TODO:CRITICAL, requires record id                    
 }                                                                           
-
-/**
-* Basic category creation script - mainly for use in free edition.
-* Only suitable for projects with one table.
-* Check that category level1 is set before calling this function.
-* 
-* USER ADVICE
-* This function does not locate and use category slugs that result from two or more different terms.
-* This means that where different terms result in the exacts same slug, the function will treat them all as
-* different categories. Other methods exist in full edition to get around data that is more complex.
-* 
-* Some Exclusions
-* 1. 3 levels of categories not 5
-* 2. Applies all categories to posts
-* 3. One set of categories i.e. a post cannot belong to two or more sections on a site
-* 
-* @todo LOWPRIORITY, consider a custom SQL query per level for establishing if a category exists with require parents etc
-* @param mixed $r a single record from results query, is an associative array
-*/
-function csv2post_categorysetup_basicscript_normalcategories($r,$project_array){
-    global $wpdb;
-                
-    // array to hold our final category ID's ( all are applied to post in this function )
-    $finalcat_array = array();
-
-    // count total new categories inserted into blog
-    $cats_created_count = 0;
-                
-    // total number of categories added to $appliedcat_array
-    $cats_used_count = 0;
-    
-    // create variables to hold each level of category ID
-    $catid_levone = 0;$catid_levtwo = 0;$catid_levthree = 0;               
-                                
-    // loop three times 0 = level one and so on
-    for ($col_lev = 0; $col_lev < 3; $col_lev++) {
-        
-        // get the current category term
-        if($col_lev == 0){
-            $cat_term = $r[$project_array['categories']['level1']['column']];    
-        }elseif($col_lev == 1){
-            $cat_term = $r[$project_array['categories']['level2']['column']];
-        }elseif($col_lev == 2){
-            $cat_term = $r[$project_array['categories']['level3']['column']];
-        }    
-
-        // set parent ID - if any
-        $parent_id = 0;
-        if($col_lev == 1){
-            $parent_id = $catid_levone;        
-        }elseif($col_lev == 2){
-            $parent_id = $catid_levtwo;            
-        }
-        
-        // determine if category term already exists, under the parent if one exists
-        $cat_taxonomy_result = csv2post_WP_SQL_is_categorywithparent(sanitize_title($cat_term),$parent_id);
-        // example return: ["term_id"]=> string(1) "3" ["name"]=> string(4) "Aone" ["parent"]=> string(1) "0"
-
-        // did get_term_by provide a negative result, requiring category to be created with required parent
-        // if level one - we only attempt to make category if NO result returned at all, the parent part can be ignored
-        if(!$cat_taxonomy_result){
-            
-            $new_cat_id = wp_insert_term($cat_term, "category", array('description' => '', 'parent' => $parent_id));
-            // array(2) { ["term_id"]=> int(80) ["term_taxonomy_id"]=> int(81) }
- 
-            if(!csv2post_is_WP_Error($new_cat_id) && $new_cat_id){
-                 
-                if($col_lev == 0){
-                    $catid_levone = $new_cat_id['term_id'];       
-                }elseif($col_lev == 1){
-                    $catid_levtwo = $new_cat_id['term_id'];       
-                }elseif($col_lev == 2){
-                    $catid_levthree = $new_cat_id['term_id'];       
-                }
-                
-                ++$cats_created_count;
-                ++$cats_used_count;
-                
-            }else{
-                ### TODO:HIGHPRIORITY, log error
-                ### use csv2post_is_WP_Error if returned
-            }            
-                
-        }elseif( $cat_taxonomy_result && $cat_taxonomy_result->parent == $parent_id ){
-            
-            // get_term_by returned existing category that has the giving parent
-            if($col_lev == 0){
-                $catid_levone = $cat_taxonomy_result->term_id;       
-            }elseif($col_lev == 1){
-                $catid_levtwo = $cat_taxonomy_result->term_id;       
-            }elseif($col_lev == 2){
-                $catid_levthree = $cat_taxonomy_result->term_id;       
-            }
-            
-            ++$cats_used_count;
-        }
-   }
-
-   // build final array - I have done this so that 2nd or 3rd level cannot be applied if their parent level 
-   // has somehow failed to be found or created. In debugging, if a post is applied to 1st and 3rd category but not
-   // the expected 2nd then this is where to begin debugging.
-   $appliedcat_array = array();
-   if($catid_levone != 0 && is_numeric($catid_levone)){
-        $appliedcat_array[] = $catid_levone;      
-   }
-   if($catid_levtwo != 0 && is_numeric($catid_levtwo) && $catid_levone != 0 && is_numeric($catid_levone)){
-        $appliedcat_array[] = $catid_levtwo;      
-   }
-   if($catid_levthree != 0 && is_numeric($catid_levthree) && $catid_levtwo != 0 && is_numeric($catid_levtwo)){
-        $appliedcat_array[] = $catid_levthree;      
-   }
-      
-   return $appliedcat_array;      
-}   
  
 /**
 * Creates post creation project.
@@ -677,4 +560,118 @@ function csv2post_update_project_defaultposttype($project_code,$default_post_typ
     $project_array['defaultposttype'] = $default_post_type;
     return csv2post_update_option_postcreationproject($project_code,$project_array);    
 }
+
+/**
+* Basic category creation script - mainly for use in free edition.
+* Only suitable for projects with one table.
+* Check that category level1 is set before calling this function.
+* 
+* USER ADVICE
+* This function does not locate and use category slugs that result from two or more different terms.
+* This means that where different terms result in the exacts same slug, the function will treat them all as
+* different categories. Other methods exist in full edition to get around data that is more complex.
+* 
+* Some Exclusions
+* 1. 3 levels of categories not 5
+* 2. Applies all categories to posts
+* 3. One set of categories i.e. a post cannot belong to two or more sections on a site
+* 
+* @todo LOWPRIORITY, consider a custom SQL query per level for establishing if a category exists with require parents etc
+* @param mixed $r a single record from results query, is an associative array
+*/
+function csv2post_categorysetup_basicscript_normalcategories($r,$project_array){
+    global $wpdb;
+                
+    // array to hold our final category ID's ( all are applied to post in this function )
+    $finalcat_array = array();
+
+    // count total new categories inserted into blog
+    $cats_created_count = 0;
+                
+    // total number of categories added to $appliedcat_array
+    $cats_used_count = 0;
+    
+    // create variables to hold each level of category ID
+    $catid_levone = 0;$catid_levtwo = 0;$catid_levthree = 0;               
+                                
+    // loop three times 0 = level one and so on
+    for ($col_lev = 0; $col_lev < 3; $col_lev++) {
+        
+        // get the current category term
+        if($col_lev == 0){
+            $cat_term = $r[$project_array['categories']['level1']['column']];    
+        }elseif($col_lev == 1){
+            $cat_term = $r[$project_array['categories']['level2']['column']];
+        }elseif($col_lev == 2){
+            $cat_term = $r[$project_array['categories']['level3']['column']];
+        }    
+
+        // set parent ID - if any
+        $parent_id = 0;
+        if($col_lev == 1){
+            $parent_id = $catid_levone;        
+        }elseif($col_lev == 2){
+            $parent_id = $catid_levtwo;            
+        }
+        
+        // determine if category term already exists, under the parent if one exists
+        $cat_taxonomy_result = csv2post_WP_SQL_is_categorywithparent(sanitize_title($cat_term),$parent_id);
+        // example return: ["term_id"]=> string(1) "3" ["name"]=> string(4) "Aone" ["parent"]=> string(1) "0"
+
+        // did get_term_by provide a negative result, requiring category to be created with required parent
+        // if level one - we only attempt to make category if NO result returned at all, the parent part can be ignored
+        if(!$cat_taxonomy_result){
+            
+            $new_cat_id = wp_insert_term($cat_term, "category", array('description' => '', 'parent' => $parent_id));
+            // array(2) { ["term_id"]=> int(80) ["term_taxonomy_id"]=> int(81) }
+ 
+            if(!csv2post_is_WP_Error($new_cat_id) && $new_cat_id){
+                 
+                if($col_lev == 0){
+                    $catid_levone = $new_cat_id['term_id'];       
+                }elseif($col_lev == 1){
+                    $catid_levtwo = $new_cat_id['term_id'];       
+                }elseif($col_lev == 2){
+                    $catid_levthree = $new_cat_id['term_id'];       
+                }
+                
+                ++$cats_created_count;
+                ++$cats_used_count;
+                
+            }else{
+                ### TODO:HIGHPRIORITY, log error
+                ### use csv2post_is_WP_Error if returned
+            }            
+                
+        }elseif( $cat_taxonomy_result && $cat_taxonomy_result->parent == $parent_id ){
+            
+            // get_term_by returned existing category that has the giving parent
+            if($col_lev == 0){
+                $catid_levone = $cat_taxonomy_result->term_id;       
+            }elseif($col_lev == 1){
+                $catid_levtwo = $cat_taxonomy_result->term_id;       
+            }elseif($col_lev == 2){
+                $catid_levthree = $cat_taxonomy_result->term_id;       
+            }
+            
+            ++$cats_used_count;
+        }
+   }
+
+   // build final array - I have done this so that 2nd or 3rd level cannot be applied if their parent level 
+   // has somehow failed to be found or created. In debugging, if a post is applied to 1st and 3rd category but not
+   // the expected 2nd then this is where to begin debugging.
+   $appliedcat_array = array();
+   if($catid_levone != 0 && is_numeric($catid_levone)){
+        $appliedcat_array[] = $catid_levone;      
+   }
+   if($catid_levtwo != 0 && is_numeric($catid_levtwo) && $catid_levone != 0 && is_numeric($catid_levone)){
+        $appliedcat_array[] = $catid_levtwo;      
+   }
+   if($catid_levthree != 0 && is_numeric($catid_levthree) && $catid_levtwo != 0 && is_numeric($catid_levtwo)){
+        $appliedcat_array[] = $catid_levthree;      
+   }
+      
+   return $appliedcat_array;      
+}   
 ?>

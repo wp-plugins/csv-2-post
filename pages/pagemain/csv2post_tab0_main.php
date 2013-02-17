@@ -1,4 +1,4 @@
-<?php 
+<?php       
 if(!$csv2post_is_free){
     csv2post_n_incontent('The Easy CSV Importer is currently in the free edition and acts as a very basic but
     quick importer. The paid version of this screen requires more work and will be more advanced than what is 

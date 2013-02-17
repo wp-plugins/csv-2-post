@@ -1,5 +1,5 @@
 <?php      
-global $csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$csv2post_options_array,$csv2post_nav_type,$csv2post_projectslist_array,$csv2post_schedule_array,$csv2post_is_free,$csv2post_project_array;
+global $csv2post_is_dev,$csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$csv2post_options_array,$csv2post_nav_type,$csv2post_projectslist_array,$csv2post_schedule_array,$csv2post_is_free,$csv2post_project_array;
 $pageid = 'creation';// used to access variable.php configuration
 $pagefolder = 'creation';// the folder in pages folder holding this pages files
 

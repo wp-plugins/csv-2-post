@@ -1,16 +1,9 @@
 <?php      
-global $csv2post_mpt_arr,$wpdb,$csv2post_options_array,$csv2post_projectslist_array,$csv2post_currentproject_code,$csv2post_nav_type,$csv2post_project_array,$csv2post_is_free,$csv2post_is_dev,$csv2post_textspin_array;
+global $csv2post_is_dev,$csv2post_mpt_arr,$wpdb,$csv2post_options_array,$csv2post_projectslist_array,$csv2post_currentproject_code,$csv2post_nav_type,$csv2post_project_array,$csv2post_is_free,$csv2post_is_dev,$csv2post_textspin_array;
 $pageid = 'projects';// used to access variable.php configuration
 $pagefolder = 'projects';// the folder in pages folder holding this pages files
 
-// main page header
-if($csv2post_is_free){
-    $page_title_string = 'Your Project Configuration';    
-}else{
-    $page_title_string = $csv2post_mpt_arr['menu'][$pageid]['title'] . csv2post_get_current_project_name() . ' (ID: '.csv2post_convertvalue_projectcodefalse_toostring().')';
-}
-
-csv2post_header_page($page_title_string,0);
+csv2post_header_page($csv2post_mpt_arr['menu'][$pageid]['title'],0);
              
 // create tab menu for the giving page
 csv2post_createmenu($pageid);

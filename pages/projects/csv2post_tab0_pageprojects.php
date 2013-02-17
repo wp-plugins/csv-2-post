@@ -156,9 +156,9 @@ if(isset($csv2post_projectslist_array) && is_array($csv2post_projectslist_array)
         ++$panel_number;// increase panel counter so this panel has unique ID
         $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
         $panel_array['panel_name'] = 'selectcurrentproject';// slug to act as a name and part of the panel ID 
-        $panel_array['panel_title'] = __('Set Current Project');// user seen panel header text 
+        $panel_array['panel_title'] = __('Set Your Current Project');// user seen panel header text 
         $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-        if($csv2post_is_free){$panel_array['panel_intro'] = __('Full edition allows multiple projects to be created');}else{$panel_array['panel_intro'] = __('You can activate any project to make changes to its configuration');}
+        if($csv2post_is_free){$panel_array['panel_intro'] = __('Full edition allows multiple projects to be created');}else{$panel_array['panel_intro'] = __('The "Current Project" is the one currently being worked on');}
         $panel_array['panel_help'] = __('This panel allows you to make any of your projects your Current project. Your current project settings will be displayed in the Your Projects screens. The Your Project screens also allow you to change global settings so take care when making changes if you are running multiple projects.');
         $panel_array['help_button'] = csv2post_helpbutton_text(false,true);
         // Form Settings - create the array that is passed to jQuery form functions
@@ -174,13 +174,8 @@ if(isset($csv2post_projectslist_array) && is_array($csv2post_projectslist_array)
             csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
             csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
             ?> 
-            
-            <script>
-            $(function() {
-                $( "#csv2post_radios_<?php echo $panel_array['panel_name'];?>" ).buttonset();
-            });
-            </script>
-
+        
+            <?php csv2post_JQUERY_buttonset('csv2post_radios_'.$panel_array['panel_name']);?>
             <div id="csv2post_radios_<?php echo $panel_array['panel_name'];?>">
                 
                 <?php
@@ -192,12 +187,14 @@ if(isset($csv2post_projectslist_array) && is_array($csv2post_projectslist_array)
                     
                     $i = 0; 
                     foreach($csv2post_projectslist_array as $project_code => $project ){
-                        $checked = '';
-                        if($csv2post_currentproject_code == $project_code){
-                            $checked = 'checked="checked"';    
+                        if($project_code != 'arrayinfo'){
+                            $checked = '';
+                            if($csv2post_currentproject_code == $project_code){
+                                $checked = 'checked="checked"';    
+                            }
+                            echo '<input type="radio" id="csv2post_radio'.$i.$panel_array['panel_name'].'" name="csv2post_radio_projectcode" value="'.$project_code.'" '.$checked.' /><label for="csv2post_radio'.$i.$panel_array['panel_name'].'">'.$project['name'].'</label>';    
+                            ++$i;
                         }
-                        echo '<input type="radio" id="csv2post_radio'.$i.$panel_array['panel_name'].'" name="csv2post_radio_projectcode" value="'.$project_code.'" '.$checked.' /><label for="csv2post_radio'.$i.$panel_array['panel_name'].'">'.$project['name'].'</label>';    
-                        ++$i;
                     }
                 }
                 ?>
@@ -366,7 +363,6 @@ if(isset($csv2post_projectslist_array) && is_array($csv2post_projectslist_array)
                     });
                 </script><?php 
             }
-            
 
             // add js for dialog on form submission and the dialog <div> itself
             if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
@@ -390,7 +386,7 @@ if($csv2post_is_dev && isset($csv2post_projectslist_array)){
     $panel_array['panel_title'] = __('Projects List Array Dump');// user seen panel header text 
     $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
     $panel_array['panel_intro'] = __('A dump of the array that holds a small amount of info for each project');
-    $panel_array['panel_help'] = __('Every project has its own array stored in the Wordpress options table but all projects are also added to the $csv2post_projectlist_array. It is used to list projects and holds a small amount of key information for when querying none specific projects on specific criteria i.e. a project with changed configuration since posts were created. That can tell us that there are posts that need updated.');
+    $panel_array['panel_help'] = __('Every project has its own array stored in the Wordpress options table but all projects are also added to the $csv2post_projectslist_array. It is used to list projects and holds a small amount of key information for when querying none specific projects on specific criteria i.e. a project with changed configuration since posts were created. That can tell us that there are posts that need updated.');
     $panel_array['help_button'] = csv2post_helpbutton_text(false,true);?>
     <?php csv2post_panel_header( $panel_array );?>  
                

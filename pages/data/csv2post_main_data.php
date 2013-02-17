@@ -3,14 +3,7 @@ global $csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$csv2post_options_array,$
 $pageid = 'data';// used to access variable.php configuration
 $pagefolder = 'data';// the folder in pages folder holding this pages files
 
-// main page header
-if(!csv2post_get_option_currentjobcode()){
-    $id_string = '';
-}else{
-    $id_string = ' (ID: '.csv2post_get_option_currentjobcode().')';
-}
-
-csv2post_header_page($csv2post_mpt_arr['menu'][$pageid]['title'] . csv2post_get_current_job_name() . $id_string,0);
+csv2post_header_page($csv2post_mpt_arr['menu'][$pageid]['title'],0);
  
 // create tab menu for the giving page
 csv2post_createmenu($pageid); 

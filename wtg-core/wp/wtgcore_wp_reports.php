@@ -580,11 +580,28 @@ function csv2post_notice_output(){
 /**
 * Standard notice format to be displayed on submission of a form (Large).
 * Change the size if a plugin using core is to have a different format.
+* 
+* @deprecated use csv2post_n_postresult as of 13th February 2013
 */
 function csv2post_notice_postresult($type,$title,$message,$helpurl = false,$user = 'admin'){
     csv2post_notice($message,$type,'Large',$title, $helpurl, 'echo');    
 }
 
+/**
+* Display a standard notification after form submission.
+* This function simply helps to quickly apply a notice to the outcome while using the same
+* configuration for all form submissions.
+* 
+* @param mixed $type
+* @param mixed $title
+* @param mixed $message
+* @param mixed $helpurl
+* @param mixed $user
+*/
+function csv2post_n_postresult($type,$title,$message,$helpurl = false,$user = 'admin'){
+    csv2post_notice($message,$type,'Large',$title, $helpurl, 'echo');    
+}
+     
 /**
 * Standard notice format to be displayed at the top of a screen (Tiny)
 */

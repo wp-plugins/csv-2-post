@@ -136,6 +136,9 @@ if($cont){
     // Deletes random advanced shortcode rules
     $cont = csv2post_form_delete_randomadvanced_shortcoderules();
     
+    // Activate or disable text spinning
+    $cont = csv2post_form_textspinning_switch();
+    
     // Save basic SEO options
     $cont = csv2post_form_save_basic_seo_options();
     
@@ -168,8 +171,11 @@ if($cont){
     // Start post creation even manually
     $cont = csv2post_form_start_post_creation();
     
-    // Creates categories
+    // Creates categories (2012 method, all levels at once)
     $cont = csv2post_form_create_categories(); 
+    
+    // Create category level (2013 method, one level at a time for better monitoring/diagnostics)
+    $cont = csv2post_form_create_category_level();
     
     // Updates a single giving post using post ID                         
     $cont = csv2post_form_update_post();
@@ -181,7 +187,10 @@ if($cont){
     $cont = csv2post_form_undo_posts();
     
     // Delete flags
-    $cont = csv2post_form_delete_flags();         
+    $cont = csv2post_form_delete_flags(); 
+    
+    // Undo current project categories 
+    $cont = csv2post_form_undo_categories();        
 }
 
 // Install
@@ -2352,35 +2361,31 @@ function csv2post_form_featuredimage(){
   
 /**
 * Saves easy configuration questions
+* 
+* @todo HIGHPRIORITY, complete this function. Add option to reverse specific groups of posts by time/date range.
 */
 function csv2post_form_undo_posts(){
-    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'creation' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'undoposts'){
-        global $csv2post_currentproject_code;
-        
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'creation' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'undopostscurrentproject'){
+        global $csv2post_currentproject_code,$csv2post_project_array;
+
         $number_of_posts_deleted = 0;
-        
-        // if no range selected
-        if(!isset($_POST['csv2post_undo'])){
-            csv2post_notice('You did not select the range/group of posts you would like to undo.',
-            'error','Large','No Range Selected','','echo');
-            return false;
-        }
-        
+                
         // if current project options selected but no posts made with project
-        if($_POST['csv2post_undo'] == 'currentproject' 
-        || $_POST['csv2post_undo'] == 'last10minutes' 
-        || $_POST['csv2post_undo'] == 'last60minutes' 
-        || $_POST['csv2post_undo'] == 'last24hours'){
-            $postscreated = csv2post_does_project_have_posts($csv2post_currentproject_code);
-            if(!$postscreated){
-                csv2post_notice('The current project does not have any posts according to the projects main table',
-                'error','Large','No Posts','','echo');
-                return false;        
-            } 
-        }
+        $postscreated = csv2post_does_project_have_posts($csv2post_currentproject_code);
+        if(!$postscreated){
+            csv2post_notice('The current project does not have any posts according to the projects main table','warning','Large','No Posts','','echo');
+            return false;        
+        } 
         
+        // Sub-page
+        // if sub-page in use and all posts are to be deleted we need to reset the stage counter
+        if(isset($csv2post_project_array['subpages']['stage'])){
+            $csv2post_project_array['subpages']['stage'] = 1;
+            csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
+        }
+            
         // delete posts
-        $number_of_posts_deleted = csv2post_delete_project_posts_byrange($csv2post_currentproject_code,$_POST['csv2post_undo']);
+        $number_of_posts_deleted = csv2post_delete_project_posts_byrange($csv2post_currentproject_code,'currentproject');
         
         if($number_of_posts_deleted > 0){
             
@@ -2391,7 +2396,8 @@ function csv2post_form_undo_posts(){
             
             csv2post_notice('You deleted ' . $number_of_posts_deleted .' posts. The post ID have also been removed from their
             project table so that the records are ready to use again.'
-            ,'success','Large',$number_of_posts_deleted . " Post".$plural." Deleted",'','echo'); 
+            ,'success','Large',$number_of_posts_deleted . " Post".$plural." Deleted",'','echo');
+             
         }else{
             csv2post_notice('No posts were deleted as there are no post ID in the project tables checked.',
             'info','Large','No Posts Deleted','','echo');
@@ -2636,7 +2642,7 @@ function csv2post_form_update_post(){
 * Creates categories 
 */
 function csv2post_form_create_categories(){
-    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'creation' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'createcategories'){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'creation' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'createallcategories'){
         global $csv2post_is_free;
         
         // if is premium/paid edition 
@@ -2654,7 +2660,7 @@ function csv2post_form_create_categories(){
     }else{
         return true;
     }       
-}      
+}  
   
 /**
 * Manual data import
@@ -3094,116 +3100,6 @@ function csv2post_form_save_category_mapping(){
         return true;
     }      
 }     
-     
-/**
-* Saves advanced category submission 
-*/
-function csv2post_form_save_categories_advanced(){
-    global $csv2post_currentproject_code,$csv2post_project_array,$csv2post_is_free;
-    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'advancedcategories'){
-        
-        // ensure the previous column has been selected for every column user submits
-        $required_column_missing = false;// set to true if a required column has not been selected
-        $required_column_level = false;// change to level 1,2,3 or 4 to indicate which column has not been selected but should be
-        
-        // check for level 1 - always required
-        if( $_POST['csv2post_categorylevel1_advanced'] == 'notselected' ){
-            csv2post_notice('You did not select a level one data table and column, you must always use level one if you want to create categories using this panel.','error','Large','Level One Not Selected');
-            return false;//discontinue post function processing
-        }
-        
-        // check if 3 is set - requires 2
-        if( $_POST['csv2post_categorylevel3_advanced'] != 'notselected' && $_POST['csv2post_categorylevel2_advanced'] == 'notselected' ){
-            $required_column_missing = true;
-            $required_column_level = 2;
-        }
-        
-        // check if 4 is set - requires 3
-        if( !$csv2post_is_free && $_POST['csv2post_categorylevel4_advanced'] != 'notselected' && $_POST['csv2post_categorylevel3_advanced'] == 'notselected' ){
-            $required_column_missing = true;
-            $required_column_level = 3;
-        }       
-        
-        // check if 5 is set - requires 4
-        if( !$csv2post_is_free && $_POST['csv2post_categorylevel5_advanced'] != 'notselected' && $_POST['csv2post_categorylevel4_advanced'] == 'notselected' ){
-            $required_column_missing = true;
-            $required_column_level = 4;
-        }        
-        
-        // only continue if all required columns have been selected
-        if($required_column_missing){
-            $column_above_missing_level = $required_column_level + 1;
-            csv2post_notice('You did not appear to select all required columns. You selected a column for category level '.$column_above_missing_level.' but did not select one for category level '.$required_column_level.'. You must select category columns in order as displayed i.e. use 1,2 and 3 for three levels not 1,2 and 4.','error','Large','Missing Category Column Selection');
-            return false;// discontinues post functions processing        
-        }else{
-    
-            $csv2post_project_array = csv2post_get_project_array($csv2post_currentproject_code);   
-            
-            // add level 1 
-            $csv2post_project_array['categories']['level1']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel1_advanced']);
-            $csv2post_project_array['categories']['level1']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel1_advanced']);            
-
-            // save level 1 description template id if selected
-            if(isset($_POST['csv2post_categorylevel1_description'])){
-                $csv2post_project_array['categories']['level1']['description'] = $_POST['csv2post_categorylevel1_description'];        
-            }
-            
-            // add level 2
-            if($_POST['csv2post_categorylevel2_advanced'] != 'notselected'){
-                $csv2post_project_array['categories']['level2']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel2_advanced']);
-                $csv2post_project_array['categories']['level2']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel2_advanced']);                     
-            
-                // save level 2 description template id if selected
-                if(isset($_POST['csv2post_categorylevel2_description'])){
-                    $csv2post_project_array['categories']['level2']['description'] = $_POST['csv2post_categorylevel2_description'];        
-                }            
-            }
-            
-            // add level 3
-            if($_POST['csv2post_categorylevel3_advanced'] != 'notselected'){
-                $csv2post_project_array['categories']['level3']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel3_advanced']);
-                $csv2post_project_array['categories']['level3']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel3_advanced']);                     
-            
-                // save level 3 description template id if selected
-                if(isset($_POST['csv2post_categorylevel2_description'])){
-                    $csv2post_project_array['categories']['level3']['description'] = $_POST['csv2post_categorylevel3_description'];        
-                }            
-            }                
-
-            // add level 4
-            if(!$csv2post_is_free && $_POST['csv2post_categorylevel4_advanced'] != 'notselected'){
-                $csv2post_project_array['categories']['level4']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel4_advanced']);
-                $csv2post_project_array['categories']['level4']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel4_advanced']);                     
-
-                // save level 4 description template id if selected
-                if(isset($_POST['csv2post_categorylevel4_description'])){
-                    $csv2post_project_array['categories']['level4']['description'] = $_POST['csv2post_categorylevel4_description'];        
-                }            
-            }
-            
-            // add level 5
-            if(!$csv2post_is_free && $_POST['csv2post_categorylevel5_advanced'] != 'notselected'){
-                $csv2post_project_array['categories']['level5']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel5_advanced']);
-                $csv2post_project_array['categories']['level5']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel5_advanced']);                     
-            
-                // save level 5 description template id if selected
-                if(isset($_POST['csv2post_categorylevel5_description'])){
-                    $csv2post_project_array['categories']['level5']['description'] = $_POST['csv2post_categorylevel5_description'];        
-                }       
-            }            
-  
-            // update project option         
-            csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
-            
-            csv2post_notice('Your advanced category configuration has been saved and categories will be created during post creation. Posts will be assigned to their proper category.','success','Large','Standard Category Settings Saved');    
-
-        }
-
-        return false;
-    }else{
-        return true;
-    }      
-}
 
 /**
 * Saves default category (ID only)  
@@ -3243,48 +3139,6 @@ function csv2post_form_save_default_tags_column(){
         return true;
     }      
 }
-
-/**
-* Process post creation for giving project 
-*/
-function csv2post_form_start_post_creation(){
-    global $csv2post_projectslist_array,$csv2post_schedule_array,$csv2post_is_free,$csv2post_project_array,$csv2post_currentproject_code;
-    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'creation' && isset($_POST['csv2post_post_creation_request'])){
-        
-        // store post type in project array
-        if(isset($_POST['csv2post_radio_poststatus'])){
-            $csv2post_project_array['poststatus'] = $_POST['csv2post_radio_poststatus'];
-        }
-        
-        csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
-          
-        // free edition processes all records at once, $_POST['csv2post_postsamount'] will not be set
-        $target_posts = 999999;
-        if(!$csv2post_is_free){
-            $target_posts = $_POST['csv2post_postsamount'];    
-        }
-    
-        // call create posts function     
-        $post_id = csv2post_create_posts($_POST['csv2post_project_code'],$target_posts,'manual');
-        if($post_id){
-            
-            // no false returned (false indicates a failure)
-            // $post_id will be the last post ID created
-            csv2post_notice('Post creation went smoothly, no problems were detected. The last post ID created was <strong>'.$post_id.'</strong>.','success','Large','Post Creation Complete','','echo');
-            ### TODO:LOWPRIORITY, add link and url to last created post to the output
-                
-        }else{
-           
-           // must be a failure, if multiple posts were requests the failure is big enough to output it to the user
-           csv2post_notice('A problem was detected during the post creation process. The severity can only be established by checking logs and any posts created or expected to have been created.','error','Large','Problem Detected During Post Creation','','echo');
-        
-        }
-         
-        return false;
-    }else{
-        return true;
-    }      
-}  
   
 /**
 * Save drip feed limits  
@@ -3387,8 +3241,10 @@ function csv2post_form_save_dripfeedprojects_switch(){
         if(!isset($_POST['csv2post_dripfeedprojects_list'])){
 
             // user has set all posts to manual only - loop through all projects and set them to off
-            foreach( $csv2post_projectslist_array as $code => $project ){
-                $csv2post_projectslist_array[$code]['dripfeeding'] = 'off';
+            foreach( $csv2post_projectslist_array as $project_code => $project ){
+                if($project_code != 'arrayinfo'){ 
+                    $csv2post_projectslist_array[$project_code]['dripfeeding'] = 'off';
+                }
             }           
  
         }else{
@@ -3434,91 +3290,6 @@ function csv2post_form_save_projectupdatesettings(){
         return true;
     }    
 }      
-    
-/**
-* Saves basic categories form
-*/
-function csv2post_form_save_categories_standard(){
-    global $csv2post_currentproject_code,$csv2post_is_free,$csv2post_project_array;
-    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'standardcategories'){
-
-        // ensure the previous column has been selected for every column user submits
-        $required_column_missing = false;// set to true if a required column has not been selected
-        $required_column_level = false;// change to level 1,2,3 or 4 to indicate which column has not been selected but should be
-        
-        // check for level 1 - always required
-        if( $_POST['csv2post_categorylevel1_select_columnandtable'] == 'notselected' ){
-            csv2post_notice('You did not select a level one data table and column, you must always use level one if you want to create categories using this panel.','error','Large','Level One Not Selected');
-            return false;//discontinue post function processing
-        }
-        
-        // check if 3 is set - requires 2
-        if( $_POST['csv2post_categorylevel3_select_columnandtable'] != 'notselected' && $_POST['csv2post_categorylevel2_select_columnandtable'] == 'notselected' ){
-            $required_column_missing = true;
-            $required_column_level = 2;
-        }
-        
-        // check if 4 is set - requires 3
-        if( !$csv2post_is_free && $_POST['csv2post_categorylevel4_select_columnandtable'] != 'notselected' && $_POST['csv2post_categorylevel3_select_columnandtable'] == 'notselected' ){
-            $required_column_missing = true;
-            $required_column_level = 3;
-        }       
-        
-        // check if 5 is set - requires 4
-        if( !$csv2post_is_free && $_POST['csv2post_categorylevel5_select_columnandtable'] != 'notselected' && $_POST['csv2post_categorylevel4_select_columnandtable'] == 'notselected' ){
-            $required_column_missing = true;
-            $required_column_level = 4;
-        }        
-        
-        // only continue if all required columns have been selected
-        if($required_column_missing){
-            $column_above_missing_level = $required_column_level + 1;
-            csv2post_notice('You did not appear to select all required columns. You selected a column for category level '.$column_above_missing_level.' but did not select one for category level '.$required_column_level.'. You must select category columns in order as displayed i.e. use 1,2 and 3 for three levels not 1,2 and 4.','error','Large','Missing Category Column Selection');
-            return false;// discontinues post functions processing        
-        }else{
-    
-            $csv2post_project_array = csv2post_get_project_array($csv2post_currentproject_code);   
-            
-            // add level 1 
-            $csv2post_project_array['categories']['level1']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel1_select_columnandtable']);
-            $csv2post_project_array['categories']['level1']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel1_select_columnandtable']);            
-
-            // add level 2
-            if($_POST['csv2post_categorylevel2_select_columnandtable'] != 'notselected'){
-                $csv2post_project_array['categories']['level2']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel2_select_columnandtable']);
-                $csv2post_project_array['categories']['level2']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel2_select_columnandtable']);                     
-            }
-            
-            // add level 3
-            if($_POST['csv2post_categorylevel3_select_columnandtable'] != 'notselected'){
-                $csv2post_project_array['categories']['level3']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel3_select_columnandtable']);
-                $csv2post_project_array['categories']['level3']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel3_select_columnandtable']);                     
-            }                
-
-            // add level 4
-            if(!$csv2post_is_free && $_POST['csv2post_categorylevel4_select_columnandtable'] != 'notselected'){
-                $csv2post_project_array['categories']['level4']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel4_select_columnandtable']);
-                $csv2post_project_array['categories']['level4']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel4_select_columnandtable']);                     
-            }
-            
-            // add level 5
-            if(!$csv2post_is_free && $_POST['csv2post_categorylevel5_select_columnandtable'] != 'notselected'){
-                $csv2post_project_array['categories']['level5']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel5_select_columnandtable']);
-                $csv2post_project_array['categories']['level5']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel5_select_columnandtable']);                     
-            }            
-  
-            // update project option         
-            csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
-            
-            csv2post_notice('Your basic type category configuration has been saved and categories will be created during post creation. Posts will be assigned to their proper category.','success','Large','Standard Category Settings Saved');    
-
-        }
-            
-        return false;
-    }else{
-        return true;
-    }    
-}    
     
 /**
 * Adds basic custom fields
@@ -3643,8 +3414,7 @@ function csv2post_form_update_datecolumn(){
     }else{
         return true;
     }    
-}
-  
+}   
   
 /**
 * Inserts a new post type condition (value trigger) 
@@ -4079,114 +3849,6 @@ function csv2post_form_delete_post_creation_projects(){
         return true;
     }    
 }    
-
-/**
-* Processes request to make new post creation project
-*/
-function csv2post_form_create_post_creation_project(){
-
-    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'createpostcreationproject'){
-        
-        global $csv2post_currentproject_code,$csv2post_is_free;
-        
-        // if no project name
-        if(!isset($_POST['csv2post_projectname_name']) || $_POST['csv2post_projectname_name'] == NULL || $_POST['csv2post_projectname_name'] == '' || $_POST['csv2post_projectname_name'] == ' '){
-            csv2post_notice('No project name was entered, please try again','error','Large','Project Name Required','','echo');    
-            return false;
-        }
-        
-        // if no database table selected
-        if(!isset($_POST['csv2post_databasetables_array'])){
-            csv2post_notice('You did not appear to select any database tables for taking data from and putting into posts. Project was not created.','info','Large','Database Table Selection Required','','echo');    
-            return false;
-        }else{
-            
-            // carry out project table resets
-            if(isset($_POST['csv2post_databasetables_resettable_array'])){
-
-                if($csv2post_is_free){
-                    
-                    // does user want posts deleted also? Requires the same table to be selected 
-                    if(isset($_POST['csv2post_databasetables_resetposts_array']) && $_POST['csv2post_databasetables_resetposts_array'] == $_POST['csv2post_databasetables_resettable_array']){
-                        $reset_posts = true;
-                        $reset_posts_notice = ' All posts related to the project table have been deleted also.';    
-                    }else{
-                        $reset_posts = false;
-                    }
-    
-                    csv2post_WP_SQL_reset_project_table($_POST['csv2post_databasetables_resettable_array'],$reset_posts);
-                    csv2post_notice('The table named '.$_POST['csv2post_databasetables_resettable_array'].' was reset as requested.','success','Large','Table Reset','','echo');                    
-                
-                }else{
-                    foreach($_POST['csv2post_databasetables_resettable_array'] as $key => $table_name){
-                        
-                        // does user also want this tables posts deleted
-                        if(isset($_POST['csv2post_databasetables_resetposts_array'])){
-                            $reset_posts = false;
-                            foreach($_POST['csv2post_databasetables_resetposts_array'] as $key => $t){
-                                if($t == $_POST['csv2post_databasetables_resettable_array']){
-                                    $reset_posts = true;    
-                                }    
-                            }
-                        }
-                        
-                        csv2post_WP_SQL_reset_project_record($table_name,$reset_posts);
-                        csv2post_notice('The table named '.$table_name.' was reset as requested.','success','Large','Table Reset','','echo');    
-                    }  
-                } 
-            }
-            
-            // free edition does not allow mapping method selection on form
-            if(isset($_POST['csv2post_projecttables_mappingmethod_inputname']) && !$csv2post_is_free){
-                $mapping_method = $_POST['csv2post_projecttables_mappingmethod_inputname'];    
-            }else{
-                $mapping_method = 'defaultorder';
-            }
-            
-            // free edition will submit selected database table as string, not array, make array for rest of plugins use
-            if(!is_array($_POST['csv2post_databasetables_array'])){
-                $tables_array = array($_POST['csv2post_databasetables_array']);// we add the single table name to an array in free edition                                
-            }else{
-                $tables_array = $_POST['csv2post_databasetables_array'];// paid edition value will already be an array
-            }
-
-            // create project function will return project code on success
-            $createproject_result_code = csv2post_create_post_creation_project($_POST['csv2post_projectname_name'],$tables_array,$mapping_method);
-            if($createproject_result_code){
-                
-                // now set the new project as the Current Project ($csv2post_currentproject_code)               
-                $csv2post_currentproject_code = $createproject_result_code;
-                csv2post_update_currentproject($createproject_result_code);
-                
-                // do notification
-                csv2post_notice('Your new Post Creation Project has been made. Please click on the Content Designs tab and create your main content layout for this project or select an existing one.','success','Large','Post Creation Project Created');
-            
-                // display next step message
-                if(!$csv2post_is_free){
-                    $table_count = count($_POST['csv2post_databasetables_array']);
-                    if($table_count != 1){
-                        csv2post_notice('You must now complete the Multiple Tables Project panel on the Projects screen.','step','Large','Next Step','','echo');    
-                    }
-                }
-            
-            }else{
-                
-                if($csv2post_is_free){
-                
-                    csv2post_notice('You appear to have already created your project. The free edition allows one project at a time, please complete your post creation then delete the project. You may then create another project with a new database table that holds different data.','warning','Large','Post Creation Project Not Created','','echo');    
-               
-                }else{
-                    
-                    csv2post_notice('A problem was detected when making the new Post Creation Project. It is recommended that you attempt to make the project again and report this problem if it continues to happen.','error','Large','Post Creation Project Not Created');    
-                
-                }
-            }  
-        }
-        return false;
-    }else{
-        return true;
-    }     
-} 
 
 /**
 * Processes request to delete multiple data import jobs selected on Start tab 
@@ -5207,8 +4869,7 @@ function csv2post_form_subpage_bypermalinks(){
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'subpagesbypermalinks'){
         
         global $csv2post_project_array,$csv2post_currentproject_code;
-                           
-        
+
         if($_POST['csv2post_subpage_permalinks_radio'] == 'off'){
             
             $csv2post_project_array['subpages']['status'] = false;
@@ -5219,20 +4880,12 @@ function csv2post_form_subpage_bypermalinks(){
                         
         }else{
       
-            $csv2post_project_array['subpages']['parentcolumn']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_subpages_bypermalinks_parent']);
-            $csv2post_project_array['subpages']['parentcolumn']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_subpages_bypermalinks_parent']);            
+            $csv2post_project_array['subpages']['levelcolumn']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_subpages_bypermalinks_level']);
+            $csv2post_project_array['subpages']['levelcolumn']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_subpages_bypermalinks_level']);            
                     
-            $csv2post_project_array['subpages']['subone']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_subpages_bypermalinks_sub1']);
-            $csv2post_project_array['subpages']['subone']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_subpages_bypermalinks_sub1']);            
-                         
-            if($_POST['csv2post_subpages_bypermalinks_sub2'] == 'noselectionmade'){
-                $csv2post_project_array['subpages']['subtwo']['table'] = false;
-                $csv2post_project_array['subpages']['subtwo']['column'] = false;                    
-            }else{
-                $csv2post_project_array['subpages']['subtwo']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_subpages_bypermalinks_sub2']);
-                $csv2post_project_array['subpages']['subtwo']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_subpages_bypermalinks_sub2']);                    
-            }
-            
+            $csv2post_project_array['subpages']['slugscolumn']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_subpages_bypermalinks_slug']);
+            $csv2post_project_array['subpages']['slugscolumn']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_subpages_bypermalinks_slug']);            
+
             // is another method active? If so make user aware that it will be deactivated as only one method can run at a time
             if(isset($csv2post_project_array['subpages']['status']) && $csv2post_project_array['subpages']['status'] == true){
                 if(isset($csv2post_project_array['subpages']['method']) && $csv2post_project_array['subpages']['method'] != 'permalinks'){
@@ -5245,7 +4898,8 @@ function csv2post_form_subpage_bypermalinks(){
 
             $csv2post_project_array['subpages']['status'] = true;
             $csv2post_project_array['subpages']['method'] = 'permalinks';
-
+            $csv2post_project_array['subpages']['stage'] = 1;// this is increased per stage and used to determine what level of pages is to be created
+            
             csv2post_notice_postresult('success','Sub-page Grouping Method Activated','Your post creation
             will setup sub-pages providing your data is suitable for the permalink method.');            
         }
@@ -5258,7 +4912,10 @@ function csv2post_form_subpage_bypermalinks(){
     }     
 } 
 
-// save sub-page by grouping 
+/**
+* save sub-page by grouping
+* NOT IN USE YET
+*/
 function csv2post_form_subpage_bygrouping(){
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'subpagesbygroupingtwocolumn'){
 
@@ -5287,8 +4944,9 @@ function csv2post_form_subpage_bygrouping(){
 
         $csv2post_project_array['subpages']['status'] = true;
         $csv2post_project_array['subpages']['method'] = 'grouping';
-        $csv2post_project_array['subpages']['parentcolumn']['table'] = 'grouping';
-        $csv2post_project_array['subpages']['parentcolumn']['column'] = 'grouping';
+        $csv2post_project_array['subpages']['stage'] = 1;// this is increased per stage and used to determine what level of pages is to be created           
+        $csv2post_project_array['subpages']['slugscolumn']['table'] = 'grouping';
+        $csv2post_project_array['subpages']['slugscolumn']['column'] = 'grouping';
         $csv2post_project_array['subpages']['subone']['table'] = $table_name1;
         $csv2post_project_array['subpages']['subone']['column'] = $column_name1;
         $csv2post_project_array['subpages']['subtwo']['table'] = $table_name2;
@@ -5303,5 +4961,500 @@ function csv2post_form_subpage_bygrouping(){
     }else{
         return true;
     }     
-}                                     
+}    
+
+/**
+* Processes request to make new post creation project
+*/
+function csv2post_form_create_post_creation_project(){
+
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'createpostcreationproject'){
+        
+        global $csv2post_currentproject_code,$csv2post_is_free;
+        
+        // if no project name
+        if(!isset($_POST['csv2post_projectname_name']) || $_POST['csv2post_projectname_name'] == NULL || $_POST['csv2post_projectname_name'] == '' || $_POST['csv2post_projectname_name'] == ' '){
+            csv2post_notice('No project name was entered, please try again','error','Large','Project Name Required','','echo');    
+            return false;
+        }
+        
+        // if no database table selected
+        if(!isset($_POST['csv2post_databasetables_array'])){
+            csv2post_notice('You did not appear to select any database tables for taking data from and putting into posts. Project was not created.','info','Large','Database Table Selection Required','','echo');    
+            return false;
+        }else{
+            
+            // carry out project table resets
+            if(isset($_POST['csv2post_databasetables_resettable_array'])){
+
+                if($csv2post_is_free){
+                    
+                    // does user want posts deleted also? Requires the same table to be selected 
+                    if(isset($_POST['csv2post_databasetables_resetposts_array']) && $_POST['csv2post_databasetables_resetposts_array'] == $_POST['csv2post_databasetables_resettable_array']){
+                        $reset_posts = true;
+                        $reset_posts_notice = ' All posts related to the project table have been deleted also.';    
+                    }else{
+                        $reset_posts = false;
+                    }
+    
+                    csv2post_WP_SQL_reset_project_table($_POST['csv2post_databasetables_resettable_array'],$reset_posts);
+                    csv2post_notice('The table named '.$_POST['csv2post_databasetables_resettable_array'].' was reset as requested.','success','Large','Table Reset','','echo');                    
+                
+                }else{
+                    foreach($_POST['csv2post_databasetables_resettable_array'] as $key => $table_name){
+                        
+                        // does user also want this tables posts deleted
+                        if(isset($_POST['csv2post_databasetables_resetposts_array'])){
+                            $reset_posts = false;
+                            foreach($_POST['csv2post_databasetables_resetposts_array'] as $key => $t){
+                                if($t == $_POST['csv2post_databasetables_resettable_array']){
+                                    $reset_posts = true;    
+                                }    
+                            }
+                        }
+                        
+                        csv2post_WP_SQL_reset_project_record($table_name,$reset_posts);
+                        csv2post_notice('The table named '.$table_name.' was reset as requested.','success','Large','Table Reset','','echo');    
+                    }  
+                } 
+            }
+            
+            // free edition does not allow mapping method selection on form
+            if(isset($_POST['csv2post_projecttables_mappingmethod_inputname']) && !$csv2post_is_free){
+                $mapping_method = $_POST['csv2post_projecttables_mappingmethod_inputname'];    
+            }else{
+                $mapping_method = 'defaultorder';
+            }
+            
+            // free edition will submit selected database table as string, not array, make array for rest of plugins use
+            if(!is_array($_POST['csv2post_databasetables_array'])){
+                $tables_array = array($_POST['csv2post_databasetables_array']);// we add the single table name to an array in free edition                                
+            }else{
+                $tables_array = $_POST['csv2post_databasetables_array'];// paid edition value will already be an array
+            }
+
+            // create project function will return project code on success
+            $createproject_result_code = csv2post_create_post_creation_project($_POST['csv2post_projectname_name'],$tables_array,$mapping_method);
+            if($createproject_result_code){
+                
+                // now set the new project as the Current Project ($csv2post_currentproject_code)               
+                $csv2post_currentproject_code = $createproject_result_code;
+                csv2post_update_currentproject($createproject_result_code);
+                
+                // do notification
+                csv2post_notice('Your new Post Creation Project has been made. Please click on the Content Designs tab and create your main content layout for this project or select an existing one.','success','Large','Post Creation Project Created');
+            
+                // display next step message
+                if(!$csv2post_is_free){
+                    $table_count = count($_POST['csv2post_databasetables_array']);
+                    if($table_count != 1){
+                        csv2post_notice('You must now complete the Multiple Tables Project panel on the Projects screen.','step','Large','Next Step','','echo');    
+                    }
+                }
+            
+            }else{
+                
+                if($csv2post_is_free){
+                    csv2post_notice('You appear to have already created your project. The free edition allows one project at a time, please complete your post creation then delete the project. You may then create another project with a new database table that holds different data.','warning','Large','Post Creation Project Not Created','','echo');    
+                }else{  
+                    csv2post_notice('A problem was detected when making the new Post Creation Project. It is recommended that you attempt to make the project again and report this problem if it continues to happen.','error','Large','Post Creation Project Not Created');    
+                }
+            }  
+        }
+        return false;
+    }else{
+        return true;
+    }     
+}  
+    
+/**
+* Process post creation for giving project 
+*/
+function csv2post_form_start_post_creation(){
+    global $csv2post_projectslist_array,$csv2post_schedule_array,$csv2post_is_free,$csv2post_project_array,$csv2post_currentproject_code;
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'creation' && isset($_POST['csv2post_post_creation_request'])){
+        
+        // store post type in project array
+        if(isset($_POST['csv2post_radio_poststatus'])){
+            $csv2post_project_array['poststatus'] = $_POST['csv2post_radio_poststatus'];
+        }
+        
+        csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
+          
+        // free edition processes all records at once, $_POST['csv2post_postsamount'] will not be set
+        $target_posts = 999999;
+        if(!$csv2post_is_free){
+            $target_posts = $_POST['csv2post_postsamount'];    
+        }
+    
+        // subpages
+        $subpagelevel = false;
+        if(isset($csv2post_project_array['subpages']['status'] ) && $csv2post_project_array['subpages']['status'] == true
+        && isset($csv2post_project_array['subpages']['stage']) && is_numeric($csv2post_project_array['subpages']['stage'])){
+            $subpagelevel = $csv2post_project_array['subpages']['stage'];    
+        }
+        
+        // call create posts function     
+        $post_id = csv2post_create_posts($_POST['csv2post_project_code'],$target_posts,'manual',$subpagelevel);
+        if($post_id){
+            
+            // no false returned (false indicates a failure)
+            // $post_id will be the last post ID created
+            csv2post_notice('Post creation went smoothly, no problems were detected. The last post ID created was <strong>'.$post_id.'</strong>.','success','Large','Post Creation Complete','','echo');
+            ### TODO:LOWPRIORITY, add link and url to last created post to the output
+                
+        }else{
+           // must be a failure, if multiple posts were requests the failure is big enough to output it to the user
+           csv2post_notice('No post ID was returned during post creation. This is usually because all 
+           records have been used to create posts and the project is finished. This warning is simply 
+           to recommend that you confirm all records used or report a discrepancy.','warning','Small',
+           'Projects Post Creation Complete','','echo');
+        }
+         
+        return false;
+    }else{
+        return true;
+    }      
+}                    
+
+/**
+* Activate or disable text spinning 
+*/
+function csv2post_form_textspinning_switch(){
+    if(isset( $_POST[WTG_C2P_ABB.'hidden_pageid'] ) && $_POST[WTG_C2P_ABB.'hidden_pageid'] == 'projects' && isset($_POST[WTG_C2P_ABB.'hidden_panel_name']) && $_POST[WTG_C2P_ABB.'hidden_panel_name'] == 'textspinningswitch'){
+        global $csv2post_textspin_array,$csv2post_adm_set;
+
+        if(isset($csv2post_textspin_array['settings']['status']) && $csv2post_textspin_array['settings']['status'] == true){
+            $csv2post_textspin_array['settings']['status'] = false;
+            csv2post_notice_postresult('success','Text Spin Features On','You have activated
+            text spin features. It will put all post content through more processing during post creation
+            and display more accordion panels.');       
+        }else{
+            $csv2post_textspin_array['settings']['status'] = true;
+            csv2post_notice_postresult('success','Text Spin Features Off','You have disabled
+            text spin features. This will reduce processing during post creation and hide options.
+            However at does not disable shortcodes already in use.');              
+        }
+        
+        csv2post_update_option_textspin($csv2post_textspin_array);        
+        
+        return false;
+    }else{
+        return true;
+    }     
+}   
+
+/**
+* Saves basic categories form
+*/
+function csv2post_form_save_categories_standard(){
+    global $csv2post_currentproject_code,$csv2post_is_free,$csv2post_project_array;
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'standardcategories'){
+
+        // ensure the previous column has been selected for every column user submits
+        $required_column_missing = false;// set to true if a required column has not been selected
+        $required_column_level = false;// change to level 1,2,3 or 4 to indicate which column has not been selected but should be
+        
+        // check for level 1 - always required
+        if( $_POST['csv2post_categorylevel1_select_columnandtable'] == 'notselected' ){
+            csv2post_notice('You did not select a level one data table and column, you must always use level one if you want to create categories using this panel.','error','Large','Level One Not Selected');
+            return false;//discontinue post function processing
+        }
+        
+        // check if 3 is set - requires 2
+        if( $_POST['csv2post_categorylevel3_select_columnandtable'] != 'notselected' && $_POST['csv2post_categorylevel2_select_columnandtable'] == 'notselected' ){
+            $required_column_missing = true;
+            $required_column_level = 2;
+        }
+        
+        // check if 4 is set - requires 3
+        if( !$csv2post_is_free && $_POST['csv2post_categorylevel4_select_columnandtable'] != 'notselected' && $_POST['csv2post_categorylevel3_select_columnandtable'] == 'notselected' ){
+            $required_column_missing = true;
+            $required_column_level = 3;
+        }       
+        
+        // check if 5 is set - requires 4
+        if( !$csv2post_is_free && $_POST['csv2post_categorylevel5_select_columnandtable'] != 'notselected' && $_POST['csv2post_categorylevel4_select_columnandtable'] == 'notselected' ){
+            $required_column_missing = true;
+            $required_column_level = 4;
+        }        
+        
+        // only continue if all required columns have been selected
+        if($required_column_missing){
+            $column_above_missing_level = $required_column_level + 1;
+            csv2post_notice('You did not appear to select all required columns. You selected a column for category level '.$column_above_missing_level.' but did not select one for category level '.$required_column_level.'. You must select category columns in order as displayed i.e. use 1,2 and 3 for three levels not 1,2 and 4.','error','Large','Missing Category Column Selection');
+            return false;// discontinues post functions processing        
+        }else{
+    
+            $csv2post_project_array = csv2post_get_project_array($csv2post_currentproject_code);   
+            
+            // apply depth
+            $csv2post_project_array['categories']['applydepth'] = $_POST['csv2post_categorisationlevel_basic'];
+            
+            // add level 1 
+            $csv2post_project_array['categories']['level1']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel1_select_columnandtable']);
+            $csv2post_project_array['categories']['level1']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel1_select_columnandtable']);            
+
+            // add level 2
+            if($_POST['csv2post_categorylevel2_select_columnandtable'] != 'notselected'){
+                $csv2post_project_array['categories']['level2']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel2_select_columnandtable']);
+                $csv2post_project_array['categories']['level2']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel2_select_columnandtable']);                     
+            }elseif(isset($csv2post_project_array['categories']['level2']) && $_POST['csv2post_categorylevel2_select_columnandtable'] == 'notselected'){
+                unset($csv2post_project_array['categories']['level2']);            
+            }
+            
+            // add level 3
+            if($_POST['csv2post_categorylevel3_select_columnandtable'] != 'notselected'){
+                $csv2post_project_array['categories']['level3']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel3_select_columnandtable']);
+                $csv2post_project_array['categories']['level3']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel3_select_columnandtable']);                     
+            }elseif(isset($csv2post_project_array['categories']['level3']) && $_POST['csv2post_categorylevel3_select_columnandtable'] == 'notselected'){
+                unset($csv2post_project_array['categories']['level3']);           
+            }                
+
+            // add level 4
+            if(!$csv2post_is_free && $_POST['csv2post_categorylevel4_select_columnandtable'] != 'notselected'){
+                $csv2post_project_array['categories']['level4']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel4_select_columnandtable']);
+                $csv2post_project_array['categories']['level4']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel4_select_columnandtable']);                     
+            }elseif(isset($csv2post_project_array['categories']['level4']) && $_POST['csv2post_categorylevel4_select_columnandtable'] == 'notselected'){
+                unset($csv2post_project_array['categories']['level4']);           
+            }
+            
+            // add level 5
+            if(!$csv2post_is_free && $_POST['csv2post_categorylevel5_select_columnandtable'] != 'notselected'){
+                $csv2post_project_array['categories']['level5']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel5_select_columnandtable']);
+                $csv2post_project_array['categories']['level5']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel5_select_columnandtable']);                     
+            }elseif(isset($csv2post_project_array['categories']['level5']) && $_POST['csv2post_categorylevel5_select_columnandtable'] == 'notselected'){
+                unset($csv2post_project_array['categories']['level5']);            
+            }            
+  
+            // update project option         
+            csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
+            
+            csv2post_notice('Your basic type category configuration has been saved and categories will be created during post creation. Posts will be assigned to their proper category.','success','Large','Standard Category Settings Saved');    
+        }
+  
+        return false;
+    }else{
+        return true;
+    }    
+}
+
+/**
+* Saves advanced category submission 
+*/
+function csv2post_form_save_categories_advanced(){
+    global $csv2post_currentproject_code,$csv2post_project_array,$csv2post_is_free;
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'advancedcategories'){
+        
+        // ensure the previous column has been selected for every column user submits
+        $required_column_missing = false;// set to true if a required column has not been selected
+        $required_column_level = false;// change to level 1,2,3 or 4 to indicate which column has not been selected but should be
+        
+        // check for level 1 - always required
+        if( $_POST['csv2post_categorylevel1_advanced'] == 'notselected' ){
+            csv2post_notice('You did not select a level one data table and column, you must always use level one if you want to create categories using this panel.','error','Large','Level One Not Selected');
+            return false;//discontinue post function processing
+        }
+        
+        // check if 3 is set - requires 2
+        if( $_POST['csv2post_categorylevel3_advanced'] != 'notselected' && $_POST['csv2post_categorylevel2_advanced'] == 'notselected' ){
+            $required_column_missing = true;
+            $required_column_level = 2;
+        }
+        
+        // check if 4 is set - requires 3
+        if( !$csv2post_is_free && $_POST['csv2post_categorylevel4_advanced'] != 'notselected' && $_POST['csv2post_categorylevel3_advanced'] == 'notselected' ){
+            $required_column_missing = true;
+            $required_column_level = 3;
+        }       
+        
+        // check if 5 is set - requires 4
+        if( !$csv2post_is_free && $_POST['csv2post_categorylevel5_advanced'] != 'notselected' && $_POST['csv2post_categorylevel4_advanced'] == 'notselected' ){
+            $required_column_missing = true;
+            $required_column_level = 4;
+        }        
+
+        // only continue if all required columns have been selected
+        if($required_column_missing){
+            $column_above_missing_level = $required_column_level + 1;
+            csv2post_notice('You did not appear to select all required columns. You selected a column for category level '.$column_above_missing_level.' but did not select one for category level '.$required_column_level.'. You must select category columns in order as displayed i.e. use 1,2 and 3 for three levels not 1,2 and 4.','error','Large','Missing Category Column Selection');
+            return false;// discontinues post functions processing        
+        }else{
+    
+            $csv2post_project_array = csv2post_get_project_array($csv2post_currentproject_code);   
+            
+            // apply depth
+            $csv2post_project_array['categories']['applydepth'] = $_POST['csv2post_categorisationlevel_adv'];
+                        
+            // add level 1 
+            $csv2post_project_array['categories']['level1']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel1_advanced']);
+            $csv2post_project_array['categories']['level1']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel1_advanced']);            
+
+            // save level 1 description template id if selected
+            if( $_POST['csv2post_categorylevel1_description'] != 'notselected' ){
+                $csv2post_project_array['categories']['level1']['description'] = $_POST['csv2post_categorylevel1_advanced'];        
+            }elseif(isset($_POST['csv2post_categorylevel1_descriptioncolumn_advanced'])){
+                $csv2post_project_array['categories']['level1']['descriptioncolumn'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel1_descriptioncolumn_advanced']);
+                $csv2post_project_array['categories']['level1']['descriptiontable'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel1_descriptioncolumn_advanced']);    
+            }
+  
+            // add level 2
+            if($_POST['csv2post_categorylevel2_advanced'] != 'notselected'){
+                $csv2post_project_array['categories']['level2']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel2_advanced']);
+                $csv2post_project_array['categories']['level2']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel2_advanced']);                     
+            
+                // save level 2 description template id if selected
+                if($_POST['csv2post_categorylevel2_description'] != 'notselected'){
+                    $csv2post_project_array['categories']['level2']['description'] = $_POST['csv2post_categorylevel2_advanced'];        
+                }elseif(isset($_POST['csv2post_categorylevel2_descriptioncolumn_advanced'])){
+                    $csv2post_project_array['categories']['level2']['descriptioncolumn'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel2_descriptioncolumn_advanced']);
+                    $csv2post_project_array['categories']['level2']['descriptiontable'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel2_descriptioncolumn_advanced']);    
+                }    
+                        
+            }elseif(isset($csv2post_project_array['categories']['level2']) && $_POST['csv2post_categorylevel2_advanced'] == 'notselected'){
+                unset($csv2post_project_array['categories']['level2']);            
+            }
+            
+            // add level 3
+            if($_POST['csv2post_categorylevel3_advanced'] != 'notselected'){
+                $csv2post_project_array['categories']['level3']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel3_advanced']);
+                $csv2post_project_array['categories']['level3']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel3_advanced']);                     
+            
+                // save level 3 description template id if selected
+                if($_POST['csv2post_categorylevel3_description'] != 'notselected'){
+                    $csv2post_project_array['categories']['level3']['description'] = $_POST['csv2post_categorylevel3_advanced'];        
+                }elseif(isset($_POST['csv2post_categorylevel3_descriptioncolumn_advanced'])){
+                    $csv2post_project_array['categories']['level3']['descriptioncolumn'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel3_descriptioncolumn_advanced']);
+                    $csv2post_project_array['categories']['level3']['descriptiontable'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel3_descriptioncolumn_advanced']);    
+                }       
+                     
+            }elseif(isset($csv2post_project_array['categories']['level3']) && $_POST['csv2post_categorylevel3_advanced'] == 'notselected'){
+                unset($csv2post_project_array['categories']['level3']);            
+            }                
+
+            // add level 4
+            if(!$csv2post_is_free && $_POST['csv2post_categorylevel4_advanced'] != 'notselected'){
+                $csv2post_project_array['categories']['level4']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel4_advanced']);
+                $csv2post_project_array['categories']['level4']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel4_advanced']);                     
+
+                // save level 4 description template id if selected
+                if($_POST['csv2post_categorylevel4_description'] != 'notselected'){
+                    $csv2post_project_array['categories']['level4']['description'] = $_POST['csv2post_categorylevel4_advanced'];        
+                }elseif(isset($_POST['csv2post_categorylevel4_descriptioncolumn_advanced'])){
+                    $csv2post_project_array['categories']['level4']['descriptioncolumn'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel4_descriptioncolumn_advanced']);
+                    $csv2post_project_array['categories']['level4']['descriptiontable'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel4_descriptioncolumn_advanced']);    
+                }     
+                       
+            }elseif(isset($csv2post_project_array['categories']['level4']) && $_POST['csv2post_categorylevel4_advanced'] == 'notselected'){
+                unset($csv2post_project_array['categories']['level4']);            
+            }
+            
+            // add level 5             
+            if(!$csv2post_is_free && $_POST['csv2post_categorylevel5_advanced'] != 'notselected'){
+                $csv2post_project_array['categories']['level5']['table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel5_advanced']);
+                $csv2post_project_array['categories']['level5']['column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel5_advanced']);                     
+            
+                // save level 5 description template id if selected
+                if($_POST['csv2post_categorylevel5_description'] != 'notselected'){
+                    $csv2post_project_array['categories']['level5']['description'] = $_POST['csv2post_categorylevel5_advanced'];        
+                }elseif(isset($_POST['csv2post_categorylevel5_descriptioncolumn_advanced'])){
+                    $csv2post_project_array['categories']['level5']['descriptioncolumn'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_categorylevel5_descriptioncolumn_advanced']);
+                    $csv2post_project_array['categories']['level5']['descriptiontable'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_categorylevel5_descriptioncolumn_advanced']);    
+                }     
+                  
+            }elseif(isset($csv2post_project_array['categories']['level5']) && $_POST['csv2post_categorylevel5_advanced'] == 'notselected'){
+                unset($csv2post_project_array['categories']['level5']);            
+            }            
+  
+            // update project option         
+            csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
+            
+            csv2post_notice('Your advanced category configuration has been saved and categories will be created during post creation. Posts will be assigned to their proper category.','success','Large','Standard Category Settings Saved');    
+        }
+
+        return false;
+    }else{
+        return true;
+    }      
+}    
+
+/**
+* Creates one level of categories at a time 
+*/
+function csv2post_form_create_category_level(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'creation' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'createcategoriesperlevel'){
+        global $csv2post_is_free;
+        
+        if(!$csv2post_is_free){
+            csv2post_WP_CATEGORIES_manuallevels_advanced($_POST['csv2post_categories_next_level']);
+        }else{
+            csv2post_WP_CATEGORIES_manuallevels_basic($_POST['csv2post_categories_next_level']);
+        }
+
+        return false;
+    }else{
+        return true;
+    }     
+} 
+
+/**
+* Delete all categories created with the current project 
+*/
+function csv2post_form_undo_categories(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'creation' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'undocategoriescurrentproject'){
+        global $csv2post_currentproject_code,$csv2post_project_array,$csv2post_is_free;  
+        
+        $categories_deleted_count = 0;
+        
+        $pro_table = csv2post_get_project_maintable($csv2post_currentproject_code);
+        
+        // query csv2post_catid column
+        $records = csv2post_WP_SQL_select_catidcolumn($pro_table); 
+        if(!$records){
+            csv2post_n_postresult('warning','No Category Data','There does not appear to be any category
+            ID values in your data. If you are sure you created categories and not already undone them, please
+            contact the plugin author for support.');
+            return;
+        }
+
+        // keep track of the combinations of cat ID already deleted to avoid running deletion more than once
+        $cats_deleted_array = array();
+        
+        foreach($records as $key => $category){
+
+            if($category['csv2post_catid'] != NULL && !in_array($category['csv2post_catid'],$cats_deleted_array)){
+                
+                // explode the ID's and delete each category with those ID
+                $category_IDs_array = explode(',',$category['csv2post_catid']);
+
+                foreach($category_IDs_array as $key => $cat_ID){
+                    if(wp_delete_category( $cat_ID )){
+                        ++$categories_deleted_count;
+                    }
+                }
+                
+                // update records csv2post_catid value with NULL where csv2post_catid matches our string
+                csv2post_WP_SQL_categories_resetIDs($pro_table,$category['csv2post_catid']);
+                
+                // update cats_deleted_array
+                $cats_deleted_array[] = $category['csv2post_catid'];    
+            }        
+        }
+        
+        // reset category level tracking - will loop 10 times should we ever add more levels
+        for($i=1;$i<=10;$i++){
+            if(isset($csv2post_project_array['categories']['level'.$i]['complete'])){
+                unset($csv2post_project_array['categories']['level'.$i]['complete']);
+            }
+        }
+        
+        csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
+        
+        csv2post_n_postresult('success','Projects Categories Deleted','A total of '.$categories_deleted_count.' were deleted');        
+         
+        return false;
+    }else{
+        return true;
+    }     
+}             
 ?>

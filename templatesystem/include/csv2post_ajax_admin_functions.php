@@ -83,7 +83,7 @@ function csv2post_ajax_createproject_checkprojectname() {
     // TODO:HIGHPRIORITY, to avoid the user getting confused, warn them about duplicate job names (not used as an ID though so we will allow duplicate, that is the users choice)
     ////$importjobname_validate_result = csv2post_validate_dataimportjob_name(); 
     
-    echo csv2post_notice(urldecode( $_POST[ 'csv2post_projectname' ] ) .' appears to be a suitable project name, please continue' ,'success','Extra','Suitable Project Name','','return');
+    echo csv2post_notice(urldecode( $_POST[ 'csv2post_projectname' ] ) .' appears to be a suitable project name, please continue' ,'success','Small','Suitable Project Name','','return');
     
     die();
 }

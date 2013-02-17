@@ -1,5 +1,5 @@
 <p>
-<strong>Developed in 2012 by Zara Walsh</strong><br />
+<strong>CSV 2 POST Developed in 2012 by Zara Walsh</strong><br />
 </p>
 
 <p>CSV 2 POST is the most advanced data import and post creation plugin created 2012. It will be supported

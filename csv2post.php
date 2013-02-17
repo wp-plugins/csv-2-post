@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: CSV 2 POST
-Version: 6.8.3
+Version: 6.8.5
 Plugin URI: http://www.csv2post.com
-Description: CSV 2 POST released 2012 by Zara Walsh
+Description: CSV 2 POST released 2012 by Zara Walsh and Ryan Bayne
 Author: Zara Walsh
 Author URI: http://www.csv2post.com
 
@@ -25,19 +25,33 @@ See <http://www.gnu.org/licenses/>.
 
 This license does not apply to the paid edition which comes with premium
 services not just software. License and agreement is seperate.
-*/
+*/         
 
-// package variables 
-$csv2post_debug_mode = false;// boolean true or false 
-if(is_admin() && isset($_GET['csv2postdebug'])){$csv2post_debug_mode = true;}
-$csv2post_is_dev = false;// boolean, true displays more panels with even more data i.e. array dumps
-$csv2post_currentversion = '6.8.3';
-$csv2post_is_free_override = false;// change to true for free edition setup when fulledition folder present
-                 
-// other variables required on installation or loading
-### TODO:HIGHPRIORITY, some these should be constants 
+// package variables (frequently changed)
+$csv2post_currentversion = '6.8.4';
 $csv2post_php_version_tested = '5.4.0';// current version the plugin is being developed on
 $csv2post_php_version_minimum = '5.2.1';// minimum version required for plugin to operate
+$csv2post_is_free_override = false;// change to true for free edition setup when fulledition folder present 
+$csv2post_demo = false;// we do not want error display on demos on www.csvtopost.com
+$csv2post_debug_mode = false;
+
+if($csv2post_demo != true){
+    if(isset($_GET['csv2postdebug']) || get_bloginfo('url') == 'http://www.csvtopost.com/test1' ){
+        $csv2post_debug_mode = true;        
+    }    
+}
+
+if(defined('DOING_AJAX') && DOING_AJAX){
+    $csv2post_debug_mode = false;    
+}
+ 
+$csv2post_is_dev = false;// boolean, true displays more panels with even more data i.e. array dumps
+if(isset($_GET['csv2postdebug']) || get_bloginfo('url') == 'http://www.csvtopost.com/test1' ){
+    $csv2post_is_dev = true;
+}
+
+// other variables required on installation or loading
+### TODO:HIGHPRIORITY, some these should be constants 
 $csv2post_plugintitle = 'CSV 2 POST';// requires so that extensions can re-brand the plugin
 $csv2post_pluginname = 'csv2post';// should not be used to make up paths
 $csv2post_homeslug = $csv2post_pluginname;// @todo page slug for plugin main page used in building menus
@@ -58,13 +72,15 @@ $csv2post_log_maindir = 'unknown';
 $csv2post_callcode = '000000000000';
 $csv2post_currentproject = 'No Project Set';
 $csv2post_notice_array = array();// set notice array for storing new notices in (not persistent notices)
-
+$csv2post_extension_loaded = false;
+                  
 ##########################################################################################
 #                                                                                        #
 #                                     DEFINE CONSTANTS                                   #
 #                                                                                        #
 ##########################################################################################                 
 if(!defined("WTG_C2P_ABB")){define("WTG_C2P_ABB","csv2post_");}
+if(!defined("WTG_C2P_NAME")){define("WTG_C2P_NAME",$csv2post_plugintitle);} 
 if(!defined("WTG_C2P_URL")){define("WTG_C2P_URL", plugin_dir_url(__FILE__) );}//http://localhost/wordpress-testing/wtgplugintemplate/wp-content/plugins/wtgplugintemplate/
 if(!defined("WTG_C2P_DIR")){define("WTG_C2P_DIR", plugin_dir_path(__FILE__) );}//C:\AppServ\www\wordpress-testing\wtgplugintemplate\wp-content\plugins\wtgplugintemplate/
 if(!defined("WTG_C2P_ID")){define("WTG_C2P_ID","27");}
@@ -79,11 +95,6 @@ if(!defined("WTG_C2P_CONTENTFOLDER_DIR")){define("WTG_C2P_CONTENTFOLDER_DIR",WP_
 if(!defined("WTG_C2P_IMAGEFOLDER_URL")){define("WTG_C2P_IMAGEFOLDER_URL",WP_PLUGIN_URL.'/'.WTG_C2P_FOLDERNAME.'/templatesystem/images/');}// directory path to storage folder inside the wp_content folder 
 if(!defined("WTG_C2P_DATEFORMAT")){define("WTG_C2P_DATEFORMAT",'Y-m-d H:i:s');}
 if(!defined("WTG_C2P_EXTENSIONS")){define("WTG_C2P_EXTENSIONS",get_option('csv2post_extensions'));}
-                                              
-// disable debug mode during Ajax requests or on public side 
-if(!is_admin() || defined('DOING_AJAX') && DOING_AJAX){
-    $csv2post_debug_mode = false;
-}
 
 // decide if package is free or full edition - apply the over-ride variable to use as free edition when full edition files present
 if(file_exists(WTG_C2P_DIR . 'fulledition') && $csv2post_is_free_override == false){
@@ -139,7 +150,7 @@ require_once(WTG_C2P_DIR.'templatesystem/include/csv2post_post_functions.php');/
 $csv2post_adm_set = csv2post_get_option_adminsettings();# installs admin settings record if not yet installed, this will happen on plugin being activated
                     
 // error display variables, variable that displays maximum errors is set in main file 
-csv2post_debugmode();
+if($csv2post_demo != true){csv2post_debugmode();}
                      
 ##########################################################################################
 #                                                                                        #
@@ -193,6 +204,9 @@ if(is_admin()){
 if(WTG_C2P_EXTENSIONS != 'disable' && file_exists(WTG_C2P_CONTENTFOLDER_DIR . '/extensions')){
     // we are only going to load our prototype extension right
     if(file_exists(WTG_C2P_CONTENTFOLDER_DIR . '/extensions/ryanair')){
+        // set a variable to tell CSV 2 POST scripts to consider an active extension
+        $csv2post_extension_loaded = true;
+        // INCLUDE EXTENSION FILES
         // include constants, variables and arrays
         include_once(WTG_C2P_CONTENTFOLDER_DIR . '/extensions/ryanair/variables.php');
         // include functions

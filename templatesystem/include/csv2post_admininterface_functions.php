@@ -19,9 +19,14 @@ function csv2post_admin_menu(){
     // visiting a page without permission between installation
     $installed_version = csv2post_WP_SETTINGS_get_version();                
     global $csv2post_currentversion;
-  
     if(!$csv2post_is_installed && !isset($_POST['csv2post_plugin_install_now'])){   
        
+        // if URL user is attempting to visit any screen other than page=csv2post then redirect to it
+        if(isset($_GET['page']) && strstr($_GET['page'],'csv2post_')){
+            wp_redirect( 'http://www.csvtopost.com/test1/wp-admin/admin.php?page=csv2post' );
+            exit;    
+        }
+        
         // if plugin not installed
         add_menu_page(__('Install',$n.'install'), __('CSV 2 POST Install','home'), 'administrator', 'csv2post', 'csv2post_page_toppage' );
         
@@ -31,6 +36,12 @@ function csv2post_admin_menu(){
     && $csv2post_currentversion > $installed_version 
     && !isset($_POST['csv2post_plugin_update_now'])){
         
+        // if URL user is attempting to visit any screen other than page=csv2post then redirect to it
+        if(isset($_GET['page']) && strstr($_GET['page'],'csv2post_')){
+            wp_redirect( get_bloginfo('url') . '/wp-admin/admin.php?page=csv2post' );
+            exit;    
+        }
+                
         // if $installed_version = false it indicates no installation so we should not be displaying an update screen
         // update screen will be displayed after installation submission if this is not in place
         
@@ -60,7 +71,7 @@ function csv2post_admin_menu(){
             }
 
         }// end page loop
-   }
+    }
 }
 
 /**
@@ -86,6 +97,18 @@ function csv2post_list_optionrecordtrace($form = false,$size = 'Small',$optionty
     }
 }
 
+/**
+* Script, jQuery buttonset
+* Outputs a basic <script> for buttonset, used for radio and checkboxes.
+*/
+function csv2post_JQUERY_buttonset($id){?>
+    <script>
+    $(function(){
+        $( "#<?php echo $id;?>" ).buttonset();
+    });
+    </script><?php    
+}
+            
 function csv2post_navigation_jquery($thepagekey){    
     global $csv2post_is_activated,$csv2post_is_installed,$csv2post_mpt_arr,$csv2post_projectslist_array;?>
 
@@ -300,6 +323,7 @@ function csv2post_header_page($pagetitle,$layout){
     
         <div id="icon-options-general" class="icon32"><br /></div>
         <h2><?php echo $pagetitle;?></h2>
+        <?php csv2post_GUI_currentproject(); ?>
 
         <?php 
         // admin triggered automation
@@ -321,6 +345,21 @@ function csv2post_header_page($pagetitle,$layout){
         <div class="postbox-container" style="width:99%">
             <div class="metabox-holder">
                 <div class="meta-box-sortables"><?php
+}
+
+/**
+* Outputs details of the current project, used under the title 
+*/
+function csv2post_GUI_currentproject(){
+    global $csv2post_is_free;
+    // main page header
+    if(!$csv2post_is_free){
+        $jobname = csv2post_get_option_currentjobcode();
+        if(!$jobname){$jobname = 'No Current Data Job';}
+        csv2post_n_screeninfo('Post Creation Project','
+        <strong>Data Import Job:</strong> '. $jobname .'<br />
+        <strong>Post Creation Project:</strong> ' . csv2post_get_current_project_name() );
+    }
 }
 
 /**
@@ -402,8 +441,19 @@ function csv2post_first_activation_check(){
  * Intended use is to display information, tutorial video etc
  *
  * @param array
+ * 
+ * @deprecated 16th February 2013 use csv2post_display_accordianpanel_buttons()
  */
 function csv2post_helpbutton_closebox($panel_array){
+    csv2post_display_accordianpanel_buttons($panel_array);  
+}
+
+/**
+* Adds the accordian panel buttons
+*                   
+* @param mixed $panel_array
+*/
+function csv2post_display_accordianpanel_buttons($panel_array){
 
      extract( shortcode_atts( array(
     'panel_name' => 'invalidpanelname',
@@ -416,30 +466,39 @@ function csv2post_helpbutton_closebox($panel_array){
     'panel_help' => 'No Help Text Found',
     'panel_icon' => 'invalid-image-or-image-not-yet-created-notice.png',
     'panel_url' => 'http://www.csv2post.com/support',
+    'video' => false,// example: http://www.youtube.com/embed/lYL0YE8Ps8w 
     'help_button' => 'Help' 
     ), $panel_array ) );   
                
-    // call jquery for dialog on button press
-    csv2post_jquery_opendialog_helpbutton($panel_number,$panel_intro,$panel_title,$panel_help,$panel_icon,$panel_name,$panel_url);?>
-                                  
-    <!-- dialog div, displayed when help button clicked -->
-    <div id="csv2post_helpbutton-<?php echo $panel_number;?>" title="<?php echo $panel_title;?>">
+    // jquery for dialog on button press
+    csv2post_jquery_opendialog_accordianpanel_button('_info',$panel_number,$panel_intro,$panel_title,$panel_help,$panel_icon,$panel_name,$panel_url);
+    
+    if($video){
+        csv2post_jquery_opendialog_accordianpanel_button('_video',$panel_number,$panel_intro,$panel_title,$panel_help,$panel_icon,$panel_name,$panel_url);
+    }?>  
+                               
+    <!-- info div -->
+    <div id="csv2post_accordianpanelbutton_<?php echo $panel_number;?>_info" title="<?php echo $panel_title;?>">
         <p style="font-size: 16px;"><?php echo $panel_help;?></p>
     </div> 
-    
-    <!-- help button -->
-    <div class="jquerybutton">
-        <button id="csv2post_opener<?php echo $panel_number;?>"><?php echo $help_button;?></button> <?php echo $panel_intro;?>  
+
+    <!-- video div -->
+    <?php if($video){?>
+    <div id="csv2post_accordianpanelbutton_<?php echo $panel_number;?>_video" title="<?php echo $panel_title;?> Video">
+        <iframe width="780" height="475" src="http://www.youtube.com/embed/lYL0YE8Ps8w" frameborder="0" allowfullscreen></iframe>
     </div>
-    
-    <?php
-    //  BOOKMARK BUTTON FORM
-    // adds the current tab as a box on the main page under bookmarks tab
-    // TODO: HIGHPRIORITY, complete this form submission, it must update the main page bookmarks
-    csv2post_formstart_standard(csv2post_create_formname($panel_name,'_bookmark'),csv2post_create_formid($panel_name,'_bookmark'),'post','csv2post_form','');
-    csv2post_hidden_form_values($panel_number,$pageid,$panel_name,$panel_title,$panel_number);
-    echo '<input type="hidden" id="'.WTG_C2P_ABB.'hidden_bookmarkrequest" name="'.WTG_C2P_ABB.'hidden_bookmarkrequest" value="'.$tabnumber.'">';    
-    echo '</form>';    
+    <?php }?>
+        
+    <!-- help button -->
+    <div float="right" class="jquerybutton">
+        
+        <button id="csv2post_opener<?php echo $panel_number;?>_info"><?php echo $help_button;?></button> 
+        
+        <?php if($video){?>
+        <button id="csv2post_opener<?php echo $panel_number;?>_video">Video</button> 
+        <?php }?>
+        
+    </div><?php   
 }
 
 /**
@@ -2343,7 +2402,9 @@ function csv2post_option_items_csvfiles($range = 'all'){
 function csv2post_option_items_postcreationprojects($existing_values = false){
     global $csv2post_projectslist_array;
     foreach($csv2post_projectslist_array as $project_code => $project){
-        echo '<option value="'.$project_code.'">'.$project['name'].'</option>';    
+        if($project_code != 'arrayinfo'){
+            echo '<option value="'.$project_code.'">'.$project['name'].'</option>';
+        }    
     }    
 }
 
@@ -2677,12 +2738,14 @@ function csv2post_postcreationproject_table(){
             </tr>
             
             <?php
-            foreach( $csv2post_projectslist_array as $project_code => $project ){?>
-                <tr class="first">
-                    <td><?php echo $project_code;?></td>
-                    <td><?php echo $project['name'];?></td>
-                    <td><?php echo csv2post_display_projectstables_commaseparated($project_code);?></td>                                                                               
-                </tr><?php     
+            foreach( $csv2post_projectslist_array as $project_code => $project ){
+                if($project_code != 'arrayinfo'){?>
+                    <tr class="first">
+                        <td><?php echo $project_code;?></td>
+                        <td><?php echo $project['name'];?></td>
+                        <td><?php echo csv2post_display_projectstables_commaseparated($project_code);?></td>                                                                               
+                    </tr><?php 
+                }    
             }?>
               
         </table><?php
@@ -3180,10 +3243,12 @@ function csv2post_schedulescreen_notices(){
     $project_dripfeeding = false;
     if(isset($csv2post_projectslist_array) && is_array($csv2post_projectslist_array)){
         foreach($csv2post_projectslist_array as $project_code => $project_array){
-            if(isset($project_array['dripfeeding']) && $project_array['dripfeeding'] == 'on'){
-                $project_dripfeeding = true;
-                break;
-            }        
+            if($project_code != 'arrayinfo'){
+                if(isset($project_array['dripfeeding']) && $project_array['dripfeeding'] == 'on'){
+                    $project_dripfeeding = true;
+                    break;
+                }   
+            }     
         }
     }
     

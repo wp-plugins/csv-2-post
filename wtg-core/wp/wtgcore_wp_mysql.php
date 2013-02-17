@@ -24,6 +24,22 @@ function csv2post_option($option,$action,$value = 'No Value',$autoload = 'no'){
 }
 
 /**
+* Get POST ID using post_name (slug)
+* 
+* @param string $name
+* @return string|null
+*/
+function csv2post_WP_SQL_get_post_ID_by_postname($name){
+    var_dump($name);
+    global $wpdb;
+    // get page id using custom query
+    return $wpdb->get_var("SELECT ID 
+    FROM $wpdb->posts 
+    WHERE post_name = '".$name."' 
+    AND post_type='page' ");
+}  
+
+/**
 * Get the record used to create a post using Wordpress post ID
 * @returns ARRAY_A if record found else false if record could not be found or failure
 */

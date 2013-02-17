@@ -129,7 +129,7 @@ $csv2post_mpt_arr['menu']['data']['active'] = true;
 $csv2post_mpt_arr['menu']['data']['slug'] =  "csv2post_yourdata";
 $csv2post_mpt_arr['menu']['data']['menu'] = "1. Your Data";
 $csv2post_mpt_arr['menu']['data']['name'] = "yourdata";
-$csv2post_mpt_arr['menu']['data']['title'] = 'Current Job: ';
+$csv2post_mpt_arr['menu']['data']['title'] = 'Data Import';
 $csv2post_mpt_arr['menu']['data']['icon'] = 'options-general';
 $csv2post_mpt_arr['menu']['data']['headers'] = false;
 $csv2post_mpt_arr['menu']['data']['vertical'] = false;
@@ -260,7 +260,7 @@ $csv2post_mpt_arr['menu']['projects']['active'] = true;
 $csv2post_mpt_arr['menu']['projects']['slug'] =  "csv2post_yourprojects";
 $csv2post_mpt_arr['menu']['projects']['menu'] = "2. Your Projects";
 $csv2post_mpt_arr['menu']['projects']['name'] = "yourprojects";
-$csv2post_mpt_arr['menu']['projects']['title'] = 'Current Project: ';
+$csv2post_mpt_arr['menu']['projects']['title'] = 'Post Creation';
 $csv2post_mpt_arr['menu']['projects']['icon'] = 'options-general';
 $csv2post_mpt_arr['menu']['projects']['headers'] = false;
 $csv2post_mpt_arr['menu']['projects']['vertical'] = false;
@@ -437,80 +437,70 @@ $csv2post_mpt_arr['menu']['creation']['headers'] = false;
 $csv2post_mpt_arr['menu']['creation']['vertical'] = false;
 $csv2post_mpt_arr['menu']['creation']['statusicons'] = true;
 $csv2post_mpt_arr['menu']['creation']['permissions']['defaultcapability'] = 'update_core';
- 
-// creation 0
 $sub = 0;
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['active'] = true;
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['slug'] = 'tab0_pagecreation';
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['label'] = 'Create Posts';
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['slug'] = 'createcategories';
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['label'] = '1. Create Categories';
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['package'] = 'free';
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_tab'.$sub.'_pagecreation.php';     
-// creation 1
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_createcategories.php'; 
 ++$sub;
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['active'] = true;
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['slug'] = 'tab1_pagecreation';
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['label'] = 'Schedule Events';
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['slug'] = 'createposts';
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['label'] = '2. Create Posts';
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['package'] = 'free';
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_createposts.php';
+++$sub;
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['slug'] = 'updateposts';
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['label'] = '3. Update Posts';
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['package'] = 'paid';
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_tab'.$sub.'_pagecreation.php';
-// creation 2
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_updateposts.php';     
 ++$sub;
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['active'] = true;
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['slug'] = 'tab2_pagecreation';
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['label'] = 'Update Posts';
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['slug'] = 'scheduleevents';
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['label'] = 'Scheduled Events';
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['package'] = 'paid';
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_tab'.$sub.'_pagecreation.php';
-// creation 3
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_scheduledevents.php';
 ++$sub;
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['active'] = true;
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['slug'] = 'tab3_pagecreation';
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['label'] = 'Undo';
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['slug'] = 'undocreations';
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['label'] = 'Undo Creations';
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['package'] = 'paid';
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['package'] = 'free';
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_tab'.$sub.'_pagecreation.php';
-// creation 4
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_undocreations.php';
 ++$sub;
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['active'] = false;
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['slug'] = 'tab4_pagecreation';
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['slug'] = 'viewposts';
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['label'] = 'View Posts';
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['package'] = 'free';
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_tab'.$sub.'_pagecreation.php';
-// creation 5
-++$sub;
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['active'] = true;
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['slug'] = 'tab5_pagecreation';
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['label'] = 'Create Categories';
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['package'] = 'paid';
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_tab'.$sub.'_pagecreation.php';
-// creation 6
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_viewposts.php';
 ++$sub; 
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['active'] = true;
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['slug'] = 'tab6_pagecreation';
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['slug'] = 'flaggedposts';
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['label'] = 'Flagged Posts';
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['package'] = 'free';
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_tab'.$sub.'_pagecreation.php';       
-// creation 7
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_flaggedposts.php';       
 ++$sub;                                                        
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['active'] = true;
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['slug'] = 'postshistory';
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['label'] = 'Posts History';
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['allowhide'] = true;   
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['package'] = 'free';
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['package'] = 'paid';
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_postshistory.php';
-// creation 8
 ++$sub;                                                        
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['active'] = true;
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['slug'] = 'automationhistory';

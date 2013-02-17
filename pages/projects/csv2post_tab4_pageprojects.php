@@ -104,20 +104,29 @@ if(!$csv2post_is_free){
 }?> 
 
 <?php
-if(isset($csv2post_project_array['defaultposttype']) && $csv2post_project_array['defaultposttype'] == 'page'){
+if(!$csv2post_is_free && isset($csv2post_project_array['defaultposttype']) && $csv2post_project_array['defaultposttype'] == 'page'){
     ++$panel_number;// increase panel counter so this panel has unique ID
     $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
     $panel_array['panel_name'] = 'subpagesbypermalinks';// slug to act as a name and part of the panel ID 
-    $panel_array['panel_title'] = __('Sub-Pages By Permalinks BETA');// user seen panel header text 
+    $panel_array['panel_title'] = __('Sub-Pages By Permalinks/Slugs BETA');// user seen panel header text 
     $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-    $panel_array['panel_intro'] = __('Beta feature added 28th January 2013');
-    $panel_array['panel_help'] = __('Beta feature added 28th January 2013');
+    $panel_array['panel_intro'] = __('Create sub-pages using pre-determined post slug/permalinks');
+    $panel_array['panel_help'] = __('This method is called Permalinks but it is actually the slug part of
+    a pages data that is important. For this method to work the data must must have two columns with
+    suitably prepared. A column that indicates the level of page
+    each record is meant to create and a colum holding the slug of the parent page. 
+    CSV 2 POST needs to query the records in order, creating the first level of
+    pages first so that no matter what 2nd level page the plugin creates. The parent should be there, providing
+    the data is good. Despite any sample data we may provide or examples in videos or screenshots. The
+    columns can have any header/title. If you use Sub-Pages you cannot use page type rules or it
+    may cause faults.');
     $panel_array['help_button'] = csv2post_helpbutton_text(false,false);
     // Form Settings - create the array that is passed to jQuery form functions
     $jsform_set_override = array();
     $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);       
-    $jsform_set['dialogbox_title'] = 'BETA';
-    $jsform_set['noticebox_content'] = 'BETA';?>
+    $jsform_set['dialogbox_title'] = 'Activate Sub-Pages by Permalinks/Slugs';
+    $jsform_set['noticebox_content'] = 'You are about to apply configuration to your project that
+    requires data prepared for this specific method. Do you wish to continue?';?>
     <?php csv2post_panel_header( $panel_array );?>
 
         <?php 
@@ -154,17 +163,17 @@ if(isset($csv2post_project_array['defaultposttype']) && $csv2post_project_array[
         <br />
 
         <?php
-        if(isset($csv2post_project_array['subpages']['parentcolumn']['table']) 
-        && isset($csv2post_project_array['subpages']['parentcolumn']['column'])){
-            $t1 = $csv2post_project_array['subpages']['parentcolumn']['table'];
-            $c1 = $csv2post_project_array['subpages']['parentcolumn']['column'];
+        if(isset($csv2post_project_array['subpages']['levelcolumn']['table']) 
+        && isset($csv2post_project_array['subpages']['levelcolumn']['column'])){
+            $t1 = $csv2post_project_array['subpages']['levelcolumn']['table'];
+            $c1 = $csv2post_project_array['subpages']['levelcolumn']['column'];
         }else{
             $t1 = false;
-            $c1 = false;
+            $c1 = false;                      
         } 
         ?>                          
-        <label for="csv2post_subpages_bypermalinks_parent_id">Select Parent Column: 
-        <select name="csv2post_subpages_bypermalinks_parent" id="csv2post_subpages_bypermalinks_parent_id" class="csv2post_multiselect_menu">
+        <label for="csv2post_subpages_bypermalinks_level_id">Select Level Column: 
+        <select name="csv2post_subpages_bypermalinks_level" id="csv2post_subpages_bypermalinks_level_id" class="csv2post_multiselect_menu">
             <?php $atts = array('table' => $t1,'column' => $c1,'usedefault' => false);
             csv2post_GUI_menuoptions_project_columnsandtables($project_code,$atts);?>        
         </select></label>        
@@ -172,39 +181,22 @@ if(isset($csv2post_project_array['defaultposttype']) && $csv2post_project_array[
         <br />
                                                                                                                                                                                                     
         <?php
-        if(isset($csv2post_project_array['subpages']['subone']['table']) && isset($csv2post_project_array['subpages']['subone']['column'])){
-            $levone1t = $csv2post_project_array['subpages']['subone']['table'];
-            $levone1c = $csv2post_project_array['subpages']['subone']['column'];
+        if(isset($csv2post_project_array['subpages']['slugscolumn']['table']) && isset($csv2post_project_array['subpages']['slugscolumn']['column'])){
+            $levone1t = $csv2post_project_array['subpages']['slugscolumn']['table'];
+            $levone1c = $csv2post_project_array['subpages']['slugscolumn']['column'];
         }else{
             $levone1t = 'hasnotbeenset';
             $levone1c = 'hasnotbeenset';
         } 
         ?>                
-        <label for="csv2post_subpages_bypermalinks_sub1_id">Select Sub 1 Column: 
-        <select name="csv2post_subpages_bypermalinks_sub1" id="csv2post_subpages_bypermalinks_sub1_id" class="csv2post_multiselect_menu">
+        <label for="csv2post_subpages_bypermalinks_slug_id">Slug Column: 
+        <select name="csv2post_subpages_bypermalinks_slug" id="csv2post_subpages_bypermalinks_slug_id" class="csv2post_multiselect_menu">
             <?php $atts = array('table' => $levone1t,'column' => $levone1c,'usedefault' => false);
             csv2post_GUI_menuoptions_project_columnsandtables($project_code,$atts);?>
         </select></label>        
         
         <br />
 
-        <?php
-        if(isset($csv2post_project_array['subpages']['subtwo']['table']) && isset($csv2post_project_array['subpages']['subtwo']['column'])){
-            $levtwo1t = $csv2post_project_array['subpages']['subtwo']['table'];
-            $levtwo1c = $csv2post_project_array['subpages']['subtwo']['column'];
-        }else{
-            $levtwo1t = 'hasnotbeenset';
-            $levtwo1c = 'hasnotbeenset';
-        } 
-        ?>                  
-        <label for="csv2post_subpages_bypermalinks_sub2_id">Select Sub 2 Column: 
-        <select name="csv2post_subpages_bypermalinks_sub2" id="csv2post_subpages_bypermalinks_sub2_id" class="csv2post_multiselect_menu">
-            <?php $atts = array('table' => $levtwo1t,'column' => $levtwo1c,'usedefault' => true);
-            csv2post_GUI_menuoptions_project_columnsandtables($project_code,$atts);?>                                                                                                                                                                      ct_columnsandtables($project_code,$atts);?>
-        </select></label>        
- 
-        <br />
-          
         <?php 
         // add js for dialog on form submission and the dialog <div> itself
         if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
@@ -220,7 +212,7 @@ if(isset($csv2post_project_array['defaultposttype']) && $csv2post_project_array[
 
 <?php
 $testing = 1;
-if(isset($csv2post_project_array['defaultposttype']) && $csv2post_project_array['defaultposttype'] == 'page' && $testing == 2){
+if(!$csv2post_is_free && isset($csv2post_project_array['defaultposttype']) && $csv2post_project_array['defaultposttype'] == 'page' && $testing == 2){
     ++$panel_number;// increase panel counter so this panel has unique ID
     $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
     $panel_array['panel_name'] = 'subpagesbygroupingtwocolumn';// slug to act as a name and part of the panel ID 

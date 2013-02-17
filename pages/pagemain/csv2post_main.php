@@ -1,6 +1,19 @@
 <?php 
-global $csv2post_adm_set,$csv2post_is_installed,$csv2post_currentversion,$csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$wtgtp_pluginforum,$wtgtp_pluginblog,$csv2post_options_array,$csv2post_nav_type,$csv2post_is_free,$csv2post_theme_array,$csv2post_projectslist_array,$csv2post_schedule_array;
-        
+global $csv2post_extension_loaded,$csv2post_adm_set,$csv2post_is_installed,$csv2post_currentversion,$csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$wtgtp_pluginforum,$wtgtp_pluginblog,$csv2post_options_array,$csv2post_nav_type,$csv2post_is_free,$csv2post_theme_array,$csv2post_projectslist_array,$csv2post_schedule_array;
+
+$installing_software_name = WTG_C2P_NAME;
+$installing_message = '';
+
+// load extension globals
+if($csv2post_extension_loaded){
+    $installing_software_name = WTG_C2P_RYANAIR_NAME;
+    $installing_software_name_plus = ' and ' . WTG_C2P_RYANAIR_NAME;
+    $installing_message = 'You are using the ' . $installing_software_name . ' extension files.
+    This extension will also be installed. Remove the extension files to install CSV 2 POST on its own.';
+}
+
+// set the installation software name, CSV 2 POST or extension name
+
 $installed_version = csv2post_WP_SETTINGS_get_version();
                       
 // this switch is set to false when we detect first time install or update is required
@@ -16,26 +29,19 @@ if(!$csv2post_is_installed && !isset($_POST['csv2post_plugin_install_now'])){# w
     // hide the main screens until update complete
     $display_main_screens = false;
     
-    csv2post_n_incontent('Thank you for adding CSV 2 POST to your Wordpress blog.   <br /><br />CSV 2 POST is not a small plugin.
-    It contains self diagnostic functions, monitors itself more than most plugins and has the ability to adapt to
-    every user. All of these things are important to ensure long term auto-blogging is stable,
-    reliable and flexible in terms of making changes long after posts are created. Much of this plugins ability
-    is not obvious, hidden and can be put to use by hacking (we support hacking of the plugin) or request interface changes to make use of code
-    functions that already exist. Please feedback to info@csv2post.com and keep us update on your own project so
-    we know how to make all of this work best for you.<br /><br />
-    <strong>Changes made in your blog will be confirmed after installation. No changes are made that can risk
-    your main Worpress installation and all changes can be reversed.</strong>','info','Large','Welcome');
+    ### TODO:MEDIUMPRIORITY, add link to forum page and form for feedback
+    csv2post_n_incontent('Thank you for using our plugin, we look forward to your feedback.
+    <br /><br />
+    <strong>' . $installing_message .'</strong>','info','Large','Welcome To CSV 2 POST');
         
     csv2post_jquery_button();?>
 
     <form class="csv2post_form" method="post" name="csv2post_plugin_install" action="">
         <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">
         <input type="hidden" id="csv2post_plugin_install_now" name="csv2post_plugin_install_now" value="z3sx4bhik970">
-
         <div class="jquerybutton">
-            <button id="csv2post_install_plugin_button">Install CSV 2 POST</button>
+            <button id="csv2post_install_plugin_button">Install CSV 2 POST <?php echo $installing_software_name_plus;?></button>
         </div>
-        
     </form>
     
 <?php       
