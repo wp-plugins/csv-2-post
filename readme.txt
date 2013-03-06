@@ -96,6 +96,23 @@ first plugin was created in 2009 and was halted pending re-development.
 6. You can use up to 3 columns of data to create 3 levels of categories.
 
 == Changelog ==
+= 6.8.8 =
+* From The Developers
+    * Released 6th March 2013
+* Fixes     
+    * Critical fix that would cause error when submitting any form 
+* Feature Changes
+    * None
+* Support Changes
+    * None
+* Technical Changes
+    * None
+* Top User Requests
+    * Target Completion: March 20th 2013
+    * Option required to load tab screens with Ajax (will make it an option for the sake of beta testing)
+    * Better encoding functions (some of the work already done) 
+    * Training system: start with Easy Configuration Questions then go through all minimum required screens to create posts
+    * URL Import (beta features only)
 = 6.8.7 =
 * From The Developers
     * Released 6th March 2013

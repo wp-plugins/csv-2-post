@@ -214,9 +214,6 @@ if($cont){
     // Activate Log File Post Validation
     $cont = csv2post_form_activatelogfile();
     
-    // View Log File Post Validation
-    $cont = csv2post_form_viewlogfile();
-    
     // Contact Form Submission Post Validation
     $cont = csv2post_form_contactformsubmission();
     
@@ -4497,12 +4494,6 @@ function csv2post_form_activatelogfile(){
 }
 
 /**
-* View Log File Post Validation
-*/
-function csv2post_form_viewlogfile(){
-
-
-/**
 * Contact Form Submission Post Validation 
 */
 function csv2post_form_contactformsubmission(){     
@@ -5723,7 +5714,7 @@ function csv2post_form_save_urlcloaking(){
         return true;
     }                 
 }  
-
+     
 function csv2post_form_reinstall_databasetables(){
     if(isset($_POST[WTG_C2P_ABB.'hidden_pageid']) && $_POST[WTG_C2P_ABB.'hidden_pageid'] == 'install' && isset($_POST[WTG_C2P_ABB.'hidden_panel_name']) && $_POST[WTG_C2P_ABB.'hidden_panel_name'] == 'reinstalldatabasetables'){
         
