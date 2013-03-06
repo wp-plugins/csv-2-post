@@ -4748,6 +4748,12 @@ function csv2post_form_reseteci(){
     }     
 }  
 
+/**
+* Updates existing installation
+* 
+* @todo this procedure is not complete. For now we are not using precise updating. It will require array comparisons possibly, table table alterations etc. So we need a range of functions for this.
+* 
+*/
 function csv2post_form_plugin_update(){
     if(isset( $_POST['csv2post_plugin_update_now'] ) && $_POST['csv2post_plugin_update_now'] == 'a43bt7695c34'){
 
@@ -4755,6 +4761,8 @@ function csv2post_form_plugin_update(){
         csv2post_INSTALL_tabmenu_settings();    
         // re-install admin settings
         csv2post_INSTALL_admin_settings();
+        // initialize csv2post_theme since it changed to jquery OR wordpresscss rather than jquery theme
+        csv2post_option('csv2post_theme','add','jquery');
         
         // update locally stored version number
         global $csv2post_currentversion;
