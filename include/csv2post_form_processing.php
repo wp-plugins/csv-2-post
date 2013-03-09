@@ -404,7 +404,7 @@ function csv2post_form_ECI_paid_step18_createposts(){
         $csv2post_ecisession_array = csv2post_WP_SETTINGS_get_eciarray();
 
         // update the ECI session array
-//$csv2post_ecisession_array['nextstep'] = 19;
+        //$csv2post_ecisession_array['nextstep'] = 19;
         csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array); 
                 
         // paid edition processes all records at once, $_POST['csv2post_postsamount'] will not be set   
@@ -422,7 +422,7 @@ function csv2post_form_ECI_paid_step18_createposts(){
            any posts created or expected to have been created. Feel free to contact the plugins 
            team for free help.');
         }    
-        
+
         return false;
     }else{
         return true;
@@ -442,7 +442,7 @@ function csv2post_form_ECI_paid_step17_posttypes(){
         csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
         
         csv2post_notice_postresult('success','Post Type Saved','Your post type has been saved.');
-        
+  
         return false;
     }else{
         return true;
@@ -451,6 +451,7 @@ function csv2post_form_ECI_paid_step17_posttypes(){
        
 function csv2post_form_ECI_paid_step16_themesupport(){
     if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecipaiduploadcsvfile' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+                
         // not in free edition
         return false;
     }else{
@@ -474,7 +475,7 @@ function csv2post_form_ECI_paid_step15_authors(){
         csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
         
         csv2post_notice_postresult('success','Default Author Saved','A default author has been saved');
-        
+
         return false;
     }else{
         return true;
@@ -483,6 +484,7 @@ function csv2post_form_ECI_paid_step15_authors(){
 
 function csv2post_form_ECI_paid_step14_textspinning(){
     if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecipaiduploadcsvfile' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+
         // not currently in free edition
         return false;
     }else{
@@ -515,7 +517,7 @@ function csv2post_form_ECI_paid_step13_tags(){
         
         // update the ECI session array
         csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
-        
+
         return false;
     }else{
         return true;
@@ -546,7 +548,7 @@ function csv2post_form_ECI_paid_step12_images(){
         
         // update the ECI session array
         csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);    
-        
+
         return false;
     }else{
         return true;
@@ -579,7 +581,7 @@ function csv2post_form_ECI_paid_step10_categories(){
         csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
         
         csv2post_notice_postresult('success','Category Saved','You have set a default category, the category ID is '.$_POST['csv2post_createcategorymappingecifreecategory_select'].'.');
-        
+
         return false;
     }else{
         return true;
@@ -618,7 +620,7 @@ function csv2post_form_ECI_paid_step9_customfields(){
         csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
         
         csv2post_notice_postresult('success','Custom Fields Saved','Your custom field settings have been saved.');
-        
+
         return false;
     }else{
         return true;
@@ -655,7 +657,7 @@ function csv2post_form_ECI_paid_step8_postdates(){
         csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);
         
         csv2post_notice_postresult('success','Data Method Saved','Your selected date method has been saved.');     
-        
+
         return false;
     }else{
         return true;
@@ -680,7 +682,7 @@ function csv2post_form_ECI_paid_step7_poststatus(){
         csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
 
         csv2post_notice_postresult('success','Post Status Saved','All your post status will be set to ' . $status . '.');
-        
+
         return false;
     }else{
         return true;
@@ -721,7 +723,7 @@ function csv2post_form_ECI_paid_step5_titletemplate(){
         csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
 
         csv2post_notice_postresult('success','Title Template Created','A new title template was created.');
-        
+
         return false;
     }else{
         return true;
@@ -763,7 +765,7 @@ function csv2post_form_ECI_paid_step4_contenttemplate(){
         csv2post_notice_postresult('success','Content Template Created','A new content template was created
         and set as your projects default template. You may edit the template under Content Templates in the
         main Wordpress menu, it is a post type.');
-            
+ 
         return false;
     }else{
         return true;
@@ -805,7 +807,7 @@ function csv2post_form_ECI_paid_step3_importdate(){
         
         // update the ECI session array
         csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);
-                        
+         
         return false;
     }else{
         return true;
@@ -2304,12 +2306,7 @@ function csv2post_form_uninstallplugin_partial(){
             if(isset($_POST['csv2post_deletefolders_array'])){
                 foreach($_POST['csv2post_deletefolders_array'] as $k => $o){
                     // currently only have one folder so we will use a specific function   
-                    $result = csv2post_delete_contentfolder(WTG_C2P_CONTENTFOLDER_DIR,false);
-                    if($result){
-                        csv2post_notice('Folder and its contents deleted.','success','Tiny','Folder ' . $o,'','echo');   
-                    }else{
-                        csv2post_notice('Folder named '.$o.' could not be deleted, it could be a permissions issue.','error','Small','Folder Not Deleted','','echo');    
-                    }
+                    csv2post_delete_contentfolder(WTG_C2P_CONTENTFOLDER_DIR,false);
                 }      
             }            
 
@@ -5740,5 +5737,5 @@ function csv2post_form_reinstall_databasetables(){
     }else{
         return true;
     }      
-}         
+}           
 ?>

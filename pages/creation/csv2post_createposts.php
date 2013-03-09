@@ -4,7 +4,7 @@ if(!isset($csv2post_projectslist_array) || $csv2post_projectslist_array == false
     echo '<strong>You do not have any post creation projects, please create a project on the Your Projects page</strong>';
         
 }else{
-
+  
     $i = 0;
     $panel_number = 0; 
     foreach($csv2post_projectslist_array as $project_code => $project ){
@@ -31,7 +31,7 @@ if(!isset($csv2post_projectslist_array) || $csv2post_projectslist_array == false
                     csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
                     ?>
                     
-                    <?php 
+                    <?php          
                     $project_array = csv2post_get_project_array($project_code);
                      
                     $requirements_met = true;
@@ -269,7 +269,7 @@ if(!isset($csv2post_projectslist_array) || $csv2post_projectslist_array == false
     }
 }?>
 
-<?php
+<?php 
 if($csv2post_is_dev && isset($csv2post_projectslist_array)){
     ++$panel_number;// increase panel counter so this panel has unique ID
     $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);

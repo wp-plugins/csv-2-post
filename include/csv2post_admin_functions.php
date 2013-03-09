@@ -344,12 +344,18 @@ function csv2post_install_contentfolder($pathdir,$output = false){
 function csv2post_delete_contentfolder($pathdir,$output = false){
     if(!is_dir($pathdir)){
         global $csv2post_plugintitle;
-        csv2post_notice($csv2post_plugintitle . ' could not locate the main content folder, it appears it
-        may have already been deleted or moved.', 'warning', 'Extra');
+        csv2post_notice($csv2post_plugintitle . ' could not find the main content folder, it appears it
+        may have already been deleted or moved.', 'warning', 'Tiny','Content Folder Not Found');
         return false;
     }else{
-        rmdir($pathdir);
-        return true;
+    
+        if (csv2post_dir_is_empty($pathdir)) {
+            rmdir($pathdir);
+            csv2post_notice('Content folder has been deleted after confirming it did not contain any files.', 'success', 'Tiny','Content Folder Removed');                
+            return true; 
+        }else{
+            csv2post_notice('Content folder cannot be deleted as it contains files.', 'warning', 'Tiny','Content Folder Not Removed');                      
+        }
     }
 }
 

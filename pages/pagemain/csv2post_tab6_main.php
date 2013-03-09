@@ -13,6 +13,7 @@ if(!$csv2post_is_free){
     You can reset your answers should you find something is missing and you need it. These questions are 
     nothing to do with individual projects, they are global and apply to the entire plugin including all projects, all
     data import jobs and all extensions.There are different questions on another screen for quick project configuration.'); 
+    $panel_array['video'] = 'http://www.youtube.com/embed/z8S8ArOiVaw';    
     // Form Settings - create the array that is passed to jQuery form functions
     $jsform_set_override = array();
     $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            

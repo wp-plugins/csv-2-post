@@ -18,13 +18,7 @@ $jsform_set['noticebox_content'] = 'You are about to create your next level of c
 // TODO:MEDIUMPRIORITY, add optional date criteria to restrict deletion to a publish date range ?>
 
 <?php csv2post_panel_header( $panel_array );?>
-
-    <?php 
-    // begin form and add hidden values
-    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
-    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
-    ?> 
-    
+      
     <?php
     // we will run some initial checks to ensure category settings have been saved else notifications are displayed
     // if no category settings saved at all
@@ -34,6 +28,10 @@ $jsform_set['noticebox_content'] = 'You are about to create your next level of c
     
     }else{
 
+        // begin form and add hidden values
+        csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
+        csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+                
         echo csv2post_notice('This is the newer category creation form that requires multiple submission.
         This allows us to ensure each level is in place and narrow down any issues in category data to
         specific levels or settings being applied per level.','info','Small','Category Creation Method 2013','','return');
@@ -67,7 +65,7 @@ $jsform_set['noticebox_content'] = 'You are about to create your next level of c
         if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
             csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
             csv2post_jquery_form_prompt($jsform_set);
-        }
+        } 
         
         csv2post_formend_standard('Create Level '.$nextlevel.' Categories',$jsform_set['form_id']);   
              

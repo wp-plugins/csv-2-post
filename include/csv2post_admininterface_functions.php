@@ -84,7 +84,19 @@ function csv2post_list_optionrecordtrace($form = false,$size = 'Small',$optionty
     
     // first get all records that begin with csv2post_
     $csv2postrecords_result = csv2post_WP_SQL_options_beginning_with('csv2post_');
-    $counter = 1;
+    $counter = 1;?>
+        
+        <script language="JavaScript">
+        function csv2post_deleteoptions_checkboxtoggle(source) {
+          checkboxes = document.getElementsByName('csv2post_deleteoptions_array[]');
+          for(var i in checkboxes)
+            checkboxes[i].checked = source.checked;
+        }
+        </script>
+
+        <input type="checkbox" onClick="csv2post_deleteoptions_checkboxtoggle(this)" /> Select All Options<br/>
+    
+    <?php       
     foreach($csv2postrecords_result as $key => $option ){
         
         if($form){
@@ -122,6 +134,8 @@ function csv2post_include_form_processing_php(){
             echo '<h1>$_GET</h1>';
             csv2post_var_dump($_GET);    
         }
+
+        csv2post_log_adminform(__FUNCTION__,1,'Form Submitted','form submission about to be processed','general','low',$_GET);
   
         // set a variable used to skip further form processing functions, importing when using extensions
         $cont = true;
@@ -1121,9 +1135,19 @@ function csv2post_list_csvfiles(){
         
         @$opendir_result = opendir( WTG_C2P_CONTENTFOLDER_DIR );
         
-        if($opendir_result){
+        if($opendir_result){?>
+        
+            <script language="JavaScript">
+            function csv2post_deletecsvfiles_checkboxtoggle(source) {
+              checkboxes = document.getElementsByName('csv2post_deletecsvfiles_array[]');
+              for(var i in checkboxes)
+                checkboxes[i].checked = source.checked;
+            }
+            </script>
+
+            <input type="checkbox" onClick="csv2post_deletecsvfiles_checkboxtoggle(this)" /> Select All Files<br/>
             
-            $counter = 0;
+            <?php $counter = 0;
 
             while( false != ( $filename = readdir( $opendir_result ) ) ){
                 
@@ -2372,8 +2396,19 @@ function csv2post_list_jobtables(){
 
     if(isset($csv2post_jobtable_array) && $csv2post_jobtable_array != false){
         
-        $counter = 1;
- 
+        $counter = 1;?>
+        
+        <script language="JavaScript">
+        function csv2post_deletejobtables_checkboxtoggle(source) {
+          checkboxes = document.getElementsByName('csv2post_deletejobtables_array[]');
+          for(var i in checkboxes)
+            checkboxes[i].checked = source.checked;
+        }
+        </script>
+
+        <input type="checkbox" onClick="csv2post_deletejobtables_checkboxtoggle(this)" /> Select All Tables<br/>
+        
+        <?php
         foreach( $csv2post_jobtable_array as $key => $table_name ){
             
             $jobcode = str_replace('csv2post_','',$table_name);
@@ -2383,10 +2418,9 @@ function csv2post_list_jobtables(){
             if($table_exists_result){
                 $table_row_count = csv2post_WP_SQL_counttablerecords($table_name);
                 
-                $form = '<input type="checkbox" name="csv2post_deletejobtables_array[]" value="'.$table_name.'" />';
-            
+                $form = '<input type="checkbox" name="csv2post_deletejobtables_array[]" id="csv2post_deletejobtables_array" value="'.$table_name.'" />';
+               
                 echo csv2post_notice($form . ' ' . $counter . '. ' . $table_name,'success','Tiny','','','return');                
-                
             }
             
             ++$counter;     
@@ -2402,10 +2436,19 @@ function csv2post_list_folders(){
 
     $contentfolder_exists = csv2post_contentfolder_exist();
     
-    if($contentfolder_exists){
+    if($contentfolder_exists){?>
+        
+        <script language="JavaScript">
+        function csv2post_deletefolders_checkboxtoggle(source) {
+          checkboxes = document.getElementsByName('csv2post_deletefolders_array[]');
+          for(var i in checkboxes)
+            checkboxes[i].checked = source.checked;
+        }
+        </script>
 
-        echo csv2post_notice('<input type="checkbox" name="csv2post_deletefolders_array[]" value="wpcsvimportercontent" />' . ' 1. wpcsvimportercontent','success','Tiny','','','return');                
- 
+        <input type="checkbox" onClick="csv2post_deletefolders_checkboxtoggle(this)" /> Select All Folders<br/>
+        
+        <?php echo csv2post_notice('<input type="checkbox" name="csv2post_deletefolders_array[]" value="wpcsvimportercontent" />' . ' 1. wpcsvimportercontent','success','Tiny','','','return');                
     }
 }
 

@@ -116,5 +116,34 @@ function csv2post_WP_SQL_return_cols_with_data_type($tableName,$dataType = false
     
     $ra['arrayinfo']['matchcount'] = $matchCount;
     return $ra;
-}    
+}   
+
+function csv2post_WP_SQL_querylog_bytype($type = 'all',$limit = 100){
+    global $wpdb;
+
+    // where
+    $where = '';
+    if($type != 'all'){
+      $where = 'WHERE type = "'.$type.'"';
+    }
+
+    // limit
+    $limit = 'LIMIT ' . $limit;
+    
+    // get_results
+    $rows = $wpdb->get_results( 
+    "
+    SELECT * 
+    FROM csv2post_log
+    ".$where."
+    ".$limit."
+
+    ",ARRAY_A);
+
+    if(!$rows){
+        return false;
+    }else{
+        return $rows;
+    }
+} 
 ?>

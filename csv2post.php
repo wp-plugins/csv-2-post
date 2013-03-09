@@ -1,7 +1,7 @@
 <?php         
 /*
 Plugin Name: CSV 2 POST
-Version: 6.8.9
+Version: 6.9.0
 Plugin URI: http://www.csv2post.com
 Description: CSV 2 POST released 2012 by Zara Walsh and Ryan Bayne
 Author: Zara Walsh
@@ -28,7 +28,7 @@ services not just software. License and agreement is seperate.
 */         
            
 // package variables (frequently changed)
-$csv2post_currentversion = '6.8.9';
+$csv2post_currentversion = '6.9.0';
 $csv2post_php_version_tested = '5.4.0';// current version the plugin is being developed on
 $csv2post_php_version_minimum = '5.2.1';// minimum version required for plugin to operate
 $csv2post_is_free_override = false;// change to true for free edition setup when fulledition folder present 
@@ -147,11 +147,11 @@ require_once(WTG_C2P_DIR.'include/csv2post_admin_functions.php');
 require_once(WTG_C2P_DIR.'include/csv2post_sql_functions.php');
 require_once(WTG_C2P_DIR.'include/csv2post_file_functions.php');// file management related functions
 require_once(WTG_C2P_DIR.'include/csv2post_post_functions.php');// post creation,update related functions              
-// arrays
+// admin only arrays
 if(is_admin()){require_once(WTG_C2P_DIR.'include/variables/csv2post_array_tables.php');}# requires core_functions 
 if(is_admin()){require_once(WTG_C2P_DIR.'include/variables/csv2post_variables_templatesystemfiles_array.php');}
 if(is_admin()){require_once(WTG_C2P_DIR.'include/variables/csv2post_wordpressoptionrecords_array.php');} 
-
+if(is_admin()){require_once(WTG_C2P_DIR.'include/variables/csv2post_array_logtypes.php');} 
                                                                        
 $csv2post_adm_set = csv2post_get_option_adminsettings();# installs admin settings record if not yet installed, this will happen on plugin being activated
                     
@@ -344,7 +344,6 @@ if(is_admin() && isset($_GET['page']) && csv2post_is_plugin_page($_GET['page']))
     }
     
     // process form submission - moved to here 11th January 2013
-    //csv2post_include_form_processing_php();
     add_action('admin_init','csv2post_include_form_processing_php');
         
 }elseif(!is_admin()){// default to public side script and css      

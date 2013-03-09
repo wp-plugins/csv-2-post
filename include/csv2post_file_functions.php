@@ -296,4 +296,19 @@ function csv2post_get_file_quote($csv_filename,$method = 'PEAR'){
         return '"';### TODO:MEDIUMPRIORITY, add a function that does not use PEAR CSV to determine quote    
     }    
 }
+
+/**
+* Checks if a directory is empty
+* 1. Returns NULL if directory is not readable
+* 2. Avoid actions on directory if NULL or 0 returned
+* 
+* @param mixed $dir
+*/
+function csv2post_dir_is_empty($dir) {
+    if (!is_readable($dir)){
+        return NULL;
+    }else{
+        return (count(scandir($dir)) == 2);
+    }
+}
 ?>

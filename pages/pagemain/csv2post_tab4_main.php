@@ -279,8 +279,7 @@ $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_
 $panel_array['panel_name'] = 'interfacesettings';// slug to act as a name and part of the panel ID 
 $panel_array['panel_title'] = __('Interface Settings');// user seen panel header text  
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_help'] = __('Change how the plugins interface
-operates and how it appears.'); 
+$panel_array['panel_help'] = __('Change how the plugins interface operates and how it appears.'); 
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);
@@ -293,10 +292,7 @@ $jsform_set['noticebox_content'] = 'Do you want to change interface settings?';?
     csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
     csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
     ?> 
-    
-    <?php csv2post_n_incontent('Added Feb 2013. This feature is not complete, it will strip the interface down to minimum
-    functionality. Some features become hidden until work is finished.','warning','Small','Beta');?>
-                   
+                       
     <?php if($csv2post_guitheme == 'jquery'){?>
     <script>
     $(function() {

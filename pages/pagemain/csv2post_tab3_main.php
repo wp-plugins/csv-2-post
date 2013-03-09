@@ -2,7 +2,10 @@
 <strong>CSV 2 POST Developed in 2012</strong><br />
 </p>
 
+<?php global $csv2post_extension_loaded;
+if(!$csv2post_extension_loaded){ ?>
 <iframe width="640" height="450" src="http://www.youtube.com/embed/5NmvBdzICcA" frameborder="0" allowfullscreen></iframe>
+<?php }?>
 
 <p>CSV 2 POST is the most advanced data import and post creation plugin created 2012. It will be supported
 for many years. Users can import data, manage it then use newly created database tables in their post creation projects.</p>

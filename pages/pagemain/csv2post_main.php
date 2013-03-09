@@ -1,5 +1,5 @@
 <?php 
-global $csv2post_guitheme,$csv2post_extension_loaded,$csv2post_adm_set,$csv2post_is_installed,$csv2post_currentversion,$csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$wtgtp_pluginforum,$wtgtp_pluginblog,$csv2post_options_array,$csv2post_nav_type,$csv2post_is_free,$csv2post_projectslist_array,$csv2post_schedule_array;
+global $pageid,$csv2post_guitheme,$csv2post_extension_loaded,$csv2post_adm_set,$csv2post_is_installed,$csv2post_currentversion,$csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$wtgtp_pluginforum,$wtgtp_pluginblog,$csv2post_options_array,$csv2post_nav_type,$csv2post_is_free,$csv2post_projectslist_array,$csv2post_schedule_array;
 
 $installing_software_name = WTG_C2P_NAME;
 $installing_message = '';
@@ -39,6 +39,10 @@ if(!$csv2post_is_installed && !isset($_POST['csv2post_plugin_install_now'])){# w
     <form class="csv2post_form" method="post" name="csv2post_plugin_install" action="">
         <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">
         <input type="hidden" id="csv2post_plugin_install_now" name="csv2post_plugin_install_now" value="z3sx4bhik970">
+        <input type="hidden" name="csv2post_hidden_pageid" value="<?php echo $pageid;?>">
+        <input type="hidden" name="csv2post_hidden_panel_name" value="installationscreen">
+        <input type="hidden" name="csv2post_hidden_panel_title" value="Welcome To CSV 2 POST">
+        <input type="hidden" name="csv2post_hidden_tabnumber" value="0">
         <div class="jquerybutton">
             <button id="csv2post_install_plugin_button">Install CSV 2 POST <?php echo $installing_software_name_plus;?></button>
         </div>
@@ -108,11 +112,13 @@ if(!$csv2post_is_installed && !isset($_POST['csv2post_plugin_install_now'])){# w
     <form class="csv2post_form" method="post" name="csv2post_plugin_update" action="">
         <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">
         <input type="hidden" id="csv2post_plugin_update_now" name="csv2post_plugin_update_now" value="a43bt7695c34">
-
+        <input type="hidden" name="csv2post_hidden_pageid" value="<?php echo $pageid;?>">
+        <input type="hidden" name="csv2post_hidden_panel_name" value="pluginupdatescreen">
+        <input type="hidden" name="csv2post_hidden_panel_title" value="Update CSV 2 POST">
+        <input type="hidden" name="csv2post_hidden_tabnumber" value="0">       
         <div class="jquerybutton">
             <button id="csv2post_update_plugin_button">Update CSV 2 POST Installation</button>
         </div>
-        
     </form>
     
 <?php   

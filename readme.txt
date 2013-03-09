@@ -96,6 +96,18 @@ first plugin was created in 2009 and was halted pending re-development.
 6. You can use up to 3 columns of data to create 3 levels of categories.
 
 == Changelog ==
+= 6.9.0 =
+* From The Developers
+    * Released 9th March 2013
+* Fixes     
+    * New category screen was adding form start when form was not needed, causing bug on post creation screen 
+* Feature Changes
+    * Added select all checkboxes to the Partial Un-Install panel
+* Support Changes
+    * None
+* Technical Changes
+    * None
+
 = 6.8.9 =
 * From The Developers
     * Released 6th March 2013
@@ -107,12 +119,6 @@ first plugin was created in 2009 and was halted pending re-development.
     * None
 * Technical Changes
     * None
-* Top User Requests
-    * Target Completion: March 20th 2013
-    * Option required to load tab screens with Ajax (will make it an option for the sake of beta testing)
-    * Better encoding functions (some of the work already done) 
-    * Training system: start with Easy Configuration Questions then go through all minimum required screens to create posts
-    * URL Import (beta features only)
     
 = 6.8.8 =
 * From The Developers
@@ -125,12 +131,6 @@ first plugin was created in 2009 and was halted pending re-development.
     * None
 * Technical Changes
     * None
-* Top User Requests
-    * Target Completion: March 20th 2013
-    * Option required to load tab screens with Ajax (will make it an option for the sake of beta testing)
-    * Better encoding functions (some of the work already done) 
-    * Training system: start with Easy Configuration Questions then go through all minimum required screens to create posts
-    * URL Import (beta features only)
     
 = 6.8.7 =
 * From The Developers
@@ -180,10 +180,3 @@ first plugin was created in 2009 and was halted pending re-development.
     * Panel help button function renamed to csv2post_panel_support_buttons() and the div wrapping the function is now inside this function to prevent the div being used when no buttons are in use
     * CSS inside panels has been changed to reduce empty space and make more use of the page, important on screens with many panels or wide tables inside panels
     * csv2post_load_arrays.php deleted, contents moved to csv2post.php
-* Top User Requests
-    * Target Completion: March 20th 2013
-    * Option required to load tab screens with Ajax (will make it an option for the sake of beta testing)
-    * Better encoding functions (some of the work already done) 
-    * Training system: start with Easy Configuration Questions then go through all minimum required screens to create posts
-    * URL Import (beta features only)
-      

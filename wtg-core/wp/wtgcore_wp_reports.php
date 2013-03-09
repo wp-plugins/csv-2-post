@@ -1,27 +1,94 @@
 <?php
 /**
 * Display log entries for specific log types
-* @param string $log  (error,user,admin,general,sql) (in CSV 2 POST we have custom data,posts,project logs)
 * 
 * @link http://www.csv2post.com/hacking/log-table
 * 
-* @todo CRITICAL
+* @todo MEDIUMPRIORITY, use jQuery UI and Ajax table to display results
+* 
+* @param string $type general|error
+* @param integer $display_rows number of rows to display in table
+* @param array $display_columns an array holding the column names from csv2post_log table to be displayed
 */
-function csv2post_log_display_bytype($log,$display_rows = 100){
-
-    // we will put the rows to be displayed into an array so that we can reverse the order they are displayed in
-    $rows_array = array();
+function csv2post_log_display_bytype($type = 'all',$display_rows = 100,$display_columns = 'all'){
+    $rows = csv2post_WP_SQL_querylog_bytype($type,$display_rows);
     
-    
-    ######## SELECT QUERY HERE
-
-     
-    $i = 0;
+    if(!$rows){
+        csv2post_n_incontent('No log entries have been made for this.','info','Small','No Log Entries');    
+        return;
+    }
     
     // reverse the order of the array
-    $rows_array_reversed = array_reverse($rows_array);
+    $logrows = array_reverse($rows);
     
-    ############# OUTPUT HERE
+    $rowCount = 0;
+    
+    echo '<table class="widefat post fixed">';
+
+    foreach($logrows as $id => $row){
+        
+        // if first row do header
+        if($rowCount == 0){
+            
+            echo '<tr>';
+            
+            foreach($row as $column => $value){
+
+                // if display_columns is default "all" or specific columns passed we only add those
+                if($display_columns == 'all' || !is_array($display_columns)){
+                    
+                    echo '<td><strong>'.$column.'</strong></td>'; 
+
+                }else{
+                
+                    // only add values in columns passed either by
+                    if(in_array($column,$display_columns)){
+
+                        echo '<td><strong>'.$column.'</strong></td>'; 
+
+                    }   
+                }
+            }
+            
+            echo '</tr>';
+            
+        }else{
+            
+            echo '<tr>';
+            
+            foreach($row as $column => $value){
+
+                // if display_columns is default "all" or specific columns passed we only add those
+                if($display_columns == 'all' || !is_array($display_columns)){
+                    
+                    if($value == NULL){
+                        echo '<td></td>';
+                    }else{
+                        echo '<td>'.$value.'</td>'; 
+                    }
+                    
+                }else{
+                
+                    // only add values in columns passed either by
+                    if(in_array($column,$display_columns)){
+                        
+                        if($value == NULL){
+                            echo '<td></td>';
+                        }else{
+                            echo '<td>'.$value.'</td>'; 
+                        }   
+        
+                    }   
+                }
+            }
+            
+            echo '</tr>';
+        }
+        
+        ++$rowCount;   
+    }
+    
+    echo '</table>'; 
 }
 
 /**
@@ -66,7 +133,11 @@ function csv2post_log($atts){
         'ipaddress' => false, 
         'userid' => false,    
         'noticemessage' => false,      
-        'comment' => false
+        'comment' => false,
+        'type' => false,
+        'category' => false, 
+        'action' => false,
+        'priority' => false                               
     ), $atts ) );
     
     // start query
@@ -96,6 +167,10 @@ function csv2post_log($atts){
     if($userid){$query_columns .= ',userid';$query_values .= ',"'.$userid.'"';}     
     if($noticemessage){$query_columns .= ',noticemessage';$query_values .= ',"'.$noticemessage.'"';}     
     if($comment){$query_columns .= ',comment';$query_values .= ',"'.$comment.'"';}     
+    if($type){$query_columns .= ',type';$query_values .= ',"'.$type.'"';}     
+    if($category){$query_columns .= ',category';$query_values .= ',"'.$category.'"';}     
+    if($action){$query_columns .= ',action';$query_values .= ',"'.$action.'"';}     
+    if($priority){$query_columns .= ',priority';$query_values .= ',"'.$priority.'"';}     
 
     // end columns and values string
     $query_columns .= ')';
@@ -106,6 +181,34 @@ function csv2post_log($atts){
         
     $wpdb->query( $query );     
 }
+
+/**
+* Log form submissions on admin side
+*/
+function csv2post_log_adminform($function,$outcome,$action,$comment = 'unknown',$type = 'general',$priority = 'normal',$dump = 'unknown',$wordpresserror = 'none'){    
+                           
+    $atts = array();             
+    $atts['outcome'] = $outcome;
+    $atts['function'] = $function; 
+    $atts['wordpresserror'] = $wordpresserror;;
+    //$atts['tabscreenname'] = $tabscreenname; # not in use 
+    $atts['dump'] = $dump;
+    $atts['comment'] = $comment;
+    $atts['type'] = $type;
+    $atts['action'] = $action;
+    $atts['priority'] = $priority;          
+    
+    // default values
+    $atts['userid'] = get_current_user_id();       
+    $atts['category'] = 'adminform'; 
+    $atts['page'] = $_POST['csv2post_hidden_pageid'];
+    $atts['panelname'] = $_POST['csv2post_hidden_panel_name'];
+    $atts['paneltitle'] = $_POST['csv2post_hidden_panel_title'];
+    $atts['tabscreenid'] = $_POST['csv2post_hidden_tabnumber'];                              
+            
+    csv2post_log($atts);     
+}
+
 
 /**
 * This will log sql queries and details of any failures in a way that helps debug. 
@@ -124,17 +227,15 @@ function csv2post_log_sql($comment,$function,$file,$line,$recordid = 'NA',$dump 
     // set log type so the log entry is made to the required log file
     $atts['type'] = 'sql';    
     csv2post_log($atts);    
-}
+}        
 
 /**
 * Admin log is about tracing admin users actions, tracing staffs use.
 * Place the csv2post_log_user() function in form processing.
 */
-function csv2post_log_users($usertype,$side,$message,$ipaddress = 'NA',$userid = 'NA',$username = 'NA',$panelname = 'NA',$paneltitle = 'NA',$page = 'NA'){
+function csv2post_log_users($message,$ipaddress = 'NA',$userid = 'NA',$panelname = 'NA',$paneltitle = 'NA',$page = 'NA'){
     $atts = array();              
     $atts['userid'] = $userid;
-    $atts['usertype'] = $usertype;
-    $atts['side'] = $side; 
     $atts['message'] = $message;
     $atts['panelname'] = $panelname;
     $atts['paneltitle'] = $paneltitle;

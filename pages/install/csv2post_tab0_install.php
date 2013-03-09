@@ -40,11 +40,7 @@ $panel_array['panel_help'] = 'This tool allows you to delete existing records, f
                     csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
                     csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
                     ?> 
-                    
-                    <?php 
-                    ### TODO:LOWPRIORITY,adapt these functions, use the counters and display a notice when no items exist
-                    ?>
-                    
+
                     <h4>Data Import Job Tables</h4>
                     <?php csv2post_list_jobtables(); ?>
                     
@@ -71,7 +67,7 @@ $panel_array['panel_help'] = 'This tool allows you to delete existing records, f
         <?php } ?>
     </div>
 </div>
-
+       
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
 $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);

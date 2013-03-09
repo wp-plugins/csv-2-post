@@ -51,7 +51,7 @@ function csv2post_install(){
 
     $minor_fails = 0;// count minor number of failures, if 3 or more then we'll call it a failed install
     $overall_install_result = true;// used to indicate overall result
-
+        
     #################################################
     #                                               #
     #       INSTALL SCHEDULE ARRAY NOTICE ARRAY     #
@@ -431,7 +431,9 @@ function csv2post_INSTALL_reinstall_databasetables(){
 
 /**
 * Creates csv2post_log
-* @link http://www.csv2post.com/hacking/log-table 
+* @link http://www.csv2post.com/hacking/log-table
+* 
+* @todo LOWPRIORITY, a default is set in code but lets set a default for "type" anyway based on the value that queries all log entries, probably all but needs confirmed 
 */
 function csv2post_INSTALL_table_log(){
     $table_name = 'csv2post_log';
@@ -441,11 +443,11 @@ function csv2post_INSTALL_table_log(){
     }else{ 
         global $wpdb;
         
-         // table name 
-         $create = 'CREATE TABLE `'.$table_name.'` (';
-         
-         // columns - please update http://www.csv2post.com/hacking/log-table   
-         $create .= '`rowid` int(11) NOT NULL AUTO_INCREMENT,
+        // table name 
+        $create = 'CREATE TABLE `'.$table_name.'` (';
+
+        // columns - please update http://www.csv2post.com/hacking/log-table   
+        $create .= '`rowid` int(11) NOT NULL AUTO_INCREMENT,
         `outcome` tinyint(1) NOT NULL DEFAULT 1,
         `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `line` int(11) DEFAULT NULL,
@@ -467,9 +469,13 @@ function csv2post_INSTALL_table_log(){
         `ipaddress` varchar(45) DEFAULT NULL,
         `userid` int(11) DEFAULT NULL,
         `comment` mediumtext,
+        `type` varchar(45) DEFAULT NULL,
+        `category` varchar(45) DEFAULT NULL,
+        `action` varchar(45) DEFAULT NULL,
+        `priority` varchar(45) DEFAULT NULL,        
         PRIMARY KEY (`rowid`),
         UNIQUE KEY `rowid` (`rowid`)';
-                
+
         // table config  
         $create .= ') ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8';
         
