@@ -218,7 +218,8 @@ function csv2post_header_page($pagetitle,$layout){
 
     <div class="wrap">
 
-        <?php       
+        <?php      
+        // display persistent notices for all pages
         csv2post_persistentnotice_output('global');
         
         // decide if user is probably activating for the first time and display message accordingly
@@ -226,10 +227,11 @@ function csv2post_header_page($pagetitle,$layout){
     
         <div id="icon-options-general" class="icon32"><br /></div>
         <h2><?php echo $pagetitle;?></h2>
-        <?php csv2post_GUI_currentproject(); ?>
+        
+        <?php csv2post_GUI_currentproject();# displays current data job and post project ?>
 
         <?php 
-        // admin triggered automation
+        // run specific admin triggered automation tasks, this way an output can be created for admin to see
         csv2post_admin_triggered_automation();  
 
         // check existing plugins and give advice or warnings
@@ -238,7 +240,7 @@ function csv2post_header_page($pagetitle,$layout){
         // display form submission result notices
         csv2post_notice_output();
         
-        // display persistent notices
+        // display persistent notices for current page
         csv2post_persistentnotice_output('page',$_GET['page']);?>
         
         <?php     
@@ -254,11 +256,16 @@ function csv2post_header_page($pagetitle,$layout){
 * Outputs details of the current project, used under the title 
 */
 function csv2post_GUI_currentproject(){
-    global $csv2post_is_free;
+    global $csv2post_is_free,$csv2post_dataimportjobs_array;
     // main page header
     if(!$csv2post_is_free){
-        $jobname = csv2post_get_option_currentjobcode();
-        if(!$jobname){$jobname = 'No Current Data Job';}
+        $jobcode = csv2post_get_option_currentjobcode();
+
+        $jobname = 'None';
+        if($jobname_result = csv2post_current_jobname()){
+            $jobname = $jobname_result;
+        }
+        
         csv2post_n_screeninfo('Post Creation Project','
         <strong>Data Import Job:</strong> '. $jobname .'<br />
         <strong>Post Creation Project:</strong> ' . csv2post_get_current_project_name() );
@@ -367,7 +374,6 @@ function csv2post_display_accordianpanel_buttons($panel_array){
     'pageid' => 'invalidpageid',
     'tabnumber' => 'invalidtabnumber',
     'panel_id' => 'invalidpanelid',    
-    'panel_intro' => 'No Intro Text Found',### NO LONGER IN USE REMOVE
     'panel_help' => false,// default of false hides the Info button
     'panel_icon' => 'invalid-image-or-image-not-yet-created-notice.png',
     'panel_url' => 'http://www.csv2post.com/support',
@@ -379,10 +385,10 @@ function csv2post_display_accordianpanel_buttons($panel_array){
     $b = 0; 
                
     // jquery for dialog on button press
-    csv2post_jquery_opendialog_accordianpanel_button('_info',$panel_number,$panel_intro,$panel_title,$panel_help,$panel_icon,$panel_name,$panel_url);
+    csv2post_jquery_opendialog_accordianpanel_button('_info',$panel_number,$panel_title,$panel_help,$panel_icon,$panel_name,$panel_url);
     
     if($video){
-        csv2post_jquery_opendialog_accordianpanel_button('_video',$panel_number,$panel_intro,$panel_title,$panel_help,$panel_icon,$panel_name,$panel_url);
+        csv2post_jquery_opendialog_accordianpanel_button('_video',$panel_number,$panel_title,$panel_help,$panel_icon,$panel_name,$panel_url);
     }?>  
                                
     <!-- info div -->

@@ -106,6 +106,7 @@ $panel_array['panel_name'] = 'templateeditor';// slug to act as a name and part 
 $panel_array['panel_title'] = __('Create Content Templates - WYSIWYG Editor *global panel*');// user seen panel header text  
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_help'] = __('The WYSIWYG editor can be used to create the html content design/template for post content, post excerpts, category descriptions, custom field values and even widget content. The idea is that you tell the plugin what your new design is for, you take control of your design and ensure it is suitable for the type of content it will be used to create. All you need to do is copy and paste your column replacement tokens where you want that columns data to be placed, keeping in mind that this happens on the html side because the design view is created using the html.');
+$panel_array['video'] = 'http://www.youtube.com/embed/gNwD-36ilWo';
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);   

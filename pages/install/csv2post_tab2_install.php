@@ -7,7 +7,6 @@ $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_
 $panel_array['panel_name'] = 'optionrecordtrace';// slug to act as a name and part of the panel ID 
 $panel_array['panel_title'] = __('Option Record Trace');// user seen panel header text 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_intro'] = 'Displays all records in the Wordpress options table created by CSV 2 POST';
 $panel_array['panel_help'] = 'This feature does a search for records that begin with "csv2post_". We can use it to fully cleanup the Wordpress option table.'; 
 ### TODO:MEDIUMPRIORITY, merge the critical options record panel with this sort of, display option record 
 ### notifications in a table, also add columns for displaying smaller notifications indicating important and status

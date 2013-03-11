@@ -15,7 +15,10 @@ $jsform_set['noticebox_content'] = 'You are about to upload a CSV file, it will 
   
     <h4><?php _e('Upload CSV File')?> <?php echo ini_get( "upload_max_filesize").'B Limit';?></h4>
    <form method="post" enctype="multipart/form-data" name="uploadform" class="form-table">                
-       <input type="file" name="file" size="70" /><br /><br />
+        
+        <?php csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);?> 
+ 
+        <input type="file" name="file" size="70" /><br /><br />
 
         <div class="jquerybuttoncsv2post">
             <input class="button-primary" type="submit" value="Upload CSV File" name="eci_csvupload_submit" />
@@ -157,25 +160,21 @@ $jsform_set['noticebox_content'] = 'You are about to delete select data import j
 // TODO: LOWPRIORITY, update dialog content with a list of the selected jobs
 ?>
 
-<?php csv2post_panel_header( $panel_array );?>
+<?php csv2post_panel_header( $panel_array );
 
-    <?php 
     // begin form and add hidden values
     csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
     csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
-    ?> 
     
-    <?php csv2post_list_dataimportjobs();?>
-
-            <?php 
+    csv2post_list_dataimportjobs();
+    
     // add js for dialog on form submission and the dialog <div> itself
     if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
         csv2post_jquery_form_prompt($jsform_set);
     }
-    ?>
-        
-    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
+    
+    csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
 
 <?php csv2post_panel_footer();?>
 
@@ -204,7 +203,6 @@ $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_
 $panel_array['panel_name'] = 'testcsvfiles';// slug to act as a name and part of the panel ID 
 $panel_array['panel_title'] = __('Test CSV Files');// user seen panel header text 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_intro'] = __('Run a series of tests on a file to help determine its suitability as a CSV file');
 $panel_array['panel_help'] = __('This tool will run some tests on your file and try to detect potential problems. You may get recommendations for your file which you can ignore, you will know best but the plugin will try to suggest changes that you can try should you experience any problems with your file. Where a fault is detected and confirmed to prevent proper use of a file it will be made very clear to you. The most common cause of problems is a CSV file that is not properly formatted. A CSV files rows should be spread over a single line within the file when opened in Notepad and Excel. Many files are created with data covering multiple rows within the file, missing commas or headers/titles that are not suitable as an identifier i.e. too many words and special characters. Most of the requirements of a properly formatted CSV file follow standards often expected within database management because the data usually comes from a database and is eventually being imported to a database.');
 // <form> values, seperate from panel value
 $jsform_set_override = array();
@@ -257,7 +255,6 @@ $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_
 $panel_array['panel_name'] = 'deletecsvfiles';// slug to act as a name and part of the panel ID 
 $panel_array['panel_title'] = __('Delete CSV File');// user seen panel header text 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_intro'] = __('A list of used files, scroll further down to view import jobs');
 $panel_array['panel_help'] = __('Refreshing the browser will show the latest statistics in this table if you have imported data on this page. This list of files are those used in data import jobs. If a file shows twice it is because you are using it in more than one job. This panel is not for importing data. Scroll further down the Import screen to view individual job panels to begin manual data importing and view their progress.');
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
@@ -273,7 +270,7 @@ $jsform_set['noticebox_content'] = 'You are about to delete the selected CSV fil
     
     <?php csv2post_csv_files_list();?>
 
-      <?php 
+    <?php 
     // add js for dialog on form submission and the dialog <div> itself
     if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);

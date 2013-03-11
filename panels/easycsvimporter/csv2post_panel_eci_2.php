@@ -2,7 +2,7 @@
 ++$panel_number;// increase panel counter so this panel has unique ID
 $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'ecifreeconfirmformat';// slug to act as a name and part of the panel ID 
-$panel_array['panel_title'] = __('Step 2: Confirm CSV File Format');// user seen panel header text 
+$panel_array['panel_title'] = __('Step 2: CSV File and Post Creation Setup');// user seen panel header text 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 // <form> values, seperate from panel value
 $jsform_set_override = array();
@@ -82,6 +82,59 @@ keep this in mind if you are unsure about your CSV file and do experience diffic
         echo '</table>';     
         ?>
 
+    
+    <h4>Ping Status</h4>
+    <script>
+    $(function() {
+        $( "#csv2post_pingstatus" ).buttonset();
+    });
+    </script>
+    
+    <div id="csv2post_pingstatus"><?php      
+        $o = ''; $c = 'checked';
+        if(isset($csv2post_project_array['pingstatus']) && $csv2post_project_array['pingstatus'] == 'open'){
+            $o = 'checked'; $c = '';
+        }elseif(isset($csv2post_project_array['pingstatus']) && $csv2post_project_array['pingstatus'] == 'closed'){
+            $o = ''; $c = 'checked'; 
+        }else{
+            // project ping default not set so we now make use of the blogs default ping
+            $d = get_option('default_ping_status');
+            if($d == 'closed'){
+                $o = ''; $c = 'checked';        
+            }elseif($d == 'open'){
+                $o = 'checked'; $c = '';
+            }
+        }?>
+        <input type="radio" id="csv2post_pingstatus_open_id" name="csv2post_pingstatus" value="open" <?php echo $o;?> /><label for="csv2post_pingstatus_open_id">Open</label>
+        <input type="radio" id="csv2post_pingstatus_closed_id" name="csv2post_pingstatus" value="closed" <?php echo $c;?> /><label for="csv2post_pingstatus_closed_id">Closed</label>          
+    </div>
+         
+    <h4>Comment Status</h4>
+    <script>
+    $(function() {
+        $( "#csv2post_commentstatus" ).buttonset();
+    });
+    </script>
+    
+    <div id="csv2post_commentstatus"><?php
+        $o = ''; $c = 'checked';
+        if(isset($csv2post_project_array['commentstatus']) && $csv2post_project_array['commentstatus'] == 'open'){
+            $o = 'checked'; $c = '';
+        }elseif(isset($csv2post_project_array['commentstatus']) && $csv2post_project_array['commentstatus'] == 'closed'){
+            $o = ''; $c = 'checked'; 
+        }else{
+            // project ping default not set so we now make use of the blogs default ping
+            $d = get_option('default_comment_status');
+            if($d == 'closed'){
+                $o = ''; $c = 'checked';        
+            }elseif($d == 'open'){
+                $o = 'checked'; $c = '';
+            }
+        }?>
+        <input type="radio" id="csv2post_commentstatus_open_id" name="csv2post_commentstatus" value="open" <?php echo $o;?> /><label for="csv2post_commentstatus_open_id">Open</label>
+        <input type="radio" id="csv2post_commentstatus_closed_id" name="csv2post_commentstatus" value="closed" <?php echo $c;?> /><label for="csv2post_commentstatus_closed_id">Closed</label>          
+    </div>
+            
         <?php 
         // add js for dialog on form submission and the dialog <div> itself
         if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){

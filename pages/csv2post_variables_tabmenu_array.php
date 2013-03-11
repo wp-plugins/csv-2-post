@@ -512,12 +512,12 @@ $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['display'] = true;// user ca
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_postshistory.php';
 ++$sub;                                                        
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['active'] = true;
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['slug'] = 'automationhistory';
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['label'] = 'Automation History';
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['slug'] = 'schedulehistory';
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['label'] = 'Schedule History';
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['allowhide'] = true;   
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['package'] = 'paid';
 $csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
-$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_automation.php';
+$csv2post_mpt_arr['menu']['creation']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/creation/csv2post_schedulehistory.php';
   
 ######################################################
 #                                                    #

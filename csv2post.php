@@ -1,7 +1,7 @@
 <?php         
 /*
 Plugin Name: CSV 2 POST
-Version: 6.9.0
+Version: 6.9.1
 Plugin URI: http://www.csv2post.com
 Description: CSV 2 POST released 2012 by Zara Walsh and Ryan Bayne
 Author: Zara Walsh
@@ -28,12 +28,13 @@ services not just software. License and agreement is seperate.
 */         
            
 // package variables (frequently changed)
-$csv2post_currentversion = '6.9.0';
+$csv2post_currentversion = '6.9.1';
 $csv2post_php_version_tested = '5.4.0';// current version the plugin is being developed on
 $csv2post_php_version_minimum = '5.2.1';// minimum version required for plugin to operate
 $csv2post_is_free_override = false;// change to true for free edition setup when fulledition folder present 
 $csv2post_demo = false;// we do not want error display on demos on www.csvtopost.com
 $csv2post_debug_mode = false;// www.csvtopost.com will override this but only if demo mode not active
+$csv2post_disable_extensions = false;// boolean - can quickly disable extensions using this
 
 if($csv2post_demo != true){
     if(isset($_GET['csv2postdebug']) || get_bloginfo('url') == 'http://www.csvtopost.com/beta' ){
@@ -96,7 +97,7 @@ if(!defined("WTG_C2P_PANELFOLDER_PATH")){define("WTG_C2P_PANELFOLDER_PATH",WP_PL
 if(!defined("WTG_C2P_CONTENTFOLDER_DIR")){define("WTG_C2P_CONTENTFOLDER_DIR",WP_CONTENT_DIR.'/'.'wpcsvimportercontent');}// directory path to storage folder inside the wp_content folder  
 if(!defined("WTG_C2P_IMAGEFOLDER_URL")){define("WTG_C2P_IMAGEFOLDER_URL",WP_PLUGIN_URL.'/'.WTG_C2P_FOLDERNAME.'/images/');} 
 if(!defined("WTG_C2P_DATEFORMAT")){define("WTG_C2P_DATEFORMAT",'Y-m-d H:i:s');}
-if(!defined("WTG_C2P_EXTENSIONS")){define("WTG_C2P_EXTENSIONS",get_option('csv2post_extensions'));}
+if(!defined("WTG_C2P_EXTENSIONS")){if(!$csv2post_disable_extensions){define("WTG_C2P_EXTENSIONS",get_option('csv2post_extensions'));}else{define("WTG_C2P_EXTENSIONS",'disable');}}
 if(!defined("WTG_C2P_ID")){define("WTG_C2P_ID","27");}// used by SOAP web services, this ID allows specific web services to be made available for this plugin. Change the ID and things will simply go very wrong
 
 // decide if package is free or full edition - apply the over-ride variable to use as free edition when full edition files present

@@ -20,6 +20,7 @@ to do in the Multiple Table Project panel. This panel offers the ability to rese
 delete posts as part of the reset process. You can only reset posts related to a table if the table is also
 selected for reset, this is a safety measure and the alternative is not usually a requirement.');
 $panel_array['panel_url'] = 'http://www.csv2post.com/feature-guides/create-post-creation-project';
+$panel_array['video'] = 'http://www.youtube.com/embed/b1K__laYifc';
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
@@ -247,7 +248,7 @@ if(isset($csv2post_projectslist_array) && is_array($csv2post_projectslist_array)
                 
             </div>           
 
-             <?php 
+            <?php 
             // add js for dialog on form submission and the dialog <div> itself
             if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
                 csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
@@ -429,9 +430,12 @@ if($csv2post_is_dev && isset($csv2post_projectslist_array)){
                
         <h4>Entire Array</h4>
         <?php 
-        echo '<pre>';     
-        csv2post_var_dump($csv2post_projectslist_array);
-        echo '</pre>';?>
+        if(!is_array($csv2post_projectslist_array)){
+            echo '<p>The $csv2post_projectslist_array is not an array!</p>';    
+        }else{     
+            csv2post_var_dump($csv2post_projectslist_array);
+        }
+        ?>
 
     <?php csv2post_panel_footer();
 }?>

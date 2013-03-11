@@ -79,7 +79,6 @@ $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_
 $panel_array['panel_name'] = 'pluginfunctiontests';// slug to act as a name and part of the panel ID 
 $panel_array['panel_title'] = __('Plugin Function Tests');// user seen panel header text 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_intro'] = __('Remove');
 $panel_array['panel_help'] = __('Remove'); ?>
 <?php csv2post_panel_header( $panel_array );?>
     <ul>
@@ -128,7 +127,6 @@ $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_
 $panel_array['panel_name'] = 'wordpressconfiguration';// slug to act as a name and part of the panel ID 
 $panel_array['panel_title'] = __('Wordpress Configuration');// user seen panel header text 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_intro'] = __('Variable values created by Wordpress core and used by this plugin.');
 $panel_array['panel_help'] = __('Please send this information to us when seeking support on very complex problems.'); ?>
 <?php csv2post_panel_header( $panel_array );?>
     <ul>

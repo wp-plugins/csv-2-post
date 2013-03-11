@@ -935,24 +935,36 @@ function csv2post_form_ECI_paid_step2_confirmformat(){
         #        CREATE POST CREATION PROJECT           #
         #                                               #
         #################################################
-        global $csv2post_currentproject_code;
-                
-        // reset the project table (we only do this in ECI for ease)
-        csv2post_WP_SQL_reset_project_table(csv2post_get_project_maintable($csv2post_currentproject_code),true);
-
-        // create project function will return project code on success
-        csv2post_create_post_creation_project($file . ' ' . csv2post_date() ,array('csv2post_'.$code),'defaultorder');
-
+        global $csv2post_currentproject_code,$csv2post_projectslist_array; 
+        
+        // delete existing project using the same $file as it is the same name also (we want ECI to be very simple)
+        foreach($csv2post_projectslist_array as $code => $project){ 
+            if(isset($project['name']) && $project['name'] == $file){
+                csv2post_delete_postcreationproject($code,$csv2post_currentproject_code);
+            }
+        }
+                              
+        $createproject_result_code = csv2post_create_post_creation_project($file,array('csv2post_'.$code),'defaultorder');
+        
         // now set the new project as the Current Project ($csv2post_currentproject_code)               
-        $csv2post_currentproject_code = $code;
-        csv2post_update_currentproject($code);
-
-        // update the ECI session array
-        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);
-                
-        csv2post_notice_postresult('success','Project Created','A data 
-        import job was created for managing your data. A post creation 
-        project was created for managing your post creation.');
+        if($createproject_result_code){
+            
+            // now set the new project as the Current Project ($csv2post_currentproject_code)               
+            $csv2post_currentproject_code = $createproject_result_code;
+            csv2post_update_currentproject($createproject_result_code);
+            
+            // update the ECI session array
+            csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);
+                    
+            csv2post_notice_postresult('success','Project Created','A data 
+            import job was created for managing your data. A post creation 
+            project was created for managing your post creation.');
+        
+        }else{
+            csv2post_notice('A problem was detected when making the new Post 
+            Creation Project. It is recommended that you attempt to make 
+            the project again and please report this problem if it continues.','error','Large','Post Creation Project Not Created');    
+        } 
 
         return false;
     }else{
@@ -1484,10 +1496,14 @@ function csv2post_form_ECI_free_step3_importdate(){
     }     
 }
                           
-// Easy CSV Importer - Step 2 (in code it is zero) - Confirm Format 
+/**
+* Easy CSV Importer STEP 2
+* 1. confirms and stores csv file format
+* 2. creates post creation project
+*/
 function csv2post_form_ECI_free_step2_confirmformat(){
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeconfirmformat'){
-        
+
         $csv2post_ecisession_array = csv2post_WP_SETTINGS_get_eciarray();
         
         // set full filename
@@ -1608,21 +1624,30 @@ function csv2post_form_ECI_free_step2_confirmformat(){
         #        CREATE POST CREATION PROJECT           #
         #                                               #
         #################################################
-        global $csv2post_currentproject_code;
-                      
-        csv2post_create_post_creation_project($file . ' ' . csv2post_date() ,array('csv2post_'.$code),'defaultorder');
+        global $csv2post_currentproject_code,$csv2post_projectslist_array; 
+                
+        $createproject_result_code = csv2post_create_post_creation_project($file,array('csv2post_'.$code),'defaultorder');
         
         // now set the new project as the Current Project ($csv2post_currentproject_code)               
-        $csv2post_currentproject_code = $code;
-        csv2post_update_currentproject($code);
-
-        // update the ECI session array
-        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);
-                
-        csv2post_notice_postresult('success','Project Created','A data 
-        import job was created for managing your data. A post creation 
-        project was created for managing your post creation.');
-
+        if($createproject_result_code){
+            
+            // now set the new project as the Current Project ($csv2post_currentproject_code)               
+            $csv2post_currentproject_code = $createproject_result_code;
+            csv2post_update_currentproject($createproject_result_code);
+            
+            // update the ECI session array
+            csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);
+                    
+            csv2post_notice_postresult('success','Project Created','A data 
+            import job was created for managing your data. A post creation 
+            project was created for managing your post creation.');
+        
+        }else{
+            csv2post_notice('A problem was detected when making the new Post 
+            Creation Project. It is recommended that you attempt to make 
+            the project again and please report this problem if it continues.','error','Large','Post Creation Project Not Created');    
+        }  
+        
         return false;
     }else{
         return true;
@@ -1731,6 +1756,118 @@ function csv2post_form_ECI_free_step1_uploadcsvfile(){
         return true;
     }     
 }
+
+/**
+* Processes request to make new post creation project
+*/
+function csv2post_form_create_post_creation_project(){
+
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'createpostcreationproject'){
+        
+        global $csv2post_currentproject_code,$csv2post_is_free;
+        
+        // if no project name
+        if(!isset($_POST['csv2post_projectname_name']) || $_POST['csv2post_projectname_name'] == NULL || $_POST['csv2post_projectname_name'] == '' || $_POST['csv2post_projectname_name'] == ' '){
+            csv2post_notice('No project name was entered, please try again','error','Large','Project Name Required','','echo');    
+            return false;
+        }
+        
+        // if no database table selected
+        if(!isset($_POST['csv2post_databasetables_array'])){
+            csv2post_notice('You did not appear to select any database tables for taking data from and putting into posts. Project was not created.','info','Large','Database Table Selection Required','','echo');    
+            return false;
+        }else{
+            
+            // carry out project table resets
+            if(isset($_POST['csv2post_databasetables_resettable_array'])){
+
+                if($csv2post_is_free){
+                    
+                    // does user want posts deleted also? Requires the same table to be selected 
+                    if(isset($_POST['csv2post_databasetables_resetposts_array']) && $_POST['csv2post_databasetables_resetposts_array'] == $_POST['csv2post_databasetables_resettable_array']){
+                        $reset_posts = true;
+                        $reset_posts_notice = ' All posts related to the project table have been deleted also.';    
+                    }else{
+                        $reset_posts = false;
+                    }
+    
+                    csv2post_WP_SQL_reset_project_table($_POST['csv2post_databasetables_resettable_array'],$reset_posts);
+                    csv2post_notice('The table named '.$_POST['csv2post_databasetables_resettable_array'].' was reset as requested.','success','Large','Table Reset','','echo');                    
+                
+                }else{
+                    foreach($_POST['csv2post_databasetables_resettable_array'] as $key => $table_name){
+                        
+                        // does user also want this tables posts deleted
+                        if(isset($_POST['csv2post_databasetables_resetposts_array'])){
+                            $reset_posts = false;
+                            foreach($_POST['csv2post_databasetables_resetposts_array'] as $key => $t){
+                                if($t == $_POST['csv2post_databasetables_resettable_array']){
+                                    $reset_posts = true;    
+                                }    
+                            }
+                        }
+                        
+                        csv2post_WP_SQL_reset_project_record($table_name,$reset_posts);
+                        csv2post_notice('The table named '.$table_name.' was reset as requested.','success','Large','Table Reset','','echo');    
+                    }  
+                } 
+            }
+            
+            // free edition does not allow mapping method selection on form
+            if(isset($_POST['csv2post_projecttables_mappingmethod_inputname']) && !$csv2post_is_free){
+                $mapping_method = $_POST['csv2post_projecttables_mappingmethod_inputname'];    
+            }else{
+                $mapping_method = 'defaultorder';
+            }
+
+            // free edition will submit selected database table as string, not array, make array for rest of plugins use
+            if(!is_array($_POST['csv2post_databasetables_array'])){
+                $tables_array = array($_POST['csv2post_databasetables_array']);// we add the single table name to an array in free edition                                
+            }else{
+                $tables_array = $_POST['csv2post_databasetables_array'];// paid edition value will already be an array
+            }
+
+            // create project function will return project code on success
+            $createproject_result_code = csv2post_create_post_creation_project($_POST['csv2post_projectname_name'],$tables_array,$mapping_method);
+            if($createproject_result_code){
+                
+                // delete existing project using the same $file as it is the same name also (we want ECI to be very simple)
+                foreach($csv2post_projectslist_array as $code => $project){ 
+                    if(isset($project['name']) && $project['name'] == $file){
+                        csv2post_delete_postcreationproject($code,$csv2post_currentproject_code);
+                    }
+                }
+                        
+                // now set the new project as the Current Project ($csv2post_currentproject_code)               
+                $csv2post_currentproject_code = $createproject_result_code;
+                csv2post_update_currentproject($createproject_result_code);
+                
+                // do notification
+                csv2post_notice('Your new Post Creation Project has been made. Please click on the Content Designs tab and create your main content layout for this project or select an existing one.','success','Large','Post Creation Project Created');
+            
+                // display next step message
+                if(!$csv2post_is_free){
+                    $table_count = count($_POST['csv2post_databasetables_array']);
+                    if($table_count != 1){
+                        csv2post_notice('You must now complete the Multiple Tables Project panel on the Projects screen.','step','Large','Next Step','','echo');    
+                    }
+                }
+            
+            }else{
+                
+                if($csv2post_is_free){
+                    csv2post_notice('You appear to have already created your project. The free edition allows one project at a time, please complete your post creation then delete the project. You may then create another project with a new database table that holds different data.','warning','Large','Post Creation Project Not Created','','echo');    
+                }else{  
+                    csv2post_notice('A problem was detected when making the new Post Creation Project. It is recommended that you attempt to make the project again and report this problem if it continues to happen.','error','Large','Post Creation Project Not Created');    
+                }
+            }  
+        }
+        
+        return false;
+    }else{
+        return true;
+    }     
+}  
 
 function csv2post_form_delete_persistentnotice(){
     if(isset($_POST['csv2post_post_deletenotice']) && $_POST['csv2post_post_deletenotice'] == true){
@@ -5032,110 +5169,6 @@ function csv2post_form_subpage_bygrouping(){
         return true;
     }     
 }    
-
-/**
-* Processes request to make new post creation project
-*/
-function csv2post_form_create_post_creation_project(){
-
-    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'createpostcreationproject'){
-        
-        global $csv2post_currentproject_code,$csv2post_is_free;
-        
-        // if no project name
-        if(!isset($_POST['csv2post_projectname_name']) || $_POST['csv2post_projectname_name'] == NULL || $_POST['csv2post_projectname_name'] == '' || $_POST['csv2post_projectname_name'] == ' '){
-            csv2post_notice('No project name was entered, please try again','error','Large','Project Name Required','','echo');    
-            return false;
-        }
-        
-        // if no database table selected
-        if(!isset($_POST['csv2post_databasetables_array'])){
-            csv2post_notice('You did not appear to select any database tables for taking data from and putting into posts. Project was not created.','info','Large','Database Table Selection Required','','echo');    
-            return false;
-        }else{
-            
-            // carry out project table resets
-            if(isset($_POST['csv2post_databasetables_resettable_array'])){
-
-                if($csv2post_is_free){
-                    
-                    // does user want posts deleted also? Requires the same table to be selected 
-                    if(isset($_POST['csv2post_databasetables_resetposts_array']) && $_POST['csv2post_databasetables_resetposts_array'] == $_POST['csv2post_databasetables_resettable_array']){
-                        $reset_posts = true;
-                        $reset_posts_notice = ' All posts related to the project table have been deleted also.';    
-                    }else{
-                        $reset_posts = false;
-                    }
-    
-                    csv2post_WP_SQL_reset_project_table($_POST['csv2post_databasetables_resettable_array'],$reset_posts);
-                    csv2post_notice('The table named '.$_POST['csv2post_databasetables_resettable_array'].' was reset as requested.','success','Large','Table Reset','','echo');                    
-                
-                }else{
-                    foreach($_POST['csv2post_databasetables_resettable_array'] as $key => $table_name){
-                        
-                        // does user also want this tables posts deleted
-                        if(isset($_POST['csv2post_databasetables_resetposts_array'])){
-                            $reset_posts = false;
-                            foreach($_POST['csv2post_databasetables_resetposts_array'] as $key => $t){
-                                if($t == $_POST['csv2post_databasetables_resettable_array']){
-                                    $reset_posts = true;    
-                                }    
-                            }
-                        }
-                        
-                        csv2post_WP_SQL_reset_project_record($table_name,$reset_posts);
-                        csv2post_notice('The table named '.$table_name.' was reset as requested.','success','Large','Table Reset','','echo');    
-                    }  
-                } 
-            }
-            
-            // free edition does not allow mapping method selection on form
-            if(isset($_POST['csv2post_projecttables_mappingmethod_inputname']) && !$csv2post_is_free){
-                $mapping_method = $_POST['csv2post_projecttables_mappingmethod_inputname'];    
-            }else{
-                $mapping_method = 'defaultorder';
-            }
-
-            // free edition will submit selected database table as string, not array, make array for rest of plugins use
-            if(!is_array($_POST['csv2post_databasetables_array'])){
-                $tables_array = array($_POST['csv2post_databasetables_array']);// we add the single table name to an array in free edition                                
-            }else{
-                $tables_array = $_POST['csv2post_databasetables_array'];// paid edition value will already be an array
-            }
-
-            // create project function will return project code on success
-            $createproject_result_code = csv2post_create_post_creation_project($_POST['csv2post_projectname_name'],$tables_array,$mapping_method);
-            if($createproject_result_code){
-                
-                // now set the new project as the Current Project ($csv2post_currentproject_code)               
-                $csv2post_currentproject_code = $createproject_result_code;
-                csv2post_update_currentproject($createproject_result_code);
-                
-                // do notification
-                csv2post_notice('Your new Post Creation Project has been made. Please click on the Content Designs tab and create your main content layout for this project or select an existing one.','success','Large','Post Creation Project Created');
-            
-                // display next step message
-                if(!$csv2post_is_free){
-                    $table_count = count($_POST['csv2post_databasetables_array']);
-                    if($table_count != 1){
-                        csv2post_notice('You must now complete the Multiple Tables Project panel on the Projects screen.','step','Large','Next Step','','echo');    
-                    }
-                }
-            
-            }else{
-                
-                if($csv2post_is_free){
-                    csv2post_notice('You appear to have already created your project. The free edition allows one project at a time, please complete your post creation then delete the project. You may then create another project with a new database table that holds different data.','warning','Large','Post Creation Project Not Created','','echo');    
-                }else{  
-                    csv2post_notice('A problem was detected when making the new Post Creation Project. It is recommended that you attempt to make the project again and report this problem if it continues to happen.','error','Large','Post Creation Project Not Created');    
-                }
-            }  
-        }
-        return false;
-    }else{
-        return true;
-    }     
-}  
     
 /**
 * Process post creation for giving project 

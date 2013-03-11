@@ -30,7 +30,6 @@ $jsform_set['noticebox_content'] = 'It is recommended you monitor the plugin for
         <tr valign="top">
             <th scope="row">All Log Files</th>
             <td>
-
                 <?php 
                 // if is not set ['admintriggers']['newcsvfiles']['status'] then it is enabled by default
                 if(!isset($csv2post_adm_set['reporting']['uselog'])){
@@ -337,11 +336,13 @@ $jsform_set['noticebox_content'] = 'Do you want to change interface settings?';?
             $display = 'checked';    
         }
     }?>
+    
     <script>
         $(function() {
             $( "#csv2post_div_<?php echo $panel_array['panel_name'];?>_dialog" ).buttonset();
         });
-    </script>    
+    </script> 
+       
     <div id="csv2post_div_<?php echo $panel_array['panel_name'];?>_dialog">
         <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_dialog_hide" name="csv2post_radiogroup_dialog" value="hide" <?php echo $hide;?> /><label for="csv2post_<?php echo $panel_array['panel_name'];?>_dialog_hide">Hide</label>
         <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_dialog_display" name="csv2post_radiogroup_dialog" value="display" <?php echo $display;?> /><label for="csv2post_<?php echo $panel_array['panel_name'];?>_dialog_display">Display</label>
@@ -360,17 +361,18 @@ $jsform_set['noticebox_content'] = 'Do you want to change interface settings?';?
             $display = 'checked';    
         }
     }?>
+    
     <script>
         $(function() {
             $( "#csv2post_div_<?php echo $panel_array['panel_name'];?>_supportbuttons" ).buttonset();
         });
-    </script>    
+    </script>
+        
     <div id="csv2post_div_<?php echo $panel_array['panel_name'];?>_supportbuttons">
         <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_supportbuttons_hide" name="csv2post_radiogroup_supportbuttons" value="hide" <?php echo $hide;?> /><label for="csv2post_<?php echo $panel_array['panel_name'];?>_supportbuttons_hide">Hide</label>
         <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_supportbuttons_display" name="csv2post_radiogroup_supportbuttons" value="display" <?php echo $display;?> /><label for="csv2post_<?php echo $panel_array['panel_name'];?>_supportbuttons_display">Display</label>
     </div> 
-     
-
+        
     <?php 
     // add js for dialog on form submission and the dialog <div> itself
     if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){

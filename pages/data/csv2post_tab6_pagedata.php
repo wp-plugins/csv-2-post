@@ -4,7 +4,6 @@ $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_
 $panel_array['panel_name'] = 'addcsvfilefolders';// slug to act as a name and part of the panel ID 
 $panel_array['panel_title'] = __('Add CSV File Folder');// user seen panel header text 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_intro'] = __('Add a new path to the plugins settings to make use of CSV files in that directory');
 $panel_array['panel_help'] = __('CSV files within the folder you point the plugin to will be displayed on the plugins interface. At this time I need to ask users to ensure that CSV files in all directories have unique names. I have no yet decided how to handle duplicate file names in different directories as it is a low priority but has still been an issue in the past. If this is an issue for your project please let me know.');
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();

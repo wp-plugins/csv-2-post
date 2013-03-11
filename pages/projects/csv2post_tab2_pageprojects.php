@@ -55,6 +55,7 @@ $panel_array['panel_name'] = 'createtitletemplates';// slug to act as a name and
 $panel_array['panel_title'] = __('Create Title Templates *global panel*');// user seen panel header text 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_help'] = __('The plugin allows us to create multiple post title templates for selecting when creating a new project. Over 2012 I will be adding features to allow dynamic or random designs to be applied based on values within your data or any other criteria users want to be taking into consideration.');
+$panel_array['video'] = 'http://youtu.be/ydF1bqI-FtM';
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);   

@@ -4,7 +4,6 @@ $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_
 $panel_array['panel_name'] = 'createddatabasetableslist';// slug to act as a name and part of the panel ID 
 $panel_array['panel_title'] = __('Delete Job Tables');// user seen panel header text 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_intro'] = __('A list of database tables created by data import jobs for deletion');
 $panel_array['panel_help'] = __('Delete one or more tables using this panel. This list also helps to monitor the number of tables created by the plugin. It indicates the rows inside each table to help remind us which are being used.');
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();

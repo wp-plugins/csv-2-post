@@ -274,7 +274,6 @@ if($side == 'public'){
     * Displays help button in panels with but report and bookmark option also
     * 
     * @param mixed $panel_number
-    * @param mixed $panel_intro
     * @param mixed $panel_title
     * @param mixed $panel_help
     * @param mixed $panel_icon
@@ -282,7 +281,7 @@ if($side == 'public'){
     * 
     * @deprecated 16th February 2013
     */
-    function csv2post_jquery_opendialog_helpbutton($panel_number,$panel_intro,$panel_title,$panel_help,$panel_icon,$panel_name,$panel_url){
+    function csv2post_jquery_opendialog_helpbutton($panel_number,$panel_title,$panel_help,$panel_icon,$panel_name,$panel_url){
        global $csv2post_adm_set;?>
         
         <script>
@@ -317,13 +316,12 @@ if($side == 'public'){
     * Displays help button in panels with but report and bookmark option also
     * 
     * @param mixed $panel_ID
-    * @param mixed $panel_intro
     * @param mixed $panel_title
     * @param mixed $panel_help
     * @param mixed $panel_icon
     * @param mixed $panel_name
     */
-    function csv2post_jquery_opendialog_accordianpanel_button($button_type,$panel_number,$panel_intro,$panel_title,$panel_help,$panel_icon,$panel_name,$panel_url){
+    function csv2post_jquery_opendialog_accordianpanel_button($button_type,$panel_number,$panel_title,$panel_help,$panel_icon,$panel_name,$panel_url){
        global $csv2post_adm_set;?>
         
         <script>

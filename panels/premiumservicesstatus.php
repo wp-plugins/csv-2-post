@@ -9,7 +9,6 @@ $panel_array['panel_title'] = __('Premium Services Status');// user seen panel h
 $panel_array['pageid'] = $pageid;// store the $pageid for sake of ease
 $panel_array['tabnumber'] = $csv2post_tab_number; 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_array['panel_number'];// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_intro'] = __('When a post does not have settings in its custom fields, these defaults are used.');
 $panel_array['panel_help'] = __('Settings which effect posts (that includes pages or custom post types) will be found here. This panel of settings behaves as a default, in many cases the default is ignored when a setting is applied to a specific post i.e. setting value stored in a custom field.'); 
 ?>
 <div id="titles" class="postbox">

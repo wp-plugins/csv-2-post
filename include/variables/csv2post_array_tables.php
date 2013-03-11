@@ -1,5 +1,5 @@
 <?php
-$csv2post_tables_array = csv2post_ARRAY_init('An array of all database tables',__LINE__,__FUNCTION__,__FILE__,'inline array',false);
+$csv2post_tables_array =  array();
 // csv2post_log
 $csv2post_tables_array['tables'][1]['name'] = 'csv2post_log';
 $csv2post_tables_array['tables'][1]['required'] = false;// required for all installations or not (boolean)

@@ -96,6 +96,25 @@ first plugin was created in 2009 and was halted pending re-development.
 6. You can use up to 3 columns of data to create 3 levels of categories.
 
 == Changelog ==
+= 6.9.1 =
+* From The Developers
+    * Released 11th March 2013
+* Fixes     
+    * None 
+* Feature Changes
+    * Easy CSV Importer: now sets the 'Current Project' properly. This allows user to move away from ECI to the Your Projects page and finish or update their project there.
+    * Easy CSV Importer: projects created on ECI screen are named using filename only (date and time no longer included)
+    * Easy CSV Importer: using the same file twice deletes an existing project as it shares the same project name. The intention is for anyone restarting not to have difficulties. Any user looking for the ability to keep the older project despite using the same file simply needs to use the sandbox screens and not use ECI.
+    * Easy CSV Importer: Ping and Comment options added to ECI step 2 as the form submission also creates project
+    * Easy CSV Importer: Confirm CSV File Format panel renamed to 'CSV File and Post Creation Setup'
+* Support Changes
+    * New Video: http://www.youtube.com/embed/gNwD-36ilWo (Content Template WYSIWYG Editor Tutorial)
+    * New Video: http://youtu.be/ydF1bqI-FtM (Title Templates)
+    * New Video: http://www.youtube.com/embed/5Dm-LbywiE0 (Post Update Settings)
+* Technical Changes
+    * ['panel_intro'] removed from all files
+    * $panel_intro removed from all files
+    
 = 6.9.0 =
 * From The Developers
     * Released 9th March 2013

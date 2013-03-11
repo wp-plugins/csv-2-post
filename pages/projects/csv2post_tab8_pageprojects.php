@@ -5,6 +5,7 @@ $panel_array['panel_name'] = 'postcontentupdatingsettings';// slug to act as a n
 $panel_array['panel_title'] = __('Post Content Updating Settings');// user seen panel header text  
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique 
 $panel_array['panel_help'] = __('Please use the Your Creation page for actual updating processing. This panel allows you to configure how CSV 2 POST should deal with changed records being used by this project.');
+$panel_array['video'] = 'http://www.youtube.com/embed/5Dm-LbywiE0';
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);               

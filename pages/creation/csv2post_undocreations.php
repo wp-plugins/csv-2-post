@@ -4,7 +4,6 @@ $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_
 $panel_array['panel_name'] = 'undopostscurrentproject';// slug to act as a name and part of the panel ID 
 $panel_array['panel_title'] = __('Undo Posts: Current Project');// user seen panel header text 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_intro'] = __('Delete posts and reset their records in project database tables');
 $panel_array['panel_help'] = __('Not only deletes posts for the current project but statistics
 and other counters are reset. This allows us to run post creation again, important if we find we need
 to change the projects configuration.');

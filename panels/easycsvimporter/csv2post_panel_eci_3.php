@@ -30,6 +30,9 @@ continue?';
         csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
         ?> 
 
+        <p>Submission will import your data to a temporary database table where
+        you can work with it if you need to before continuing.</p>
+                
         <?php 
         // add js for dialog on form submission and the dialog <div> itself
         if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){

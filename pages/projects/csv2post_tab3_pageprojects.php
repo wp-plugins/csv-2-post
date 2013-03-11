@@ -290,7 +290,6 @@ if($csv2post_is_dev){
     $panel_array['panel_name'] = 'basicseooptionsarraydump';// slug to act as a name and part of the panel ID 
     $panel_array['panel_title'] = __('Basic SEO Options Array Dump');// user seen panel header text 
     $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-    $panel_array['panel_intro'] = __('Select columns that hold the values you wish to use for SEO values');
     $panel_array['panel_help'] = __('Basic SEO options offer the ability to quickly setup meta values that will be applied to the page by your SEO plugin. You must enter the correct meta keys for your plugin and if you change SEO plugins after posts have been made you will need to take action to re-make meta values to work with your new SEO plugin.');?>
     <?php csv2post_panel_header( $panel_array );?>
 

@@ -23,11 +23,16 @@ any existing CSV file with the same name. Do you want to upload the file now?';?
   }else{?>
   
        <h4><?php _e('Upload CSV File')?> <?php echo ini_get( "upload_max_filesize").'B Limit';?></h4>
+       
        <form method="post" enctype="multipart/form-data" name="uploadform" class="form-table">                
-           <input type="file" name="file" size="70" /><br /><br />
-           
-           <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">
-           <input type="hidden" id="csv2post_post_eciuploadcsvfile" name="csv2post_post_eciuploadcsvfile" value="true">
+            
+            <input type="file" name="file" size="70" /><br /><br />
+            <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">
+            <input type="hidden" id="csv2post_post_eciuploadcsvfile" name="csv2post_post_eciuploadcsvfile" value="true">
+            <input type="hidden" name="csv2post_hidden_pageid" value="<?php echo $pageid;?>">
+            <input type="hidden" name="csv2post_hidden_panel_name" value="<?php echo $panel_array['panel_name'];?>">
+            <input type="hidden" name="csv2post_hidden_panel_title" value="<?php echo $panel_array['panel_title'];?>">
+            <input type="hidden" name="csv2post_hidden_tabnumber" value="1">
             
             <div class="jquerybutton">
                 <input class="button-primary" type="submit" value="Upload CSV File" name="eci_csvupload_submit" />

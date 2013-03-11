@@ -1,7 +1,4 @@
-<?php  
-csv2post_n_incontent('This is the Easy CSV Importer screen and it is in testing. It is an alternative method that offers the most common requirements
-in a simplier step by step way. The rest of the plugin offers more options and a sandbox approach','warning','Small','Easy CSV Importer Beta');
-     
+<?php       
 ++$panel_number;// increase panel counter so this panel has unique ID
 $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'ecireset';// slug to act as a name and part of the panel ID 
@@ -253,16 +250,26 @@ if($csv2post_ecisession_array['nextstep'] >= 3){
 ####################################
 #                                  #
 #     2. USER CONFIRMS FORMAT      #
-#           SAME FOR BOTH          #
+#                                  #
 ####################################
-if($csv2post_ecisession_array['nextstep'] >= 2){
-    require(WTG_C2P_PANELFOLDER_PATH . 'easycsvimporter/csv2post_panel_eci_2.php');    
+if($csv2post_ecisession_array['nextstep'] >= 2){                                               
+    if($csv2post_is_free){
+        require(WTG_C2P_PANELFOLDER_PATH . 'easycsvimporter/csv2post_panel_eci_2.php');
+    }else{
+        require(WTG_C2P_DIR . 'fulledition/panels/easycsvimporter/csv2post_panel_eci_2.php');
+    }    
 }
     
 ####################################
 #                                  #
 #      1. UPLOAD CSV FILE          #
-#         SAME FOR BOTH            #
+#                                  #
 ####################################                                                                                         
-require(WTG_C2P_PANELFOLDER_PATH . 'easycsvimporter/csv2post_panel_eci_1.php');
+if($csv2post_ecisession_array['nextstep'] >= 1){                                               
+    if($csv2post_is_free){
+        require(WTG_C2P_PANELFOLDER_PATH . 'easycsvimporter/csv2post_panel_eci_1.php');
+    }else{
+        require(WTG_C2P_DIR . 'fulledition/panels/easycsvimporter/csv2post_panel_eci_1.php');
+    }    
+}
 ?>

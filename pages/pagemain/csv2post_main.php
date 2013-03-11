@@ -30,8 +30,7 @@ if(!$csv2post_is_installed && !isset($_POST['csv2post_plugin_install_now'])){# w
     $display_main_screens = false;
     
     ### TODO:MEDIUMPRIORITY, add link to forum page and form for feedback
-    csv2post_n_incontent('Thank you for using our plugin, we look forward to your feedback.
-    <br /><br />
+    csv2post_n_incontent('Thank you for using our plugin, we look forward to your feedback.<br /><br />
     <strong>' . $installing_message .'</strong>','info','Large','Welcome To CSV 2 POST');
         
     csv2post_jquery_button();?>
@@ -48,9 +47,7 @@ if(!$csv2post_is_installed && !isset($_POST['csv2post_plugin_install_now'])){# w
         </div>
     </form>
     
-<?php       
-    
-    
+<?php  
 }elseif($csv2post_currentversion > $installed_version){         
 ########################################################
 #                                                      #

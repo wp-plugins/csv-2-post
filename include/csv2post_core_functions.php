@@ -1017,24 +1017,7 @@ function csv2post_exit($url,$keywords){
     exit;
 }
 
-/**
- * Echos the html beginning of a form and beginning of widefat post fixed table
- * 
- * @param string $name (a unique value to identify the form)
- * @param string $method (optional, default is post, post or get)
- * @param string $action (optional, default is null for self submission - can give url)
- * @param string $enctype (pass enctype="multipart/form-data" to create a file upload form)
- */
-function csv2post_formstart_standard($name,$id = 'none', $method = 'post',$class,$action = '',$enctype = ''){
-    if($class){
-        $class = 'class="'.$class.'"';
-    }else{
-        $class = '';         
-    }
-    echo '<form '.$class.' '.$enctype.' id="'.$id.'" method="'.$method.'" name="'.$name.'" action="'.$action.'">
-    <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">';
-}
-            
+        
 /**
 * Returns the plugins standard date (MySQL Date Time Formatted) with common format used in Wordpress.
 * Optional $time parameter, if false will return the current time().
@@ -1739,9 +1722,9 @@ function csv2post_WP_SQL_query_rowid_exists($sql_adapted, $table_name, $row_id_v
 * 1. CSV file headers are not put through this function, if that is ever needed we should either create another function or add optional parameter on this one
 */
 function csv2post_data_prep_fromcsvfile($value){
-    
+           
     // if utf8_encode() wanted
-    if(isset($csv2post_adm_set['encoding']['type']) && $csv2post_adm_set['encoding']['type'] == 'utf8'){
+    if(!isset($csv2post_adm_set['encoding']['type']) || isset($csv2post_adm_set['encoding']['type']) && $csv2post_adm_set['encoding']['type'] == 'utf8'){
         $value = utf8_encode($value);    
     }     
           
@@ -1782,7 +1765,7 @@ function csv2post_log_posts($post_id,$post_title,$action,$message,$project_name)
 * @param mixed $file
 * @param mixed $function
 */
-function csv2post_log_automation($action,$outcome,$trigger = 'schedule',$line = 'NA',$file = 'NA',$function = 'NA'){
+function csv2post_log_schedule($action,$outcome,$trigger = 'schedule',$line = 'NA',$file = 'NA',$function = 'NA'){
     $atts = array();   
     $atts['logged'] = csv2post_date();
     $atts['action'] = $action;
@@ -1959,7 +1942,7 @@ function csv2post_formend_standard($buttontitle = 'Submit',$buttonid = 'notrequi
         }?>
 
         <br />
-
+        
         <?php if($csv2post_guitheme == 'jquery'){?>
         
             <div class="jquerybutton">
@@ -1974,6 +1957,20 @@ function csv2post_formend_standard($buttontitle = 'Submit',$buttonid = 'notrequi
         
     </form><?php
 }     
+
+/**
+* Returns current data import job name 
+*/
+function csv2post_current_jobname(){
+    global $csv2post_currentjob_code,$csv2post_dataimportjobs_array; 
+     
+    if(!isset($csv2post_dataimportjobs_array[$csv2post_currentjob_code]['name'])){
+        false;
+    }else{
+        return $csv2post_dataimportjobs_array[$csv2post_currentjob_code]['name']; 
+    }
+            
+}
 
 /**
  * Adds a jquery effect submit button, for using in form
@@ -2014,4 +2011,23 @@ function csv2post_post_categories($record_array){
         return array(end($cat_array));
     }
 }  
+
+/**
+ * Echos the html beginning of a form and beginning of widefat post fixed table
+ * 
+ * @param string $name (a unique value to identify the form)
+ * @param string $method (optional, default is post, post or get)
+ * @param string $action (optional, default is null for self submission - can give url)
+ * @param string $enctype (pass enctype="multipart/form-data" to create a file upload form)
+ */
+function csv2post_formstart_standard($name,$id = 'none', $method = 'post',$class,$action = '',$enctype = ''){
+    if($class){
+        $class = 'class="'.$class.'"';
+    }else{
+        $class = '';         
+    }
+    echo '<form '.$class.' '.$enctype.' id="'.$id.'" method="'.$method.'" name="'.$name.'" action="'.$action.'">
+    <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">';
+}
+    
 ?>

@@ -508,6 +508,8 @@ function csv2post_update_currentproject($project_code){
 * 
 * @param mixed $project_code
 * @return boolean, false if a failure is detected in trying to remove any part of the project else true is returned
+* 
+* @todo LOWPRIORITY, archive arrays using an archive system, this will offer security for all systems and user actions. We should probably establish a limit for the arrays and the best way to store them
 */
 function csv2post_delete_postcreationproject($project_code,$current_project_code = false){
     global $csv2post_projectslist_array;

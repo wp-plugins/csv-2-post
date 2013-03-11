@@ -4,7 +4,6 @@ $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_
 $panel_array['panel_name'] = 'globalpostupdatesettings';// slug to act as a name and part of the panel ID 
 $panel_array['panel_title'] = __('Global Post Updating Settings *global panel*');// user seen panel header text 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_intro'] = __('Configure how you want the plugin to handle post updating for all projects');
 $panel_array['panel_help'] = __('This is a global panel, what you configure here will effect all projects.
 You may need to visit other panels to complete the entire configuration involved in post updating i.e. save
 settings on the Schedule screen and the Your Project page has a tab named Update Settings. That tab offers

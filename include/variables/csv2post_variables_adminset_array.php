@@ -9,12 +9,14 @@
 $csv2post_adm_set = array();
 $csv2post_adm_set['ecq'] = array();
 $csv2post_adm_set['chmod'] = '0750';
+// encoding
+$csv2post_adm_set['encoding']['type'] = 'utf8';
 // admin user interface settings start
 $csv2post_adm_set['ui_advancedinfo'] = false;// hide advanced user interface information by default
 $csv2post_adm_set['ui_helpdialog_width'] = 800;
 $csv2post_adm_set['ui_helpdialog_height'] = 500;
-
 // logging settings start
+### TODO:LOWPRIORITY, these values are no longer in use, logging is a single switch
 $csv2post_adm_set['log_general_active'] = true;// boolean switch       
 $csv2post_adm_set['log_sql_active'] = true;// boolean switch   
 $csv2post_adm_set['log_admin_active'] = true;// boolean switch

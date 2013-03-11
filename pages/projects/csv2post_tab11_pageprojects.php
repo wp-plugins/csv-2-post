@@ -17,6 +17,7 @@ $panel_array['panel_name'] = 'premadetagscolumn';// slug to act as a name and pa
 $panel_array['panel_title'] = __('Pre-made Tags Column');// user seen panel header text 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_help'] = __('This feature does not generate tags for you. The plugin can generate tags for you and there are options to configure them for the best results but those features are in other panels. This is also an area I am willing to adapt to suit specific users needs should they request it. The default tags column must be a column of pre-made tags separated by comma. Comma is required by Wordpress, if you have tags separated by another character I could add a feature to replace them.');
+$panel_array['video'] = 'http://www.youtube.com/embed/PbNOG9gXfkI';
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);     

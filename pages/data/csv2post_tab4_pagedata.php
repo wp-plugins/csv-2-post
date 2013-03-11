@@ -150,7 +150,6 @@ $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_
 $panel_array['panel_name'] = 'discardrecords';// slug to act as a name and part of the panel ID 
 $panel_array['panel_title'] = __('Discard Records');// user seen panel header text 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_intro'] = __('Create rules that void or skip rows to help improve the quality of your data');
 $panel_array['panel_help'] = __('You can skip a row and it will not be imported at all or you can import all rows from a CSV file but void it within the database table so that it is never used. Voiding allows us to build more statistics and at some stage I could add features that allow us to improve the data or make other uses of the data that has been voided.');
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
