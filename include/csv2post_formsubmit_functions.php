@@ -1,7 +1,7 @@
 <?php
 #################################################
 #                                               #
-#      EASY CSV IMPORTER - FREE FUNCTIONS       #
+#      Quick Start - FREE FUNCTIONS       #
 #                                               #
 #################################################
 function csv2post_form_ECI_free_step18_createposts(){
@@ -580,7 +580,7 @@ function csv2post_form_ECI_free_step2_confirmformat(){
     }     
 }
 
-// Easy CSV Importer - Step 1 (in code it is zero) - Upload CSV File
+// Quick Start - Step 1 (in code it is zero) - Upload CSV File
 function csv2post_form_ECI_free_step1_uploadcsvfile(){
     if(isset($_POST['csv2post_post_eciuploadcsvfile']) && $_POST['csv2post_post_eciuploadcsvfile'] == true
     && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile'){
@@ -2358,14 +2358,14 @@ function csv2post_form_createcontentfolder(){
 }  
  
 /**
-* Reset Easy CSV Importer session array 
+* Reset Quick Start session array 
 */
 function csv2post_form_reseteci(){
     if(isset( $_POST[WTG_C2P_ABB.'hidden_pageid'] ) && $_POST[WTG_C2P_ABB.'hidden_pageid'] == 'main' && isset($_POST[WTG_C2P_ABB.'hidden_panel_name']) && $_POST[WTG_C2P_ABB.'hidden_panel_name'] == 'ecireset'){
 
         csv2post_INSTALL_ecisession();
         
-        csv2post_notice_postresult('success','Easy CSV Importer Reset','You can now start with Step One of the Easy CSV Importer system.');
+        csv2post_notice_postresult('success','Quick Start Reset','You can now start with Step One of the Quick Start system.');
         
         return false;
     }else{

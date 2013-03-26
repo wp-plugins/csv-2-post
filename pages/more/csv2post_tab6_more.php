@@ -7,7 +7,7 @@ $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a
 $panel_array['panel_help'] = __('Please send payments to paypal@csv2post.com or visit www.csv2post.com and go through the checkout.');?>
 <?php csv2post_panel_header( $panel_array );?>
 <p>For a limited time only you can buy CSV 2 POST for just &dollar;39/&pound;25 and as an extra bonus
-you get Easy CSV Importer premium edition free, to give you something to use until CSV 2 POST is complete.
+you get Quick Start premium edition free, to give you something to use until CSV 2 POST is complete.
 The planned
 sales price is &dollar;157/&pound;99.99. The plugin will be in development until 2013 but a well working beta will be
 available by August. During 2013 many support services will be deployed also. Click on the help button

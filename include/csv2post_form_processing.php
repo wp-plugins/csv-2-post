@@ -174,7 +174,7 @@ if($cont){
     // Save drip feed limits
     $cont = csv2post_form_save_schedulelimits(); 
     
-    // Reset Easy CSV Importer Session
+    // Reset Quick Start Session
     $cont = csv2post_form_reseteci();   
     
     // Save operation settings
@@ -194,7 +194,7 @@ if($cont){
     $cont = csv2post_form_delete_persistentnotice();   
 }
 
-// Easy CSV Importer - Free
+// Quick Start - Free
 if($cont){
     
     // Step 18: Create Posts

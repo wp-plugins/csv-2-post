@@ -5,11 +5,11 @@
 #                                                         #
 ###########################################################
 $csv2post_persistent_array = array();
-// 0 - Easy CSV Importer screen introduction
+// 0 - Quick Start screen introduction
 $csv2post_persistent_array['notifications'][0]['message'] = 'This is our quick start feature. You can import data and create posts using the most commonly used settings. There are panels that are only provided by our paid services and they had to be kept due to complications in removing them. However everything the majority of users need for auto-blogging are included in our free edition of CSV 2 POST.';
 $csv2post_persistent_array['notifications'][0]['type'] = 'info';
 $csv2post_persistent_array['notifications'][0]['size'] = 'Large';
-$csv2post_persistent_array['notifications'][0]['title'] = 'Easy CSV Importer Tool';
+$csv2post_persistent_array['notifications'][0]['title'] = 'Quick Start Tool';
 $csv2post_persistent_array['notifications'][0]['helpurl'] = ''; 
 $csv2post_persistent_array['notifications'][0]['placement_type'] = 'screen';      
 $csv2post_persistent_array['notifications'][0]['placement_specific'] = 0;  

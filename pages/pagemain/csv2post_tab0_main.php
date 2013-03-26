@@ -2,12 +2,12 @@
 ++$panel_number;// increase panel counter so this panel has unique ID
 $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'ecireset';// slug to act as a name and part of the panel ID 
-$panel_array['panel_title'] = __('Reset Easy CSV Importer');// user seen panel header text 
+$panel_array['panel_title'] = __('Reset Quick Start');// user seen panel header text 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique 
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);
-$jsform_set['dialogbox_title'] = 'Reset Easy CSV Importer'; 
+$jsform_set['dialogbox_title'] = 'Reset Quick Start'; 
 $jsform_set['noticebox_content'] = 'Doing this will not deleted Data Import Jobs, Post Creation Projects or any posts created already but it will reset progress made on this screen. Do you wish to continue?';
 
 // begin form and add hidden values
@@ -20,18 +20,18 @@ if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
     csv2post_jquery_form_prompt($jsform_set);
 }
 
-csv2post_formend_standard('Reset Easy CSV Importer Steps',$jsform_set['form_id']);?>
+csv2post_formend_standard('Reset Quick Start Steps',$jsform_set['form_id']);?>
 
 <br />    
    
 <?php  
 // get eci array, if not installed we display an introduction plus activation button
-// Easy CSV Importer Array (tracks progress)
+// Quick Start Array (tracks progress)
 $csv2post_ecisession_array = csv2post_WP_SETTINGS_get_eciarray();
 
 if(!$csv2post_ecisession_array || !is_array($csv2post_ecisession_array)){
-    csv2post_n_incontent('Required settings for the Easy CSV Importer to work do not appear to be installed. 
-    Please re-install the settings using the Install page.','warning','Large','No ECI Settings');
+    csv2post_n_incontent('Required settings for the Quick Start to work do not appear to be installed. 
+    Please re-install the settings using the Install page.','warning','Large','No Quick Start Settings');
     return;
 }
        
@@ -42,9 +42,9 @@ if(!$csv2post_ecisession_array || !is_array($csv2post_ecisession_array)){
 ####################################
 if($csv2post_ecisession_array['nextstep'] >= 18){
     if($csv2post_is_free){
-        require(WTG_C2P_PANELFOLDER_PATH . 'easycsvimporter/csv2post_panel_eci_18.php');
+        require(WTG_C2P_PANELFOLDER_PATH . 'quickstart/csv2post_panel_eci_18.php');
     }else{
-        require(WTG_C2P_DIR . 'fulledition/panels/easycsvimporter/csv2post_panel_eci_18.php');
+        require(WTG_C2P_DIR . 'fulledition/panels/quickstart/csv2post_panel_eci_18.php');
     }    
 }
 
@@ -55,9 +55,9 @@ if($csv2post_ecisession_array['nextstep'] >= 18){
 ####################################
 if($csv2post_ecisession_array['nextstep'] >= 17){
     if($csv2post_is_free){
-        require(WTG_C2P_PANELFOLDER_PATH . 'easycsvimporter/csv2post_panel_eci_17.php');
+        require(WTG_C2P_PANELFOLDER_PATH . 'quickstart/csv2post_panel_eci_17.php');
     }else{
-        require(WTG_C2P_DIR . 'fulledition/panels/easycsvimporter/csv2post_panel_eci_17.php');
+        require(WTG_C2P_DIR . 'fulledition/panels/quickstart/csv2post_panel_eci_17.php');
     }    
 }
 
@@ -68,9 +68,9 @@ if($csv2post_ecisession_array['nextstep'] >= 17){
 ####################################
 if($csv2post_ecisession_array['nextstep'] >= 16){
     if($csv2post_is_free){
-        require(WTG_C2P_PANELFOLDER_PATH . 'easycsvimporter/csv2post_panel_eci_16.php');
+        require(WTG_C2P_PANELFOLDER_PATH . 'quickstart/csv2post_panel_eci_16.php');
     }else{
-        require(WTG_C2P_DIR . 'fulledition/panels/easycsvimporter/csv2post_panel_eci_16.php');
+        require(WTG_C2P_DIR . 'fulledition/panels/quickstart/csv2post_panel_eci_16.php');
     }    
 }
 
@@ -81,9 +81,9 @@ if($csv2post_ecisession_array['nextstep'] >= 16){
 ####################################
 if($csv2post_ecisession_array['nextstep'] >= 15){
     if($csv2post_is_free){
-        require(WTG_C2P_PANELFOLDER_PATH . 'easycsvimporter/csv2post_panel_eci_15.php');
+        require(WTG_C2P_PANELFOLDER_PATH . 'quickstart/csv2post_panel_eci_15.php');
     }else{
-        require(WTG_C2P_DIR . 'fulledition/panels/easycsvimporter/csv2post_panel_eci_15.php');
+        require(WTG_C2P_DIR . 'fulledition/panels/quickstart/csv2post_panel_eci_15.php');
     }    
 }
 
@@ -94,9 +94,9 @@ if($csv2post_ecisession_array['nextstep'] >= 15){
 ####################################
 if($csv2post_ecisession_array['nextstep'] >= 14){
     if($csv2post_is_free){
-        require(WTG_C2P_PANELFOLDER_PATH . 'easycsvimporter/csv2post_panel_eci_14.php');
+        require(WTG_C2P_PANELFOLDER_PATH . 'quickstart/csv2post_panel_eci_14.php');
     }else{
-        require(WTG_C2P_DIR . 'fulledition/panels/easycsvimporter/csv2post_panel_eci_14.php');
+        require(WTG_C2P_DIR . 'fulledition/panels/quickstart/csv2post_panel_eci_14.php');
     }    
 }
 
@@ -107,9 +107,9 @@ if($csv2post_ecisession_array['nextstep'] >= 14){
 ####################################
 if($csv2post_ecisession_array['nextstep'] >= 13){
     if($csv2post_is_free){
-        require(WTG_C2P_PANELFOLDER_PATH . 'easycsvimporter/csv2post_panel_eci_13.php');
+        require(WTG_C2P_PANELFOLDER_PATH . 'quickstart/csv2post_panel_eci_13.php');
     }else{
-        require(WTG_C2P_DIR . 'fulledition/panels/easycsvimporter/csv2post_panel_eci_13.php');
+        require(WTG_C2P_DIR . 'fulledition/panels/quickstart/csv2post_panel_eci_13.php');
     }  
 }
 
@@ -120,9 +120,9 @@ if($csv2post_ecisession_array['nextstep'] >= 13){
 ####################################
 if($csv2post_ecisession_array['nextstep'] >= 12){
     if($csv2post_is_free){
-        require(WTG_C2P_PANELFOLDER_PATH . 'easycsvimporter/csv2post_panel_eci_12.php');
+        require(WTG_C2P_PANELFOLDER_PATH . 'quickstart/csv2post_panel_eci_12.php');
     }else{
-        require(WTG_C2P_DIR . 'fulledition/panels/easycsvimporter/csv2post_panel_eci_12.php');
+        require(WTG_C2P_DIR . 'fulledition/panels/quickstart/csv2post_panel_eci_12.php');
     }    
 }
 
@@ -133,9 +133,9 @@ if($csv2post_ecisession_array['nextstep'] >= 12){
 ####################################
 if($csv2post_ecisession_array['nextstep'] >= 11){
     if($csv2post_is_free){
-        require(WTG_C2P_PANELFOLDER_PATH . 'easycsvimporter/csv2post_panel_eci_11.php');
+        require(WTG_C2P_PANELFOLDER_PATH . 'quickstart/csv2post_panel_eci_11.php');
     }else{
-        require(WTG_C2P_DIR . 'fulledition/panels/easycsvimporter/csv2post_panel_eci_11.php');
+        require(WTG_C2P_DIR . 'fulledition/panels/quickstart/csv2post_panel_eci_11.php');
     }    
 }
 
@@ -146,9 +146,9 @@ if($csv2post_ecisession_array['nextstep'] >= 11){
 ####################################
 if($csv2post_ecisession_array['nextstep'] >= 10){
     if($csv2post_is_free){
-        require(WTG_C2P_PANELFOLDER_PATH . 'easycsvimporter/csv2post_panel_eci_10.php');
+        require(WTG_C2P_PANELFOLDER_PATH . 'quickstart/csv2post_panel_eci_10.php');
     }else{
-        require(WTG_C2P_DIR . 'fulledition/panels/easycsvimporter/csv2post_panel_eci_10.php');
+        require(WTG_C2P_DIR . 'fulledition/panels/quickstart/csv2post_panel_eci_10.php');
     }    
 } 
 
@@ -159,9 +159,9 @@ if($csv2post_ecisession_array['nextstep'] >= 10){
 ####################################
 if($csv2post_ecisession_array['nextstep'] >= 9){
     if($csv2post_is_free){
-        require(WTG_C2P_PANELFOLDER_PATH . 'easycsvimporter/csv2post_panel_eci_9.php');
+        require(WTG_C2P_PANELFOLDER_PATH . 'quickstart/csv2post_panel_eci_9.php');
     }else{
-        require(WTG_C2P_DIR . 'fulledition/panels/easycsvimporter/csv2post_panel_eci_9.php');
+        require(WTG_C2P_DIR . 'fulledition/panels/quickstart/csv2post_panel_eci_9.php');
     }    
 }
 
@@ -172,9 +172,9 @@ if($csv2post_ecisession_array['nextstep'] >= 9){
 ####################################
 if($csv2post_ecisession_array['nextstep'] >= 8){
     if($csv2post_is_free){
-        require(WTG_C2P_PANELFOLDER_PATH . 'easycsvimporter/csv2post_panel_eci_8.php');
+        require(WTG_C2P_PANELFOLDER_PATH . 'quickstart/csv2post_panel_eci_8.php');
     }else{
-        require(WTG_C2P_DIR . 'fulledition/panels/easycsvimporter/csv2post_panel_eci_8.php');
+        require(WTG_C2P_DIR . 'fulledition/panels/quickstart/csv2post_panel_eci_8.php');
     }    
 }
 
@@ -185,9 +185,9 @@ if($csv2post_ecisession_array['nextstep'] >= 8){
 ####################################
 if($csv2post_ecisession_array['nextstep'] >= 7){
     if($csv2post_is_free){
-        require(WTG_C2P_PANELFOLDER_PATH . 'easycsvimporter/csv2post_panel_eci_7.php');
+        require(WTG_C2P_PANELFOLDER_PATH . 'quickstart/csv2post_panel_eci_7.php');
     }else{
-        require(WTG_C2P_DIR . 'fulledition/panels/easycsvimporter/csv2post_panel_eci_7.php');
+        require(WTG_C2P_DIR . 'fulledition/panels/quickstart/csv2post_panel_eci_7.php');
     }    
 }
 
@@ -198,9 +198,9 @@ if($csv2post_ecisession_array['nextstep'] >= 7){
 ####################################
 if($csv2post_ecisession_array['nextstep'] >= 6){
     if($csv2post_is_free){
-        require(WTG_C2P_PANELFOLDER_PATH . 'easycsvimporter/csv2post_panel_eci_6.php');
+        require(WTG_C2P_PANELFOLDER_PATH . 'quickstart/csv2post_panel_eci_6.php');
     }else{
-        require(WTG_C2P_DIR . 'fulledition/panels/easycsvimporter/csv2post_panel_eci_6.php');
+        require(WTG_C2P_DIR . 'fulledition/panels/quickstart/csv2post_panel_eci_6.php');
     }    
 }
         
@@ -212,10 +212,10 @@ if($csv2post_ecisession_array['nextstep'] >= 6){
 if($csv2post_ecisession_array['nextstep'] >= 5){           
     if($csv2post_is_free){
         // select premade title
-        require(WTG_C2P_PANELFOLDER_PATH . 'easycsvimporter/csv2post_panel_eci_5.php');
+        require(WTG_C2P_PANELFOLDER_PATH . 'quickstart/csv2post_panel_eci_5.php');
     }else{
         // build a title by selecting columns with ability to insert values between them (still no tokens)
-        require(WTG_C2P_DIR . 'fulledition/panels/easycsvimporter/csv2post_panel_eci_5.php');
+        require(WTG_C2P_DIR . 'fulledition/panels/quickstart/csv2post_panel_eci_5.php');
     }    
 }
 
@@ -227,10 +227,10 @@ if($csv2post_ecisession_array['nextstep'] >= 5){
 if($csv2post_ecisession_array['nextstep'] >= 4){
     if($csv2post_is_free){
         // user pairs columns to a list of default tokens and selects from a small list of hardcoded templates that use those tokens
-        require(WTG_C2P_PANELFOLDER_PATH . 'easycsvimporter/csv2post_panel_eci_4.php');
+        require(WTG_C2P_PANELFOLDER_PATH . 'quickstart/csv2post_panel_eci_4.php');
     }else{
         // user can select a custom design, display instructions on creating one, or they can do as done in free edition
-        require(WTG_C2P_DIR . 'fulledition/panels/easycsvimporter/csv2post_panel_eci_4.php');
+        require(WTG_C2P_DIR . 'fulledition/panels/quickstart/csv2post_panel_eci_4.php');
     }    
 }
 
@@ -241,9 +241,9 @@ if($csv2post_ecisession_array['nextstep'] >= 4){
 ####################################
 if($csv2post_ecisession_array['nextstep'] >= 3){                                               
     if($csv2post_is_free){
-        require(WTG_C2P_PANELFOLDER_PATH . 'easycsvimporter/csv2post_panel_eci_3.php');
+        require(WTG_C2P_PANELFOLDER_PATH . 'quickstart/csv2post_panel_eci_3.php');
     }else{
-        require(WTG_C2P_DIR . 'fulledition/panels/easycsvimporter/csv2post_panel_eci_3.php');
+        require(WTG_C2P_DIR . 'fulledition/panels/quickstart/csv2post_panel_eci_3.php');
     }    
 }
                     
@@ -254,9 +254,9 @@ if($csv2post_ecisession_array['nextstep'] >= 3){
 ####################################
 if($csv2post_ecisession_array['nextstep'] >= 2){                                               
     if($csv2post_is_free){
-        require(WTG_C2P_PANELFOLDER_PATH . 'easycsvimporter/csv2post_panel_eci_2.php');
+        require(WTG_C2P_PANELFOLDER_PATH . 'quickstart/csv2post_panel_eci_2.php');
     }else{
-        require(WTG_C2P_DIR . 'fulledition/panels/easycsvimporter/csv2post_panel_eci_2.php');
+        require(WTG_C2P_DIR . 'fulledition/panels/quickstart/csv2post_panel_eci_2.php');
     }    
 }
     
@@ -267,9 +267,9 @@ if($csv2post_ecisession_array['nextstep'] >= 2){
 ####################################                                                                                         
 if($csv2post_ecisession_array['nextstep'] >= 1){                                               
     if($csv2post_is_free){
-        require(WTG_C2P_PANELFOLDER_PATH . 'easycsvimporter/csv2post_panel_eci_1.php');
+        require(WTG_C2P_PANELFOLDER_PATH . 'quickstart/csv2post_panel_eci_1.php');
     }else{
-        require(WTG_C2P_DIR . 'fulledition/panels/easycsvimporter/csv2post_panel_eci_1.php');
+        require(WTG_C2P_DIR . 'fulledition/panels/quickstart/csv2post_panel_eci_1.php');
     }    
 }
 ?>

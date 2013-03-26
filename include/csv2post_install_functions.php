@@ -11,9 +11,9 @@ function csv2post_install_plugin(){
     $csv2post_eci_session_array['nextstep'] = 1;  
     if( !csv2post_option('csv2post_ecisession','add',serialize($csv2post_eci_session_array)) ){
         // should never happen - csv2post_uninstall() used at the beginning of csv2post_install_core()
-        csv2post_notice('Easy CSV Importer settings are already installed, no changes were made to those settings.','warning','Tiny',false,'','echo');          
+        csv2post_notice('Quick Start settings are already installed, no changes were made to those settings.','warning','Tiny',false,'','echo');          
     }else{
-        csv2post_notice('Installed the Easy CSV Importer settings','success','Tiny',false,'','echo');
+        csv2post_notice('Installed the Quick Start settings','success','Tiny',false,'','echo');
     }    
     
     // register custom post types (currently one for post content designs)
@@ -47,7 +47,7 @@ function csv2post_diagnostic_core(){
 }
 
 /**
-* This diagnostic is specific to the custom plugin i.e. CSV 2 POST or Easy CSV Importer.
+* This diagnostic is specific to the custom plugin i.e. CSV 2 POST or Quick Start.
 * 1. Call this function in csv2post_diagnostic_core
 */
 function csv2post_diagnostic_custom(){
@@ -298,7 +298,7 @@ function csv2post_INSTALL_tabmenu_settings(){
 } 
 
 /**
-* Installs the Easy CSV Importer by using update.
+* Installs the Quick Start by using update.
 * This function should not be used during plugin installation because it
 * would destroy values that the user may be trying to retain for a new
 * installation. 
