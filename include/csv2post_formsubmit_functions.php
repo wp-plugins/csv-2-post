@@ -582,7 +582,8 @@ function csv2post_form_ECI_free_step2_confirmformat(){
 
 // Easy CSV Importer - Step 1 (in code it is zero) - Upload CSV File
 function csv2post_form_ECI_free_step1_uploadcsvfile(){
-    if(isset($_POST['csv2post_post_eciuploadcsvfile']) && $_POST['csv2post_post_eciuploadcsvfile'] == true){
+    if(isset($_POST['csv2post_post_eciuploadcsvfile']) && $_POST['csv2post_post_eciuploadcsvfile'] == true
+    && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile'){
         global $csv2post_plugintitle;
         
         $upload = $_FILES['file'];
@@ -597,7 +598,7 @@ function csv2post_form_ECI_free_step1_uploadcsvfile(){
         // check error value
         if($upload['error'] != 0){
             csv2post_notice('Could not upload file please contact us for support and 
-            give error code: ' . $upload['error'],'error','Large','Upload Failed');
+            give error code: ' . $upload['error'],'error','Large','CSV Upload Failure');
             return false;// not returning false due to failure, only returning false to indicate end of processing            
         }        
         
@@ -675,7 +676,8 @@ function csv2post_form_ECI_free_step1_uploadcsvfile(){
         that you cannot move between this ECI screen and other screens in order to work with multiple
         Data Import Jobs or Post Creation Projects. You must complete the ECI process and only then 
         use other screens to work on different projects. You can ignore this message if you have no
-        intention of working with multiple Data Import Jobs or do not use the other screens.','success','Large','CSV File Uploaded');
+        intention of working with multiple Data Import Jobs or do not use the other screens.',
+        'success','Large','CSV File Ready To Use');
 
         return false;
     }else{

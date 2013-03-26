@@ -138,7 +138,7 @@ function csv2post_templatefiles_missing($output = false){
         }
 
         if(!file_exists($path)){ 
-        
+              
             if($output){
                 csv2post_notice('A files important for the plugin to operate appear to be missing. The expect
                 file should be on the follow path...<br /><br />' . $path,'error','Small',' Core File Missing: ','','echo');             

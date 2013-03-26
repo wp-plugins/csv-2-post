@@ -97,6 +97,19 @@ first plugin was created in 2009 and was halted pending re-development.
 
 == Changelog ==
 
+= 6.9.3 =
+* From The Developers
+    * Released 26th March 2013
+* Fixes     
+    * No longer attempts to process CSV file upload more than once. 
+    * Processing a CSV file twice caused an existing copy of the file to be deleted rather than replaced, causing errors as there is no file for certain interface features that expect the file to be present.
+* Feature Changes
+    * Create Data Import Job Panel: removed jQuery UI styling for radios/checkboxes
+* Support Changes
+    * 
+* Technical Changes
+    * 
+    
 = 6.9.2 =
 * From The Developers
     * Massive changes to file structure again. The last phase of preparing a multi-plugin core is 99% complete so this will not happen again.

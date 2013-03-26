@@ -28,7 +28,7 @@ services not just software. License and agreement is seperate.
 */         
 
 // package variables (frequently changed)
-$csv2post_currentversion = '6.9.2';
+$csv2post_currentversion = '6.9.3';
 $csv2post_php_version_tested = '5.4.0';// current version the plugin is being developed on
 $csv2post_php_version_minimum = '5.2.1';// minimum version required for plugin to operate
 $csv2post_is_free_override = false;// change to true for free edition setup when fulledition folder present 

@@ -94,7 +94,6 @@ function csv2post_debugmode(){
         //define( 'SCRIPT_DEBUG', true );
         $wpdb->show_errors();
         $wpdb->print_error();
-        
     }
 }
 

@@ -611,7 +611,7 @@ function csv2post_list_dataimportjobs(){
         echo '
         <table class="widefat post fixed">
             <tr class="first">
-                <td width="50"><strong>Delete</strong></td>        
+                <td width="25"></td>        
                 <td width="250"><strong>Job Name</strong></td>
                 <td><strong>Job Code</strong></td>                                                          
             </tr>';  
@@ -1825,7 +1825,7 @@ function csv2post_display_databasetables_withjobnames($checkbox_column = false,$
         echo '<table class="widefat post fixed"><tr class="first">';
         
         if($checkbox_column){
-            echo '<td width="80"><strong>Select</strong></td>';        
+            echo '<td width="25"></td>';        
         }
         
         echo '<td width="200"><strong>Table Names</strong></td>
@@ -1833,7 +1833,7 @@ function csv2post_display_databasetables_withjobnames($checkbox_column = false,$
             <td width="100"><strong>Records</strong></td>
             <td width="100"><strong>Used</strong></td>
             <td width="100"><strong>Reset Table</strong></td>
-            <td width="100"><strong>Reset Posts</strong></td>                                                                              
+            <td><strong>Reset Posts</strong></td>                                                                              
         </tr>'; 
         
         $table_count = 0;
@@ -2014,11 +2014,11 @@ function csv2post_display_csvfiles_fornewdataimportjob(){
             
     echo '
     <tr>
-        <td width="50">Select</td>
-        <td width="200">CSV File Name</td>
+        <td width="25"></td>
+        <td width="150">CSV File Name</td>
         <td width="70">Columns</td>        
-        <td width="110">Separator</td>
-        <td width="80">Quote</td> 
+        <td width="90">Separator</td>
+        <td>Quote</td> 
     </tr>';
     
     @$opendir_result = opendir( WTG_C2P_CONTENTFOLDER_DIR ); 
@@ -2044,49 +2044,26 @@ function csv2post_display_csvfiles_fornewdataimportjob(){
                             if($csv2post_is_free || isset($csv2post_adm_set['ecq'][110]) && $csv2post_adm_set['ecq'][110] == 'no'){
                                 $object_type = 'radio';
                             }?>
-                            
-                            <script>
-                            $(function() {
-                                $( "#csv2post_newjob_includefile_<?php echo $object_type;?>_<?php echo $fileChunks[0];?>" ).buttonset();
-                            });
-                            </script>
-
-                            <div id="csv2post_newjob_includefile_<?php echo $object_type;?>_<?php echo $fileChunks[0];?>">                    
-                                <input type="<?php echo $object_type;?>" name="csv2post_newjob_included_csvfiles[]" id="csv2post_newjob_includefile_<?php echo $fileChunks[0];?>" value="<?php echo $filename;?>" />
-                                <label for="csv2post_newjob_includefile_<?php echo $fileChunks[0];?>">*</label>                     
-                            </div>
-                            
+               
+                            <input type="<?php echo $object_type;?>" name="csv2post_newjob_included_csvfiles[]" id="csv2post_newjob_includefile_<?php echo $fileChunks[0];?>" value="<?php echo $filename;?>" />
+                   
                         <?php 
                         ### TODO:HIGHPRIORITY, change the PEARCSVmethod for quote in the fget column
                         echo '</td>
                         <td>'.$filename.'</td>
                         <td><input type="text" name="csv2post_csvfile_fieldcount_'.$fileChunks[0].'" size="2" maxlength="2" value="" /></td>
                         <td>'; ?>
-
-                            <script>
-                            $(function() {
-                                $( "#csv2post_newjob_separator_radios_<?php echo $fileChunks[0];?>" ).buttonset();
-                            });
-                            </script>
-
-                            <div id="csv2post_newjob_separator_radios_<?php echo $fileChunks[0];?>">
-                                <input type="radio" id="csv2post_separator_comma_<?php echo $fileChunks[0];?>" name="csv2post_newjob_separators<?php echo $fileChunks[0];?>" value="," /><label for="csv2post_separator_comma_<?php echo $fileChunks[0];?>">,</label>
-                                <input type="radio" id="csv2post_separator_semicolon_<?php echo $fileChunks[0];?>" name="csv2post_newjob_separators<?php echo $fileChunks[0];?>" value=";" /><label for="csv2post_separator_semicolon_<?php echo $fileChunks[0];?>">;</label>
-                                <input type="radio" id="csv2post_separator_tab_<?php echo $fileChunks[0];?>" name="csv2post_newjob_separators<?php echo $fileChunks[0];?>" value="|" /><label for="csv2post_separator_tab_<?php echo $fileChunks[0];?>">|</label>                
-                            </div>
-
+                  
+                            <input type="radio" id="csv2post_separator_comma_<?php echo $fileChunks[0];?>" name="csv2post_newjob_separators<?php echo $fileChunks[0];?>" value="," /><label for="csv2post_separator_comma_<?php echo $fileChunks[0];?>"> <strong>,</strong> </label>
+                            <br><input type="radio" id="csv2post_separator_semicolon_<?php echo $fileChunks[0];?>" name="csv2post_newjob_separators<?php echo $fileChunks[0];?>" value=";" /><label for="csv2post_separator_semicolon_<?php echo $fileChunks[0];?>"> <strong>;</strong> </label>
+                            <br><input type="radio" id="csv2post_separator_tab_<?php echo $fileChunks[0];?>" name="csv2post_newjob_separators<?php echo $fileChunks[0];?>" value="|" /><label for="csv2post_separator_tab_<?php echo $fileChunks[0];?>"> <strong>|</strong> </label>                
+                  
                         </td>
                         <td>
-                            <script>
-                            $(function() {
-                                $( "#csv2post_newjob_quote_radios_<?php echo $fileChunks[0];?>" ).buttonset();
-                            });
-                            </script>
-
-                            <div id="csv2post_newjob_quote_radios_<?php echo $fileChunks[0];?>">
-                                <input type="radio" id="csv2post_quote_double_<?php echo $fileChunks[0];?>" name="csv2post_newjob_quote<?php echo $fileChunks[0];?>" value="doublequote" /><label for="csv2post_quote_double_<?php echo $fileChunks[0];?>">"</label>
-                                <input type="radio" id="csv2post_quote_single_<?php echo $fileChunks[0];?>" name="csv2post_newjob_quote<?php echo $fileChunks[0];?>" value="singlequote" /><label for="csv2post_quote_single_<?php echo $fileChunks[0];?>">'</label>                
-                            </div>                        
+          
+                            <input type="radio" id="csv2post_quote_double_<?php echo $fileChunks[0];?>" name="csv2post_newjob_quote<?php echo $fileChunks[0];?>" value="doublequote" /><label for="csv2post_quote_double_<?php echo $fileChunks[0];?>"> <strong>"</strong></label>
+                            <br><input type="radio" id="csv2post_quote_single_<?php echo $fileChunks[0];?>" name="csv2post_newjob_quote<?php echo $fileChunks[0];?>" value="singlequote" /><label for="csv2post_quote_single_<?php echo $fileChunks[0];?>"> <strong>'</strong></label>                
+                                               
                         </td>
                     </tr><?php                         
                 }                   
@@ -2301,39 +2278,56 @@ function csv2post_used_csv_file_list(){
 
                     foreach($jobrecord['files'] as $key => $csvfile_name){
 
-                        if( ($csvfile_name != ".") and ($csvfile_name != "..") ){
+                        // if file no longer exists
+                        if(!csv2post_files_does_csvfile_exist($csvfile_name)){
                             
-                            $fileChunks = explode(".", $csvfile_name);
-                                              
-                            // ensure file extension is csv
-                            if( isset( $fileChunks[1] ) && $fileChunks[1] == 'csv'){
-                                
-                                $file_path = WTG_C2P_CONTENTFOLDER_DIR . '/' . $csvfile_name;
-                                $thefilesize = filesize($file_path);
-                                $filesize_total = $thefilesize;
-                                
-                                $filemtime = filemtime(WTG_C2P_CONTENTFOLDER_DIR . '/' .$csvfile_name);
-                                
-                                if(phpversion() < '5.3'){
-                                    $fileage = '';### TODO:MEDIUMPRIORITY,add a PHP 5.2 function for determing file age
-                                }else{
-                                    // this line is only suitable for PHP 5.3
-                                    $fileage =  csv2post_ago( date_create(date(WTG_C2P_DATEFORMAT,$filemtime)),true,true,true,true,true,false);
-                                }
-                                   
-                                echo '
-                                <tr>                               
-                                    <td>'.$job['name'].'</td>                                
-                                    <td>'.$csvfile_name.'</td>                            
-                                    <td>'.count(file(WTG_C2P_CONTENTFOLDER_DIR . '/' .$csvfile_name)).'</td>
-                                    <td>'.csv2post_format_file_size($thefilesize).'</td>
-                                    <td>'.csv2post_WP_SQL_count_records_forfile('csv2post_'.$jobid,$csvfile_name,$key).'</td>                                                       
-                                    <td>'.$fileage.'</td>                            
-                                </tr>';                    
-                                
-                            }// end if csv
+                            echo '
+                            <tr>                               
+                                <td>Unknown</td>                                
+                                <td>'.$csvfile_name.' (file no longer exists)</td>                            
+                                <td></td>
+                                <td></td>
+                                <td></td>                                                       
+                                <td></td>                            
+                            </tr>';  
                             
-                        }// end if $filename = .
+                        }else{
+                            
+                            
+                            if( ($csvfile_name != ".") and ($csvfile_name != "..") ){
+                                
+                                $fileChunks = explode(".", $csvfile_name);
+                                                  
+                                // ensure file extension is csv
+                                if( isset( $fileChunks[1] ) && $fileChunks[1] == 'csv'){
+                                    
+                                    $file_path = WTG_C2P_CONTENTFOLDER_DIR . '/' . $csvfile_name;
+                                    $thefilesize = filesize($file_path);
+                                    $filesize_total = $thefilesize;
+                                    
+                                    $filemtime = filemtime(WTG_C2P_CONTENTFOLDER_DIR . '/' .$csvfile_name);
+                                    
+                                    if(phpversion() < '5.3'){
+                                        $fileage = '';### TODO:MEDIUMPRIORITY,add a PHP 5.2 function for determing file age
+                                    }else{
+                                        // this line is only suitable for PHP 5.3
+                                        $fileage =  csv2post_ago( date_create(date(WTG_C2P_DATEFORMAT,$filemtime)),true,true,true,true,true,false);
+                                    }
+                                       
+                                    echo '
+                                    <tr>                               
+                                        <td>'.$job['name'].'</td>                                
+                                        <td>'.$csvfile_name.'</td>                            
+                                        <td>'.count(file(WTG_C2P_CONTENTFOLDER_DIR . '/' .$csvfile_name)).'</td>
+                                        <td>'.csv2post_format_file_size($thefilesize).'</td>
+                                        <td>'.csv2post_WP_SQL_count_records_forfile('csv2post_'.$jobid,$csvfile_name,$key).'</td>                                                       
+                                        <td>'.$fileage.'</td>                            
+                                    </tr>';                    
+                                    
+                                }// end if csv
+                                
+                            }// end if $filename = .
+                        }// end if file exists
                         
                         ++$usedcsvfile_count;
                     }    
@@ -2398,7 +2392,7 @@ function csv2post_csv_files_list(){
             echo '
             <table class="widefat post fixed">
                 <tr class="first">
-                    <td width="50"><strong>Delete</strong></td>
+                    <td width="25"></td>
                     <td width="175"><strong>Name</strong></td>
                     <td width="80"><strong>Separator (plugin)</strong></td>                    
                     <td width="80"><strong>Separator (pear)</strong></td>
@@ -2435,18 +2429,9 @@ function csv2post_csv_files_list(){
                                 $objects = 'radio';
                             }
                             ?>
-            
-                            <script>
-                            $(function() {
-                                $( "#csv2post_deletecsvfile_<?php echo $objects;?>_<?php echo $fileChunks[0];?>" ).buttonset();
-                            });
-                            </script>
-
-                            <div id="csv2post_deletecsvfile_<?php echo $objects;?>_<?php echo $fileChunks[0];?>">                    
-                                <input type="<?php echo $objects;?>" name="csv2post_delete_csvfiles[]" id="csv2post_delete_csvfiles_<?php echo $fileChunks[0];?>" value="<?php echo $filename;?>" />
-                                <label for="csv2post_delete_csvfiles_<?php echo $fileChunks[0];?>">*</label>                     
-                            </div>                         
-                         
+           
+                            <input type="<?php echo $objects;?>" name="csv2post_delete_csvfiles[]" id="csv2post_delete_csvfiles_<?php echo $fileChunks[0];?>" value="<?php echo $filename;?>" />                    
+                          
                         <?php     
                         echo '</td>
                             <td>'.$filename.'</td>
