@@ -31,24 +31,24 @@ function csv2post_form_installpackage(){
 function csv2post_form_uninstallplugin_partial(){
     if(isset($_POST[WTG_C2P_ABB.'hidden_pageid']) && $_POST[WTG_C2P_ABB.'hidden_pageid'] == 'install' && isset($_POST[WTG_C2P_ABB.'hidden_panel_name']) && $_POST[WTG_C2P_ABB.'hidden_panel_name'] == 'partialuninstall'){  
         global $csv2post_plugintitle;
-        
+           
         if(current_user_can('delete_plugins')){
-            
+                     
             // if delete data import job tables
             if(isset($_POST['csv2post_deletejobtables_array'])){
-
+                               
                 foreach($_POST['csv2post_deletejobtables_array'] as $k => $table_name){
-                    
+                           
                     $code = str_replace('csv2post_','',$table_name);
-
+                        
                     // if table still in use
                     if(isset($csv2post_dataimportjobs_array[$code])){
-                        
+                           
                         csv2post_notice('Table '.$table_name.' is still used by Data Import Job named '.$csv2post_dataimportjobs_array[$code]['name'].'.','error','Tiny','Cannot Delete Table','','echo');
                         return false;
                         
                     }else{
-                                        
+                                       
                         // drop table
                         csv2post_SQL_drop_dataimportjob_table($table_name);
                         
@@ -56,48 +56,49 @@ function csv2post_form_uninstallplugin_partial(){
                     } 
                 }
             }
-
+                     
             // if delete csv files
             if(isset($_POST['csv2post_deletecsvfiles_array'])){
                 foreach($_POST['csv2post_deletecsvfiles_array'] as $k => $csv_file_name){
-
+                        
                     $file_is_in_use = false;
                     $file_is_in_use = csv2post_is_csvfile_in_use($csv_file_name);
-                    
+                       
                     // if file is in use
-                    if($file_is_in_use){
+                    if($file_is_in_use){        
                         csv2post_notice('The file named ' . $csv_file_name .' is in use, cannot delete.','error','Tiny','File In Use','','echo');
-                    }else{
+                    }else{                         
                         unlink(WTG_C2P_CONTENTFOLDER_DIR . '/' . $csv_file_name); 
                         csv2post_notice( $csv_file_name .' Deleted','success','Tiny','','','echo');
                     }
                                             
                 }      
             }
-            
+                      
             // if delete folders
-            if(isset($_POST['csv2post_deletefolders_array'])){
-                foreach($_POST['csv2post_deletefolders_array'] as $k => $o){
+            if(isset($_POST['csv2post_deletefolders_array'])){    
+                foreach($_POST['csv2post_deletefolders_array'] as $k => $o){       
                     // currently only have one folder so we will use a specific function   
                     csv2post_delete_contentfolder(WTG_C2P_CONTENTFOLDER_DIR,false);
                 }      
             }            
 
             // if delete options
-            if(isset($_POST['csv2post_deleteoptions_array'])){
-                foreach($_POST['csv2post_deleteoptions_array'] as $k => $o){
+            if(isset($_POST['csv2post_deleteoptions_array'])){          
+                foreach($_POST['csv2post_deleteoptions_array'] as $k => $o){      
                     delete_option($o);
-                    csv2post_notice('Option record ' . $o . ' has been deleted.','success','Tiny','Option Record Deleted','','echo');    
+                    csv2post_notice('Option record ' . $o . ' has been deleted.','success','Tiny','Option Record Deleted','','echo'); 
                 }      
             }
                              
-        }else{
+        }else{           
             csv2post_notice(__('You do not have the required permissions to un-install '.$csv2post_plugintitle.'. The Wordpress role required is delete_plugins, usually granted to Administrators.'), 'warning', 'Large','No Permission To Uninstall ' . $csv2post_plugintitle,'','echo');
             return false;
         }
-        
+                 
         // return false to stop all further post validation function calls
-        return false;// must go inside $_POST validation, not at end of function 
+        return false;// must go inside $_POST validation, not at end of function
+
         
     }else{
         return true;
@@ -475,8 +476,8 @@ function csv2post_form_save_settings_interface(){
         csv2post_update_option_adminsettings($csv2post_adm_set); 
         
         csv2post_n_postresult('success','Interface Settings Saved','This plugins
-        interface settings can made a big difference in your experience. Please
-        keep this in mind if you feel anything is not as expected.');
+        interface settings may make changes you do not expect. Please
+        keep this in mind and ask us if you are unsure about something.');
 
          // return false to stop all further post validation function calls
         return false;// must go inside $_POST validation, not at end of function         

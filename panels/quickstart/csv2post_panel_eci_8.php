@@ -8,17 +8,13 @@ $panel_array['dialogdisplay'] = 'no';
 // <form> values, seperate from panel value
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialogbox_title'] = 'NOT IN USE';
-$jsform_set['noticebox_content'] = 'NOT IN USE';
 ?>
 
 <?php csv2post_panel_header( $panel_array );?>
     
     <?php 
     if($csv2post_ecisession_array['nextstep'] > 8){
-
         csv2post_n_incontent('This step has been complete.','success','Small','Step Complete');
-
     }else{?>
 
         <?php 
@@ -34,7 +30,7 @@ $jsform_set['noticebox_content'] = 'NOT IN USE';
         </script>
 
         <div id="csv2post_eci_freedates_method">
-            <input type="radio" id="csv2post_eci_freedates_default" name="csv2post_eci_freedates_methods" value="default" /><label for="csv2post_eci_freedates_default">Use Wordpress Default Date</label>
+            <input type="radio" id="csv2post_eci_freedates_default" name="csv2post_eci_freedates_methods" value="default" checked /><label for="csv2post_eci_freedates_default">Use Wordpress Default Date</label>
             <input type="radio" id="csv2post_eci_freedates_data" name="csv2post_eci_freedates_methods" value="data" /><label for="csv2post_eci_freedates_data">Use My Dates Data</label>               
         </div>
 

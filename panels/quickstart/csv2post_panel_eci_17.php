@@ -25,22 +25,7 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
         csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
         ?> 
        
-        <script>
-        $(function() {
-            $( "#csv2post_ecifreedefaultposttype" ).buttonset();
-        });
-        </script>
-
-        <div id="csv2post_ecifreedefaultposttype">
-            
-            <?php
-            echo '<input type="radio" id="csv2post_ecifreedefaultposttype_post" name="csv2post_radio_defaultpostype" value="post" />
-            <label for="csv2post_ecifreedefaultposttype_post">post</label>';
-                    
-            echo '<input type="radio" id="csv2post_ecifreedefaultposttype_page" name="csv2post_radio_defaultpostype" value="page" />
-            <label for="csv2post_ecifreedefaultposttype_page">page</label>';?>
-            
-        </div>      
+       <?php csv2post_display_defaultposttype_radiobuttons();?>      
 
         <?php 
         // add js for dialog on form submission and the dialog <div> itself

@@ -84,7 +84,7 @@ function csv2post_install_core(){
     #                                         #
     ###########################################
     
-    // install plugin (not core)
+    // install plugin (not core, the custom plugin i.e. CSV 2 POST)
     $overall_install_result = csv2post_install_plugin();
     
     // if extension defined run extension installation functions    

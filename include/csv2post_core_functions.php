@@ -172,7 +172,7 @@ function csv2post_data_import_from_csvfile_basic( $csvfile_name, $table_name, $t
     $dataimportjob_array['stats'][$csvfile_name]['duplicates'] = $duplicates + $dataimportjob_array['stats'][$csvfile_name]['duplicates'];
                        
     // save the $function_result_array in the job array
-    csv2post_save_dataimportjob($dataimportjob_array,$jobcode);
+    csv2post_update_dataimportjob($dataimportjob_array,$jobcode);
 
     return $dataimportjob_array;    
 }  
@@ -487,19 +487,13 @@ function csv2post_WP_SQL_update_record_dataimportjob( $record, $csvfile_name, $f
     global $csv2post_plugintitle;
     // using new record id - update the record
     $updaterecord_result = csv2post_WP_SQL_update_record( $record, $csvfile_name, $fields, $jobcode,$record_id, $headers_array, $filegrouping );
-
     // increase $inserted counter if the update was a success, the full process counts as a new inserted record            
     if($updaterecord_result === false){
-        
-        return false;
         csv2post_error_log($csv2post_plugintitle . ': csv2post_WP_SQL_update_record() returned FALSE for JOB:'.$jobcode.' FILE:'.$csvfile_name.'. Please investigate.');                
-    
+        return false;
     }elseif($updaterecord_result === 1){ 
-        
-        return true; 
-          
+        return true;  
     }elseif($updaterecord_result === 0){
-        
         csv2post_error_log($csv2post_plugintitle . ': csv2post_WP_SQL_update_record() returned 0 for JOB:'.$jobcode.' FILE:'.$csvfile_name.'. Please investigate.');
         return false;
     }  
@@ -873,7 +867,7 @@ function csv2post_get_dataimportjob_headers_singlefile($jobcode,$csvfile_name){
 * @param string $code
 * @returns boolean, true if success or false if failed
 */
-function csv2post_save_dataimportjob($jobarray,$code){            
+function csv2post_update_dataimportjob($jobarray,$code){            
     $jobarray_seralized = maybe_serialize($jobarray);
     $result = update_option('csv2post_' . $code,$jobarray_seralized);
     $wperror_result = csv2post_is_WP_Error($result);
@@ -886,18 +880,6 @@ function csv2post_save_dataimportjob($jobarray,$code){
         return true;
     }
 } 
-
-/**
-* Uses csv2post_save_dataimportjob which uses update_option and serialize on the $jobarray
-* 
-* @param mixed $jobarray
-* @param mixed $code
-* @return boolean,
-* @todo rename function to csv2post_update_option_dataimportjob() and replace then remove csv2post_save_dataimportjob($jobarray,$code)
-*/
-function csv2post_update_dataimportjob($jobarray,$code){
-    return csv2post_save_dataimportjob($jobarray,$code);
-}    
 
 /**
 * Deletes the option record for giving data import job code
@@ -1109,5 +1091,5 @@ function csv2post_post_categories($record_array){
         $cat_array = explode(',',$record_array['csv2post_catid']); 
         return array(end($cat_array));
     }
-}      
+}    
 ?>

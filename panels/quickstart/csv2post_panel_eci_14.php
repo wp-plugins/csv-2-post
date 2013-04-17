@@ -15,9 +15,9 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
     <?php 
     if($csv2post_ecisession_array['nextstep'] > 14){
 
-        csv2post_n_incontent('This step is not currently available in the free edition.
-        However we welcome you to hack the plugin and provide it for that purpose. Guidance for hacking
-        CSV 2 POST is provided at www.csv2post.com.','success','Small','Step Skipped');
+        csv2post_n_incontent('Text spinning is an advanced SEO trick that allows us to generate
+        unique content on the fly and rank re-used content just as high as the original. These type of 
+        techniques in CSV 2 POST come with more options than any plugin we know and require our premium package.','success','Small','Premium Step');
 
     }else{?>
 
@@ -27,9 +27,9 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
         csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
         ?>
  
-        <?php csv2post_n_incontent('This step is not currently available in the free edition.
-        However we welcome you to hack the plugin and provide it for that purpose. Guidance for hacking
-        CSV 2 POST is provided at www.csv2post.com.','success','Small','Step Skipped'); ?> 
+        <?php csv2post_n_incontent('Text spinning is an advanced SEO trick that allows us to generate
+        unique content on the fly and rank re-used content just as high as the original. These type of 
+        techniques in CSV 2 POST come with more options than any plugin we know and require our premium package.','info','Small','Premium Step'); ?> 
 
         <?php 
         // add js for dialog on form submission and the dialog <div> itself

@@ -8,8 +8,6 @@ $panel_array['dialogdisplay'] = 'no';
 // <form> values, seperate from panel value
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialogbox_title'] = 'NOT IN USE';
-$jsform_set['noticebox_content'] = 'NOT IN USE';
 ?>
 
 <?php csv2post_panel_header( $panel_array );?>
@@ -34,7 +32,7 @@ $jsform_set['noticebox_content'] = 'NOT IN USE';
         </script>
 
         <div id="csv2post_eci_freefeaturedimage_switch">
-            <input type="radio" id="csv2post_eci_freefeaturedimage_no" name="csv2post_eci_freefeaturedimages_methods" value="no" /><label for="csv2post_eci_freefeaturedimage_no">Do Not Create Featured Images</label>
+            <input type="radio" id="csv2post_eci_freefeaturedimage_no" name="csv2post_eci_freefeaturedimages_methods" value="no" checked /><label for="csv2post_eci_freefeaturedimage_no">Do Not Create Featured Images</label>
             <input type="radio" id="csv2post_eci_freefeaturedimage_yes" name="csv2post_eci_freefeaturedimages_methods" value="yes" /><label for="csv2post_eci_freefeaturedimage_yes">Create Featured Images</label>               
         </div>
 

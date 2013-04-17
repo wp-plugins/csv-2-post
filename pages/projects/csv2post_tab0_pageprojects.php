@@ -20,7 +20,6 @@ to do in the Multiple Table Project panel. This panel offers the ability to rese
 delete posts as part of the reset process. You can only reset posts related to a table if the table is also
 selected for reset, this is a safety measure and the alternative is not usually a requirement.');
 $panel_array['panel_url'] = 'http://www.csv2post.com/feature-guides/create-post-creation-project';
-$panel_array['video'] = 'http://www.youtube.com/embed/b1K__laYifc';
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            

@@ -7,56 +7,33 @@
 
 */
 
-if(!isset($csv2post_project_array['dates'])){
-    echo csv2post_notice('Post publish dates will be the default decided by Wordpress.','info','Tiny','','','return');
-}else{
-    if(isset($csv2post_project_array['dates']['currentmethod'])){
-        if($csv2post_project_array['dates']['currentmethod'] == 'random'){
-            echo csv2post_notice('Post publish dates will be random.','info','Tiny','','','return');
-        }elseif($csv2post_project_array['dates']['currentmethod'] == 'increment'){
-            echo csv2post_notice('Post publish dates will be incremental','info','Tiny','','','return');
-        }                                                                    
-    }
-}
-?>
-
-<?php  
-### TODO:MEDIUMPRIORITY, add current date method to the panels title
-++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
-$panel_array['panel_name'] = 'projectdatemethod';// slug to act as a name and part of the panel ID 
-$panel_array['panel_title'] = __('Projects Current Date Method');// user seen panel header text  
-$panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_help'] = __('This panel tells you what publish date method is being used for your project. Change it by using and submitting a form for a different method. You can use the button in this panel to revert back to default Wordpress times for your publish dates.');
-// Form Settings - create the array that is passed to jQuery form functions
-$jsform_set_override = array();
-$jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);                
-$jsform_set['dialogbox_title'] = 'Use Wordpress Default Publish Dates';
-$jsform_set['noticebox_content'] = 'Do you want to cancel the current date method? Doing this will allow Wordpress to set your publish times based on when each post is created.';
-// TODO: HIGHPRIORITY, write function to test dates, display on this panel and use in processing?>
-<?php csv2post_panel_header( $panel_array );?>
-
-    <?php 
-    // begin form and add hidden values
-    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');
-    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
-    ?>
-    
-    <?php csv2post_display_date_method(); ?>  
-    
-     <?php 
-    // add js for dialog on form submission and the dialog <div> itself
-    if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
-        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-        csv2post_jquery_form_prompt($jsform_set);
-    }
-    ?>
+if(isset($csv2post_project_array['dates']['currentmethod'])){
         
-    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
+    if($csv2post_project_array['dates']['currentmethod'] == 'data'){
+        echo csv2post_notice('You selected a column in your project database tables for populating the publish dates of your posts.
+        Please ensure the date formats in your data is suitable if your dates do not turn out as expected.','info','Small','Current Date Method: Your Data','','return');        
+          
+    }
+            
+    if($csv2post_project_array['dates']['currentmethod'] == 'random'){
+        echo csv2post_notice('Your project is currently setup to create random publish dates. Your 
+        random dates will be generated using the giving start and end dates. All publish dates will fall
+        between those giving dates and will not be created with any increment or in order.','info','Small','Current Date Method: Random Dates','','return');        
+       
+    }
+    
+    if($csv2post_project_array['dates']['currentmethod'] == 'increment'){
+        echo csv2post_notice('The current project is setup to use the incremental publish dates method.
+        The first publish date will be the Start date you submitted. The increment will then be used to 
+        create the next publish date.','info','Small','Current Date Method: Incremental Dates','','return');           
+    }
 
-<?php csv2post_panel_footer();?>
+}else{   
+    echo csv2post_notice('Your project is set to use your blogs default publish date.','info','Small','Current Date Method: Wordpress Default','','return');
+}  
+?> 
 
-<?php
+<?php      
 ++$panel_number;// increase panel counter so this panel has unique ID
 $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'postdatescolumn';// slug to act as a name and part of the panel ID 
@@ -77,6 +54,7 @@ $jsform_set['noticebox_content'] = 'You are saving your dates column so that pos
     csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
     ?>
     
+    <label for="csv2post_datecolumn_select_columnandtable_formid">Select Column: </label>
     <select name="csv2post_datecolumn_select_columnandtable" id="csv2post_datecolumn_select_columnandtable_formid" class="csv2post_multiselect_menu">
         
         <?php
@@ -93,10 +71,29 @@ $jsform_set['noticebox_content'] = 'You are saving your dates column so that pos
         
         <?php csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code,$table,$column);?>                                                                                                                     
     </select>
-    
-    <br />
-    
-     <?php 
+  
+    <br>
+  
+    <label for="csv2post_datecolumn_format_objectid">Select Date Format: </label>
+    <select name="csv2post_datecolumn_format" id="csv2post_datecolumn_format_objectid" class="csv2post_multiselect_menu">
+        
+        <?php
+        $format = ''; 
+        if(isset($csv2post_project_array['dates']['date_column']['format'])){
+            $format = $csv2post_project_array['dates']['date_column']['format'];    
+        }     
+        ?>
+        
+        <option value="unsure">Unsure</option>
+        <option value="noformat">Do Not Format (use date data as it is)</option>        
+        <option value="uk">UK (will be formatted to MySQL standard)</option>
+        <option value="us">US (will be formatted to MySQL standard)</option>
+        <option value="mysql">MySQL (will still be formatted to be sure)</option>
+        <option value="custom">Custom/Other (contact us)</option> 
+                                                                                                                           
+    </select>
+        
+    <?php 
     // add js for dialog on form submission and the dialog <div> itself
     if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
@@ -240,3 +237,31 @@ $jsform_set['noticebox_content'] = 'You are about to change your random publish 
    
 <?php csv2post_panel_footer();
 }?> 
+
+<?php  
+++$panel_number;// increase panel counter so this panel has unique ID
+$panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
+$panel_array['panel_name'] = 'projectdatemethod';// slug to act as a name and part of the panel ID 
+$panel_array['panel_title'] = __('Set Wordpress Default Dates Method');// user seen panel header text  
+$panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
+// Form Settings - create the array that is passed to jQuery form functions
+$jsform_set_override = array();
+$jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);                
+// TODO: HIGHPRIORITY, write function to test dates, display on this panel and use in processing?>
+<?php csv2post_panel_header( $panel_array );?>
+
+    <?php 
+    // begin form and add hidden values
+    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');
+    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        csv2post_jquery_form_prompt($jsform_set);
+    }
+    ?>
+        
+    <?php csv2post_formend_standard('Click To Use Wordpress Default Publish Dates',$jsform_set['form_id']);?>
+
+<?php csv2post_panel_footer();?>

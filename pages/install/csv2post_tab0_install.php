@@ -1,4 +1,39 @@
-<?php
+<?php 
+if($csv2post_is_free){
+    csv2post_n_incontent('We hope you got the job done, saved a lot of time and created your
+    blog without a lot of cost. It is our aim to help you do just that but we also need 
+    your support. Please be kind enough to consider a donation so that we can
+    continue providing hours of free support every week and add more features to the free edition.
+    <br><br>
+
+    <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+    <input type="hidden" name="cmd" value="_s-xclick">
+    <input type="hidden" name="hosted_button_id" value="2FX3RB8H528B4">
+    <input type="image" src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal – The safer, easier way to pay online.">
+    <img alt="" border="0" src="https://www.paypalobjects.com/en_GB/i/scr/pixel.gif" width="1" height="1">
+    </form>
+
+    <br>
+    
+    <h4>Free features we provide that are not included in all free importers...</h4>
+    <ul>
+        <li>Use custom post types</li>
+        <li>Category creation with up to 3 levels</li>
+        <li>Unlimited number of custom fields</li>
+        <li>Apply the new Post Format</li>
+        <li>Add featured images to your posts</li>
+    </ul>
+    
+    <p>We feel anything less is just a demo for a premium plugin. But too much power in
+    a plugin that deals with data, demands a lot more free support requests.
+    Help us to extend this list plus continue providing adequate
+    support by donating a small amount per project, thank you.</p>
+    
+    ','info','Small','Is your project finished?');
+}
+?>
+
+<?php   
 ++$panel_number;// increase panel counter so this panel has unique ID
 $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'partialuninstall';// slug to act as a name and part of the panel ID 

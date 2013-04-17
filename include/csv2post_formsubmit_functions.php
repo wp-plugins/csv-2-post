@@ -1,7 +1,7 @@
-<?php
+<?php                                  
 #################################################
 #                                               #
-#      Quick Start - FREE FUNCTIONS       #
+#      Quick Start - FREE FUNCTIONS             #
 #                                               #
 #################################################
 function csv2post_form_ECI_free_step18_createposts(){
@@ -58,8 +58,24 @@ function csv2post_form_ECI_free_step17_posttypes(){
 } 
        
 function csv2post_form_ECI_free_step16_themesupport(){
-    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeuploadcsvfile' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
-        // not in free edition
+    if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'quickstartfreethemesupport' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
+        global $csv2post_project_array,$csv2post_currentproject_code;
+        
+        if(!isset($_POST['csv2post_radio_postformat'])){
+            $csv2post_project_array['postformat']['default'] = 'standard';
+        }else{
+            $csv2post_project_array['postformat']['default'] = $_POST['csv2post_radio_postformat'];
+        }        
+        
+        csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
+        
+        $csv2post_ecisession_array = csv2post_WP_SETTINGS_get_eciarray();
+        $csv2post_ecisession_array['nextstep'] = 17;
+        csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
+
+        csv2post_notice_postresult('success','Theme Settings Saved','All of your theme settings are saved.
+        All your post will use the '.$csv2post_project_array['postformat']['default'].' Post Format.'); 
+        
         return false;
     }else{
         return true;
@@ -76,7 +92,7 @@ function csv2post_form_ECI_free_step15_authors(){
                 
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array); 
 
-        $csv2post_ecisession_array['nextstep'] = 17;
+        $csv2post_ecisession_array['nextstep'] = 16;
         
         // update the ECI session array
         csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
@@ -275,19 +291,18 @@ function csv2post_form_ECI_free_step7_poststatus(){
         global $csv2post_project_array,$csv2post_currentproject_code;
         
         if(!isset($_POST['csv2post_radio_poststatus'])){
-            $status = 'publish';
+            $csv2post_project_array['poststatus'] = 'publish';
         }else{
-            $status = $_POST['csv2post_radio_poststatus'];
+            $csv2post_project_array['poststatus'] = $_POST['csv2post_radio_poststatus'];
         }
         
-        $csv2post_project_array['poststatus'] = $_POST['csv2post_radio_poststatus'];
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
         
         $csv2post_ecisession_array = csv2post_WP_SETTINGS_get_eciarray();
         $csv2post_ecisession_array['nextstep'] = 8;
         csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
 
-        csv2post_notice_postresult('success','Post Status Saved','All your post status will be set to ' . $status . '.');
+        csv2post_notice_postresult('success','Post Status Saved','All your post status will be set to ' . $csv2post_project_array['poststatus'] . '.');
         
         return false;
     }else{
@@ -340,20 +355,13 @@ function csv2post_form_ECI_free_step4_contenttemplate(){
     if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreesetupcontenttemplate' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
 
         global $csv2post_currentproject_code;
-        
-        $csv2post_ecisession_array = csv2post_WP_SETTINGS_get_eciarray();
+                     
+        // one template per CSV file with the Quick Start so if the title exists already, we delete that first
+        $does_post_exist = get_page_by_title( $_POST['csv2post_contentname'], ARRAY_A, 'wtgcsvcontent' );
 
-        $file = $csv2post_ecisession_array['filenamenoext'];
-                
-        $free_content_template = 'x-DESCRIPTION-x<a href="x-LINK-x"><img class="alignleft size-thumbnail wp-image-12" title="" src="x-IMAGE-x" alt="" width="150" height="150" /></a>'; 
-        
-        // replace tokens in our inline template with new tokens
-        # TODO:MEDIUMPRIORITY, add validation by testing values from a row, warn user but do not break the progress
-        $free_content_template = str_replace('x-DESCRIPTION-x','#'.$_POST['csv2post_csvfileheader_eci_pair_description_'.$file],$free_content_template);
-        $free_content_template = str_replace('x-IMAGE-x','#'.$_POST['csv2post_csvfileheader_eci_pair_image_'.$file],$free_content_template);
-        $free_content_template = str_replace('x-LINK-x','#'.$_POST['csv2post_csvfileheader_eci_pair_link_'.$file],$free_content_template);
-                
-        $template_id = csv2post_insert_post_contenttemplate($free_content_template,$file . ' ' . csv2post_date());
+        if($does_post_exist != NULL){wp_delete_post($does_post_exist['ID']);}
+             
+        $template_id = csv2post_insert_post_contenttemplate($_POST['csv2post_wysiwyg_editor'],$_POST['csv2post_contentname']);
   
         if(!is_numeric($template_id)){
             csv2post_notice_postresult('error','Content Template Not Created','A new content template could not be created. Please report
@@ -362,10 +370,9 @@ function csv2post_form_ECI_free_step4_contenttemplate(){
         }
         
         csv2post_update_default_contenttemplate($csv2post_currentproject_code,$template_id); 
-         
-        $csv2post_ecisession_array['nextstep'] = 5;
         
-        // update the ECI session array
+        // update the ECI session array 
+        $csv2post_ecisession_array['nextstep'] = 5;
         csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);     
 
         csv2post_notice_postresult('success','Content Template Created','A new content template was created
@@ -496,7 +503,7 @@ function csv2post_form_ECI_free_step2_confirmformat(){
         // set total rows
         $jobarray['totalrows'] = $jobarray['stats'][$filename]['rows'];
   
-        $result = csv2post_save_dataimportjob($jobarray,$code);
+        $result = csv2post_update_dataimportjob($jobarray,$code);
         if(!$result){
             csv2post_notice_postresult('error','Failure','Could not save new Data Import Job, please report this.');
             return;        
@@ -546,9 +553,9 @@ function csv2post_form_ECI_free_step2_confirmformat(){
         global $csv2post_currentproject_code,$csv2post_projectslist_array; 
         
         // delete existing project using the same $file as it is the same name also (we want ECI to be very simple)
-        foreach($csv2post_projectslist_array as $code => $project){ 
+        foreach($csv2post_projectslist_array as $procode => $project){ 
             if(isset($project['name']) && $project['name'] == $file){
-                csv2post_delete_postcreationproject($code,$csv2post_currentproject_code);
+                csv2post_delete_postcreationproject($procode,$csv2post_currentproject_code);
             }
         }
                                
@@ -597,7 +604,7 @@ function csv2post_form_ECI_free_step1_uploadcsvfile(){
         
         // check error value
         if($upload['error'] != 0){
-            csv2post_notice('Could not upload file please contact us for support and 
+            csv2post_notice('Sorry, your file could not upload. Please contact us for support and 
             give error code: ' . $upload['error'],'error','Large','CSV Upload Failure');
             return false;// not returning false due to failure, only returning false to indicate end of processing            
         }        
@@ -652,12 +659,12 @@ function csv2post_form_ECI_free_step1_uploadcsvfile(){
         
         // did the move fail
         if(!$move_result){
-            csv2post_notice('Failed to upload file, there was a problem moving the temporary file into the target directory, please investigate this issue.','error','Large','Upload Failed');
+            csv2post_notice('Failed to upload CSV file, there was a problem moving the temporary file into the target directory, please investigate this issue.','error','Large','Upload Failed');
             return false;
         }
         
         // check that file is now in place
-        if(!file_exists($target_file_path)){
+        if(!file_exists($target_file_path)){                                                                                      
             csv2post_notice('The server confirmed that the file was uploaded and put into the target directory but it does not appear to be there. Please report this problem.','error','Large','Uploaded File Missing');
             return;
         }
@@ -672,11 +679,7 @@ function csv2post_form_ECI_free_step1_uploadcsvfile(){
         csv2post_option('csv2post_ecisession','update',$csv2post_eci_session_array);
         
         // upload is a success
-        csv2post_notice('CSV file has been uploaded, you can proceed to the next step. <br /><br />Please note
-        that you cannot move between this ECI screen and other screens in order to work with multiple
-        Data Import Jobs or Post Creation Projects. You must complete the ECI process and only then 
-        use other screens to work on different projects. You can ignore this message if you have no
-        intention of working with multiple Data Import Jobs or do not use the other screens.',
+        csv2post_notice('The CSV file was uploaded, you can proceed to the next step.',
         'success','Large','CSV File Ready To Use');
 
         return false;
@@ -807,75 +810,7 @@ function csv2post_form_delete_persistentnotice(){
     }else{
         return true;
     }     
-}
-
-/**
-* Saves basic seo options          
-*/
-function csv2post_form_save_basic_seo_options(){
-    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'advancedseooptions'){
-        global $csv2post_project_array,$csv2post_currentproject_code;
-        
-        // title
-        if(isset($_POST['csv2post_seo_titlekey_advanced']) && $_POST['csv2post_seo_titlekey_advanced'] != '' && is_string($_POST['csv2post_seo_titlekey_advanced'])){
-            $csv2post_project_array['seo']['advanced']['title_key'] = $_POST['csv2post_seo_titlekey_advanced'];
-            if(!isset($_POST['csv2post_seo_title_advanced'])){
-                csv2post_notice('No SEO title template was selected and it is required if you want your posts
-                to have meta title values.','error','Large','Please Select Title Template','','echo');
-            }     
-        }
-
-        if(isset($_POST['csv2post_seo_title_advanced']) && $_POST['csv2post_seo_title_advanced'] != '' && is_numeric($_POST['csv2post_seo_title_advanced'])){
-            $csv2post_project_array['seo']['advanced']['title_template'] = $_POST['csv2post_seo_title_advanced'];     
-            if(!isset($_POST['csv2post_seo_titlekey_advanced'])){
-                csv2post_notice('You selected a title template but did not select your SEO plugin that will be handling
-                your meta titles. You must select the SEO plugin so that the proper meta key is used.','error','Large','Please Select Title Plugin','','echo');
-            }        
-        }        
-        
-        // description
-        if(isset($_POST['csv2post_seo_descriptionkey_advanced']) && $_POST['csv2post_seo_descriptionkey_advanced'] != '' && is_string($_POST['csv2post_seo_descriptionkey_advanced'])){
-            $csv2post_project_array['seo']['advanced']['description_key'] = $_POST['csv2post_seo_descriptionkey_advanced'];
-            if(!isset($_POST['csv2post_seo_description_advanced'])){
-                csv2post_notice('No SEO description template was selected and it is required if you want your posts
-                to have meta description values.','error','Large','Please Select Description Template','','echo');
-            }     
-        }
-
-        if(isset($_POST['csv2post_seo_description_advanced']) && $_POST['csv2post_seo_description_advanced'] != '' && is_numeric($_POST['csv2post_seo_description_advanced'])){
-            $csv2post_project_array['seo']['advanced']['description_template'] = $_POST['csv2post_seo_description_advanced'];     
-            if(!isset($_POST['csv2post_seo_descriptionkey_advanced'])){
-                csv2post_notice('You selected a description template but did not select your SEO plugin that will be handling
-                your meta description. You must select the SEO plugin so that the proper meta key is used.','error','Large','Please Select Description Plugin','','echo');
-            }        
-        }         
-         
-        // keywords
-        if(isset($_POST['csv2post_seo_keywordskey_advanced']) && $_POST['csv2post_seo_keywordskey_advanced'] != '' && is_string($_POST['csv2post_seo_keywordskey_advanced'])){
-            $csv2post_project_array['seo']['advanced']['keywords_key'] = $_POST['csv2post_seo_keywordskey_advanced'];
-            if(!isset($_POST['csv2post_seo_keywords_advanced'])){
-                csv2post_notice('No SEO keywords template was selected and it is required if you want your posts
-                to have meta keywords values.','error','Large','Please Select Keywords Template','','echo');
-            }     
-        }
-
-        if(isset($_POST['csv2post_seo_keywords_advanced']) && $_POST['csv2post_seo_keywords_advanced'] != '' && is_numeric($_POST['csv2post_seo_keywords_advanced'])){
-            $csv2post_project_array['seo']['advanced']['keywords_template'] = $_POST['csv2post_seo_keywords_advanced'];     
-            if(!isset($_POST['csv2post_seo_keywordskey_advanced'])){
-                csv2post_notice('You selected a keywords template but did not select your SEO plugin that will be handling
-                your meta keywords. You must select the SEO plugin so that the proper meta key is used.','error','Large','Please Select Keywords Plugin','','echo');
-            }        
-        }          
-          
-        // update $csv2post_project_array
-        csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
-        csv2post_notice('Advanced SEO options have been saved.','success','Large','SEO Options Saved','','echo',false,false); 
-                                 
-        return false;
-    }else{
-        return true;
-    }       
-}      
+}          
 
 /**
 * Process CSV file upload      
@@ -894,7 +829,7 @@ function csv2post_form_upload_csv_file(){
         
         // check error
         if($upload['error'] != 0){
-            csv2post_notice('Could not upload file, error code: ' . $upload['error'],'error','Large','Upload Failed');
+            csv2post_notice('Your file was not uploaded, the error code is ' . $upload['error'],'error','Large','Upload Failed');
             return false;// not returning false due to failure, only returning false to indicate end of processing            
         }     
         
@@ -1049,57 +984,7 @@ function csv2post_form_featuredimage(){
     }else{
         return true;
     }       
-}      
-  
-/**
-* Saves easy configuration questions
-* 
-* @todo HIGHPRIORITY, complete this function. Add option to reverse specific groups of posts by time/date range.
-*/
-function csv2post_form_undo_posts(){
-    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'creation' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'undopostscurrentproject'){
-        global $csv2post_currentproject_code,$csv2post_project_array;
-
-        $number_of_posts_deleted = 0;
-                
-        // if current project options selected but no posts made with project
-        $postscreated = csv2post_does_project_have_posts($csv2post_currentproject_code);
-        if(!$postscreated){
-            csv2post_notice('The current project does not have any posts according to the projects main table','warning','Large','No Posts','','echo');
-            return false;        
-        } 
-        
-        // Sub-page
-        // if sub-page in use and all posts are to be deleted we need to reset the stage counter
-        if(isset($csv2post_project_array['subpages']['stage'])){
-            $csv2post_project_array['subpages']['stage'] = 1;
-            csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
-        }
-            
-        // delete posts
-        $number_of_posts_deleted = csv2post_delete_project_posts_byrange($csv2post_currentproject_code,'currentproject');
-        
-        if($number_of_posts_deleted > 0){
-            
-            $plural = "'s";
-            if($number_of_posts_deleted == 1){
-                $plural = '';    
-            }
-            
-            csv2post_notice('You deleted ' . $number_of_posts_deleted .' posts. The post ID have also been removed from their
-            project table so that the records are ready to use again.'
-            ,'success','Large',$number_of_posts_deleted . " Post".$plural." Deleted",'','echo');
-             
-        }else{
-            csv2post_notice('No posts were deleted as there are no post ID in the project tables checked.',
-            'info','Large','No Posts Deleted','','echo');
-        }        
-           
-        return false;
-    }else{
-        return true;
-    }       
-}     
+}          
   
 /**
 * Saves default author 
@@ -1112,12 +997,12 @@ function csv2post_form_save_default_author(){
             csv2post_notice('You did not select an author, please try again.','error','Large','No Author Selected','','echo');
             return false;
         }
-        
+
         $csv2post_project_array['authors']['defaultauthor'] = $_POST['csv2post_defaultauthor_select'];
                 
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array); 
 
-        csv2post_notice('Your default author has been saved.','success','Large','Default Author Saved','','echo');
+        csv2post_notice('Your have saved a default author.','success','Large','Default Author Saved','','echo');
          
         return false;
     }else{
@@ -1643,18 +1528,14 @@ function csv2post_form_update_datecolumn(){
         // extract table name and column name from the string which holds both of them
         $table_name = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_datecolumn_select_columnandtable']);
         $column_name = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_datecolumn_select_columnandtable']);            
-
-        // check if the submitted column is the same as already set - first check if the values have been set before
-        if(isset($csv2post_project_array['dates']['date_column']['table_name']) && isset($csv2post_project_array['dates']['date_column']['column_name'])){
-            if($csv2post_project_array['dates']['date_column']['table_name'] == $table_name && $csv2post_project_array['dates']['date_column']['column_name'] == $column_name){
-                csv2post_notice('You selected the same database table and column as already saved. No changes were required.','warning','Large','No Changes Required');    
-            }    
-        }
         
         // the selected table-column values have not already been set        
         $csv2post_project_array['dates']['date_column']['table_name'] = $table_name;            
         $csv2post_project_array['dates']['date_column']['column_name'] = $column_name;
         $csv2post_project_array['dates']['currentmethod'] = 'data';
+        
+        // expected date format - added 30th March 2013
+        $csv2post_project_array['dates']['date_column']['format'] = $_POST['csv2post_datecolumn_format'];
 
         // update project option         
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
@@ -2184,7 +2065,7 @@ function csv2post_form_createdataimportjob(){
                     ++$fileid;                        
                 }
 
-                $result = csv2post_save_dataimportjob($jobarray,$code);
+                $result = csv2post_update_dataimportjob($jobarray,$code);
                 if($result){
                     
                     // set global $csv2post_currentjob_code as new code and set global $csv2post_job_array
@@ -2440,7 +2321,7 @@ function csv2post_form_subpage_bygrouping(){
         $table_name2 = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_subpages_bygrouping_sub1']);
         $column_name2 = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_subpages_bygrouping_sub1']);            
                      
-        if(isset($_POST['csv2post_subpages_bygrouping_sub2']) && $_POST['csv2post_subpages_bygrouping_sub2'] != 'noselectionmade'){
+        if(isset($_POST['csv2post_subpages_bygrouping_sub2']) && $_POST['csv2post_subpages_bygrouping_sub2'] != 'notselected'){
             $table_name3 = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_subpages_bygrouping_sub2']);
             $column_name3 = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_subpages_bygrouping_sub2']);            
         }
@@ -2876,5 +2757,97 @@ function csv2post_form_reinstall_databasetables(){
     }else{
         return true;
     }      
-}           
+} 
+
+/**
+* Saves basic seo options          
+*/
+function csv2post_form_save_basic_seo_options(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'projects' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'basicseooptions'){
+        global $csv2post_project_array,$csv2post_currentproject_code;
+        
+        // title
+        if($_POST['csv2post_seo_title'] == 'fault'){
+            csv2post_n_postresult('error','Problem Saving SEO Title','It appears the SEO form did not submit a table and column name. Please seek support.');    
+        }else{
+            $csv2post_project_array['seo']['basic']['title_key'] = $_POST['csv2post_seo_key_title'];
+            $csv2post_project_array['seo']['basic']['title_table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_seo_title']);    
+            $csv2post_project_array['seo']['basic']['title_column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_seo_title']);            
+        }
+        
+        // description
+        if($_POST['csv2post_seo_description'] == 'fault'){
+            csv2post_n_postresult('error','Problem Saving SEO Description','It appears the SEO form did not submit a table and column name. Please seek support.');    
+        }else{
+            $csv2post_project_array['seo']['basic']['description_key'] = $_POST['csv2post_seo_key_description'];
+            $csv2post_project_array['seo']['basic']['description_table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_seo_description']);    
+            $csv2post_project_array['seo']['basic']['description_column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_seo_description']);            
+        }
+         
+        // keywords
+        if($_POST['csv2post_seo_keywords'] == 'fault'){
+            csv2post_n_postresult('error','Problem Saving SEO Title','It appears the SEO form did not submit a table and column name. Please seek support.');    
+        }else{
+            $csv2post_project_array['seo']['basic']['keywords_key'] = $_POST['csv2post_seo_key_title'];
+            $csv2post_project_array['seo']['basic']['keywords_table'] = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_seo_keywords']);    
+            $csv2post_project_array['seo']['basic']['keywords_column'] = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_seo_keywords']);            
+        }
+         
+        csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
+        
+        csv2post_n_postresult('success','Basic SEO Settings Saved','You have setup basic SEO settings. If you are using the premium edition you may now configure advanced SEO settings.');
+                   
+        return false;
+    }else{
+        return true;
+    }       
+}    
+
+/**
+* Saves easy configuration questions
+* 
+* @todo HIGHPRIORITY, complete this function. Add option to reverse specific groups of posts by time/date range.
+*/
+function csv2post_form_undo_posts(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'creation' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'undopostscurrentproject'){
+        global $csv2post_currentproject_code,$csv2post_project_array;
+
+        $number_of_posts_deleted = 0;
+                
+        // if current project options selected but no posts made with project
+        $postscreated = csv2post_does_project_have_posts($csv2post_currentproject_code);
+        if(!$postscreated){
+            csv2post_notice('The current project does not have any posts according to the projects main table','warning','Large','No Posts','','echo');
+            return false;        
+        } 
+        
+        // Sub-page
+        // if sub-page in use and all posts are to be deleted we need to reset the stage counter
+        if(isset($csv2post_project_array['subpages']['stage'])){
+            $csv2post_project_array['subpages']['stage'] = 1;
+            csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
+        }
+            
+        // delete posts
+        $number_of_posts_deleted = csv2post_delete_project_posts_byrange($csv2post_currentproject_code,'currentproject');
+        
+        if($number_of_posts_deleted > 0){
+            
+            $plural = "'s";
+            if($number_of_posts_deleted == 1){
+                $plural = '';    
+            }
+            
+            csv2post_notice('You deleted ' . $number_of_posts_deleted .' posts. The post ID have also been removed from their
+            project table so that the records are ready to use again.','success','Large',$number_of_posts_deleted . " Post".$plural." Deleted",'','echo');
+             
+        }else{
+            csv2post_notice('No posts were deleted as there are no post ID in the project tables checked.','info','Large','No Posts Deleted','','echo');
+        }        
+           
+        return false;
+    }else{
+        return true;
+    }       
+}       
 ?>

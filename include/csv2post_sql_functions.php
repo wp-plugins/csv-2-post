@@ -222,7 +222,7 @@ function csv2post_WP_SQL_update_record( $row, $csvfile_name, $column_total, $job
     $keysused = 0;      
                      
     foreach( $header_array as $header_key => $header ){
-
+        
         if($csv2post_is_free){
             $row[$col] = csv2post_data_prep_fromcsvfile($row[$col]);
         }else{
@@ -302,7 +302,7 @@ function csv2post_WP_SQL_create_dataimportjob_table($jobcode,$job_file_group,$ma
         
         // loop through jobs files
         foreach($job_array['files'] as $fileid => $csv_filename){
-            
+
             // establish file ID value - if a single file is in use or free edition we do not append a value
             if($csv2post_is_free || $job_file_group == 'single'){$mod_append = '';}else{$mod_append = $fileid;}
             
@@ -318,6 +318,15 @@ function csv2post_WP_SQL_create_dataimportjob_table($jobcode,$job_file_group,$ma
             // loop through each files set of headers (3 entries in array per header)
             foreach( $job_array[$csv_filename]['headers'] as $header_key => $header){
                 
+                // is header null, this indicates incorrect separator/quote/column number entered
+                if($header['sql'] == NULL || $header['sql'] == '' || $header['sql'] == ' '){
+                    csv2post_notice('It appears an incorrect separator, quote or the number of columns has been
+                    entered for your file. A blank/empty header was found. Please ensure the correct values are
+                    submitted and that your CSV file does not actually have a column with no text in the header/title.',
+                    'error','Large','Blank Header Detected','http://www.csv2post.com/notifications/database-query-failure-on-creating-data-import-job','echo','');
+                    return false;    
+                }
+                
                 // if this is a single file job, do not append number
                 if($job_file_group == 'single'){
                     $column_name = $header['sql'];
@@ -328,16 +337,24 @@ function csv2post_WP_SQL_create_dataimportjob_table($jobcode,$job_file_group,$ma
                 $table .= "
                 `" . $column_name . "` text default NULL,";                                                                                                              
             }
-            
+
             ++$fileid;
         }
     }
-        
+    
+    // add special data prep columns that the user can make use of
+    $table .= " 
+    `splitcat1` text default NULL,
+    `splitcat2` text default NULL,
+    `splitcat3` text default NULL,
+    `splitcat4` text default NULL,
+    `splitcat5` text default NULL,";
+    
     // end of table
     ### TODO:CRITICAL, create setting for user to configure CHARSET
     $table .= "PRIMARY KEY  (`csv2post_id`)
     ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Table created by CSV 2 POST';";
-    
+            
     global $wpdb;        
     $createresult1 = $wpdb->query( $table );
 
@@ -346,8 +363,9 @@ function csv2post_WP_SQL_create_dataimportjob_table($jobcode,$job_file_group,$ma
         csv2post_add_jobtable('csv2post_' . $jobcode);  
         return true; 
     }else{
-        csv2post_notice('Database query failed. If you did not enter separator, quote or number of columns for your CSV file 
-        that may be the cause:<br /><br />' . csv2post_WP_SQL_formatter($table),'error','Large','Database Query Failure','http://www.csv2post.com/notifications/database-query-failure-on-creating-data-import-job','echo','');
+        csv2post_notice('Database query failed. Usually this is due to incorrect separator, quote or number of 
+        columns for your CSV file that may be the cause:<br /><br />' . csv2post_WP_SQL_formatter($table),
+        'error','Large','Incorrect Separator or Quote','http://www.csv2post.com/notifications/database-query-failure-on-creating-data-import-job','echo','');
         return false;
     }        
 }

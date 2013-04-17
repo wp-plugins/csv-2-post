@@ -7,9 +7,6 @@ $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a
 // <form> values, seperate from panel value
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialogbox_title'] = 'Ensure CSV Format Is Correct';
-$jsform_set['noticebox_content'] = 'Entering incorrect values will cause problems and require a restart. Please
-keep this in mind if you are unsure about your CSV file and do experience difficutly. Do you wish to continue saving?';
 ?>
 
 <?php csv2post_panel_header( $panel_array );?>
@@ -49,7 +46,7 @@ keep this in mind if you are unsure about your CSV file and do experience diffic
         <tr>
             <td>'.$csv2post_ecisession_array['filename'].'</td>
             <td><input type="text" name="csv2post_csvfile_fieldcount_'.$filename_array[0].'" size="2" maxlength="2" value="" /></td>
-            <td>'; ?>
+            <td>';?>
 
                 <script>
                 $(function() {
@@ -58,7 +55,7 @@ keep this in mind if you are unsure about your CSV file and do experience diffic
                 </script>
 
                 <div id="csv2post_newjob_separator_radios_<?php echo $filename_array[0];?>">
-                    <input type="radio" id="csv2post_separator_comma_<?php echo $filename_array[0];?>" name="csv2post_newjob_separators<?php echo $filename_array[0];?>" value="," /><label for="csv2post_separator_comma_<?php echo $filename_array[0];?>">,</label>
+                    <input type="radio" id="csv2post_separator_comma_<?php echo $filename_array[0];?>" name="csv2post_newjob_separators<?php echo $filename_array[0];?>" value="," checked /><label for="csv2post_separator_comma_<?php echo $filename_array[0];?>">,</label>
                     <input type="radio" id="csv2post_separator_semicolon_<?php echo $filename_array[0];?>" name="csv2post_newjob_separators<?php echo $filename_array[0];?>" value=";" /><label for="csv2post_separator_semicolon_<?php echo $filename_array[0];?>">;</label>
                     <input type="radio" id="csv2post_separator_tab_<?php echo $filename_array[0];?>" name="csv2post_newjob_separators<?php echo $filename_array[0];?>" value="|" /><label for="csv2post_separator_tab_<?php echo $filename_array[0];?>">|</label>                
                 </div>
@@ -72,68 +69,65 @@ keep this in mind if you are unsure about your CSV file and do experience diffic
                 </script>
 
                 <div id="csv2post_newjob_quote_radios_<?php echo $filename_array[0];?>">
-                    <input type="radio" id="csv2post_quote_double_<?php echo $filename_array[0];?>" name="csv2post_newjob_quote<?php echo $filename_array[0];?>" value="doublequote" /><label for="csv2post_quote_double_<?php echo $filename_array[0];?>">"</label>
+                    <input type="radio" id="csv2post_quote_double_<?php echo $filename_array[0];?>" name="csv2post_newjob_quote<?php echo $filename_array[0];?>" value="doublequote" checked /><label for="csv2post_quote_double_<?php echo $filename_array[0];?>">"</label>
                     <input type="radio" id="csv2post_quote_single_<?php echo $filename_array[0];?>" name="csv2post_newjob_quote<?php echo $filename_array[0];?>" value="singlequote" /><label for="csv2post_quote_single_<?php echo $filename_array[0];?>">'</label>                
                 </div>                        
             
             </td>
         </tr><?php                         
-
-        echo '</table>';     
-        ?>
-
-    
-    <h4>Ping Status</h4>
-    <script>
-    $(function() {
-        $( "#csv2post_pingstatus" ).buttonset();
-    });
-    </script>
-    
-    <div id="csv2post_pingstatus"><?php      
-        $o = ''; $c = 'checked';
-        if(isset($csv2post_project_array['pingstatus']) && $csv2post_project_array['pingstatus'] == 'open'){
-            $o = 'checked'; $c = '';
-        }elseif(isset($csv2post_project_array['pingstatus']) && $csv2post_project_array['pingstatus'] == 'closed'){
-            $o = ''; $c = 'checked'; 
-        }else{
-            // project ping default not set so we now make use of the blogs default ping
-            $d = get_option('default_ping_status');
-            if($d == 'closed'){
-                $o = ''; $c = 'checked';        
-            }elseif($d == 'open'){
+        echo '</table>';?>
+        
+        <h4>Ping Status</h4>
+        <script>
+        $(function() {
+            $( "#csv2post_pingstatus" ).buttonset();
+        });
+        </script>
+        
+        <div id="csv2post_pingstatus"><?php      
+            $o = ''; $c = 'checked';
+            if(isset($csv2post_project_array['pingstatus']) && $csv2post_project_array['pingstatus'] == 'open'){
                 $o = 'checked'; $c = '';
-            }
-        }?>
-        <input type="radio" id="csv2post_pingstatus_open_id" name="csv2post_pingstatus" value="open" <?php echo $o;?> /><label for="csv2post_pingstatus_open_id">Open</label>
-        <input type="radio" id="csv2post_pingstatus_closed_id" name="csv2post_pingstatus" value="closed" <?php echo $c;?> /><label for="csv2post_pingstatus_closed_id">Closed</label>          
-    </div>
-         
-    <h4>Comment Status</h4>
-    <script>
-    $(function() {
-        $( "#csv2post_commentstatus" ).buttonset();
-    });
-    </script>
-    
-    <div id="csv2post_commentstatus"><?php
-        $o = ''; $c = 'checked';
-        if(isset($csv2post_project_array['commentstatus']) && $csv2post_project_array['commentstatus'] == 'open'){
-            $o = 'checked'; $c = '';
-        }elseif(isset($csv2post_project_array['commentstatus']) && $csv2post_project_array['commentstatus'] == 'closed'){
-            $o = ''; $c = 'checked'; 
-        }else{
-            // project ping default not set so we now make use of the blogs default ping
-            $d = get_option('default_comment_status');
-            if($d == 'closed'){
-                $o = ''; $c = 'checked';        
-            }elseif($d == 'open'){
+            }elseif(isset($csv2post_project_array['pingstatus']) && $csv2post_project_array['pingstatus'] == 'closed'){
+                $o = ''; $c = 'checked'; 
+            }else{
+                // project ping default not set so we now make use of the blogs default ping
+                $d = get_option('default_ping_status');
+                if($d == 'closed'){
+                    $o = ''; $c = 'checked';        
+                }elseif($d == 'open'){
+                    $o = 'checked'; $c = '';
+                }
+            }?>
+            <input type="radio" id="csv2post_pingstatus_open_id" name="csv2post_pingstatus" value="open" <?php echo $o;?> /><label for="csv2post_pingstatus_open_id">Open</label>
+            <input type="radio" id="csv2post_pingstatus_closed_id" name="csv2post_pingstatus" value="closed" <?php echo $c;?> /><label for="csv2post_pingstatus_closed_id">Closed</label>          
+        </div>
+             
+        <h4>Comment Status</h4>
+        <script>
+        $(function() {
+            $( "#csv2post_commentstatus" ).buttonset();
+        });
+        </script>
+        
+        <div id="csv2post_commentstatus"><?php
+            $o = ''; $c = 'checked';
+            if(isset($csv2post_project_array['commentstatus']) && $csv2post_project_array['commentstatus'] == 'open'){
                 $o = 'checked'; $c = '';
-            }
-        }?>
-        <input type="radio" id="csv2post_commentstatus_open_id" name="csv2post_commentstatus" value="open" <?php echo $o;?> /><label for="csv2post_commentstatus_open_id">Open</label>
-        <input type="radio" id="csv2post_commentstatus_closed_id" name="csv2post_commentstatus" value="closed" <?php echo $c;?> /><label for="csv2post_commentstatus_closed_id">Closed</label>          
-    </div>
+            }elseif(isset($csv2post_project_array['commentstatus']) && $csv2post_project_array['commentstatus'] == 'closed'){
+                $o = ''; $c = 'checked'; 
+            }else{
+                // project ping default not set so we now make use of the blogs default ping
+                $d = get_option('default_comment_status');
+                if($d == 'closed'){
+                    $o = ''; $c = 'checked';        
+                }elseif($d == 'open'){
+                    $o = 'checked'; $c = '';
+                }
+            }?>
+            <input type="radio" id="csv2post_commentstatus_open_id" name="csv2post_commentstatus" value="open" <?php echo $o;?> /><label for="csv2post_commentstatus_open_id">Open</label>
+            <input type="radio" id="csv2post_commentstatus_closed_id" name="csv2post_commentstatus" value="closed" <?php echo $c;?> /><label for="csv2post_commentstatus_closed_id">Closed</label>          
+        </div>
             
         <?php 
         // add js for dialog on form submission and the dialog <div> itself

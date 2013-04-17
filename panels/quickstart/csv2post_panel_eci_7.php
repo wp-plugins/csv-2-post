@@ -8,8 +8,6 @@ $panel_array['dialogdisplay'] = 'no';
 // <form> values, seperate from panel value
 $jsform_set_override = array();### TODO:LOWPRIORITY, we can remove these lines and add array() to the functions parameter
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialogbox_title'] = 'DIALOGUE NOT IN USE';
-$jsform_set['noticebox_content'] = 'THIS DIALOGUE IS CURRENTLY NOT IN USE';
 ?>
 
 <?php csv2post_panel_header( $panel_array );?>
@@ -21,8 +19,14 @@ $jsform_set['noticebox_content'] = 'THIS DIALOGUE IS CURRENTLY NOT IN USE';
         if(isset($csv2post_project_array['poststatus'])){
             $poststatus = $csv2post_project_array['poststatus'];    
         }
+    
+        $format = 'standard';
+        if(isset($csv2post_project_array['postformat']['default'])){
+            $format = $csv2post_project_array['postformat']['default'];    
+        }    
         
-        csv2post_n_incontent('This step was complete and '.$poststatus.' is set as your status.','success','Small','Step Complete');
+        csv2post_n_incontent('This step was complete. Your default post status is '.$poststatus.' and
+        your default post format is '.$format.'.','success','Small','Step Complete');
 
     }else{?>
 
@@ -32,6 +36,7 @@ $jsform_set['noticebox_content'] = 'THIS DIALOGUE IS CURRENTLY NOT IN USE';
         csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
         ?>
 
+            <h4>Post Status</h4>
             <script>
             $(function() {
                 $( "#csv2post_eci_poststatus_radios" ).buttonset();
@@ -39,23 +44,8 @@ $jsform_set['noticebox_content'] = 'THIS DIALOGUE IS CURRENTLY NOT IN USE';
             </script>
 
             <div id="csv2post_eci_poststatus_radios">
-                
-                <?php
-                // establish current status check                
-                echo '<input type="radio" id="csv2post_eci_radiopublish_poststatus_objectid" name="csv2post_radio_poststatus" value="publish" />
-                <label for="csv2post_eci_radiopublish_poststatus_objectid">publish</label>';
-                
-                echo '<input type="radio" id="csv2post_eci_radiopending_poststatus_objectid" name="csv2post_radio_poststatus" value="pending" />
-                <label for="csv2post_eci_radiopending_poststatus_objectid">pending</label>';                    
-                
-                echo '<input type="radio" id="csv2post_eci_radiodraft_poststatus_objectid" name="csv2post_radio_poststatus" value="draft" />
-                <label for="csv2post_eci_radiodraft_poststatus_objectid">draft</label>';   
-                
-                echo '<input type="radio" id="csv2post_eci_radioprivate_poststatus_objectid" name="csv2post_radio_poststatus" value="private" />
-                <label for="csv2post_eci_radioprivate_poststatus_objectid">private</label>';                                     
-                ?>
-                
-            </div>  
+                <?php csv2post_FORMOBJECT_poststatus_radios('quickstart');?>
+            </div>           
 
         <?php 
         // add js for dialog on form submission and the dialog <div> itself

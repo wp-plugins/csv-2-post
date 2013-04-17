@@ -1,4 +1,123 @@
 <?php
+if(!$csv2post_is_free){
+    global $csv2post_dataimportjobs_array;
+    ++$panel_number;// increase panel counter so this panel has unique ID
+    $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
+    $panel_array['panel_name'] = 'datasplitter';// slug to act as a name and part of the panel ID 
+    $panel_array['panel_title'] = __('Data Splitter Rule');// user seen panel header text 
+    $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
+    $panel_array['panel_help'] = __('Use this tool to split values from one column into multiple
+    different columns. This happens during data import, it is not sorted after the initial import.
+    We select the column of data that has a string of values separated 
+    by a single character, known as a delimiter or we may refer to it as a separator sometimes to
+    sort of indicate what gets done with it within the plugins functionality. We also select
+    the multiple columns that our data is to be moved to. This is obviously more advanced than most
+    features found in data importers so please seek further instructions if unsure. Some extra database
+    table columns exist initially but you may need more. As I type this there is no tool to modify the
+    table in that way but we can provide on request if needed.');
+    // Form Settings - create the array that is passed to jQuery form functions
+    $jsform_set_override = array();
+    $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);               
+    $jsform_set['dialogbox_title'] = 'Split Data';
+    $jsform_set['noticebox_content'] = 'You are about to split one column of values into multiple database table columns, overwriting any values already in those columns. Do you wish to continue?';
+    ### TODO:HIGHPRIORITY, add default category option ?>
+    <?php csv2post_panel_header( $panel_array );?>
+
+        <?php 
+        // begin form and add hidden values
+        csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');
+        csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+        ?>
+              
+        <h4>Select Separator/Delimitar</h4>  
+        <select name="csv2post_sep">
+            <option value="notselected">Not Selected</option>
+            <?php
+            $current_sep = '';
+            $forwardslash = '';
+            $comma = '';
+            $pipe = '';
+            if(isset($csv2post_job_array['splitter']['separator'])){
+                $current_sep = $csv2post_job_array['splitter']['separator'];
+                if($current_sep == '/'){$forwardslash = 'selected="selected"';}
+                if($current_sep == ','){$comma = 'selected="selected"';}
+                if($current_sep == '|'){$pipe = 'selected="selected"';}
+            } 
+            ?>    
+            <option value="/" <?php echo $forwardslash;?>>/</option>
+            <option value="," <?php echo $comma;?>>,</option>
+            <option value="|" <?php echo $pipe;?>>|</option>        
+        </select> 
+           
+        <br>
+
+        <h4>Source Column</h4>
+        <select name="csv2post_sourcecolumn">
+            <option value="notselected">Not Selected</option>
+            <?php                    
+            if(isset($csv2post_job_array['splitter']['sourcetable']) && isset($csv2post_job_array['splitter']['sourcecolumn'])){
+                csv2post_GUI_datajob_columnsandtables_menu($csv2post_job_array['splitter']['sourcetable'],$csv2post_job_array['splitter']['sourcecolumn']);
+            }else{
+                csv2post_GUI_datajob_columnsandtables_menu();            
+            }
+            ?>                                                                                                                            
+        </select> 
+                   
+        <br>
+              
+        <h4>Select Receiving Column 1</h4>
+        <select name="csv2post_catcol1">
+            <option value="notselected">Not Selected</option>
+            <?php                    
+            if(isset($csv2post_job_array['splitter']['table1']) && isset($csv2post_job_array['splitter']['column1'])){
+                csv2post_GUI_datajob_columnsandtables_menu($csv2post_job_array['splitter']['table1'],$csv2post_job_array['splitter']['column1']);
+            }else{
+                csv2post_GUI_datajob_columnsandtables_menu();            
+            }
+            ?>                                                                                                                            
+        </select> 
+        
+        <h4>Select Receiving Column 2</h4>
+        <select name="csv2post_catcol2">
+            <option value="notselected">Not Selected</option>
+            <?php 
+            if(isset($csv2post_job_array['splitter']['table2']) && isset($csv2post_job_array['splitter']['column2'])){
+                csv2post_GUI_datajob_columnsandtables_menu($csv2post_job_array['splitter']['table2'],$csv2post_job_array['splitter']['column2']);    
+            }else{
+                csv2post_GUI_datajob_columnsandtables_menu();            
+            }
+            ?>                                                                                                                            
+        </select>
+
+        <h4>Select Receiving Column 3</h4>
+        <select name="csv2post_catcol3">
+            <option value="notselected">Not Selected</option>
+            <?php 
+            if(isset($csv2post_job_array['splitter']['table3']) && isset($csv2post_job_array['splitter']['column3'])){
+                csv2post_GUI_datajob_columnsandtables_menu($csv2post_job_array['splitter']['table3'],$csv2post_job_array['splitter']['column3']);    
+            }else{
+                csv2post_GUI_datajob_columnsandtables_menu();            
+            }
+            ?>                                                                                                                            
+        </select>
+        
+        <br>
+         
+        <?php 
+        // add js for dialog on form submission and the dialog <div> itself
+        if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
+            csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+            csv2post_jquery_form_prompt($jsform_set);
+        }
+        ?>
+            
+        <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
+
+    <?php csv2post_panel_footer();
+}?>
+
+<?php
+/*
 ++$panel_number;// increase panel counter so this panel has unique ID
 $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'replacevalues';// slug to act as a name and part of the panel ID 
@@ -209,4 +328,5 @@ $jsform_set['noticebox_content'] = 'This feature can void or actually delete rec
         
     <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
 
-<?php csv2post_panel_footer();?>
+<?php csv2post_panel_footer();
+*/?>

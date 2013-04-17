@@ -279,13 +279,7 @@ function csv2post_establish_csvfile_fieldcount_PEAR($csv_filename){
 * It also prepares the array to hold other formats of the column headers in prepartion for the plugins various uses
 */
 function csv2post_get_file_headers_formatted($csv_filename,$fileid,$separator = ',',$quote = '"',$fields = 0){
-    
-    //csv2post_pearcsv_include();
-    
-    if($fields == 0){
-        ### TODO:MEDIUMRPRIORITY, looks like we forgot to add something here OR maybe $fields cant be 0 ? we should at least log it to be sure    
-    }
-    
+
     $csv_file_conf = array();    
     $csv_file_conf['fields'] = $fields;    
     $csv_file_conf['sep'] = $separator;        
@@ -303,7 +297,7 @@ function csv2post_get_file_headers_formatted($csv_filename,$fileid,$separator = 
         }           
         break;
     }
-    
+                        
     return $header_array;    
 }
 

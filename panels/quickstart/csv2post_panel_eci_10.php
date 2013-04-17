@@ -8,8 +8,6 @@ $panel_array['dialogdisplay'] = 'no';
 // <form> values, seperate from panel value
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialogbox_title'] = 'NOT IN USE';
-$jsform_set['noticebox_content'] = 'NOT IN USE';
 ?>
 
 <?php csv2post_panel_header( $panel_array );?>

@@ -83,27 +83,41 @@ $jsform_set['noticebox_content'] = 'Do you want to continue saving cloaking sett
     csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
     ?> 
     
-    <table class="widefat post fixed">
-        <tr>
-            <td width="50"><strong>Cloak</strong></td><td width="150"><strong>Column Name</strong></td><td><strong>Table Name</strong></td>
-        </tr>
-        <?php
-        ### TODO:LOWPRIORITY, this covers a single table, we need to cover multiple tables
-        $mainTable = csv2post_get_project_maintable($csv2post_currentproject_code);
-        $urlColumns_array = csv2post_WP_SQL_return_cols_with_data_type($mainTable,'URL');
-        foreach($urlColumns_array['matches'] as $k => $c){
-            
-            $checked = '';
-            foreach($csv2post_project_array['urlcloaking'] as $key => $array){
-                if(isset($array['table']) && $array['table'] == $mainTable && isset($array['column']) && $array['column'] == $c){
-                    $checked = 'checked';
-                }
-            }    
+    <?php
+    ### TODO:LOWPRIORITY, this covers a single table, we need to cover multiple tables
+    $mainTable = csv2post_get_project_maintable($csv2post_currentproject_code);
+    $urlColumns_array = csv2post_WP_SQL_return_cols_with_data_type($mainTable,'URL');
+    if(!is_array($urlColumns_array) || !count($urlColumns_array)){
+        csv2post_n_incontent('You do not have any URL data columns suitable
+        for cloaking.','info','Small','No URL Data');        
+    }else{?>  
+             
+        <table class="widefat post fixed">
+            <tr>
+                <td width="50"><strong>Cloak</strong></td><td width="150"><strong>Column Name</strong></td><td><strong>Table Name</strong></td>
+            </tr>
+            <?php
+            if(!is_array($urlColumns_array)){
+                
+            }else{
+                foreach($urlColumns_array['matches'] as $k => $c){
+                    
+                    $checked = '';
+                    if(isset($csv2post_project_array['urlcloaking'])){
+                        foreach($csv2post_project_array['urlcloaking'] as $key => $array){
+                            if(isset($array['table']) && $array['table'] == $mainTable && isset($array['column']) && $array['column'] == $c){
+                                $checked = 'checked';
+                            }
+                        } 
+                    }   
 
-            echo '<tr><td><input type="checkbox" name="csv2post_cloakcolumns[]" value="'.$mainTable.','.$c.'" '.$checked.'></td><td>'.$c.'</td><td>'.$mainTable.'</td></tr>';    
-        }
-        ?>
-    </table>
+                    echo '<tr><td><input type="checkbox" name="csv2post_cloakcolumns[]" value="'.$mainTable.','.$c.'" '.$checked.'></td><td>'.$c.'</td><td>'.$mainTable.'</td></tr>';    
+                }
+            }?>
+        </table>
+        
+    <?php 
+    }?>
     
     <?php 
     // add js for dialog on form submission and the dialog <div> itself

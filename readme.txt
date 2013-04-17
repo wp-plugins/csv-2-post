@@ -1,14 +1,14 @@
 === Plugin Name ===
-Contributors: Zara Walsh,WebTechGlobal
+Contributors: WebTechGlobal,Zara Walsh,Ryan Bayne
 Donate link: http://www.csv2post.com
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Tags: CSV 2 POST, CSV2POST, wordpress data import,wordpress data importer,auto blogging,auto blogger,autoblog,mass create posts,mass post creation,csv file importer,csv file data import,post injection,import spreadsheet,excel file import,excel import,www.csv2post.com,CSV2POST,wordpresscsv import,wordpress import plugin,wordpress data import tool,wordpress data import plugin,wordpress post creation plugin
+Tags: CSV 2 POST, CSV2POST, Data Engine, CSV 2 POST Data Engine, wordpress data import,wordpress data importer,auto blogging,auto blogger,autoblog,mass create posts,mass post creation,csv file importer,csv file data import,post injection,import spreadsheet,excel file import,excel import,www.csv2post.com,CSV2POST,wordpresscsv import,wordpress import plugin,wordpress data import tool,wordpress data import plugin,wordpress post creation plugin
 Requires at least: 3.3.1
 Tested up to: 3.5.1
 Stable tag: trunk
 
-CSV 2 POST
+CSV 2 POST Data Engine
 
 == Description ==
 
@@ -41,8 +41,8 @@ include CBS News and Ryanair Ltd. They come to us because
 other plugins which offer a step by step system and assume a lot about what the user wants done with their data
 are simply not good enough. 
 
-CSV 2 POST has been designed to out-perform other importers and we have done that with the help of the Wordpress
-community who use them all. We include a step-by-step system like most (possibly all) other plugins available,
+This data engine has been designed to out-perform other importers and we have done that with the help of the Wordpress
+community, who have been outstanding. We include a step-by-step system like most (possibly all) other plugins available,
 which takes users through the same process on every single use, every single website no matter what theme or plugins
 we use. However our main interface is more of a workshop or a sandbox and in this sandbox are endless tools, some
 are not obvious because it's hard putting them all on one interface without making it feel over complicated.
@@ -95,7 +95,7 @@ requirements for new web technology will keep us busy until 2014. This is why th
 interface has so many screens and offers the ability to hide features not wanted. 
 
 = Why are the features on so many different plugin screens? =
-Long term plans for the development of CSV 2 POST will add an endless list
+Long term plans for the development of CSV 2 POST Data Engine will add an endless list
 of new features. Not only do all the form fields and buttons need to be tidy but
 every feature and ability has to be offered without assumption. Meaning users
 must be able to configure them or opt out of using them or use defaults. Users have that
@@ -119,6 +119,49 @@ first plugin was created in 2009 and was halted pending re-development.
 
 == Changelog ==
 
+= 6.9.5 =
+* From The Developers
+    * Released 18th April 2013
+    * WARNING: due to the amount of changes in this version and how complex they are. There is no ability to modify existing installations. If anyone wants to update their exisitng installation, please backup your database. Request update script if you run into issues on attempting to update. 
+    * Work has already begun for the support of Wordpress 3.6 beta including new options for Post Format
+* Fixes     
+    * CSV Read Method option now displays the saved setting (option worked, it just did not reflect users save on the form)
+    * Quick Start: a lot of improvement overall including a bug that caused  mixup of settings when using the same CSV file two or more times. This applies to the Quick Start screen only.
+    * CSS GUI Mode: when jQuery not in use, a bug caused issues on the Data Import page and it disabled a lot of functionality. CSS Mode is a secondary option still in development but this fix should allow it to be used even if the styling ain't perfect yet
+    * CSS GUI Mode: install screen now displays the CSS only menu
+* Feature Changes
+    * Cleaned up table/column selection menus by hiding "csv2post_" columns and if only one table is in use the table is also removed from options
+    * Post Types screen renamed to Post Settings. It holds the new Post Format option.
+    * Project Data screen renamed to "Info" in order to use reduce the menu and use this screen a bit more by merging other screens into it
+    * Project History screen removed and the history will now show on the new Info screen which holds general project information
+    * Post Format option added to the sixteenth panel "Extended Theme Support", on the Quick Start screen
+    * Custom post status can now be selected. The text display on post status buttons have also changed.S
+    * Basic SEO form fields will not default to the last plugin in our SEO plugin array when no plugin is installed, currently Yoast.
+    * Extra SEO Plugins Support panel: added a panel which lists SEO plugins that have "extra" support with links to their sites
+    * Were now setting more form defaults, starting with Quick Start which now has default radio/checkboxes etc. This will speed up use.
+    * Improvements made to the Quick Start
+    * Dates Screen: general improvements including a menu for selecting the format of dates data to avoid conflict with UK, US and MySQL formats
+    * Default Post Content Template: this panel now shows less information if the user is working with a single project. If a user delets their test projects, it will keep the panel in a state of minimum information. A small change to help reduce GUI complexity.
+* Support Changes
+    * Removed Post Creation Video (http://www.youtube.com/embed/b1K__laYifc) as it was really meant to explain the big change in our approach, I will get a more direct tutorial made soon
+* Technical Changes
+    * Some user friendly improvements made
+    * URL Cloaking Panel: improved the panels handling of determing applicable columns
+    * SEO plugins array moved from tab3_pageprojects.php to csv2post_seoplugins_array.php
+    * Paid edition inclusion lines have been moved up and are included under free edition include
+    * Quick Start: can remove the two lines for dialog now (we will be removing those lines for many panels to reduce amount of text)
+    * Moved csv2post_post_poststatus_calculate() to be called before csv2post_create_postdraft_advanced() in csv2post_create_posts_advanced()
+    * csv2post_update_option_postcreationproject() is now only called in csv2post_post_publishdate_advanced() when user has selected a date method, this will reduce processing a little
+    * csv2post_post_update_metadata_basic_seo() improved, possibly a premium edition fix.
+    * Merged csv2post_post_add_metadata_advanced() and csv2post_post_update_metadata_advanced() to become csv2post_post_customfields(), using update_post_meta() instead of add_post_meta() for all purposes. This makes it easier to maintain.
+    * Update for custom field 'csv2post_last_update' is now done within csv2post_post_updatepost()
+    * Update for custom field 'csv2post_outdated' is now done within csv2post_post_updatepost()
+    * Added table exclusion array on Your Projects, Projects screen. Plugin no longer queries tables as if they were created for post creation projects. This clears up some annoying Wordpress errors which are not critical but alarm users should they activate error display.
+    * Quick Start step 2 submission process was sharing $code for two different purposes. A loop was populating $code with old project code and preventing a new code being used instead. This caused bad behaviour in Quick Start when using the same file a second time.
+    * Screen file csv2post_tab4_install.php and csv2post_tab5_install.php deleted. Entries in menu array also removed. These screens were not yet in use and will not be in use for many weeks.
+    * New columns added to Data Import Job tables. csv2post_cat1 through to csv2post_cat5. These are for category splitting i.e. we will split a single column of categories into multiple columns. This way the user can use all category tools that expect multiple columns.
+    * Excerpt function now requires $my_post object and returns it
+    
 = 6.9.4 =
 * From The Developers
     * Released 26th March 2013

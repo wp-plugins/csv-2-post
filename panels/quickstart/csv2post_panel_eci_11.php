@@ -8,8 +8,6 @@ $panel_array['dialogdisplay'] = 'no';
 // <form> values, seperate from panel value
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialogbox_title'] = '????????';
-$jsform_set['noticebox_content'] = 'Do yo tab.</p>';
 ?>
 
 <?php csv2post_panel_header( $panel_array );?>
@@ -17,9 +15,11 @@ $jsform_set['noticebox_content'] = 'Do yo tab.</p>';
     <?php 
     if($csv2post_ecisession_array['nextstep'] > 11){
 
-        csv2post_n_incontent('This step is not currently available in the free edition.
-        However we welcome you to hack the plugin and provide it for that purpose. Guidance for hacking
-        CSV 2 POST is provided at www.csv2post.com.','success','Small','Step Skipped');
+        csv2post_n_incontent('Post updating, custom field updating and doing it in an intelligent
+        way is something we offer in our premium services at www.csv2post.com. Our updating functionality
+        allows automation, scheduling and we can exclude specific content from bring updated. The nature of such
+        features demands high support and requires backing of a premium level of support which we are ready to
+        provide you.','success','Small','Premium Step');
 
     }else{?>
 
@@ -29,9 +29,11 @@ $jsform_set['noticebox_content'] = 'Do yo tab.</p>';
         csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
         ?>
   
-        <?php csv2post_n_incontent('This step is not currently available in the free edition.
-        However we welcome you to hack the plugin and provide it for that purpose. Guidance for hacking
-        CSV 2 POST is provided at www.csv2post.com.','success','Small','Step Skipped'); ?> 
+        <?php  csv2post_n_incontent('Post updating, custom field updating and doing it in an intelligent
+        way is something we offer in our premium services at www.csv2post.com. Our updating functionality
+        allows automation, scheduling and we can exclude specific content from bring updated. The nature of such
+        features demands high support and requires backing of a premium level of support which we are ready to
+        provide you.','info','Small','Premium Step'); ?> 
 
         <?php 
         // add js for dialog on form submission and the dialog <div> itself

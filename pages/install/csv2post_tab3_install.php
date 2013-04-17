@@ -36,7 +36,6 @@ $panel_array['panel_help'] = __('This show the status of what are actually calle
         <li><strong>Disable API:</strong> <?php echo $csv2post_disableapicalls;?></li>
         <li><strong>Is Event:</strong> <?php echo $csv2post_is_event;?></li>
         <li><strong>CSV Handler:</strong> <?php echo $csv2post_csvmethod;?></li>
-        <li><strong>Menu Type:</strong> <?php echo $csv2post_nav_type;?></li>
         <li><strong>Installation Drive:</strong> <?php echo $csv2post_installation_required;?></li>
         <li><strong>API Service Status:</strong> <?php echo $csv2post_apiservicestatus;?></li>
         <li><strong>Web Service Available:</strong> <?php echo $csv2post_is_webserviceavailable;?></li>

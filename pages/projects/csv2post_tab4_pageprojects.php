@@ -1,3 +1,8 @@
+<?php 
+### TODO:MEDIUMPRIORITY
+// 'post_password'  => [ ? ] //password for post?    boolean I THINK! 
+?>
+
 <?php
 if(!isset($csv2post_project_array['defaultposttype'])){
     echo csv2post_notice('Current posts type is "post"','info','Tiny','','','return');    
@@ -104,7 +109,7 @@ if(!$csv2post_is_free && isset($csv2post_project_array['defaultposttype']) && $c
     ++$panel_number;// increase panel counter so this panel has unique ID
     $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
     $panel_array['panel_name'] = 'subpagesbypermalinks';// slug to act as a name and part of the panel ID 
-    $panel_array['panel_title'] = __('Sub-Pages By Permalinks/Slugs BETA');// user seen panel header text 
+    $panel_array['panel_title'] = __('Sub-Pages By Permalinks/Slugs');// user seen panel header text 
     $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
     $panel_array['panel_help'] = __('This method is called Permalinks but it is actually the slug part of
     a pages data that is important. For this method to work the data must must have two columns with

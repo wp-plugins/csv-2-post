@@ -1,23 +1,9 @@
-<?php 
-// array of all known SEO plugins that have extra support
-$seo_plugins_array = array();
-// All In One SEO
-$seo_plugins_array[0]['name'] = 'All In One SEO Pack';
-$seo_plugins_array[0]['folder'] = 'all-in-one-seo-pack';
-$seo_plugins_array[0]['file'] = 'all_in_one_seo_pack.php';
-$seo_plugins_array[0]['seotitle'] = '_aioseop_title';
-$seo_plugins_array[0]['seodescription'] = '_aioseop_description'; 
-// Yoast
-$seo_plugins_array[1]['name'] = 'SEO By Yoast';
-$seo_plugins_array[1]['folder'] = 'wordpress-seo';
-$seo_plugins_array[1]['file'] = 'wp-seo.php';
-$seo_plugins_array[1]['seotitle'] = '_yoast_wpseo_title';
-$seo_plugins_array[1]['seodescription'] = '_yoast_wpseo_metadesc';
-$seo_plugins_array[1]['seokeywords'] = '_yoast_wpseo_metakeywords';
-   
+<?php   
+global $csv2post_seoplugins_array;
+
 // if no SEO plugin installed that we know, display persistent message asking user to request upgrade
 $seo_plugin_installed = false;
-foreach($seo_plugins_array as $seo_plugin_id => $seo_plugin){
+foreach($csv2post_seoplugins_array as $seo_plugin_id => $seo_plugin){
     if(is_plugin_active($seo_plugin['folder'] . '/'. $seo_plugin['file'])){
         $seo_plugin_installed = true;
         // break loop even if user has more seo plugins, we will focus on one for now. $key is used further down also.
@@ -28,10 +14,10 @@ foreach($seo_plugins_array as $seo_plugin_id => $seo_plugin){
 if(!$seo_plugin_installed){
     echo csv2post_notice('No known SEO plugin was detected in your blog. To help us improve integration pease let us know what SEO
     plugin you are using. This does not mean CSV 2 POST does not work with your plugin. It means
-    there are no features to make it even easier.','info','Tiny','','','return',true);
+    there are no features to make configure quicker.','info','Tiny','','','return',true);
 }else{
-    echo csv2post_notice('CSV 2 POST has detected '.$seo_plugins_array[$seo_plugin_id]['name'].' is installed and active.','info','Tiny','','','return');
-}
+    echo csv2post_notice('CSV 2 POST has detected '.$csv2post_seoplugins_array[$seo_plugin_id]['name'].' is installed and active.','info','Tiny','','','return');
+} 
 
 if(!isset($csv2post_project_array['seo']['basic']['title_key'])
 && !isset($csv2post_project_array['seo']['basic']['description_key'])
@@ -62,20 +48,12 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
     csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
     ?>
     
-    <?php 
-    // if basic seo has not been saved and we have a supported plugin active display a message letting user know we filled the form out for them
-    if(isset($basic_seo_not_saved) && $basic_seo_not_saved == true && $seo_plugin_installed){
-        echo csv2post_notice('How good are we! We have filled out the form form you, all you need to do is select
-        the data columns for each field and submit.','success','Tiny','','','return');
-    }
-    ?>
-    
     <h4>Meta Title</h4>
     <?php $title_key = '';
     if(isset($csv2post_project_array['seo']['basic']['title_key'])){
         $title_key = $csv2post_project_array['seo']['basic']['title_key'];
     }elseif(isset($seo_plugin_installed) && isset($seo_plugin_id)){
-        $title_key = $seo_plugins_array[$seo_plugin_id]['seotitle'];    
+        $title_key = $csv2post_seoplugins_array[$seo_plugin_id]['seotitle'];    
     }?>
     Title Meta Key:<input type="text" name="csv2post_seo_key_title" value="<?php echo $title_key;?>" size="38"><br /> 
     Select Meta Title Column:
@@ -93,7 +71,7 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
     if(isset($csv2post_project_array['seo']['basic']['description_key'])){
         $description_key = $csv2post_project_array['seo']['basic']['description_key'];
     }elseif(isset($seo_plugin_installed) && isset($seo_plugin_id)){
-        $description_key = $seo_plugins_array[$seo_plugin_id]['seodescription'];    
+        $description_key = $csv2post_seoplugins_array[$seo_plugin_id]['seodescription'];    
     }?>    
     Description Meta Key:<input type="text" name="csv2post_seo_key_description" value="<?php echo $description_key;?>" size="38"><br />    
     Select Meta Description Column:<select name="csv2post_seo_description" id="csv2post_seo_description_id" class="csv2post_multiselect_menu">
@@ -110,7 +88,7 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
     if(isset($csv2post_project_array['seo']['basic']['keywords_key'])){
         $keyword_key = $csv2post_project_array['seo']['basic']['keywords_key'];
     }elseif(isset($seo_plugin_installed) && isset($seo_plugin_id)){
-        $keyword_key = $seo_plugins_array[$seo_plugin_id]['seokeywords'];    
+        $keyword_key = $csv2post_seoplugins_array[$seo_plugin_id]['seokeywords'];    
     }?>        
     Keyword Meta Key:<input type="text" name="csv2post_seo_key_keywords" value="<?php echo $keyword_key;?>" size="38"><br />
     Select Meta Keyword Column:<select name="csv2post_seo_keywords" id="csv2post_seo_keywords_id" class="csv2post_multiselect_menu">
@@ -229,7 +207,7 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
     <select name="csv2post_seo_titlekey_advanced" id="csv2post_seo_titlekey_advanced_id" class="csv2post_multiselect_menu">
         <option value="notrequired">Not Required</option>
         <?php 
-        foreach($seo_plugins_array as $key => $seo_plugin){
+        foreach($csv2post_seoplugins_array as $key => $seo_plugin){
             $selected = '';
             if(isset($csv2post_project_array['seo']['advanced']['title_key']) && $csv2post_project_array['seo']['advanced']['title_key'] == $seo_plugin['seotitle']){
                 $selected = 'selected="selected"';
@@ -244,7 +222,7 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
     <select name="csv2post_seo_descriptionkey_advanced" id="csv2post_seo_descriptionkey_advanced_id" class="csv2post_multiselect_menu">
         <option value="notrequired">Not Required</option>
         <?php 
-        foreach($seo_plugins_array as $key => $seo_plugin){
+        foreach($csv2post_seoplugins_array as $key => $seo_plugin){
             $selected = '';
             if(isset($csv2post_project_array['seo']['advanced']['description_key']) && $csv2post_project_array['seo']['advanced']['description_key'] == $seo_plugin['seodescription']){
                 $selected = 'selected="selected"';
@@ -259,7 +237,7 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
     <select name="csv2post_seo_keywordskey_advanced" id="csv2post_seo_keywordskey_advanced_id" class="csv2post_multiselect_menu">
         <option value="notrequired">Not Required</option>
         <?php 
-        foreach($seo_plugins_array as $key => $seo_plugin){
+        foreach($csv2post_seoplugins_array as $key => $seo_plugin){
             $selected = '';
             if(isset($csv2post_project_array['seo']['advanced']['keywords_key']) && $csv2post_project_array['seo']['advanced']['keywords_key'] == $seo_plugin['seokeywords']){
                 $selected = 'selected="selected"';
@@ -284,10 +262,50 @@ $jsform_set['noticebox_content'] = 'These options will add meta values to your p
 }?>
 
 <?php
+++$panel_number;// increase panel counter so this panel has unique ID
+$panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
+$panel_array['panel_name'] = 'extraseosupport';// slug to act as a name and part of the panel ID 
+$panel_array['panel_title'] = __('Extra "SEO Plugins" Support');// user seen panel header text 
+$panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
+?>
+<?php csv2post_panel_header( $panel_array );?>
+
+    <p>All SEO plugins are supported but some have extra support to make configuration quicker and easier
+    for beginners i.e. we detect the SEO plugin installed and fill out forms with required values for
+    that plugin. Simple really! Our premium plugin has even more support for SEO in general.</p>
+
+    <h4>SEO Plugins With Extra Support</h4>
+    <table class="widefat post fixed">
+        <tr class="first">
+            <td width="200"><strong>SEO Plugin Name</strong></td>
+            <td><strong>Plugins Website</strong></td>                                                       
+        </tr>  
+
+        <?php 
+        $seo_plugin_installed = false;
+        foreach($csv2post_seoplugins_array as $seo_plugin_id => $seo_plugin){
+            if(is_plugin_active($seo_plugin['folder'] . '/'. $seo_plugin['file'])){
+                $seo_plugin_installed = true;
+            } ?>
+              
+            <tr>
+                <td width="200"><?php echo $seo_plugin['name'];?></td>
+                <td><a href="<?php echo $seo_plugin['pluginsite'];?>" title="Visit SEO Plugin Website for <?php echo $seo_plugin['name'];?>">Visit Website</a></td>                                                       
+            </tr> 
+                    
+        <?php      
+        }
+        ?>
+        
+    </table>
+    
+<?php csv2post_panel_footer();?>
+
+<?php
 if($csv2post_is_dev){
     ++$panel_number;// increase panel counter so this panel has unique ID
     $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
-    $panel_array['panel_name'] = 'basicseooptionsarraydump';// slug to act as a name and part of the panel ID 
+    $panel_array['panel_name'] = 'basicsearraydump';// slug to act as a name and part of the panel ID 
     $panel_array['panel_title'] = __('Basic SEO Options Array Dump');// user seen panel header text 
     $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
     $panel_array['panel_help'] = __('Basic SEO options offer the ability to quickly setup meta values that will be applied to the page by your SEO plugin. You must enter the correct meta keys for your plugin and if you change SEO plugins after posts have been made you will need to take action to re-make meta values to work with your new SEO plugin.');?>

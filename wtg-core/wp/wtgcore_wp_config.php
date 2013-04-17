@@ -98,7 +98,7 @@ function csv2post_debugmode(){
 }
 
 /**
-* Gets option value for csv2post_adminset or defaults to the file version of the array if option returns invalid.
+* Gets option value for csv2post _adminset or defaults to the file version of the array if option returns invalid.
 * 1. Called in the main csv2post.php file.
 * 2. Installs the admin settings option record if it is currently missing due to the settings being required by all screens, this is to begin applying and configuring settings straighta away for a per user experience 
 */
@@ -210,26 +210,19 @@ function csv2post_register_activation_hook(){
 }
 
 /**
-* Returns the admin theme 
-*/
-function csv2post_get_theme(){
-    return get_option(WTG_C2P_ABB.'theme');
-}
-
-/**
 * Update admin theme
 * 
 * @param mixed $theme_name
 */
 function csv2post_update_theme($theme_name){
-    update_option(WTG_C2P_ABB.'theme',$theme_name);  
+    update_option('csv2post_theme',$theme_name);  
 }
 
 /**
 * Delets plugin main navigation 
 */
 function csv2post_delete_tabmenu(){
-    return delete_option(WTG_C2P_ABB . 'tabmenu');
+    return delete_option('csv2post_tabmenu');
 }
 
 /**
@@ -348,5 +341,14 @@ function csv2post_check_requirements($display){
     }
     
     return $requirement_missing;
+}
+
+/**
+* Returns the admin theme 
+*/
+function csv2post_get_theme(){ 
+    $theme = get_option('csv2post_theme');
+    if(!$theme || $theme == NULL){return 'jquery';}
+    return $theme;
 }
 ?>

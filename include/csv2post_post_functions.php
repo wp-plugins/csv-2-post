@@ -1,5 +1,42 @@
 <?php
 /**
+ * Returns post status based on giving criteria
+ * makes final decisision on status based on generated post publish date
+ * 
+ * @param array $csv
+ * @param array $my_post (wordpress post object)
+ * @return $my_post (wordpress post object)
+ * @link http://www.webtechglobal.co.uk/blog/php-mysql/strange-problem-with-date-function
+ */
+function csv2post_post_poststatus_calculate( $project_array,$my_post ){
+    
+    $timenow = strtotime( date("Y-m-d H:i:s",time()) );
+    $timeset = strtotime( $my_post['post_date'] );
+    
+    // add 10 seconds to $timenow, no point in setting a post for future if its only to be publish moments later
+    $timenow = $timenow + 10;
+    
+    // if posts time is greater than current
+    if( $timeset > $timenow ) {
+        $my_post['post_status'] = 'future';
+    }elseif( $timeset < $timenow ){
+        if(isset($project_array['poststatus'])){
+            $my_post['post_status'] = $project_array['poststatus'];
+        }else{
+            $my_post['post_status'] = 'draft';
+        }
+    }elseif( $timeset == $timenow ){
+        if(isset($project_array['poststatus'])){
+            $my_post['post_status'] = $project_array['poststatus'];
+        }else{
+            $my_post['post_status'] = 'draft';
+        }
+    }
+
+    return $my_post;
+}
+
+/**
 * Returns the returned result from a more specific post creation function (depending on edition used)
 * 
 * @param mixed $project_code
@@ -8,7 +45,7 @@
 */
 function csv2post_create_posts($project_code,$posts_target,$request_method,$subpagelevel = false){
     global $csv2post_is_free;
-    if(!$csv2post_is_free){
+    if(!$csv2post_is_free){# hack this, you will need to hack csv2post_create_posts_advanced() to become the advanced version of csv2post_creatE_posts_basic()
         // paid edition only - circumventing this measure will only cause errors due to key functions not existing in free package
         return csv2post_create_posts_advanced($project_code,$posts_target,$request_method,$subpagelevel); 
     }else{
@@ -25,7 +62,7 @@ function csv2post_create_postdraft_basic( $my_post,$r,$project_code,$content ){
 
     $my_post['post_date'] = date("Y-m-d H:i:s", time());    
     $my_post['post_date_gmt'] = gmdate("Y-m-d H:i:s", time());
-    $my_post['post_content'] = $content;
+    $my_post['post_content'] = $content; 
     $my_post['ID'] = wp_insert_post( $my_post );
     if( !$my_post['ID'] ){
         return false;
@@ -131,10 +168,12 @@ function csv2post_create_posts_basic($project_code,$request_method){
         if(isset($project_array['default_excerpttemplate_id'])){
             $excerpt_template = csv2post_get_template_design($project_array['default_excerpttemplate_id']);
             if($excerpt_template){
-                $my_post['post_excerpt'] = csv2post_parse_columnreplacement_basic($record_array,$excerpt_template);
+                $my_post = csv2post_parse_columnreplacement_basic($record_array,$excerpt_template);
             }             
         }
-
+        
+        $my_post = csv2post_POST_excerpt_basic($my_post,$record_array,$excerpt_template,$project_array);
+                               
         // set tags
         if(isset($project_array['tags']['default']['table']) && isset($project_array['tags']['default']['column'])){
             $my_post['tags_input'] = $record_array[$project_array['tags']['default']['column']];    
@@ -155,18 +194,18 @@ function csv2post_create_posts_basic($project_code,$request_method){
         }
         
         // ping
-        if(isset($csv2post_project_array['pingstatus']) && $csv2post_project_array['pingstatus']){
+        if(isset($project_array['pingstatus']) && $project_array['pingstatus']){
             $my_post['ping_status'] = 'closed';                    
         }
   
         // comments
-        if(isset($csv2post_project_array['pingstatus']) && $csv2post_project_array['commentstatus']){
+        if(isset($project_array['pingstatus']) && $project_array['commentstatus']){
             $my_post['comment_status'] = 'closed';                
         }        
 
         // create a draft post, csv2post_create_posts_basic uses a basic version of draft post creation with none of the most advanced features
         $my_post = csv2post_create_postdraft_basic($my_post,$record_array,$project_code,$content );                                                                        
-        
+
         if( !$my_post ){
             ++$fault_occured;
             
@@ -178,27 +217,32 @@ function csv2post_create_posts_basic($project_code,$request_method){
                 csv2post_notice('Draft post could not be created, post creation failed when using one of your records, this must be investigated.','error','Large','Post Creation Failed','','echo');    
             } 
         }else{
-            
+                 
+            if(isset($project_array['postformat']['default'])){
+                wp_set_post_terms($post_ID, 'post-format-'.$project_array['postformat']['default'], 'post_format');    
+            }
+        
             ++$new_posts;
             
             // update project table
             csv2post_WP_SQL_update_project_databasetable_basic($record_array['csv2post_id'],$my_post['ID'],$project_array['tables'][0]); 
-        }                                                                                              
-                    
-        // add custom field meta values (basic array only in this function)
-        if(isset($project_array['custom_fields']['basic'])){ 
-            foreach($project_array['custom_fields']['basic'] as $key => $cfrule){
-                add_post_meta($my_post['ID'], $cfrule['meta_key'], $record_array[$cfrule['column_name']], false);     
+                                                                                                 
+                        
+            // add custom field meta values (basic array only in this function)
+            if(isset($project_array['custom_fields']['basic'])){ 
+                foreach($project_array['custom_fields']['basic'] as $key => $cfrule){
+                    add_post_meta($my_post['ID'], $cfrule['meta_key'], $record_array[$cfrule['column_name']], false);     
+                }
             }
-        }
-                    
-        // add SEO meta values (free edition uses the ['basic'] node of the array only)
-        if(isset($project_array['seo']['basic'])){
-            csv2post_post_add_metadata_basic_seo($project_code,$record_array,$my_post['ID']);
-        }                                  
+                        
+            // add SEO meta values (free edition uses the ['basic'] node of the array only)
+            if(isset($project_array['seo']['basic'])){
+                csv2post_post_add_metadata_basic_seo($project_array,$project_code,$record_array,$my_post['ID']);
+            }                                  
 
-        // put the post id into variable for returning as the $my_post object is destroyed
-        $post_id = $my_post['ID'];
+            // put the post id into variable for returning as the $my_post object is destroyed
+            $post_id = $my_post['ID'];
+        }
         
         // keep $my_post for output at end if creating a single post, else destroy it to avoid its values being used in next post
         unset($my_post);
@@ -252,46 +296,19 @@ function csv2post_establish_posttype($project_array,$record_array){
 * @param mixed $project_code
 * @param mixed $post_ID
 */
-function csv2post_post_add_metadata_basic_seo($project_code,$record_array,$post_ID,$post_type = 'post'){
-
-    if( isset($csv2post_project_array['seo']['basic']['title_key']) && isset($csv2post_project_array['seo']['basic']['title_table']) && isset($csv2post_project_array['seo']['basic']['title_column']) ){    
-        add_post_meta($post_ID,$csv2post_project_array['seo']['basic']['title_key'],$record_array[$csv2post_project_array['seo']['basic']['title_column']],true);
+function csv2post_post_add_metadata_basic_seo($project_array,$project_code,$record_array,$post_ID,$post_type = 'post'){
+    if( isset($project_array['seo']['basic']['title_key']) && isset($project_array['seo']['basic']['title_table']) && isset($project_array['seo']['basic']['title_column']) ){    
+        add_post_meta($post_ID,$project_array['seo']['basic']['title_key'],$record_array[$project_array['seo']['basic']['title_column']],true);
     }
  
-    if( isset($csv2post_project_array['seo']['basic']['description_key']) && isset($csv2post_project_array['seo']['basic']['description_table']) && isset($csv2post_project_array['seo']['basic']['description_column']) ){   
-        add_post_meta($post_ID,$csv2post_project_array['seo']['basic']['description_key'],$record_array[$csv2post_project_array['seo']['basic']['description_column']],true);
+    if( isset($project_array['seo']['basic']['description_key']) && isset($project_array['seo']['basic']['description_table']) && isset($project_array['seo']['basic']['description_column']) ){   
+        add_post_meta($post_ID,$project_array['seo']['basic']['description_key'],$record_array[$project_array['seo']['basic']['description_column']],true);
     }
     
-    if( isset($csv2post_project_array['seo']['basic']['keywords_key']) && isset($csv2post_project_array['seo']['basic']['keywords_table']) && isset($csv2post_project_array['seo']['basic']['keywords_column']) ){        
-        add_post_meta($post_ID,$csv2post_project_array['seo']['basic']['keywords_key'],$record_array[$csv2post_project_array['seo']['basic']['keywords_column']],true);
+    if( isset($project_array['seo']['basic']['keywords_key']) && isset($project_array['seo']['basic']['keywords_table']) && isset($project_array['seo']['basic']['keywords_column']) ){        
+        add_post_meta($post_ID,$project_array['seo']['basic']['keywords_key'],$record_array[$project_array['seo']['basic']['keywords_column']],true);
     }     
- 
 }
-
-/**
-* Updates post meta
-* 
-* @uses add_update_meta()
-* @param mixed $project_code
-* @param mixed $record_array
-* @param mixed $post_ID
-* @param mixed $post_type
-*/
-function csv2post_post_update_metadata_basic_seo($project_code,$record_array,$post_ID,$post_type = 'post'){
-
-    if( isset($csv2post_project_array['seo']['basic']['title_key']) && isset($csv2post_project_array['seo']['basic']['title_table']) && isset($csv2post_project_array['seo']['basic']['title_column']) ){    
-        add_update_meta($post_ID,$csv2post_project_array['seo']['basic']['title_key'],$record_array[$csv2post_project_array['seo']['basic']['title_column']],true);
-    }
- 
-    if( isset($csv2post_project_array['seo']['basic']['description_key']) && isset($csv2post_project_array['seo']['basic']['description_table']) && isset($csv2post_project_array['seo']['basic']['description_column']) ){   
-        add_update_meta($post_ID,$csv2post_project_array['seo']['basic']['description_key'],$record_array[$csv2post_project_array['seo']['basic']['description_column']],true);
-    }
-    
-    if( isset($csv2post_project_array['seo']['basic']['keywords_key']) && isset($csv2post_project_array['seo']['basic']['keywords_table']) && isset($csv2post_project_array['seo']['basic']['keywords_column']) ){        
-        add_update_meta($post_ID,$csv2post_project_array['seo']['basic']['keywords_key'],$record_array[$csv2post_project_array['seo']['basic']['keywords_column']],true);
-    }     
- 
-} 
 
 /**
 * Replaces column strings within giving value. Does not take project table into consideration.
@@ -302,12 +319,10 @@ function csv2post_post_update_metadata_basic_seo($project_code,$record_array,$po
 * @return mixed
 */
 function csv2post_parse_columnreplacement_basic($record_array,$value){
-
     // loop through record array values
     foreach( $record_array as $column => $data ){
         $value = str_replace('#'. $column, $data, $value); 
-    }
-
+    } 
     return $value;
 }
 
@@ -320,9 +335,7 @@ function csv2post_parse_columnreplacement_basic($record_array,$value){
 function csv2post_post_default_projectmeta($post_ID,$project_code,$record_id){
     add_post_meta($post_ID, 'csv2post_project_code', $project_code, true);
     add_post_meta($post_ID, 'csv2post_record_id', $record_id, true);
-    add_post_meta($post_ID, 'csv2post_last_update', date("Y-m-d H:i:s", time()), true); 
-
-    ### TODO:CRITICAL, requires record id                    
+    add_post_meta($post_ID, 'csv2post_last_update', date("Y-m-d H:i:s", time()), true);                    
 }                                                                           
  
 /**
@@ -359,7 +372,7 @@ function csv2post_create_post_creation_project($project_name,$projecttables_arra
         // establish if a suitable project table has been selected - we set a table as the main table
         if($csv2post_projecttable_included == false){
             $is_csv2post_table = csv2post_is_csv2post_postprojecttable($table_name);
-            if($is_csv2post_table){
+            if($is_csv2post_table){    
                 $csv2post_projecttable_included = true;// ensures the check is not done again, first found table is project table
                 $csv2post_project_array['tables'][$tablecounter] = $table_name;
                 $csv2post_project_array['maintable'] = $table_name;
@@ -415,44 +428,6 @@ function csv2post_initialize_postcreationproject_array($project_name){
                                         
     return $project_array;                
 }
-
-/**
- * Returns post status based on giving criteria
- * makes final decisision on status based on generated post publish date
- * 
- * @param array $csv
- * @param array $my_post (wordpress post object)
- * @return $my_post (wordpress post object)
- * @link http://www.webtechglobal.co.uk/blog/php-mysql/strange-problem-with-date-function
- */
-function csv2post_post_poststatus_calculate( $project_array,$my_post ){
-    
-    $timenow = strtotime( date("Y-m-d H:i:s") );
-    $timeset = strtotime( $my_post['post_date'] );
-    
-    // add 10 seconds to $timenow, no point in setting a post for future if its only to be publish moments later
-    $timenow = $timenow + 10;
-    
-    // if posts time is greater than current
-    if( $timeset > $timenow ) {
-        $my_post['post_status'] = 'future';
-    }elseif( $timeset < $timenow ){
-        if(isset($project_array['poststatus'])){
-            $my_post['post_status'] = $project_array['poststatus'];
-        }else{
-            $my_post['post_status'] = 'draft';
-        }
-    }elseif( $timeset == $timenow ){
-        if(isset($project_array['poststatus'])){
-            $my_post['post_status'] = $project_array['poststatus'];
-        }else{
-            $my_post['post_status'] = 'draft';
-        }
-    }
-
-    return $my_post;
-}
-
 
 /**
 * Decides which tag generating function to use.
@@ -681,5 +656,16 @@ function csv2post_categorysetup_basicscript_normalcategories($r,$project_array){
    }
       
    return $appliedcat_array;      
-}   
+} 
+
+function csv2post_POST_excerpt_basic($my_post,$record_array,$excerpt_template,$project_array){
+    if(isset($project_array['default_excerpttemplate_id'])){  
+        $excerpt_template = csv2post_get_template_design($project_array['default_excerpttemplate_id']);
+        if($excerpt_template){
+            $my_post['post_excerpt'] = csv2post_parse_columnreplacement_basic($record_array,$excerpt_template);
+            return $my_post;
+        }                 
+    }  
+    return $my_post;
+}  
 ?>

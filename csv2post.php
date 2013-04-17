@@ -26,19 +26,19 @@ See <http://www.gnu.org/licenses/>.
 This license does not apply to the paid edition which comes with premium
 services not just software. License and agreement is seperate.
 */         
-
+                            
 // package variables (frequently changed)
-$csv2post_currentversion = '6.9.4';
-$csv2post_php_version_tested = '5.4.0';// current version the plugin is being developed on
-$csv2post_php_version_minimum = '5.2.1';// minimum version required for plugin to operate
+$csv2post_currentversion = '6.9.5';
+$csv2post_php_version_tested = '5.4.12';// current version the plugin is being developed on
+$csv2post_php_version_minimum = '5.4.1';// minimum version required for plugin to operate
 $csv2post_is_free_override = false;// change to true for free edition setup when fulledition folder present 
 $csv2post_demo = false;// we do not want error display on demos on www.csvtopost.com
 $csv2post_debug_mode = false;// www.csvtopost.com will override this but only if demo mode not active
 $csv2post_disable_extensions = false;// boolean - can quickly disable extensions using this
-
+                             
 // activate debug by url or based on the domain                   
 if($csv2post_demo != true){
-    if(isset($_GET['csv2postdebug']) || ABSPATH == '/home/sites/csvtopost.com/public_html/beta/' ){
+    if(isset($_GET['csv2postdebug']) || ABSPATH == '/home/sites/csvtopost.com/public_html/beta/' || ABSPATH == '/home/sites/csvtopost.com/public_html/wordpress36beta1/' ){
         $csv2post_debug_mode = true;        
     }                
 }
@@ -49,7 +49,7 @@ if(defined('DOING_AJAX') && DOING_AJAX){
 }
                 
 $csv2post_is_dev = false;// boolean, true displays more panels with even more data i.e. array dumps
-if(isset($_GET['csv2postdebug']) || ABSPATH == '/home/sites/csvtopost.com/public_html/beta/' ){
+if(isset($_GET['csv2postdebug']) || ABSPATH == '/home/sites/csvtopost.com/public_html/beta/' || ABSPATH == '/home/sites/csvtopost.com/public_html/wordpress36beta1/' ){
     $csv2post_is_dev = true;
 }      
                  
@@ -62,7 +62,6 @@ $csv2post_isbeingactivated = false;// changed to true during activation, used to
 $csv2post_disableapicalls = 0;// 1 = yes, disable all api calls 0 allows api calls
 $csv2post_is_event = false;// when true, an event is running or has ran, used to avoid over processing 
 $csv2post_csvmethod = 1;// 0=PEAR CSV 1=fget/fgetcsv only         
-$csv2post_nav_type = 'jquery';// css,jquery,nonav (changes the navigation, we can adapt this as much as required)
 $csv2post_installation_required = true;
 $csv2post_apiservicestatus = 'unknown';
 $csv2post_is_webserviceavailable = false;                                                       
@@ -76,8 +75,7 @@ $csv2post_callcode = '000000000000';
 $csv2post_currentproject = 'No Project Set';
 $csv2post_notice_array = array();// set notice array for storing new notices in (not persistent notices)
 $csv2post_extension_loaded = false;
-$csv2post_guitheme = 'jquery';// jquery|wordpress
-                   
+                                   
 ##########################################################################################
 #                                                                                        #
 #                                     DEFINE CONSTANTS                                   #
@@ -166,19 +164,14 @@ require_once(WTG_C2P_DIR.'include/csv2post_file_functions.php');// file manageme
 require_once(WTG_C2P_DIR.'include/csv2post_post_functions.php');// post creation,update related functions              
 require_once(WTG_C2P_DIR.'include/csv2post_formsubmit_functions.php');
 // admin only arrays
-if(is_admin()){require_once(WTG_C2P_DIR.'include/variables/csv2post_array_tables.php');}# requires core_functions 
-if(is_admin()){require_once(WTG_C2P_DIR.'include/variables/csv2post_variables_templatesystemfiles_array.php');}
-if(is_admin()){require_once(WTG_C2P_DIR.'include/variables/csv2post_wordpressoptionrecords_array.php');} 
-if(is_admin()){require_once(WTG_C2P_DIR.'include/variables/csv2post_array_logtypes.php');} 
-              
-csv2post_pearcsv_include();
-          
-// we require the main admin settings array for continuing the loading of the plugin                                                                       
-$csv2post_adm_set = csv2post_get_option_adminsettings();# installs admin settings record if not yet installed, this will happen on plugin being activated
-                    
-// error display variables, variable that displays maximum errors is set in main file 
-if($csv2post_demo != true){csv2post_debugmode();}
-                    
+if(is_admin()){
+    require_once(WTG_C2P_DIR.'include/variables/csv2post_seoplugins_array.php');
+    require_once(WTG_C2P_DIR.'include/variables/csv2post_array_tables.php');# requires core_functions 
+    require_once(WTG_C2P_DIR.'include/variables/csv2post_variables_templatesystemfiles_array.php');
+    require_once(WTG_C2P_DIR.'include/variables/csv2post_wordpressoptionrecords_array.php'); 
+    require_once(WTG_C2P_DIR.'include/variables/csv2post_array_logtypes.php');
+} 
+                          
 ##########################################################################################
 #                                                                                        #
 #                                  INCLUDE PAID EDITION                                  #
@@ -193,7 +186,17 @@ if(!$csv2post_is_free){
             }
         }
     } 
-}   
+
+    if(is_admin()){require_once(WTG_C2P_DIR.'fulledition/admin/csv2post_paid_adminforms.php');}    
+} 
+
+csv2post_pearcsv_include();
+          
+// we require the main admin settings array for continuing the loading of the plugin                                                                       
+$csv2post_adm_set = csv2post_get_option_adminsettings();# installs admin settings record if not yet installed, this will happen on plugin being activated
+                      
+// error display variables, variable that displays maximum errors is set in main file 
+if($csv2post_demo != true){csv2post_debugmode();}  
                                  
 ##########################################################################################
 #                                                                                        #
@@ -206,7 +209,7 @@ $csv2post_job_array = csv2post_get_dataimportjob($csv2post_currentjob_code);
 $csv2post_jobtable_array = csv2post_get_option_jobtable_array(); 
 $csv2post_dataimportjobs_array = csv2post_get_option_dataimportjobs_array();
 $csv2post_file_profiles = csv2post_get_option_fileprofiles();
-
+                 
 // get post creation project related variables
 $csv2post_currentproject_code = csv2post_option('csv2post_currentprojectcode','get');
 $csv2post_project_array = csv2post_get_project_array($csv2post_currentproject_code);
@@ -250,7 +253,9 @@ if(WTG_C2P_EXTENSIONS != 'disable' && file_exists(WTG_C2P_CONTENTFOLDER_DIR . '/
 ####                                                                                            ####
 ####################################################################################################  
 if(is_admin()){ 
-    
+
+    $csv2post_guitheme = csv2post_get_theme();
+                       
     register_activation_hook( __FILE__ ,'csv2post_register_activation_hook');
 
     // content template custom post type
@@ -359,8 +364,8 @@ if(is_admin() && isset($_GET['page']) && csv2post_is_plugin_page($_GET['page']))
          
     add_action('init','csv2post_export_singlesqltable_as_csvfile');// export CSV file request by $_POST
 
-    // print scripts to page 
-    if(isset($csv2post_guitheme) && $csv2post_guitheme == 'jquery'){ 
+    // print scripts to page            
+    if(isset($csv2post_guitheme) && $csv2post_guitheme == 'jquery' || $csv2post_guitheme == false){  
         add_action( 'wp_print_scripts', 'csv2post_print_admin_scripts' );
     }
     

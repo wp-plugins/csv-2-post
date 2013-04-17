@@ -25,7 +25,7 @@ $csv2post_mpt_arr['menu']['main']['permissions']['customcapability'] = 'update_c
 $sub = 0; 
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['active'] = true;// boolean - developer only - disbale screen in all packages using false
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['slug'] = 'tab0_main';
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['label'] = 'ECI';      
+$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['label'] = 'Quick Start';      
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['package'] = 'free';
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['display'] = true;// user can change to false to hide screens 
@@ -119,18 +119,7 @@ $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['package'] = 'paid';
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/pagemain/csv2post_fileprofiles.php';
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['permissions']['defaultcapability'] = 'activate_plugins';
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['permissions']['customcapability'] = 'activate_plugins';
-// main 9
-++$sub;
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['active'] = true;
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['slug'] = 'postsettings';
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['label'] = 'Post Settings';
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['package'] = 'paid';
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/pagemain/csv2post_postsettings.php';
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['permissions']['defaultcapability'] = 'activate_plugins';
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['permissions']['customcapability'] = 'activate_plugins';  
+$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['permissions']['customcapability'] = 'activate_plugins'; 
       
 ######################################################
 #                                                    #
@@ -162,7 +151,7 @@ $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['permissions']['defaultcapabilit
 ++$sub;
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['active'] = true;
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['slug'] = 'tab1_pagedata';
-$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['label'] = 'Basic Import';
+$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['label'] = 'Free Importer';
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['allowhide'] = true;
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['package'] = 'free';
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
@@ -218,7 +207,6 @@ $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['package'] = 'paid';
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/data/csv2post_tab'.$sub.'_pagedata.php';
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['permissions']['defaultcapability'] = 'activate_plugins';
-
 // data 7
 ++$sub;
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['active'] = false;
@@ -233,9 +221,9 @@ $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['permissions']['defaultcapabilit
 ++$sub;
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['active'] = true;
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['slug'] = 'tab8_pagedata';
-$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['label'] = 'Advanced Import';
+$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['label'] = 'Premium Importer';
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['allowhide'] = true;
-$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['package'] = 'paid';
+$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['package'] = 'free';
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/data/csv2post_tab'.$sub.'_pagedata.php';
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['permissions']['defaultcapability'] = 'import';
@@ -319,7 +307,7 @@ $csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages
 ++$sub;
 $csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['active'] = true;
 $csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['slug'] = 'tab4_pageprojects';
-$csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['label'] = 'Post Types';
+$csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['label'] = 'Post Settings';
 $csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['allowhide'] = true;
 $csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['package'] = 'free';
 $csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
@@ -328,7 +316,7 @@ $csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages
 ++$sub;
 $csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['active'] = true;
 $csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['slug'] = 'tab5_pageprojects';
-$csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['label'] = 'Post Dates';
+$csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['label'] = 'Dates';
 $csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
 $csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['package'] = 'free';
 $csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
@@ -400,7 +388,7 @@ $csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages
 ++$sub;
 $csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['active'] = true;
 $csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['slug'] = 'tab13_pageprojects';
-$csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['label'] = 'Project Data';
+$csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['label'] = 'Info';
 $csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['allowhide'] = true;// is tab screen allowed to be hidden (boolean)
 $csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['package'] = 'free';
 $csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
@@ -423,24 +411,6 @@ $csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['allowhide'] = true;// is ta
 $csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['package'] = 'paid';
 $csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
 $csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/projects/csv2post_tab'.$sub.'_pageprojects.php';
-// projects 16
-++$sub;                                                        
-$csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['active'] = true;
-$csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['slug'] = 'projecthistory';
-$csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['label'] = 'Project History';
-$csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['allowhide'] = true;   
-$csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['package'] = 'free';
-$csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
-$csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/projects/csv2post_projecthistory.php';
-// projects 17
-++$sub;                                                        
-$csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['active'] = true;
-$csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['slug'] = 'projectother';
-$csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['label'] = 'Other';
-$csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['allowhide'] = true;   
-$csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['package'] = 'free';
-$csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
-$csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/projects/csv2post_projectother.php';
 
 ######################################################
 #                                                    #
@@ -583,24 +553,6 @@ $csv2post_mpt_arr['menu']['install']['tabs'][$sub]['allowhide'] = true;// is tab
 $csv2post_mpt_arr['menu']['install']['tabs'][$sub]['package'] = 'free';
 $csv2post_mpt_arr['menu']['install']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
 $csv2post_mpt_arr['menu']['install']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/install/csv2post_tab'.$sub.'_install.php';   
-// install 4
-++$sub;
-$csv2post_mpt_arr['menu']['install']['tabs'][$sub]['active'] = true;
-$csv2post_mpt_arr['menu']['install']['tabs'][$sub]['slug'] = 'tab4_install';
-$csv2post_mpt_arr['menu']['install']['tabs'][$sub]['label'] = 'Activation Controls';
-$csv2post_mpt_arr['menu']['install']['tabs'][$sub]['allowhide'] = false  ;// is tab screen allowed to be hidden (boolean) 
-$csv2post_mpt_arr['menu']['install']['tabs'][$sub]['package'] = 'free';
-$csv2post_mpt_arr['menu']['install']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
-$csv2post_mpt_arr['menu']['install']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/install/csv2post_tab'.$sub.'_install.php';
-// install 5
-++$sub;
-$csv2post_mpt_arr['menu']['install']['tabs'][$sub]['active'] = true;
-$csv2post_mpt_arr['menu']['install']['tabs'][$sub]['slug'] = 'tab5_install';
-$csv2post_mpt_arr['menu']['install']['tabs'][$sub]['label'] = 'Files Status';
-$csv2post_mpt_arr['menu']['install']['tabs'][$sub]['allowhide'] = false  ;// is tab screen allowed to be hidden (boolean) 
-$csv2post_mpt_arr['menu']['install']['tabs'][$sub]['package'] = 'paid';
-$csv2post_mpt_arr['menu']['install']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
-$csv2post_mpt_arr['menu']['install']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/install/csv2post_tab'.$sub.'_install.php'; 
 
 ######################################################
 #                                                    #
@@ -709,31 +661,4 @@ $csv2post_mpt_arr['menu']['more']['tabs'][$sub]['allowhide'] = false;// is tab s
 $csv2post_mpt_arr['menu']['more']['tabs'][$sub]['package'] = 'free';
 $csv2post_mpt_arr['menu']['more']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
 $csv2post_mpt_arr['menu']['more']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/more/csv2post_tab'.$sub.'_more.php';
-
-######################################################
-#                                                    #
-#                     BETA PAGE                      #
-#                                                    #
-######################################################  
-// beta page - used for testing, new interfaces will be added to the beta area for sometime and in paid edition only
-$csv2post_mpt_arr['menu']['beta']['active'] = false;
-$csv2post_mpt_arr['menu']['beta']['slug'] = "csv2post_beta";
-$csv2post_mpt_arr['menu']['beta']['menu'] = "Beta";
-$csv2post_mpt_arr['menu']['beta']['role'] = 'activate_plugins';// required user role permission
-$csv2post_mpt_arr['menu']['beta']['title'] = 'Beta';
-$csv2post_mpt_arr['menu']['beta']['name'] = 'beta'; 
-$csv2post_mpt_arr['menu']['beta']['icon'] = 'install';
-$csv2post_mpt_arr['menu']['beta']['headers'] = false;
-$csv2post_mpt_arr['menu']['beta']['vertical'] = false;
-$csv2post_mpt_arr['menu']['beta']['statusicons'] = false;
-$csv2post_mpt_arr['menu']['beta']['permissions']['defaultcapability'] = 'update_core';      
-// more 0
-$sub = 0;
-$csv2post_mpt_arr['menu']['beta']['tabs'][$sub]['active'] = true;
-$csv2post_mpt_arr['menu']['beta']['tabs'][$sub]['slug'] = 'betaone';
-$csv2post_mpt_arr['menu']['beta']['tabs'][$sub]['label'] = 'Beta One';
-$csv2post_mpt_arr['menu']['beta']['tabs'][$sub]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
-$csv2post_mpt_arr['menu']['beta']['tabs'][$sub]['package'] = 'free';
-$csv2post_mpt_arr['menu']['beta']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
-$csv2post_mpt_arr['menu']['beta']['tabs'][$sub]['path'] = WTG_C2P_DIR.'pages/more/csv2post_betaone.php';
 ?>

@@ -1,6 +1,6 @@
 <?php 
-global $pageid,$csv2post_guitheme,$csv2post_extension_loaded,$csv2post_adm_set,$csv2post_is_installed,$csv2post_currentversion,$csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$wtgtp_pluginforum,$wtgtp_pluginblog,$csv2post_options_array,$csv2post_nav_type,$csv2post_is_free,$csv2post_projectslist_array,$csv2post_schedule_array;
-
+global $csv2post_guitheme,$csv2post_extension_loaded,$csv2post_adm_set,$csv2post_is_installed,$csv2post_currentversion,$csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$wtgtp_pluginforum,$wtgtp_pluginblog,$csv2post_options_array,$csv2post_is_free,$csv2post_projectslist_array,$csv2post_schedule_array;
+                        
 $installing_software_name = WTG_C2P_NAME;
 $installing_software_name_plus = '';
 $installing_message = '';
@@ -18,7 +18,7 @@ $installed_version = csv2post_WP_SETTINGS_get_version();
             
 // this switch is set to false when we detect first time install or update is required
 $display_main_screens = true;
-
+                             
 ########################################################
 #                                                      #
 #     REQUEST USER TO INITIATE FIRST TIME INSTALL      #
@@ -38,7 +38,7 @@ if(!$csv2post_is_installed && !isset($_POST['csv2post_plugin_install_now'])){# w
     <form class="csv2post_form" method="post" name="csv2post_plugin_install" action="">
         <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">
         <input type="hidden" id="csv2post_plugin_install_now" name="csv2post_plugin_install_now" value="z3sx4bhik970">
-        <input type="hidden" name="csv2post_hidden_pageid" value="<?php echo $pageid;?>">
+        <input type="hidden" name="csv2post_hidden_pageid" value="main">
         <input type="hidden" name="csv2post_hidden_panel_name" value="installationscreen">
         <input type="hidden" name="csv2post_hidden_panel_title" value="Welcome To CSV 2 POST">
         <input type="hidden" name="csv2post_hidden_tabnumber" value="0">
@@ -146,11 +146,11 @@ if($display_main_screens){
     // set tab number variable, a common use is in form hidden values
     $csv2post_tab_number = csv2post_get_tabnumber();
 
-    if($csv2post_nav_type == 'css' || $csv2post_guitheme == 'wordpresscss' ){### TODO:CRITICAL, complete css menu 
+    if($csv2post_guitheme == 'wordpresscss' ){### TODO:CRITICAL, complete css menu 
 
         csv2post_GUI_css_screen_include($pageid,$panel_number,$csv2post_tab_number);
 
-    }elseif($csv2post_nav_type == 'jquery' && $csv2post_guitheme != 'wordpresscss'){
+    }elseif($csv2post_guitheme == 'jquery'){
         
         // loop through tabs - held in menu pages tabs array
         foreach($csv2post_mpt_arr['menu'][$pageid]['tabs'] as $tab => $values){
@@ -177,7 +177,7 @@ if($display_main_screens){
             }
         } 
         
-    }elseif($csv2post_nav_type == 'nonav'){# results in all accordions listed on one screen
+    }elseif($csv2post_guitheme == 'nonav'){# results in all accordions listed on one screen
         
         ### TODO:CRITICAL, complete no navigation view 
         

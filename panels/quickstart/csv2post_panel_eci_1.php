@@ -8,18 +8,13 @@ $panel_array['panel_url'] = 'http://www.csv2post.com/feature-guides/csv-file-upl
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialogbox_title'] = 'Upload CSV File';
-$jsform_set['noticebox_content'] = 'You are about to upload a CSV file, it will overwrite 
-any existing CSV file with the same name. Do you want to upload the file now?';?>
+?>
 
 <?php csv2post_panel_header( $panel_array );?>
   
-  <?php 
+  <?php
   if($csv2post_ecisession_array['nextstep'] > 1){
-      
-      csv2post_n_incontent('You have completed this step. You selected a CSV file 
-      named '.$csv2post_ecisession_array['filename'].' for your new project.','success','Small','Step Complete');
-      
+      csv2post_n_incontent('You have completed this step. You selected a CSV file named '.$csv2post_ecisession_array['filename'].' for your new project.','success','Small','Step Complete');
   }else{?>
   
        <h4><?php _e('Upload CSV File')?> <?php echo ini_get( "upload_max_filesize").'B Limit';?></h4>

@@ -1,8 +1,8 @@
 <?php              
-global $csv2post_guitheme,$csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$csv2post_options_array,$csv2post_nav_type,$csv2post_is_free,$csv2post_job_array,$csv2post_is_dev,$csv2post_dataimportjobs_array,$csv2post_jobtable_array;
+global $csv2post_guitheme,$csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$csv2post_options_array,$csv2post_is_free,$csv2post_job_array,$csv2post_is_dev,$csv2post_dataimportjobs_array,$csv2post_jobtable_array;
 $pageid = 'data';// used to access variable.php configuration
 $pagefolder = 'data';// the folder in pages folder holding this pages files
-
+        
 csv2post_header_page($csv2post_mpt_arr['menu'][$pageid]['title'],0);
  
 // create tab menu for the giving page
@@ -15,11 +15,11 @@ $panel_number = 0;
 $csv2post_tab_number = csv2post_get_tabnumber();
 
 // we can change the navigation type to CSS only, important for debugging javascript bugs
-if($csv2post_nav_type == 'css' || $csv2post_guitheme == 'wordpresscss'){ 
+if($csv2post_guitheme == 'wordpresscss'){ 
 
     csv2post_GUI_css_screen_include($pageid,$panel_number,$csv2post_tab_number);
 
-}elseif($csv2post_nav_type == 'jquery'){
+}elseif($csv2post_guitheme == 'jquery'){
     
     // loop through tabs - held in menu pages tabs array
     foreach($csv2post_mpt_arr['menu'][$pageid]['tabs'] as $tab=>$values){
@@ -49,7 +49,7 @@ if($csv2post_nav_type == 'css' || $csv2post_guitheme == 'wordpresscss'){
         }
     } 
     
-}elseif($csv2post_nav_type == 'nonav'){
+}elseif($csv2post_guitheme == 'nonav'){
     
     // loop through tabs - held in menu pages tabs array
     foreach($csv2post_mpt_arr['menu'][$pageid]['tabs'] as $tab=>$values){
@@ -63,7 +63,6 @@ if($csv2post_nav_type == 'css' || $csv2post_guitheme == 'wordpresscss'){
         
         }
     }    
-    
 }
      
 csv2post_footer(); ?>

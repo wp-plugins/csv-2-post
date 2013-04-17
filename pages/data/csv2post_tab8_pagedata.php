@@ -1,17 +1,4 @@
 <?php 
-/*
-echo csv2post_notice('This is screen allows us to not only carry out an initial data import but we can also
-update our data with it. Use this screen instead of the Basic Import screen if you plan to run updates. It allows 
-us to select an ID column so that a relationship exists between CSV file rows and existing database records. There is
-no other way to update data, sometime of unique ID value is always required.
-It is important to note that the update is applied to the Data Import Job database table before being used elsewhere.
-Our approach is one step at a time for the security and safety of your blog, especially on the public side. Further
-action is required after data is imported or updated if you want the data to be displayed in posts.',
-'info','Large','Screen Introduction','','return');
-*/
-?>
-
-<?php 
 ##################################################################################
 #                                                                                #
 #         START OF DATA IMPORT JOB PANELS LOOP - CREATES A PANEL PER JOB         #
@@ -226,6 +213,6 @@ if(!isset($csv2post_dataimportjobs_array) || !is_array($csv2post_dataimportjobs_
 
         csv2post_panel_footer(); 
                                                     
-    }// end of $job loop
+    }// end of $job loop 
 }
 ?>

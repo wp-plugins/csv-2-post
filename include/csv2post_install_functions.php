@@ -1,6 +1,8 @@
 <?php
 function csv2post_install_plugin(){
+    
     $overall_install_result = true;
+    
     #################################################
     #                                               #
     #                INSTALL ECI ARRAY              #

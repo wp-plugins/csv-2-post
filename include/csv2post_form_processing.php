@@ -31,6 +31,9 @@ if($cont){
                      
 // Project Screen Form Submissions (project creation and configuration)
 if($cont){
+    
+    // Save basic SEO options
+    $cont = csv2post_form_save_basic_seo_options(); 
                      
     // Create post creation project
     $cont = csv2post_form_create_post_creation_project();
@@ -100,10 +103,7 @@ if($cont){
 
     // Activate or disable text spinning
     $cont = csv2post_form_textspinning_switch();
-    
-    // Save basic SEO options
-    $cont = csv2post_form_save_basic_seo_options();   
-    
+
     // Save post titles data column
     $cont = csv2post_form_save_title_data_column();
     

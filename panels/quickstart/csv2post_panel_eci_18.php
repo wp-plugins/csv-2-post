@@ -24,8 +24,11 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
         // begin form and add hidden values
         csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
         csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
-        ?> 
-
+        ?>
+        
+        <input type="hidden" name="csv2post_project_code" value="<?php echo $csv2post_currentproject_code; ?>">
+        <input type="hidden" name="csv2post_post_creation_request" value="true">  
+        
         <?php 
         // add js for dialog on form submission and the dialog <div> itself
         if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){

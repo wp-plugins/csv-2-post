@@ -80,7 +80,16 @@ function csv2post_delete_project_posts_byrange($project_code,$range){
     return $posts_deleted;  
 }
         
-
+function csv2post_count_projects(){
+    global $csv2post_projectslist_array;
+    $i = 0;
+    foreach($csv2post_projectslist_array as $k => $p){
+        if($k != 'arrayinfo'){
+            ++$i;
+        }
+    }
+    return $i;
+}
         
 /**
 * Called from main file using add_action. 
@@ -251,10 +260,10 @@ function csv2post_update_currentproject($project_code){
 */
 function csv2post_delete_postcreationproject($project_code,$current_project_code = false){
     global $csv2post_projectslist_array;
-    
+                          
     // check if csv2post_currentprojectcode matches the project being deleted and set it to false if so
     if(isset($current_project_code) && $project_code == $current_project_code){
-       csv2post_update_currentproject(false);
+       csv2post_update_currentproject(false);    
     }
     
     // now remove the project from the project list array    

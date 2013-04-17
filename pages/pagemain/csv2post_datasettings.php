@@ -192,15 +192,15 @@ $jsform_set['noticebox_content'] = 'It is recommended you monitor the plugin for
                 <?php 
                 // if is not set ['admintriggers']['newcsvfiles']['status'] then it is enabled by default
                 if(!isset($csv2post_adm_set['data']['csvimportmethod'])){
-                    $radio1_checked_none = 'checked';     
-                    $radio2_checked_utf8 = '';                    
+                    $radio1_checked_fgetcsv = 'checked';     
+                    $radio2_checked_pearcsv = '';                    
                 }else{
                     if($csv2post_adm_set['data']['csvimportmethod'] == 'fgetcsv'){
-                        $radio1_checked_none = 'checked'; 
-                        $radio2_checked_utf8 = '';    
+                        $radio1_checked_fgetcsv = 'checked'; 
+                        $radio2_checked_pearcsv = '';    
                     }elseif($csv2post_adm_set['data']['csvimportmethod'] == 'pearcsv'){
-                        $radio1_checked_none = ''; 
-                        $radio2_checked_utf8 = 'checked';    
+                        $radio1_checked_fgetcsv = ''; 
+                        $radio2_checked_pearcsv = 'checked';    
                     }
                 }?>
                 <div id="csv2post_div_<?php echo $panel_array['panel_name'];?>_csvreadmethod">

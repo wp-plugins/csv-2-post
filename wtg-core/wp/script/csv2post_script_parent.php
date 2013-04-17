@@ -55,11 +55,11 @@ if($side == 'public'){
     * This is where new .js files should be added. 
     */
     function csv2post_print_admin_scripts() {
-             
+                      
          // $csv2post_js_switch and similiar variables set in main file
          $csv2post_js_switch = true;
          if($csv2post_js_switch == true){
-
+               
             wp_enqueue_script('jquery');  
             wp_enqueue_script('jquery-ui');
             wp_enqueue_script('jquery-ui-widget');

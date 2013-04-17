@@ -669,7 +669,82 @@ $jsform_set['noticebox_content'] = 'Do you want to save category mapping rules n
 <?php csv2post_panel_footer();
 }?>
 
-<?php ### TODO:HIGHPRIORITY, add panel for Single Column Categories (category splitter approach)?>
+<?php
+if(!$csv2post_is_free){
+++$panel_number;// increase panel counter so this panel has unique ID
+$panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
+$panel_array['panel_name'] = 'categorysplitter';// slug to act as a name and part of the panel ID 
+$panel_array['panel_title'] = __('Category Splitter Settings');// user seen panel header text 
+$panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
+$panel_array['panel_help'] = __('Use this tool to split categories that are a single column. You
+can take different approaches depending on your project needs. If you require the use of category
+mapping, you must import all of your data straight away. The plugin needs your category data imported
+in order to determine all distinct/unique values. If your not using mapping you do not need to have
+all of your data imported but it is recommend that you import some for testing. When you submit
+this panels form, the plugin will split your categories into multiple columns. You can check the 
+database table using MyPhpAdmin and confirm all went smoothly. Whatever approach you use, you will
+be able to select up to five category columns "csv2post_cat1" to "csv2post_cat5" as if they were
+originally in your data.');
+// Form Settings - create the array that is passed to jQuery form functions
+$jsform_set_override = array();
+$jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);               
+$jsform_set['dialogbox_title'] = 'Split Categories';
+$jsform_set['noticebox_content'] = 'You are about to split one column of values into multiple database table columns. It could take around 20 seconds depending on how many categories you have. Do you wish to continue?';
+### TODO:HIGHPRIORITY, add default category option ?>
+<?php csv2post_panel_header( $panel_array );?>
+
+    <?php 
+    // begin form and add hidden values
+    csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form','');
+    csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
+    ?>
+
+    <h4>Select Category Column</h4>
+    <select name="csv2post_catcol">
+        <option value="notselected">Not Selected</option>
+        <?php 
+        if(isset($csv2post_project_array['categories']['splitter']['table']) && isset($csv2post_project_array['categories']['splitter']['column'])){
+            csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code,$csv2post_project_array['categories']['splitter']['table'],$csv2post_project_array['categories']['splitter']['column']);    
+        }else{
+            csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code);            
+        }
+        ?>                                                                                                                            
+    </select>    
+    
+    <h4>Select Separator</h4>  
+    <select name="csv2post_sep">
+        <option value="notselected">Not Selected</option>
+        <?php
+        $current_sep = '';
+        $forwardslash = '';
+        $comma = '';
+        $pipe = '';
+        if(isset($csv2post_project_array['categories']['splitter']['separator'])){
+            $current_sep = $csv2post_project_array['categories']['splitter']['separator'];
+            if($current_sep == '/'){$forwardslash = 'selected="selected"';}
+            if($current_sep == ','){$comma = 'selected="selected"';}
+            if($current_sep == '|'){$pipe = 'selected="selected"';}
+        } 
+        ?>    
+        <option value="/" <?php echo $forwardslash;?>>/</option>
+        <option value="," <?php echo $comma;?>>,</option>
+        <option value="|" <?php echo $pipe;?>>|</option>        
+    </select>    
+       
+    <br>
+    
+    <?php 
+    // add js for dialog on form submission and the dialog <div> itself
+    if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
+        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
+        csv2post_jquery_form_prompt($jsform_set);
+    }
+    ?>
+        
+    <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
+
+<?php csv2post_panel_footer();
+}?>
 
 <?php ### TODO:LOWPRIORITY,add panel that shows columns created with heirarchy ?> 
 

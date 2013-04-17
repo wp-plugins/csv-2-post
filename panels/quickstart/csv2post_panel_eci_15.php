@@ -4,7 +4,6 @@ $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_
 $panel_array['panel_name'] = 'ecifreedefaultauthor';// slug to act as a name and part of the panel ID 
 $panel_array['panel_title'] = __('Step 15: Default Author');// user seen panel header text 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['dialogdisplay'] = 'no';
 // <form> values, seperate from panel value
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
@@ -25,16 +24,16 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
         csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
         ?>
 
-            <select name="csv2post_ecifreedefaultauthor_select" id="csv2post_ecifreedefaultauthor_select_id" class="csv2post_multiselect_menu">
+            <select name="csv2post_ecifreedefaultauthor_select" class="csv2post_multiselect_menu">
                 
                 <?php
                 // apply selected to default option when no value has been saved already
                 $selected = '';
                 $current = ''; 
-                if(!isset($csv2post_project_array['defaultuser'])){
+                if(!isset($csv2post_project_array['authors']['defaultauthor'])){
                     $selected = 'selected="selected"';
                 }else{
-                    $current = $csv2post_project_array['defaultuser'];
+                    $current = $csv2post_project_array['authors']['defaultauthor'];
                 }?>
     
                 <?php csv2post_display_users_options($current);?>
@@ -44,8 +43,6 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
             <br />
                     
         <?php 
-        echo csv2post_WP_SETTINGS_form_submit_dialog($panel_array);
-        
         // add js for dialog on form submission and the dialog <div> itself
         if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
             csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);

@@ -2,7 +2,9 @@
 if(!isset($csv2post_project_array['default_contenttemplate_id'])){
     echo csv2post_notice('You have not selected a content template yet, this is a requirement for all projects.','warning','Tiny','','','return');
 }else{
-    echo csv2post_notice('Your project has a content template setup.','success','Tiny','','','return');
+    echo csv2post_notice('You can change or edit your main content template. It is also possible
+    to link more templates to your project and use different templates for different records.',
+    'success','Small','Your Main Content Template: '.csv2post_get_default_contenttemplate_name(),'','return');
 }
 ?>
 
@@ -18,76 +20,27 @@ $panel_array['panel_help'] = __('Click on any design to make it your default for
                  
     <form id="csv2post_form_opencontenttemplate_id" action="<?php echo $csv2post_form_action;?>" method="post" name="csv2post_form_opencontenttemplate">
         <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">               
-        
         <input type="hidden" name="csv2post_current_project_id" value="<?php echo $csv2post_currentproject_code;?>">
         <input type="hidden" name="csv2post_change_default_contenttemplate" value="true">        
-
-        <h4>Current Projects Default Content Template</h4> 
-        <?php echo csv2post_get_default_contenttemplate_name();?>
+        
+        <?php csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);?> 
+         
+        <?php 
+        // if more than one project, display templates linked to the current project
+        if(csv2post_count_projects() > 1){?>
             
         <h4>Current Projects Post Content Templates</h4>
         <?php csv2post_displayproject_templates_buttonlist('csv2post_selecttemplate_fromproject_id','postcontent');?>          
+    
+        <?php }?>
     
         <h4>All Post Content Designs</h4>
         <?php csv2post_display_all_post_contentdesigns_buttonlist();?>            
 
     </form>
 
- <?php csv2post_panel_footer();?> 
-     
- <?php  
-++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
-$panel_array['panel_name'] = 'defaultexcerpttemplate';// slug to act as a name and part of the panel ID 
-$panel_array['panel_title'] = __('Default Excerpt Template (Currently: '.csv2post_get_default_excerpttemplate_name().')');// user seen panel header text 
-$panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_help'] = __('You do not need to setup an excerpt for your posts. To apply an excerpt, select Post Excerpt in the Design Type menu then create your template. The first template you create will automatically be set as your default if you only select "Post Excerpt" as the type. If you select more types, please remember to set your excerpt template because the default/main template is only applied when set properly. For advance excerpt rules you can create more but they will only be used when excerpt rules are setup.');?>
-<?php csv2post_panel_header( $panel_array );?>
-                 
-    <form id="csv2post_form_openexcerpttemplate_id" action="<?php echo $csv2post_form_action;?>" method="post" name="csv2post_form_openexcerpttemplate">
-        <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">               
-        
-        <input type="hidden" name="csv2post_current_project_id" value="<?php echo $csv2post_currentproject_code;?>">
-        <input type="hidden" name="csv2post_change_default_excerpttemplate" value="true">        
-
-        <h4>Current Projects Default Excerpt Template</h4> 
-        <?php echo csv2post_get_default_excerpttemplate_name();?>
-            
-        <h4>Current Projects Excerpt Templates</h4>
-        <?php csv2post_displayproject_templates_buttonlist('csv2post_selecttemplate_fromproject_id','postexcerpt');?>          
-    
-        <h4>All Excerpt Designs</h4>
-        <?php csv2post_display_all_post_excerptdesigns_buttonlist();?>            
-
-    </form>
-
- <?php csv2post_panel_footer();?> 
- 
-<?php
-++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
-$panel_array['panel_name'] = 'opentemplates';// slug to act as a name and part of the panel ID 
-$panel_array['panel_title'] = __('Open Template For Editing');// user seen panel header text 
-$panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_help'] = __('You can open and edit an existing content template. Click on the template you wish to edit. When the browser loads the WYSIWYG editor will contain your selected template.');?>
-<?php csv2post_panel_header( $panel_array );?>
-
-    <form id="csv2post_form_opentemplate_id" method="post" name="csv2post_form_opentemplate" action="<?php echo $csv2post_form_action;?>">
-        <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">               
-        
-        <input type="hidden" name="csv2post_current_project_id" value="<?php echo $csv2post_currentproject_code;?>">
-        <input type="hidden" name="csv2post_opencontentdesign" value="true">        
-    
-        <h4>Current Project Designs</h4>
-        <?php csv2post_displayproject_templates_buttonlist('csv2post_selecttemplate_fromproject_id','all');?>          
-    
-        <h4>All Designs</h4>
-        <?php csv2post_display_all_contentdesigns_buttonlist();?>            
-
-    </form>
-
 <?php csv2post_panel_footer();?> 
-
+  
 <?php
 ++$panel_number;// increase panel counter so this panel has unique ID
 $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
@@ -136,13 +89,6 @@ $templatedesign_array = csv2post_get_template_bypostrequest();?>
     Design ID: <input type="text" name="csv2post_templateid" size="5" value="<?php echo $templatedesign_array['template_id'];?>" readonly />
                                             
     <div id="poststuff">
-        
-        <!-- Method to use if there is issues with WYSIWYG editor
-        <textarea rows="10" cols="80" name="csv2post_wysiwyg_editor">
-         echo //$templatedesign_array['template_content']; ?>
-        </textarea>
-        -->
-        
         <?php wp_editor($templatedesign_array['template_content'],'csv2postwysiwygeditor',array('textarea_name' => 'csv2post_wysiwyg_editor'));?>
     </div>
                
@@ -155,6 +101,61 @@ $templatedesign_array = csv2post_get_template_bypostrequest();?>
     ?>
         
     <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
+
+<?php csv2post_panel_footer();?> 
+
+<?php  
+++$panel_number;// increase panel counter so this panel has unique ID
+$panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
+$panel_array['panel_name'] = 'defaultexcerpttemplate';// slug to act as a name and part of the panel ID 
+$panel_array['panel_title'] = __('Default Excerpt Template (Currently: '.csv2post_get_default_excerpttemplate_name().')');// user seen panel header text 
+$panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
+$panel_array['panel_help'] = __('You do not need to setup an excerpt for your posts. To apply an excerpt, select Post Excerpt in the Design Type menu then create your template. The first template you create will automatically be set as your default if you only select "Post Excerpt" as the type. If you select more types, please remember to set your excerpt template because the default/main template is only applied when set properly. For advance excerpt rules you can create more but they will only be used when excerpt rules are setup.');?>
+<?php csv2post_panel_header( $panel_array );?>
+                 
+    <form id="csv2post_form_openexcerpttemplate_id" action="<?php echo $csv2post_form_action;?>" method="post" name="csv2post_form_openexcerpttemplate">
+        <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">               
+        <input type="hidden" name="csv2post_current_project_id" value="<?php echo $csv2post_currentproject_code;?>">
+        <input type="hidden" name="csv2post_change_default_excerpttemplate" value="true">        
+
+        <?php csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);?> 
+         
+        <h4>Current Projects Default Excerpt Template</h4> 
+        <?php echo csv2post_get_default_excerpttemplate_name();?>
+            
+        <h4>Current Projects Excerpt Templates</h4>
+        <?php csv2post_displayproject_templates_buttonlist('csv2post_selecttemplate_fromproject_id','postexcerpt');?>          
+    
+        <h4>All Excerpt Designs</h4>
+        <?php csv2post_display_all_post_excerptdesigns_buttonlist();?>            
+
+    </form>
+
+ <?php csv2post_panel_footer();?> 
+ 
+<?php
+++$panel_number;// increase panel counter so this panel has unique ID
+$panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
+$panel_array['panel_name'] = 'opentemplates';// slug to act as a name and part of the panel ID 
+$panel_array['panel_title'] = __('Open Template For Editing');// user seen panel header text 
+$panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
+$panel_array['panel_help'] = __('You can open and edit an existing content template. Click on the template you wish to edit. When the browser loads the WYSIWYG editor will contain your selected template.');?>
+<?php csv2post_panel_header( $panel_array );?>
+
+    <form id="csv2post_form_opentemplate_id" method="post" name="csv2post_form_opentemplate" action="<?php echo $csv2post_form_action;?>">
+        <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">               
+        <input type="hidden" name="csv2post_current_project_id" value="<?php echo $csv2post_currentproject_code;?>">
+        <input type="hidden" name="csv2post_opencontentdesign" value="true">        
+    
+        <?php csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);?> 
+     
+        <h4>Current Project Designs</h4>
+        <?php csv2post_displayproject_templates_buttonlist('csv2post_selecttemplate_fromproject_id','all');?>          
+    
+        <h4>All Designs</h4>
+        <?php csv2post_display_all_contentdesigns_buttonlist();?>            
+
+    </form>
 
 <?php csv2post_panel_footer();?> 
 

@@ -1169,42 +1169,6 @@ function csv2post_display_headers_menuoptions($headers,$jobcode,$current = 'NOTS
     }    
 }
 
-/**
-* Display date method with a short description of what the date method does 
-*/
-function csv2post_display_date_method(){
-    global $csv2post_project_array,$csv2post_plugintitle;
-    
-    if(isset($csv2post_project_array['dates']['currentmethod'])){
-        
-        if($csv2post_project_array['dates']['currentmethod'] == 'data'){
-            echo csv2post_notice('You selected a column in your project database tables for populating the publish dates of your posts.
-            Please ensure the date formats in your data is suitable if your dates do not turn out as expected.','info','Large','Pre-Set Data Dates','','return');        
-            return;    
-        }
-                
-        if($csv2post_project_array['dates']['currentmethod'] == 'random'){
-            echo csv2post_notice('Your project is currently setup to create random publish dates. Your 
-            random dates will be generated using the giving start and end dates. All publish dates will fall
-            between those giving dates and will not be created with any increment or in order.','info','Large','Random Dates','','return');        
-            return;    
-        }
-        
-        if($csv2post_project_array['dates']['currentmethod'] == 'increment'){
-            echo csv2post_notice('The current project is setup to use the incremental publish dates method.
-            The first publish date will be the Start date you submitted. The increment will then be used to 
-            create the next publish date.','info','Large','Incremental Dates','','return');        
-            return;    
-        }
-
-    }
-    
-    // display default
-    echo csv2post_notice('Your project will use your blogs default publish date. '.$csv2post_plugintitle.' will not apply
-    a date or make modifications to the one decided by Wordpress based on your current Date configuration here on
-    this screen.','info','Large','Wordpress Default Publish Dates','','return');    
-}
-
 
 /**
 * Displays checkbox menu holding all the designs for the giving project
@@ -1456,6 +1420,66 @@ function csv2post_table_customfield_rules_basic(){
 }
 
 /**
+* Outputs form objects: post statuses as form radio buttons
+* 
+* @param mixed $i
+*/
+function csv2post_FORMOBJECT_poststatus_radios($i){ 
+    foreach(get_post_statuses() as $status_name => $status_title){
+
+        if(isset($csv2post_project_array['poststatus']) && $csv2post_project_array['poststatus'] == $status_name){
+            $statuschecked = 'checked';
+        }else{
+            $statuschecked = '';
+        }
+        
+        // apply default
+        if($status_name == 'publish' && $statuschecked == ''){
+            $statuschecked = 'checked';
+        }                              
+              
+        echo '<input type="radio" id="csv2post_radio'.$status_name.'_poststatus_objectid_'.$i.'" name="csv2post_radio_poststatus" value="'.$status_name.'" '.$statuschecked.' />
+        <label for="csv2post_radio'.$status_name.'_poststatus_objectid_'.$i.'">'.$status_title.'</label>';                                 
+    }  
+} 
+
+/**
+* Outputs post formats as form radio objects 
+* 
+* @param mixed $i
+*/
+function csv2post_FORMOBJECT_postformat_radios($i){ 
+    if ( current_theme_supports( 'post-formats' ) ) {
+        $post_formats = get_theme_support( 'post-formats' );
+
+        if ( is_array( $post_formats[0] ) ) {
+            
+            foreach($post_formats[0] as $key => $format){
+
+                if(isset($csv2post_project_array['postformat']['default']) && $csv2post_project_array['postformat']['default'] == $format){
+                    $statuschecked = 'checked="checked"';
+                }else{
+                    $statuschecked = '';
+                }
+                                                    
+                echo '<input type="radio" id="csv2post_radio'.$format.'_postformat_objectid_'.$i.'" name="csv2post_radio_postformat" value="'.$format.'" '.$statuschecked.' />
+                <label for="csv2post_radio'.$format.'_postformat_objectid_'.$i.'">'.$format.'</label>';                                 
+            }
+            
+            if($statuschecked == ''){$statuschecked = 'checked="checked"';}
+            
+            echo '<input type="radio" id="csv2post_radiostandard_postformat_objectid_'.$i.'" name="csv2post_radio_postformat" value="standard" '.$statuschecked.' />
+            <label for="csv2post_radiostandard_postformat_objectid_'.$i.'">standard (default)</label>';               
+                
+        }    
+      
+    }else{
+        echo '<input type="radio" id="csv2post_radiostandard_postformat_objectid_'.$i.'" name="csv2post_radio_postformat" value="standard" checked="checked" />
+        <label for="csv2post_radiostandard_postformat_objectid_'.$i.'">Your Theme Does Not Support Post Formats</label>';        
+    }
+}  
+
+/**
 * Delete advanced custom field rules  
 */
 function csv2post_table_customfield_rules_advanced(){
@@ -1493,13 +1517,16 @@ function csv2post_table_customfield_rules_advanced(){
             }else{
                 $update = 'off';
             }
-                        
+            
+            $t = 'None';
+            if(isset($rule['template_id'])){$t = $rule['template_id'];} 
+                       
             echo '<tr class="first">
                 <td><input type="checkbox" name="csv2post_customfield_rule_arraykey" value="'.$key.'" /></td>
                 <td>'.$rule['meta_key'].'</td>               
                 <td>'.$table.'</td>
                 <td>'.$column.'</td>
-                <td>'.$rule['template_id'].'</td>
+                <td>'.$t.'</td>
                 <td>'.$update.'</td>                                                                                       
             </tr>';
         }
@@ -1836,6 +1863,8 @@ function csv2post_display_databasetables_withjobnames($checkbox_column = false,$
             <td><strong>Reset Posts</strong></td>                                                                              
         </tr>'; 
         
+        $table_exclusions = array('csv2post_log','csv2post_ryanair_aircraft','csv2post_ryanair_dfformstaff','csv2post_ryanair_eposerrors','csv2post_ryanair_flight','csv2post_ryanair_onlinedf1_products','csv2post_ryanair_producthistory','csv2post_ryanair_session');
+        
         $table_count = 0;
 
         $tables = csv2post_WP_SQL_get_tables();
@@ -1848,7 +1877,7 @@ function csv2post_display_databasetables_withjobnames($checkbox_column = false,$
             if($show_table){   
                 // I decided free users should not get a plugin that offers open access to Wordpress database tables.
                 // I would like to reduce such access at least until better documentation is released and more security added
-                if($csv2post_is_free && !strstr($table_name[0],'csv2post_')){
+                if($csv2post_is_free && !strstr($table_name[0],'csv2post_') || in_array($table_name[0],$table_exclusions)){
                 
                     // we do nothing - we do not add database tables to our table if csv2post_ is not within the name
                     // or if user does not want them shown     
@@ -2545,8 +2574,6 @@ function csv2post_display_sample_data($table_name,$limit = 10,$columns = '*'){
 /**
 * Loops through giving projects tables and prints <option> item for menu for each column header.
 * Table and column are added to value with comma delimeter. Use csv2post_explode_tablecolumn_returnnode to split the submitted value
-* 
-* @deprecated 29th January 2013 use csv2post_GUI_menuoptions_project_columnsandtables() instead
 */
 function csv2post_display_project_columnsandtables_menuoptions($project_code,$current_table = 'NOTPROVIDED98723462',$current_column = 'NOTPROVIDED09871237'){
     
@@ -2556,21 +2583,32 @@ function csv2post_display_project_columnsandtables_menuoptions($project_code,$cu
 
         global $csv2post_project_array;
 
+        // hide operation columns
+        $exclude = array('csv2post_id','csv2post_postid','csv2post_postcontent','csv2post_inuse'
+        ,'csv2post_importer','csv2post_updated','csv2post_changed','csv2post_applied','csv2post_catid'
+        ,'csv2post_filemoddate','csv2post_filedone');
+
+        // category splitter special columns
+        if(!isset($csv2post_project_array['categories']['splitter']['table']) 
+        || !isset($csv2post_project_array['categories']['splitter']['column'])
+        || !isset($csv2post_project_array['categories']['splitter']['separator'])){
+            $exclude = array_merge($exclude,array('splitcat1','splitcat2','splitcat3','splitcat4','splitcat5'));
+        }
+        
+        $tables_count = count($csv2post_project_array['tables']);
+            
         foreach( $csv2post_project_array['tables'] as $key => $table ){
             $table_columns = csv2post_WP_SQL_get_tablecolumns($table);
             
             if($table_columns == false){
-                
                 echo '<option value="fault">Problem Detected In Relation To Table Named: '.$table.'</option>';        
-            
             }else{
                 while ($row_column = mysql_fetch_row($table_columns)) {
 
                     // establish selected status for this option
                     $selected = '';
                     
-                    ### TODO:MEDIUMPRIORITY change these not provided values all over the plugin
-                    ### we use a random number so that it can never match a users own column name but this approach has not been used everywhere
+                    // we use a random number so that it can never match a users own column
                     if($current_table != 'NOTPROVIDED98723462' && $current_column != 'NOTPROVIDED09871237'){
                         if($current_table == $table && $current_column == $row_column[0]){
                             $selected = ' selected="selected"';
@@ -2578,7 +2616,16 @@ function csv2post_display_project_columnsandtables_menuoptions($project_code,$cu
                     } 
                     
                     // must add table name also to avoid confusion when two or more tables share the same column name               
-                    echo '<option value="'.$table.','.$row_column[0].'"'.$selected.'>' . $table . ' - '.$row_column[0].'</option>'; 
+                    if(!in_array($row_column[0],$exclude)){
+                        
+                        if($tables_count > 1){    
+                            $option_title = $table . ' - '.$row_column[0];    
+                        }else{
+                            $option_title = $row_column[0];
+                        }
+                        
+                        echo '<option value="'.$table.','.$row_column[0].'"'.$selected.'>' . $option_title .'</option>'; 
+                    }
                 }  
             }                        
         } 
@@ -2604,7 +2651,7 @@ function csv2post_GUI_menuoptions_project_columnsandtables($project_code,$atts){
         ), $atts ) );        
 
         if($usedefault){
-            echo '<option value="noselectionmade">No Selection Made</option>';
+            echo '<option value="notselected">No Selection Made</option>';
         }
         
         foreach( $csv2post_project_array['tables'] as $key => $t ){
@@ -2612,7 +2659,7 @@ function csv2post_GUI_menuoptions_project_columnsandtables($project_code,$atts){
             
             if($table_columns == false){
                 
-                echo '<option value="noselectionmade">Problem Detected In Relation To Table Named: '.$t.'</option>';        
+                echo '<option value="notselected">Problem Detected In Relation To Table Named: '.$t.'</option>';        
             
             }else{
                 while ($row_column = mysql_fetch_row($table_columns)) {
@@ -2633,5 +2680,55 @@ function csv2post_GUI_menuoptions_project_columnsandtables($project_code,$atts){
             }                        
         } 
     }  
-}                                                                                                             
+}
+
+function csv2post_GUI_datajob_columnsandtables_menu($current_table = 'NOTPROVIDED256786767',$current_column = 'NOTPROVIDED434588814'){
+
+    global $csv2post_currentjob_code;
+    if(!$csv2post_currentjob_code){
+        echo '<option value="notselected">No Data Import Job</option>';        
+    }else{
+
+        // hide operation columns
+        $exclude = array('csv2post_id','csv2post_postid','csv2post_postcontent','csv2post_inuse'
+        ,'csv2post_importer','csv2post_updated','csv2post_changed','csv2post_applied','csv2post_catid'
+        ,'csv2post_filemoddate','csv2post_filedone');
+
+        $table = 'csv2post_' . $csv2post_currentjob_code;
+        
+        $tables_count = count($table);
+            
+        $table_columns = csv2post_WP_SQL_get_tablecolumns($table);
+        
+        if($table_columns == false){
+            echo '<option value="fault">Problem Detected In Relation To Table Named: '.$table.'</option>';        
+        }else{
+            while ($row_column = mysql_fetch_row($table_columns)) {
+
+                // establish selected status for this option
+                $selected = '';
+                
+                ### TODO:MEDIUMPRIORITY change these not provided values all over the plugin
+                ### we use a random number so that it can never match a users own column name but this approach has not been used everywhere
+                if($current_table != 'NOTPROVIDED256786767' && $current_column != 'NOTPROVIDED434588814'){
+                    if($current_table == $table && $current_column == $row_column[0]){
+                        $selected = ' selected="selected"';
+                    }    
+                } 
+                
+                // must add table name also to avoid confusion when two or more tables share the same column name               
+                if(!in_array($row_column[0],$exclude)){
+                    
+                    if($tables_count > 1){    
+                        $option_title = $table . ' - '.$row_column[0];    
+                    }else{
+                        $option_title = $row_column[0];
+                    }
+                    
+                    echo '<option value="'.$table.','.$row_column[0].'"'.$selected.'>' . $option_title .'</option>'; 
+                }
+            }  
+        }                        
+    }  
+}                                                                                                              
 ?>

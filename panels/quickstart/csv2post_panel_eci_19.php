@@ -7,8 +7,6 @@ $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a
 // <form> values, seperate from panel value
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialogbox_title'] = '???????????????';
-$jsform_set['noticebox_content'] = 'Do you??????????? tab.</p>';
 ?>
 
 <?php csv2post_panel_header( $panel_array );

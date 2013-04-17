@@ -89,7 +89,6 @@ $jsform_set['noticebox_content'] = 'Saving these settings will activate advanced
     ?> 
           
     <p>
-
         <script>
         $(function() {
             $( "#csv2post_taggenerator_checkboxes_<?php echo $panel_array['panel_name'];?>" ).buttonset();
@@ -185,9 +184,7 @@ $jsform_set['noticebox_content'] = 'Your changes will effect all posts created f
     csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
     csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
     ?> 
-    
-    <h4>This panel is still under construction, thank you for your patience.<h4>
-        
+
     <script>
     $(function() {
         $( "#csv2post_tags_allownumeric" ).buttonset();

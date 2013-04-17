@@ -577,7 +577,7 @@ function csv2post_notice_output(){
 function csv2post_notice_postresult($type,$title,$message,$helpurl = false,$user = 'admin'){
     csv2post_notice($message,$type,'Large',$title, $helpurl, 'echo');    
 }
-
+                        
 /**
 * Display a standard notification after form submission.
 * This function simply helps to quickly apply a notice to the outcome while using the same

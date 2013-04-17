@@ -39,20 +39,22 @@ function csv2post_hidden_form_values($tabnumber,$pageid,$panel_name,$panel_title
  * 
  * @todo this function requires the form
  */
-function csv2post_jqueryform_singleaction_middle($jsform_set,$formobjects_array){         
-    extract( shortcode_atts( array(
-    'has_options' => false,
-    'pageid' => 0,
-    'panel_number' => 0,
-    'panel_name' => 'nopanelname',
-    'panel_title' => 'No Panel Name',    
-    'tab_number' => 'error no tab number passed to csv2post_jqueryform_singleaction_middle()',
-    'form_id' => 'csv2post_form_id_default',
-    'form_name' => 'csv2post_form_name_default',
-    ), $jsform_set ) );
+function csv2post_jqueryform_singleaction_middle($jsform_set,$formobjects_array){
+  if(isset($jsform_set['dialogbox_title']) && isset($jsform_set['noticebox_content'])){     
+        extract( shortcode_atts( array(
+        'has_options' => false,
+        'pageid' => 0,
+        'panel_number' => 0,
+        'panel_name' => 'nopanelname',
+        'panel_title' => 'No Panel Name',    
+        'tab_number' => 'error no tab number passed to csv2post_jqueryform_singleaction_middle()',
+        'form_id' => 'csv2post_form_id_default',
+        'form_name' => 'csv2post_form_name_default',
+        ), $jsform_set ) );
 
-    // add the javascript
-    csv2post_jquery_opendialog_confirmformaction($jsform_set,$formobjects_array);
+        // add the javascript
+        csv2post_jquery_opendialog_confirmformaction($jsform_set,$formobjects_array);
+    }
 }
 
 /**
@@ -211,12 +213,14 @@ function csv2post_panel_footer(){
 /**
 * Standard form submission prompt 
 */
-function csv2post_jquery_form_prompt($jsform_set){?>
-    <!-- dialog box start -->
-    <div id="<?php echo $jsform_set['dialogbox_id'];?>" title="<?php echo $jsform_set['dialogbox_title'];?>">
-        <?php echo csv2post_notice($jsform_set['noticebox_content'],'question','Small',false,'','return');?>
-    </div>
-    <!-- dialog box end --> <?php      
+function csv2post_jquery_form_prompt($jsform_set){
+    if(isset($jsform_set['dialogbox_title']) && isset($jsform_set['noticebox_content'])){?>
+        <!-- dialog box start -->
+        <div id="<?php echo $jsform_set['dialogbox_id'];?>" title="<?php echo $jsform_set['dialogbox_title'];?>">
+            <?php echo csv2post_notice($jsform_set['noticebox_content'],'question','Small',false,'','return');?>
+        </div>
+        <!-- dialog box end --> <?php 
+    }     
 } 
 
 /**
@@ -225,12 +229,12 @@ function csv2post_jquery_form_prompt($jsform_set){?>
  * @param string $thepagekey this is the screen being visited
  */
 function csv2post_createmenu($thepagekey){           
-    global $csv2post_nav_type,$csv2post_guitheme;
-    if($csv2post_nav_type == 'css' || $csv2post_guitheme == 'wordpresscss'){
+    $csv2post_guitheme = csv2post_get_theme();
+    if($csv2post_guitheme == 'wordpresscss'){  
         csv2post_navigation_css($thepagekey);
-    }elseif($csv2post_nav_type == 'jquery' && $csv2post_guitheme != 'wordpresscss'){
+    }elseif($csv2post_guitheme == 'jquery'){
         csv2post_navigation_jquery($thepagekey);    
-    }elseif($csv2post_nav_type == 'nonav'){
+    }elseif($csv2post_guitheme == 'nonav'){
         echo '<div id="csv2post_maintabs">';
     }
 }
@@ -242,12 +246,10 @@ function csv2post_createmenu($thepagekey){
 * @param mixed $pageid
 * @param mixed $panel_number
 * @param mixed $csv2post_tab_number
-*/
+*/     
 function csv2post_GUI_css_screen_include($pageid,$panel_number,$csv2post_tab_number){
-    global $csv2post_project_array,$csv2post_currentproject_code,$csv2post_is_dev,$csv2post_guitheme,$csv2post_extension_loaded,$csv2post_adm_set,$csv2post_is_installed,$csv2post_currentversion,$csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$wtgtp_pluginforum,$wtgtp_pluginblog,$csv2post_options_array,$csv2post_nav_type,$csv2post_is_free,$csv2post_projectslist_array,$csv2post_schedule_array;
-
-    $csv2post_form_action = '';
-                          
+    global $csv2post_jobtable_array,$csv2post_job_array,$csv2post_dataimportjobs_array,$csv2post_project_array,$csv2post_currentproject_code,$csv2post_is_dev,$csv2post_guitheme,$csv2post_extension_loaded,$csv2post_adm_set,$csv2post_is_installed,$csv2post_currentversion,$csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$wtgtp_pluginforum,$wtgtp_pluginblog,$csv2post_options_array,$csv2post_is_free,$csv2post_projectslist_array,$csv2post_schedule_array;
+    $csv2post_form_action = '';         
     include($csv2post_mpt_arr['menu'][$pageid]['tabs'][$csv2post_tab_number]['path']);        
 }
 
@@ -309,7 +311,6 @@ function csv2post_display_categories_options($current_value){
         
         echo '<option value="'.$c->term_id.'" '.$selected.'>'. $c->term_id . ' - ' . $c->name .'</option>'; 
     }            
-    
 }
 
 function csv2post_display_users_options($current_value){
@@ -419,7 +420,7 @@ function csv2post_navigation_jquery($thepagekey){
     }// for each
     
     echo '</ul>';
-}
+}                     
 
 /**
 * Secondary navigation builder - CSS only

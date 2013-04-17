@@ -16,18 +16,19 @@ $jsform_set['noticebox_content'] = 'Do you want to save a default author now?';?
     // begin form and add hidden values
     csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
     csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
-    ?> 
+    
+    global $csv2post_project_array;?> 
     
     <select name="csv2post_defaultauthor_select" id="csv2post_defaultauthor_select_id" class="csv2post_multiselect_menu">
         
-        <?php
+        <?php        
         // apply selected to default option when no value has been saved already
         $selected = '';
         $current = ''; 
-        if(!isset($csv2post_project_array['defaultuser'])){
+        if(!isset($csv2post_project_array['authors']['defaultauthor'])){
             $selected = 'selected="selected"';
         }else{
-            $current = $csv2post_project_array['defaultuser'];
+            $current = $csv2post_project_array['authors']['defaultauthor'];
         }?>
         
         <option value="notselected" <?php echo $selected;?>>None Selected</option> 
@@ -38,7 +39,7 @@ $jsform_set['noticebox_content'] = 'Do you want to save a default author now?';?
 
     <br />
        
-     <?php 
+    <?php 
     // add js for dialog on form submission and the dialog <div> itself
     if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
