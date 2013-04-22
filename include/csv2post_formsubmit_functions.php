@@ -355,7 +355,9 @@ function csv2post_form_ECI_free_step4_contenttemplate(){
     if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreesetupcontenttemplate' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
 
         global $csv2post_currentproject_code;
-                     
+        
+		$csv2post_ecisession_array = csv2post_WP_SETTINGS_get_eciarray();
+		
         // one template per CSV file with the Quick Start so if the title exists already, we delete that first
         $does_post_exist = get_page_by_title( $_POST['csv2post_contentname'], ARRAY_A, 'wtgcsvcontent' );
 
