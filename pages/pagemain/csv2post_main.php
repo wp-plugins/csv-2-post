@@ -30,8 +30,18 @@ if(!$csv2post_is_installed && !isset($_POST['csv2post_plugin_install_now'])){# w
     $display_main_screens = false;
     
     ### TODO:MEDIUMPRIORITY, add link to forum page and form for feedback
-    csv2post_n_incontent('Thank you for using our plugin, we look forward to your feedback.<br /><br />
-    <strong>' . $installing_message .'</strong>','info','Large','Welcome To CSV 2 POST');
+    csv2post_n_incontent('<p>Thank you for using our plugin, we look forward to working with you.</p>
+    
+    <h4>Limited Time Offers (end 31st May)</h4>
+    <p>We are preparing for Wordperss 3.6 and already added features to support it. Now we really want more
+    testing done to ensure a smooth transition. If you would like to 
+    beta test our free edition version 6.9.6 Beta with Wordpress 3.6 Beta, for the chance to get some free web hosting
+    please let us know. We will email a nightly build to you and provide the link to download Wordpress 3.6.
+     We are also offering one time 50% discount on the premium edition of 6.9.6 which you can read about
+    href="http://www.csv2post.com/updates-news/wordpress-3-6-discount-offer-save-50-off-csv-2-post">on the plugins main website</a>.
+    Another offer like this will not come again until December.</p>
+    
+    <p><strong>' . $installing_message .'</strong></p>','info','Large','Welcome To CSV 2 POST');
         
     csv2post_jquery_button();?>
 
