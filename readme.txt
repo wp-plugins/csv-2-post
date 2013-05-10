@@ -4,8 +4,8 @@ Donate link: http://www.csv2post.com
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: CSV 2 POST, CSV2POST, Data Engine, CSV 2 POST Data Engine, wordpress data import,wordpress data importer,auto blogging,auto blogger,autoblog,mass create posts,mass post creation,csv file importer,csv file data import,post injection,import spreadsheet,excel file import,excel import,www.csv2post.com,CSV2POST,wordpresscsv import,wordpress import plugin,wordpress data import tool,wordpress data import plugin,wordpress post creation plugin
-Requires at least: 3.3.1
-Tested up to: 3.5.1
+Requires at least: 3.5.0
+Tested up to: 3.6.0
 Stable tag: 6.9.6
 
 CSV 2 POST Data Engine

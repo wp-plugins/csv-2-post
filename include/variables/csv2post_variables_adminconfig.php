@@ -15,7 +15,7 @@ $csv2post_apisession_array = false;
 // set theme variable from users own setting, set default if it has not been saved.
 $csv2post_guitheme = csv2post_option('csv2post_theme','get');
 if(!is_string($csv2post_guitheme) || $csv2post_guitheme == null || $csv2post_guitheme == false){
-    $csv2post_guitheme = 'wordpresscss';// jquery|wordpresscss
+    $csv2post_guitheme = 'jquery';// jquery|wordpresscss
 }       
 
 ###############################################################

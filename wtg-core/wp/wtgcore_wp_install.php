@@ -59,10 +59,9 @@ function csv2post_install_core(){
         csv2post_notice('Installed the notification settings','success','Tiny',false,'','echo');
     }    
 
-    // theme - only change the theme value when it is not set 
-    // February 2013: changed to jquery or css rather than actual themes     
+    // theme - only change the theme value when it is not set  
     if(!csv2post_option('csv2post_theme','get')){
-        csv2post_option('csv2post_theme','add','wordpresscss');# jquery or wordpresscss
+        csv2post_option('csv2post_theme','add','jquery');# jquery or wordpresscss
     }         
                              
     // extension switch option record
