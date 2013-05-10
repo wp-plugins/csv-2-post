@@ -150,10 +150,6 @@ if($cont){
 
 // Install
 if($cont){
-      
-    // Test CSV File 
-    $cont = csv2post_form_test_csvfile();
-        
     // Contact Form Submission Post Validation
     $cont = csv2post_form_contactformsubmission();
     

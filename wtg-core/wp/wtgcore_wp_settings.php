@@ -39,9 +39,18 @@ function csv2post_WP_SETTINGS_form_submit_dialog($panel_array){
 * @param mixed $tab_key the array key for tabs within a page
 */
 function csv2post_WP_SETTINGS_get_tab_capability($page_name,$tab_key,$default = false){
-    global $csv2post_mpt_arr;
+    global $csv2post_mpt_arr,$csv2post_demo_mode;
     $codedefault = 'activate_plugins';
-    if(isset($csv2post_mpt_arr['menu'][$page_name]['tabs'][$tab_key]['permissions']['customcapability']) && !$default){
+    if($csv2post_demo_mode){
+        
+        if(isset($csv2post_mpt_arr['menu'][$page_name]['tabs'][$tab_key]['permissions']['demoallowed']) && $csv2post_mpt_arr['menu'][$page_name]['tabs'][$tab_key]['permissions']['demoallowed'] == false){
+            // the page is not permitted to be used during demo mode
+        }elseif(!isset($csv2post_mpt_arr['menu'][$page_name]['tabs'][$tab_key]['permissions']['demoallowed']) || $csv2post_mpt_arr['menu'][$page_name]['tabs'][$tab_key]['permissions']['demoallowed'] == true){
+            // page permits demo use in demo mode and we are in demo mode (otherwise all arguments passed and $thisdefault)
+            return 'publish_pages';# publish_pages is an Editor capability
+        }        
+        
+    }elseif(isset($csv2post_mpt_arr['menu'][$page_name]['tabs'][$tab_key]['permissions']['customcapability']) && !$default){
         return $csv2post_mpt_arr['menu'][$page_name]['tabs'][$tab_key]['permissions']['customcapability'];    
     }else{ 
         if(isset($csv2post_mpt_arr['menu'][$page_name]['tabs'][$tab_key]['permissions']['defaultcapability'])){
@@ -54,17 +63,31 @@ function csv2post_WP_SETTINGS_get_tab_capability($page_name,$tab_key,$default = 
 }
 
 function csv2post_WP_SETTINGS_get_page_capability($page_name,$default = false){
-    global $csv2post_mpt_arr;
-    $thisdefault = 'update_core';
-    if(!isset($csv2post_mpt_arr['menu'][$page_name]['permissions']['customcapability']) || $default == true){
+    global $csv2post_mpt_arr,$csv2post_demo_mode;
+    $thisdefault = 'update_core';// script default for all outcomes
+    
+    if($csv2post_demo_mode){
+             
+        if(isset($csv2post_mpt_arr['menu'][$page_name]['permissions']['demoallowed']) && $csv2post_mpt_arr['menu'][$page_name]['permissions']['demoallowed'] == false){
+            // the page is not permitted to be used during demo mode
+        }elseif(!isset($csv2post_mpt_arr['menu'][$page_name]['permissions']['demoallowed']) || $csv2post_mpt_arr['menu'][$page_name]['permissions']['demoallowed'] == true){
+            // page permits demo use in demo mode and we are in demo mode (otherwise all arguments passed and $thisdefault)
+            return 'publish_pages';# publish_pages is an Editor capability
+        }
+        
+    }elseif(!isset($csv2post_mpt_arr['menu'][$page_name]['permissions']['customcapability']) || $default == true){
+        
+        // there is no customcapability (setup by users settings), so we check for the defaultcapability we have already hard coded as most suitable
         if(!isset($csv2post_mpt_arr['menu'][$page_name]['permissions']['defaultcapability'])){
             return $thisdefault;    
         }else{
-            return $csv2post_mpt_arr['menu'][$page_name]['permissions']['defaultcapability'];    
+            return $csv2post_mpt_arr['menu'][$page_name]['permissions']['defaultcapability'];// our decided default    
         }
-    }else{
+        
+    }elseif(isset($csv2post_mpt_arr['menu'][$page_name]['permissions']['customcapability'])){
         return $csv2post_mpt_arr['menu'][$page_name]['permissions']['customcapability'];  
     }
+    
     return $thisdefault;   
 }
 

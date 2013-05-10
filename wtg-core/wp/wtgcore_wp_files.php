@@ -9,7 +9,13 @@ function csv2post_csvfile_download_export_databasettable($table_name){
     global $wpdb;
 
     $result = $wpdb->get_results( "SELECT * FROM ".$table_name."" );
-    $requestedTable = mysql_query("SELECT * FROM ".$table_name."" );
+    
+    $requestedTable = mysql_query(
+        "
+            SELECT * FROM ".$table_name."
+        " 
+    );
+    
     $fieldsCount = mysql_num_fields($requestedTable);
 
     for($i=0; $i<$fieldsCount; $i++){
@@ -161,139 +167,21 @@ function csv2post_establish_csvfile_separator_fgetmethod($csv_filename, $output 
 }
 
 /**
-* Establishes CSV files separator character
-* 
-* @param mixed $csv_filename
-* @param boolean $display, will cause more output to screen for user
-* 
-* @todo HIGHPRIORITY, complete function
-*/
-function csv2post_establish_csvfile_separator_PEARCSVmethod( $csv_filename,$output = false){
-    //csv2post_pearcsv_include();
-    $csv_file_conf = File_CSV::discoverFormat( WTG_C2P_CONTENTFOLDER_DIR . '/' . $csv_filename );
-
-    // display the result of output required
-    if(!$output){
-        return $csv_file_conf['sep'];
-    }elseif($output){
-
-        if($csv_file_conf['sep'] == ','){
-            
-            $probable_separator = ',';
-            $probable_separator_name = 'comma';
-                
-        }
-        
-        // pipe
-        if($csv_file_conf['sep'] == '|'){ 
-            
-            $probable_separator = '|';
-            $probable_separator_name = 'pipe';
-            
-        }
-        
-        // semicolon
-        if($csv_file_conf['sep'] == ';'){
-            
-            $probable_separator = ';';
-            $probable_separator_name = 'semicolon';
-            
-        }
-        
-        // colon
-        if($csv_file_conf['sep'] == ':'){
-            
-            $probable_separator = ':';
-            $probable_separator_name = 'colon';
-            
-        }        
-        
-        csv2post_notice('Separator was established using method two, PEAR CSV. Established Separator is <strong>'.$probable_separator_name.' ( '.$probable_separator.' )</strong>','success','Large','Test 2: Established Separator Using PEAR CSV','','echo');
-    }
-            
-    return $csv_file_conf['sep'];          
-} 
-
-/**
-* Establishes CSV files quote character
-* 
-* @param mixed $csv_filename
-* @param boolean $display, will cause more output to screen for user
-* 
-* @todo HIGHPRIORITY, complete function
-*/
-function csv2post_establish_csvfile_quote_PEARCSVmethod( $csv_filename,$output = false){
-    //csv2post_pearcsv_include();
-    $csv_file_conf = File_CSV::discoverFormat( WTG_C2P_CONTENTFOLDER_DIR . '/' . $csv_filename );
-           
-    // display the result of output required
-    if($output){
-        
-        $probable_quote = 'UNKNOWN';
-        $probable_quote_name = 'UNKNOWN';
-            
-        // pear returns NULL
-        if($csv_file_conf['quote'] == NULL){
-            
-            $probable_quote = '"';
-            $probable_quote_name = 'double quote';
-                
-        }
-        
-        // double quote       
-        if($csv_file_conf['quote'] == '"'){
-            
-            $probable_quote = '"';
-            $probable_quote_name = 'double quote';
-                
-        }
-        
-        // single quote
-        if($csv_file_conf['quote'] == "'"){ 
-            
-            $probable_quote = "'";
-            $probable_quote_name = 'single quote';
-            
-        }
-
-        csv2post_notice('Quote was established using PEAR CSV. Established quote is <strong>'.$probable_quote_name.' ( '.$probable_quote.' )</strong>','success','Large','Test 3: Established Quote','','echo');
-    }
-                    
-    return $csv_file_conf['quote'];   
-} 
-
-/**
-* Uses pear to establish the number of fields/columns in giving CSV file
-* 
-* @param mixed $csv_filename
-* @return numeric on success or false on fail, possibly zero if PEAR fails
-*/
-function csv2post_establish_csvfile_fieldcount_PEAR($csv_filename){
-    //csv2post_pearcsv_include();
-    $csv_file_conf = File_CSV::discoverFormat( WTG_C2P_CONTENTFOLDER_DIR . '/' . $csv_filename );             
-    return $csv_file_conf['fields'];   
-} 
-
-/**
 * Returns array holding the headers of the giving filename
 * It also prepares the array to hold other formats of the column headers in prepartion for the plugins various uses
 */
 function csv2post_get_file_headers_formatted($csv_filename,$fileid,$separator = ',',$quote = '"',$fields = 0){
 
-    $csv_file_conf = array();    
-    $csv_file_conf['fields'] = $fields;    
-    $csv_file_conf['sep'] = $separator;        
-    $csv_file_conf['quote'] = $quote; 
-            
     $header_array = array();
-
-    // read and loop through the first row in the csv file    
-    while ( ( $readone = File_CSV::read( WTG_C2P_CONTENTFOLDER_DIR . '/' . $csv_filename,$csv_file_conf ) ) ){                
-               
-        for ( $i = 0; $i < $csv_file_conf['fields']; $i++ ){
-            $header_array[$i]['original'] = $readone[$i];
-            $header_array[$i]['sql'] = csv2post_PHP_STRINGS_clean_sqlcolumnname($readone[$i]);// none adapted/original sql version of headers, could have duplicates with multi-file jobs
-            $header_array[$i]['sql_adapted'] = csv2post_PHP_STRINGS_clean_sqlcolumnname($readone[$i]) . $fileid;// add files id to avoid duplicate header names              
+    
+    // read and loop through the first row in the csv file  
+    $handle = fopen(WTG_C2P_CONTENTFOLDER_DIR .'/'. $csv_filename, "r");
+    while (($row = fgetcsv($handle, 10000, $separator,$quote)) !== FALSE) {
+   
+        for ( $i = 0; $i < $fields; $i++ ){
+            $header_array[$i]['original'] = $row[$i];
+            $header_array[$i]['sql'] = csv2post_PHP_STRINGS_clean_sqlcolumnname($row[$i]);// none adapted/original sql version of headers, could have duplicates with multi-file jobs
+            $header_array[$i]['sql_adapted'] = csv2post_PHP_STRINGS_clean_sqlcolumnname($row[$i]) . $fileid;// add files id to avoid duplicate header names              
         }           
         break;
     }
@@ -305,28 +193,9 @@ function csv2post_get_file_headers_formatted($csv_filename,$fileid,$separator = 
 * Returns established separator
 * 
 * @param string $csv_filename
-* @param string $method, either PEAR or FGETCSV (not in use yet)
 */
 function csv2post_get_file_separator($csv_filename){
-    global $csv2post_csvmethod;
-    $pearcsv_failed = false;
-    
-    if($csv2post_csvmethod == 0){
-        //csv2post_pearcsv_include();
-        
-        $csv_file_conf = File_CSV::discoverFormat( WTG_C2P_CONTENTFOLDER_DIR . '/' . $csv_filename );
-            
-        if(!$csv_file_conf || !isset($csv_file_conf['sep']) || $csv_file_conf['sep'] == false){
-            $pearcsv_failed = true;
-        }else{
-            return $csv_file_conf['sep'];
-        }
-    }
-    
-    // if method is 1 (fget without PEAR CSV) OR it is PEAR CSV but PEAR CSV failed
-    if($pearcsv_failed == true || $csv2post_csvmethod == 1){
-        return csv2post_establish_csvfile_separator_fgetmethod($csv_filename,false);    
-    }   
+    return csv2post_establish_csvfile_separator_fgetmethod($csv_filename,false);    
 }
 
 /**
@@ -336,26 +205,8 @@ function csv2post_get_file_separator($csv_filename){
 * @param string $method, PEAR or FGETCSV (not in use yet)
 * @return string, should be a single character
 */
-function csv2post_get_file_quote($csv_filename,$method = 'PEAR'){
-    global $csv2post_csvmethod;
-    $pearcsv_failed = false;
-    
-    if($csv2post_csvmethod == 0){
-        //csv2post_pearcsv_include();
-        
-        $csv_file_conf = File_CSV::discoverFormat( WTG_C2P_CONTENTFOLDER_DIR . '/' . $csv_filename );
-            
-        if(!$csv_file_conf || !isset($csv_file_conf['quote']) || $csv_file_conf['quote'] == false){
-            $pearcsv_failed = true;
-        }else{
-            return $csv_file_conf['quote'];
-        }
-    }
- 
-    // if method is 1 (fget without PEAR CSV) OR it is PEAR CSV but PEAR CSV failed
-    if($pearcsv_failed == true || $csv2post_csvmethod == 1){
-        return '"';### TODO:MEDIUMPRIORITY, add a function that does not use PEAR CSV to determine quote    
-    }    
+function csv2post_get_file_quote($csv_filename,$method = 'nolongerinuse'){
+        return '"';### TODO:MEDIUMPRIORITY, add a function that does not use PEAR CSV to determine quote     
 }
 
 /**

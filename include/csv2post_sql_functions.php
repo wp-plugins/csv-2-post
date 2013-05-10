@@ -320,7 +320,7 @@ function csv2post_WP_SQL_create_dataimportjob_table($jobcode,$job_file_group,$ma
                 
                 // is header null, this indicates incorrect separator/quote/column number entered
                 if($header['sql'] == NULL || $header['sql'] == '' || $header['sql'] == ' '){
-                    csv2post_notice('It appears an incorrect separator, quote or the number of columns has been
+                    csv2post_notice('An incorrect separator, quote or the number of columns has been
                     entered for your file. A blank/empty header was found. Please ensure the correct values are
                     submitted and that your CSV file does not actually have a column with no text in the header/title.',
                     'error','Large','Blank Header Detected','http://www.csv2post.com/notifications/database-query-failure-on-creating-data-import-job','echo','');
@@ -444,7 +444,12 @@ function csv2post_SQL_drop_dataimportjob_table($table_name){
 function csv2post_WP_SQL_reset_project_record($post_ID,$table_name){
     global $wpdb;
     if(isset($post_ID) && isset($table_name)){
-        $wpdb->query('UPDATE ' . $table_name .' SET csv2post_postid = 0 WHERE csv2post_postid = '.$post_ID);
+        $wpdb->query(
+            '
+                UPDATE ' . $table_name .' 
+                SET csv2post_postid = 0 
+                WHERE csv2post_postid = '.$post_ID
+        );
     }        
 }
 

@@ -10,6 +10,8 @@
  * @param integer $step (1 = confirm form, 2 = process request, 3+ alternative processing)
  */
 function csv2post_hidden_form_values($tabnumber,$pageid,$panel_name,$panel_title,$panel_number,$step = 1){
+
+    wp_nonce_field($panel_name); 
     
     // multiple steps - use this to state a step - argument within form validation will process accordingly
     echo '<input type="hidden" id="csv2post_hidden_tabnumber" name="csv2post_hidden_tabnumber" value="'.$tabnumber.'">';
@@ -118,18 +120,18 @@ function csv2post_link($text,$url,$htmlentities = '',$target = '_blank',$class =
 * 
 * @todo make use of adsense for none gold users
 */
-function csv2post_google_searchlink($text,$subscription,$string){
+function csv2post_google_searchlink($text,$package,$string){
                                             
-    if($subscription == 'gold'){
+    if($package == 'paid'){
         // standard google
-        $url = 'http://.google.co.uk/search?q='.$text;    
+        $url = 'http://www.google.co.uk/search?q='.$text;    
     }else{
         // adsense google
-        ### @todo REVENUE - change to a local url, process google adsense form to a search page
-        $url = 'http://.google.co.uk/search?q='.$text;   
+        ### @todo LOWPRIORITY, consider a method that puts the search through our own search page instead
+        $url = 'http://www.google.co.uk/search?q='.$text;   
     }
     
-    csv2post_link($text,$url,'_blank',$string);   
+    return csv2post_link($text,$url,'_blank',$string);   
 }
 
 /**
@@ -186,6 +188,20 @@ function csv2post_panel_header( $panel_array, $boxintro_div = true ){
         $panel_state = 'closed';
     }?>
 
+    <!-- two column accordion, we use this to position the support buttons to the right -->
+    <style type='text/css'>
+    #Top_A_Left 
+    {
+       width:90%;
+    }
+
+    #Top_A_Right
+    {  clear:both;
+       width:auto;
+       float:right;
+    }
+    </style>
+
     <div id="titles" class="postbox <?php echo $panel_state;?>">
         <div class="handlediv" title="Click to toggle"><br /></div>
         <h3 class="hndle"><span><?php echo $panel_array['panel_title'];?></span></h3>
@@ -194,26 +210,55 @@ function csv2post_panel_header( $panel_array, $boxintro_div = true ){
             <?php // row of panel support buttons
             if($boxintro_div && $csv2post_guitheme == 'jquery'){
                 if(!isset($csv2post_adm_set['interface']['panels']['supportbuttons']['status']) || $csv2post_adm_set['interface']['panels']['supportbuttons']['status'] == 'display'){?>
-                    <?php csv2post_panel_support_buttons($panel_array);
+
+                <?php
+                // two column accordion 
+                if($csv2post_guitheme == 'jquery'){            
+                    echo '<div id="Top_A_right">';
+                }
+                ?>
+
+                <?php csv2post_panel_support_buttons($panel_array);?>
+
+                <?php 
+                // two column accordion
+                if($csv2post_guitheme == 'jquery'){        
+                    echo '</div>';
+                }?>
+                    
+                    <?php 
                 }
             }?>
             
-            <div class="csv2post_boxcontent_div"><?php
+            <?php
                 // display persistent notices for the current panel
                 csv2post_persistentnotice_output('panel',$panel_array['panel_id']);
+            
+                // two column accordion 
+                if($csv2post_guitheme == 'jquery'){
+                    echo '<div id="Top_A_left">';
+                }
+
 }
 
 /**
 * Adds closing divs for panels 
 */
 function csv2post_panel_footer(){
-    echo '</div></div></div>';
+    global $csv2post_guitheme;
+    
+    // two column accordion
+    if($csv2post_guitheme == 'jquery'){
+        echo '</div>';
+    }
+     
+    echo '</div></div>';
 }
 
 /**
 * Standard form submission prompt 
 */
-function csv2post_jquery_form_prompt($jsform_set){
+function csv2post_jquery_form_promptdiv($jsform_set){
     if(isset($jsform_set['dialogbox_title']) && isset($jsform_set['noticebox_content'])){?>
         <!-- dialog box start -->
         <div id="<?php echo $jsform_set['dialogbox_id'];?>" title="<?php echo $jsform_set['dialogbox_title'];?>">
@@ -224,22 +269,6 @@ function csv2post_jquery_form_prompt($jsform_set){
 } 
 
 /**
- * Tabs menu loader - calls function for css only menu or jquery tabs menu
- * 
- * @param string $thepagekey this is the screen being visited
- */
-function csv2post_createmenu($thepagekey){           
-    $csv2post_guitheme = csv2post_get_theme();
-    if($csv2post_guitheme == 'wordpresscss'){  
-        csv2post_navigation_css($thepagekey);
-    }elseif($csv2post_guitheme == 'jquery'){
-        csv2post_navigation_jquery($thepagekey);    
-    }elseif($csv2post_guitheme == 'nonav'){
-        echo '<div id="csv2post_maintabs">';
-    }
-}
-
-/**
 * Includes screen as requested through CSS menu
 * 1. Calls all globals for screen file to access, saves us putting them on all screens
 * 
@@ -247,8 +276,8 @@ function csv2post_createmenu($thepagekey){
 * @param mixed $panel_number
 * @param mixed $csv2post_tab_number
 */     
-function csv2post_GUI_css_screen_include($pageid,$panel_number,$csv2post_tab_number){
-    global $csv2post_jobtable_array,$csv2post_job_array,$csv2post_dataimportjobs_array,$csv2post_project_array,$csv2post_currentproject_code,$csv2post_is_dev,$csv2post_guitheme,$csv2post_extension_loaded,$csv2post_adm_set,$csv2post_is_installed,$csv2post_currentversion,$csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$wtgtp_pluginforum,$wtgtp_pluginblog,$csv2post_options_array,$csv2post_is_free,$csv2post_projectslist_array,$csv2post_schedule_array;
+function csv2post_GUI_wordpresscss_screen_include($pageid,$panel_number,$csv2post_tab_number){
+    global $csv2post_textspin_array,$csv2post_jobtable_array,$csv2post_job_array,$csv2post_dataimportjobs_array,$csv2post_project_array,$csv2post_currentproject_code,$csv2post_is_dev,$csv2post_guitheme,$csv2post_extension_loaded,$csv2post_adm_set,$csv2post_is_installed,$csv2post_currentversion,$csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$wtgtp_pluginforum,$wtgtp_pluginblog,$csv2post_options_array,$csv2post_is_free,$csv2post_projectslist_array,$csv2post_schedule_array;
     $csv2post_form_action = '';         
     include($csv2post_mpt_arr['menu'][$pageid]['tabs'][$csv2post_tab_number]['path']);        
 }
@@ -337,7 +366,7 @@ function csv2post_display_users_options($current_value){
 * @param mixed $id used to make ID attribute unique, recommend that it not be a number only if the menu is to be used many times
 */
 function csv2post_menu_tablecolumns($table_name,$id = ''){?>  
-    <select name="csv2post_table_columns_<?php echo $table_name;?><?php echo $id;?>" id="csv2post_table_columns_<?php echo $table_name;?><?php echo $id;?>_id" class="csv2post_multiselect_menu">
+    <select name="csv2post_table_columns_<?php echo $table_name;?><?php echo $id;?>" id="csv2post_table_columns_<?php echo $table_name;?><?php echo $id;?>_id" >
         <?php csv2post_options_tablecolumns($table_name);?>                                                                                                                     
     </select><?php    
 }
@@ -350,134 +379,7 @@ function csv2post_menu_tablecolumns($table_name,$id = ''){?>
 */
 function csv2post_link_toadmin($page,$values = ''){
     return get_admin_url() . 'admin.php?page=' . $page . $values;
-}
-
-function csv2post_navigation_jquery($thepagekey){    
-    global $csv2post_is_activated,$csv2post_is_installed,$csv2post_mpt_arr,$csv2post_projectslist_array;?>
-  
-    <script>
-    $(function() {
-         $( "#csv2post_maintabs" ).tabs({
-            cookie: {
-                // store cookie for a day, without, it would be a session cookie
-                expires: 1
-            },
-            select: function(event, ui){
-              window.location = ui.tab.href;
-            }
-        });       
-    });
-    </script>
-                
-    <div id="csv2post_maintabs">
-        <?php 
-        ##########################################################
-        #                                                        #
-        #          ADD HEADERS FIRST not currently in use        #
-        #                                                        #
-        ##########################################################
-        if($csv2post_mpt_arr['menu'][$thepagekey]['headers'] == true){
-
-            foreach($csv2post_mpt_arr['menu'][$thepagekey]['tabs'] as $tab => $values){
-
-                $pageslug = $csv2post_mpt_arr['menu'][$thepagekey]['slug'];
-                $tabslug = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['slug'];
-                $tablabel = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['label'];   
-
-                if( csv2post_menu_should_tab_be_displayed($thepagekey,$tab) ){
-          
-                }
-            }
-        }?>       
-    
-    <?php 
-    // begin building menu - controlled by jQuery
-    echo '<ul>'; 
-
-    // loop through tabs - held in menu pages tabs array 
-    foreach($csv2post_mpt_arr['menu'][$thepagekey]['tabs'] as $tab=>$values){
-                   
-        $pageslug = $csv2post_mpt_arr['menu'][$thepagekey]['slug'];
-        $tabslug = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['slug'];
-        $tablabel = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['label'];   
-                                 
-        if( csv2post_menu_should_tab_be_displayed($thepagekey,$tab) ){
-        
-            // change label for first time users on
-            if($thepagekey == 'projects' && !isset($csv2post_projectslist_array) || $thepagekey == 'projects' && !is_array($csv2post_projectslist_array)){
-                $tablabel = 'Please create your first Post Creation Project...';
-            }   
-                            
-            // default menu build approach
-            echo '<li><a href="#tabs-'.$tab.'">' . $tablabel . '</a></li>';                                
-        } 
-      
-        // discontinue loop if no projects exist so that only the first screen is displayed
-        if($thepagekey == 'projects' && !isset($csv2post_projectslist_array) || $thepagekey == 'projects' && !is_array($csv2post_projectslist_array)){
-            break;
-        }    
-                            
-    }// for each
-    
-    echo '</ul>';
-}                     
-
-/**
-* Secondary navigation builder - CSS only
-* @todo MEDIUMPRIORITY, move the css in function to a .css file and double check no duplicates
-* @param mixed $thepagekey
-*/
-function csv2post_navigation_css($thepagekey){    
-    global $csv2post_is_activated,$csv2post_is_installed,$csv2post_mpt_arr;?>   
-            
-    <div id="csv2post_maintabs">
-
-        <style>
-        #cssmenu ul {margin: 0; padding: 7px 6px 0; background: #7d7d7d url(overlay.png) repeat-x 0 -110px; line-height: 100%; border-radius: 1em; font: normal 12px Arial, Helvetica, sans-serif; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; -webkit-box-shadow: 0 1px 3px rgba(0,0,0, .4); -moz-box-shadow: 0 1px 3px rgba(0,0,0, .4);}
-        #cssmenu li {margin: 0 5px; padding: 0 0 8px; float: left; position: relative; list-style: none; }
-        #cssmenu a,
-        #cssmenu a:link {font-weight: bold; color: #e7e5e5; text-decoration: none; display: block; padding:  8px 5px; margin: 0; border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px;     text-shadow: 0 1px 1px rgba(0,0,0, .3); }
-        #cssmenu a:hover {background: #000; color: #fff;}
-        #cssmenu .active a, 
-        #cssmenu li:hover > a {background: #666 url(http://cssmenumaker.com/sites/default/files/menu/96/overlay.png) repeat-x 0 -40px; color: #444; border-top: solid 1px #f8f8f8; -webkit-box-shadow: 0 1px 1px rgba(0,0,0, .2); -moz-box-shadow: 0 1px 1px rgba(0,0,0, .2); box-shadow: 0 1px 1px rgba(0,0,0, .2); text-shadow: 0 1px 0 rgba(255,255,255, 1); }
-        #cssmenu ul ul li:hover a,
-        #cssmenu li:hover li a {background: none; border: none; color: #666; -webkit-box-shadow: none; -moz-box-shadow: none;}
-        #cssmenu ul ul a:hover {background: #8f8f8f url(http://cssmenumaker.com/sites/default/files/menu/96/overlay.png) repeat-x 0 -100px !important; color: #fff !important; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; text-shadow: 0 1px 1px rgba(0,0,0, .1);}
-        #cssmenu li:hover > ul {display: block;}
-        #cssmenu ul ul {display: none; margin: 0; padding: 0; width: 185px; position: absolute; top: 40px; left: 0; background: #ddd url(http://cssmenumaker.com/sites/default/files/menu/96/overlay.png) repeat-x 0 0; border: solid 1px #b4b4b4; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; -webkit-box-shadow: 0 1px 3px rgba(0,0,0, .3); -moz-box-shadow: 0 1px 3px rgba(0,0,0, .3); box-shadow: 0 1px 3px rgba(0,0,0, .3);}
-        #cssmenu ul ul li {float: none; margin: 0; padding: 3px; }
-        #cssmenu ul ul a {font-weight: normal; text-shadow: 0 1px 0 #fff; }
-        #cssmenu ul:after {content: '.'; display: block; clear: both; visibility: hidden; line-height: 0; height: 0;}
-        * html #cssmenu  ul {height: 1%;}
-        </style>
-        
-    <?php
-    $pageslug = $csv2post_mpt_arr['menu'][$thepagekey]['slug'];
-
-    // begin building menu - controlled by jQuery
-    echo '<div id="cssmenu">
-    <ul>';
-          
-        // loop through tabs - held in menu pages tabs array
-        foreach($csv2post_mpt_arr['menu'][$thepagekey]['tabs'] as $tab => $values){
-
-            $tabslug = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['slug'];
-            $tablabel = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['label'];   
-            
-            if($csv2post_mpt_arr['menu'][ $thepagekey ]['tabs'][ $tab ]['display'] == true){
-                
-                $active = '';
-                if(isset($_GET['csv2posttabnumber']) && $_GET['csv2posttabnumber'] == $tab){
-                    $active = 'class="active"';
-                }
-                // default menu build approach
-                echo '<li '.$active.'><a href="'.csv2post_create_adminurl($pageslug,'').'&csv2posttabnumber='.$tab.'&csv2postpagename='.$thepagekey.'">' . $tablabel . '</a></li>';                                
-            
-            } 
-        }// for each
-        
-    echo '</ul></div>';
-}
+}              
 
 /**
  * jQuery script for styling button with roll over effect
@@ -494,8 +396,6 @@ function csv2post_jquery_button(){?>
     </script><?php
 }
 
-
-
 /**
  * Adds <button> with jquerybutton class and </form>, for using after a function that outputs a form
  * Add all parameteres or add none for defaults
@@ -511,33 +411,17 @@ function csv2post_formend_standard($buttontitle = 'Submit',$buttonid = 'notrequi
             $buttonid = $buttonid.'_formbutton';
         }?>
 
-        <br />
-        
-        <?php if($csv2post_guitheme == 'jquery'){?>
-        
-            <div class="jquerybutton">
-                <button id="<?php echo $buttonid;?>"><?php echo $buttontitle;?></button>
-            </div>
-            
-        <?php }else{ ?>
-
+        <p class="submit">
             <input type="submit" name="csv2post_wpsubmit" id="<?php echo $buttonid;?>" class="button button-primary" value="<?php echo $buttontitle;?>">
-            
-        <?php }?>
+        </p>
         
-    </form><?php
-} 
+        <?php /*  change to Wordpress styling however there may be or were scripts that require <button i.e. dialog content that updates
+        <div class="jquerybutton"> 
+            <button id="<?php echo $buttonid;?>"><?php echo $buttontitle;?></button>
+        </div>  */ 
+        ?>
 
-/**
- * Adds a jquery effect submit button, for using in form
- * 
- * @param string $panel_name (original use for in panels,panel name acts as an identifier)
- * @uses csvip_helpbutton function uses jquery script required by this button to have any jquery effect
- */
-function csv2post_formsubmitbutton_jquery($form_name){?>
-    <div class="jquerybutton">
-        <input type="submit" name="<?php echo WTG_C2P_ABB;?><?php echo $form_name;?>_submit" value="Submit"/>
-    </div><?php
+    </form><?php
 } 
 
 /**
@@ -556,66 +440,6 @@ function csv2post_formstart_standard($name,$id = 'none', $method = 'post',$class
     }
     echo '<form '.$class.' '.$enctype.' id="'.$id.'" method="'.$method.'" name="'.$name.'" action="'.$action.'">
     <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">';
-}
-
-/**
-* Used to determine if a screen is meant to be displayed or not, based on package and settings 
-*/
-function csv2post_menu_should_tab_be_displayed($page,$tab){
-    global $csv2post_mpt_arr,$csv2post_is_free;
-
-    // if screen not active
-    if(isset($csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['active']) && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['active'] == false){
-        return false;
-    }    
-
-    // if user does not want screen displays
-    if(isset($csv2post_mpt_arr['menu'][$page]['tabs'][ $tab ]['display']) && $csv2post_mpt_arr['menu'][$page]['tabs'][ $tab ]['display'] == false){  
-        return false;    
-    }
-                 
-    // if package is not set return true and display page. This will only effect users who upgrade but do not re-install menu
-    // the ['package'] value was added 5th January 2013, we will be forcing a re-install of the menu in version 6.7.4
-    if(!isset($csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'])){      
-        return true;
-    }
-                 
-    // if package is free and screen is free OR if package is not free and screen is not free = return false
-    if($csv2post_is_free && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'] == 'free'  
-    || !$csv2post_is_free && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'] == 'paid'){   
-        return true;
-    }
-
-    // if package is not free and screen is free = return true
-    if(!$csv2post_is_free && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'] == 'free'){   
-        return true;
-    }   
-                 
-    return false;      
-}
-
-/**
-* Returns value for displaying or hiding a page based on edition (free or full).
-* These is no point bypassing this. The pages hidden require PHP that is only provided with
-* the full edition. You may be able to use the forms, but the data saved won't do anything or might
-* cause problems.
-* 
-* @param mixed $package_allowed, 0=free 1=full/paid 2=dont ever display
-* @returns boolean true if screen is to be shown else false
-* 
-* @deprecated
-*/
-function csv2post_page_show_hide($package_allowed = 0){
-    global $csv2post_is_free;
-    
-    if($package_allowed == 2){
-        return false;// do not display in any package   
-    }elseif($csv2post_is_free && $package_allowed == 0){
-        return true;     
-    }elseif($csv2post_is_free && $package_allowed == 1){
-        return false;// paid edition page only, not be displayed in free edition
-    }
-    return true;
 }
 
 /**
@@ -730,30 +554,6 @@ function csv2post_header_page($pagetitle,$layout){
         <div class="postbox-container" style="width:99%">
             <div class="metabox-holder">
                 <div class="meta-box-sortables"><?php
-}
-
-/**
-* Displays persistent messages.
-* The parameters allow filtering to display notices in their intended parts of the interface.
-* 
-* @param mixed $placement_type global OR page OR screen OR panel
-* @param mixed $placement_specific page slug OR screens tab number OR panel id
-* @param string $pageid used with screen number, $placement_specific is the screen number
-* 
-* When $placement_type is global, all other parameteres are false
-*/
-function csv2post_persistentnotice_output($placement_type,$placement_specific = false,$pageid = false){
-    global $csv2post_persistent_array;
-
-    if(!is_array($csv2post_persistent_array) || !isset($csv2post_persistent_array['notifications'])){
-        return false;
-    }   
-
-    foreach($csv2post_persistent_array['notifications'] as $key => $n){
-        if($placement_type == $n['placement_type'] && $placement_specific == $n['placement_specific'] && $pageid == $n['pageid']){
-            echo csv2post_persistentnotice_display($n['type'],$n['helpurl'],$n['size'],$n['title'],$n['message'],true,$n['id']);
-        }
-    }
 }
 
 /**
@@ -1073,4 +873,27 @@ function csv2post_schedulescreen_notices(){
         echo csv2post_notice('You do not have any Post Creation Projects activated for drip-feeding through the plugins schedule','info','Tiny','','','return');    
     } 
 } 
+
+/**
+* <table class="widefat">
+* Allows control over all table
+* 
+*/
+function csv2post_GUI_tablestart($class = false){
+    if(!$class){$class = 'widefat';}
+    echo '<table class="'.$class.'">';    
+}
+
+
+/**
+ * Adds a jquery effect submit button, for using in form
+ * 
+ * @param string $panel_name (original use for in panels,panel name acts as an identifier)
+ * @uses csvip_helpbutton function uses jquery script required by this button to have any jquery effect
+ */
+function csv2post_formsubmitbutton_jquery($form_name){?>
+    <p class="submit">
+        <input type="submit" name="<?php echo WTG_C2P_ABB;?><?php echo $form_name;?>_submit" value="Submit" />
+    </p><?php
+}                         
 ?>

@@ -45,8 +45,11 @@ $jsform_set['noticebox_content'] = 'It is recommended you monitor the plugin for
                     }
                 }?>
                 <div id="csv2post_div_<?php echo $panel_array['panel_name'];?>_reporting_logstatus">
-                    <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_logstatus_enable" name="csv2post_radiogroup_logstatus" value="1" <?php echo $radio1_uselog_enabled;?> /><label for="csv2post_<?php echo $panel_array['panel_name'];?>_logstatus_enable">Enable</label>
-                    <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_logstatus_disable" name="csv2post_radiogroup_logstatus" value="0" <?php echo $radio2_uselog_disabled;?> /><label for="csv2post_<?php echo $panel_array['panel_name'];?>_logstatus_disable">Disable</label>
+                    <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_logstatus_enable" name="csv2post_radiogroup_logstatus" value="1" <?php echo $radio1_uselog_enabled;?> />
+                    <label for="csv2post_<?php echo $panel_array['panel_name'];?>_logstatus_enable"> Enable</label>
+                    <?php csv2post_GUI_br();?>
+                    <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_logstatus_disable" name="csv2post_radiogroup_logstatus" value="0" <?php echo $radio2_uselog_disabled;?> />
+                    <label for="csv2post_<?php echo $panel_array['panel_name'];?>_logstatus_disable"> Disable</label>
                 </div>     
 
             </td>
@@ -88,8 +91,11 @@ $jsform_set['noticebox_content'] = 'It is recommended you monitor the plugin for
                     $radio2_checked_disabled = 'checked';    
                 }?>
                 <div id="csv2post_div_<?php echo $panel_array['panel_name'];?>_extensionstatus">
-                    <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_enable" name="csv2post_radiogroup_extensionstatus" value="enable" <?php echo $radio1_checked_enabled;?> /><label for="csv2post_<?php echo $panel_array['panel_name'];?>_enable">Enable</label>
-                    <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_disable" name="csv2post_radiogroup_extensionstatus" value="disable" <?php echo $radio2_checked_disabled;?> /><label for="csv2post_<?php echo $panel_array['panel_name'];?>_disable">Disable</label>
+                    <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_enable" name="csv2post_radiogroup_extensionstatus" value="enable" <?php echo $radio1_checked_enabled;?> />
+                    <label for="csv2post_<?php echo $panel_array['panel_name'];?>_enable"> Enable</label>
+                    <?php csv2post_GUI_br();?>
+                    <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_disable" name="csv2post_radiogroup_extensionstatus" value="disable" <?php echo $radio2_checked_disabled;?> />
+                    <label for="csv2post_<?php echo $panel_array['panel_name'];?>_disable"> Disable</label>
                 </div>    
 
                 <?php ### TODO:LOWPRIORITY, list present extensions and allow user to select the extension they want to be active.?>      
@@ -104,7 +110,7 @@ $jsform_set['noticebox_content'] = 'It is recommended you monitor the plugin for
     // add js for dialog on form submission and the dialog <div> itself
     if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-        csv2post_jquery_form_prompt($jsform_set);
+        csv2post_jquery_form_promptdiv($jsform_set);
     }
     ?>
         
@@ -118,7 +124,7 @@ $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_
 $panel_array['panel_name'] = 'interfacesettings';// slug to act as a name and part of the panel ID 
 $panel_array['panel_title'] = __('Interface Settings');// user seen panel header text  
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_help'] = __('Change how the plugins interface operates and how it appears.'); 
+$panel_array['panel_help'] = __('Change how the plugins interface operates and how it is displayed.'); 
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);
@@ -153,7 +159,7 @@ $jsform_set['noticebox_content'] = 'Do you want to change interface settings?';?
         echo '<input type="radio" id="csv2post_themeoption_jqueryui" name="csv2post_themeradios" value="jquery" '.$j.' />';
         echo '<label for="csv2post_themeoption_jqueryui">';
         if($csv2post_guitheme == 'jquery'){ echo '<img src="'.WP_PLUGIN_URL.'/'.WTG_C2P_FOLDERNAME.'/wtg-core/images/jquerytheme.png" alt="Use jQuery UI Theming" width="80" height="80" /><br />';}
-        echo 'jQuery UI</label>';                        
+        echo ' jQuery UI</label>';                        
         
         if($csv2post_guitheme != 'jquery'){echo '<br />';}
                                                               
@@ -161,7 +167,7 @@ $jsform_set['noticebox_content'] = 'Do you want to change interface settings?';?
         echo '<label for="csv2post_themeoption_wordpresscss">'; 
         if($csv2post_guitheme == 'jquery'){ echo '<img src="'.WP_PLUGIN_URL.'/'.WTG_C2P_FOLDERNAME.'/wtg-core/images/wordpresstheme.png" alt="Use Wordpress Theming CSS Only" width="80" height="80" /><br />';}
         
-        echo 'Wordpress CSS</label>';?>                      
+        echo ' Wordpress CSS</label>';?>                      
     </div>
      
     <h4>Form Submission Dialog Popups</h4>
@@ -185,8 +191,11 @@ $jsform_set['noticebox_content'] = 'Do you want to change interface settings?';?
     </script> 
        
     <div id="csv2post_div_<?php echo $panel_array['panel_name'];?>_dialog">
-        <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_dialog_hide" name="csv2post_radiogroup_dialog" value="hide" <?php echo $hide;?> /><label for="csv2post_<?php echo $panel_array['panel_name'];?>_dialog_hide">Hide</label>
-        <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_dialog_display" name="csv2post_radiogroup_dialog" value="display" <?php echo $display;?> /><label for="csv2post_<?php echo $panel_array['panel_name'];?>_dialog_display">Display</label>
+        <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_dialog_hide" name="csv2post_radiogroup_dialog" value="hide" <?php echo $hide;?> />
+        <label for="csv2post_<?php echo $panel_array['panel_name'];?>_dialog_hide"> Hide</label>
+        <?php csv2post_GUI_br();?>
+        <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_dialog_display" name="csv2post_radiogroup_dialog" value="display" <?php echo $display;?> />
+        <label for="csv2post_<?php echo $panel_array['panel_name'];?>_dialog_display"> Display</label>
     </div>
     
     <h4>Panel Support Buttons</h4>
@@ -210,15 +219,18 @@ $jsform_set['noticebox_content'] = 'Do you want to change interface settings?';?
     </script>
         
     <div id="csv2post_div_<?php echo $panel_array['panel_name'];?>_supportbuttons">
-        <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_supportbuttons_hide" name="csv2post_radiogroup_supportbuttons" value="hide" <?php echo $hide;?> /><label for="csv2post_<?php echo $panel_array['panel_name'];?>_supportbuttons_hide">Hide</label>
-        <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_supportbuttons_display" name="csv2post_radiogroup_supportbuttons" value="display" <?php echo $display;?> /><label for="csv2post_<?php echo $panel_array['panel_name'];?>_supportbuttons_display">Display</label>
+        <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_supportbuttons_hide" name="csv2post_radiogroup_supportbuttons" value="hide" <?php echo $hide;?> />
+        <label for="csv2post_<?php echo $panel_array['panel_name'];?>_supportbuttons_hide"> Hide</label>
+        <?php csv2post_GUI_br();?>
+        <input type="radio" id="csv2post_<?php echo $panel_array['panel_name'];?>_supportbuttons_display" name="csv2post_radiogroup_supportbuttons" value="display" <?php echo $display;?> />
+        <label for="csv2post_<?php echo $panel_array['panel_name'];?>_supportbuttons_display"> Display</label>
     </div> 
         
     <?php 
     // add js for dialog on form submission and the dialog <div> itself
     if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-        csv2post_jquery_form_prompt($jsform_set);
+        csv2post_jquery_form_promptdiv($jsform_set);
     }
     ?>
         
@@ -261,9 +273,26 @@ if(isset($csv2post_adm_set['ecq'][109]) && $csv2post_adm_set['ecq'][109] == 'yes
         foreach($csv2post_mpt_arr['menu'] as $page_name => $page_array){
             
             echo '<h2>' . $page_name . '</h2>';
-            echo '<table class="widefat post fixed">';
-            echo '<tr><td><strong>Screen Name</strong></td><td><strong>Default Required Capability</strong></td><td><strong>Current Required Capability</strong></td></tr>';
+            csv2post_GUI_tablestart();
+            echo '
+            <thead>
+                <tr>
+                    <th>Screen Name</td>
+                    <th>Default Required Capability</th>
+                    <th>Current Required Capability</th>
+                </tr>
+            </thead>';
+            echo '
+            <tfoot>
+                <tr>
+                    <th>Screen Name</td>
+                    <th>Default Required Capability</th>
+                    <th>Current Required Capability</th>
+                </tr>
+            </tfoot>';
             
+            echo '<tbody>';
+                       
             foreach($page_array['tabs'] as $key => $tab_array){
                 
                 // do not display tab names for screens user is not meant to see
@@ -287,7 +316,7 @@ if(isset($csv2post_adm_set['ecq'][109]) && $csv2post_adm_set['ecq'][109] == 'yes
                 }        
             }
             
-            echo '</table>';
+            echo '<tbody></table>';
         }
         
         echo '<input type="hidden" name="csv2post_total_menus" value="'.$menu_id.'">'; 
@@ -297,7 +326,7 @@ if(isset($csv2post_adm_set['ecq'][109]) && $csv2post_adm_set['ecq'][109] == 'yes
         // add js for dialog on form submission and the dialog <div> itself
         if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
             csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-            csv2post_jquery_form_prompt($jsform_set);
+            csv2post_jquery_form_promptdiv($jsform_set);
         }
         ?>
             
@@ -331,9 +360,26 @@ if(isset($csv2post_adm_set['ecq'][109]) && $csv2post_adm_set['ecq'][109] == 'yes
       
         <?php   
         ### TODO:CRITICAL, create an array of capabilities and feed it to the capability menu so we are not looping through the roles array many times
-        echo '<table class="widefat post fixed">';
-        echo '<tr><td><strong>Page Name</strong></td><td><strong>Default Required Capability</strong></td><td><strong>Current Required Capability</strong></td></tr>';
-                
+        csv2post_GUI_tablestart();
+        echo '
+        <thead>
+            <tr>
+                <th>Page Name</td>
+                <th>Default Required Capability</th>
+                <th>Current Required Capability</th>
+            </tr>
+        </thead>';
+        echo '
+        <tfoot>
+            <tr>
+                <th>Page Name</td>
+                <th>Default Required Capability</th>
+                <th>Current Required Capability</th>
+            </tr>
+        </tfoot>';
+        
+        echo '<tbody>';
+                        
         foreach($csv2post_mpt_arr['menu'] as $page_name => $page_array){
 
             echo '<tr>';
@@ -351,13 +397,13 @@ if(isset($csv2post_adm_set['ecq'][109]) && $csv2post_adm_set['ecq'][109] == 'yes
             echo '</tr>';
         }
         
-        echo '</table>';?>
+        echo '</tbody></table>';?>
 
         <?php 
         // add js for dialog on form submission and the dialog <div> itself
         if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
             csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-            csv2post_jquery_form_prompt($jsform_set);
+            csv2post_jquery_form_promptdiv($jsform_set);
         }
         ?>
             

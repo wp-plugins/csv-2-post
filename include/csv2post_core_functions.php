@@ -11,9 +11,7 @@
 function csv2post_data_import_from_csvfile_basic( $csvfile_name, $table_name, $target = 1, $jobcode ){
     
     global $wpdb,$csv2post_adm_set;
-    
-    csv2post_pearcsv_include(); 
-    
+
     $file_path = WTG_C2P_CONTENTFOLDER_DIR .'/'. $csvfile_name;  
 
     // get files modification time
@@ -22,7 +20,7 @@ function csv2post_data_import_from_csvfile_basic( $csvfile_name, $table_name, $t
     // set job statistics
     $inserted = 0;// INSERT to table
     $updated = 0;// UPDATE on a record in table
-    $deleted = 0;// DELETE record when CSV file does not appear to still include it
+    $deleted = 0;// DELETE i.e. user does not want old records that are no longer in the CSV file to be kept in table
     $void = 0;// IMPORTED OR UPDATE, but then made void so it cannot be used
     $dropped = 0;// number or rows that have been skipped, possibly through failure or users configuration
     $duplicates = 0;
@@ -61,84 +59,42 @@ function csv2post_data_import_from_csvfile_basic( $csvfile_name, $table_name, $t
     $handle = fopen($file_path, "r");
     $row = 0;
 
-    if(!isset($csv2post_adm_set['data']['csvimportmethod']) || $csv2post_adm_set['data']['csvimportmethod'] == 'fgetcsv'){
+    while (($data = fgetcsv($handle, 10000, $conf['sep'],$conf['quote'])) !== FALSE) {
+        
+        ++$while_start;// used to know where we should continue in new events 
+  
+        // if 2nd row or after
+        if($while_start > 1){
 
-        while (($data = fgetcsv($handle, 10000, $conf['sep'],$conf['quote'])) !== FALSE) {
-            
-            ++$while_start;// used to know where we should continue in new events 
-      
-            // if 2nd row or after
-            if($while_start > 1){
+            if($while_start > $lastrow ){
 
-                if($while_start > $lastrow ){
-
-                    // we insert a null record, this allows us to focus on the update function as the main function for both insert and updating. 
-                    // Avoids duplicate code on a vital part of the plugin and this is important due to the complexity of features that will be added later
-                    $record_id = csv2post_WP_SQL_insert_new_record( $table_name, $csvfile_modtime ); 
-                    ++$new_rows_processed;   
-     
-                    $updaterecord_result = csv2post_WP_SQL_update_record_dataimportjob( $data, $csvfile_name, $conf['fields'], $jobcode,$record_id, $dataimportjob_array[$csvfile_name]['headers'],$dataimportjob_array['filegrouping'] );
-
-                    if($updaterecord_result){  
-                        ++$inserted;    
-                    }else{             
-                        ++$dropped;
-                    } 
-                }
-            } 
-            
-            // if $new_rows_processed == $target break loop (we met users requested rows)
-            if($new_rows_processed == $target){
-                break;
-            }
-
-            // unset variables
-            unset($updaterecord_result);
-            unset($record_id);
-            
-            ++$while_end;        
-        }       
-       
-   }else{
+                // we insert a null record, this allows us to focus on the update function as the main function for both insert and updating. 
+                // Avoids duplicate code on a vital part of the plugin and this is important due to the complexity of features that will be added later
+                $record_id = csv2post_WP_SQL_insert_new_record( $table_name, $csvfile_modtime ); 
+                ++$new_rows_processed;   
  
-        // loop through records using PEAR CSV File_CSV::read   
-        while ( ( $record = File_CSV::read( $file_path, $conf ) ) ) {  
+                $updaterecord_result = csv2post_WP_SQL_update_record_dataimportjob( $data, $csvfile_name, $conf['fields'], $jobcode,$record_id, $dataimportjob_array[$csvfile_name]['headers'],$dataimportjob_array['filegrouping'] );
 
-            ++$while_start;// used to know where we should continue in new events 
-      
-            // if 2nd row or after
-            if($while_start > 1){
-
-                if($while_start > $lastrow ){
-
-                    // we insert a null record, this allows us to focus on the update function as the main function for both insert and updating. 
-                    // Avoids duplicate code on a vital part of the plugin and this is important due to the complexity of features that will be added later
-                    $record_id = csv2post_WP_SQL_insert_new_record( $table_name, $csvfile_modtime ); 
-                    ++$new_rows_processed;   
-     
-                    $updaterecord_result = csv2post_WP_SQL_update_record_dataimportjob( $record, $csvfile_name, $conf['fields'], $jobcode,$record_id, $dataimportjob_array[$csvfile_name]['headers'],$dataimportjob_array['filegrouping'] );
-
-                    if($updaterecord_result){  
-                        ++$inserted;    
-                    }else{             
-                        ++$dropped;
-                    } 
-                }
-            } 
-            
-            // if $new_rows_processed == $target break loop (we met users requested rows)
-            if($new_rows_processed == $target){
-                break;
+                if($updaterecord_result){  
+                    ++$inserted;    
+                }else{             
+                    ++$dropped;
+                } 
             }
-
-            // unset variables
-            unset($updaterecord_result);
-            unset($record_id);
-            
-            ++$while_end;        
+        } 
+        
+        // if $new_rows_processed == $target break loop (we met users requested rows)
+        if($new_rows_processed == $target){
+            break;
         }
-   }
- 
+
+        // unset variables
+        unset($updaterecord_result);
+        unset($record_id);
+        
+        ++$while_end;        
+    }       
+
     #############################################################################
     #                                                                           #
     #             END OF DATA IMPORT JOB EVENT - STORE STATISTICS               #
@@ -178,18 +134,6 @@ function csv2post_data_import_from_csvfile_basic( $csvfile_name, $table_name, $t
 }  
 
 /**
- * Includes PEAR CSV
- */
-function csv2post_pearcsv_include(){  
-    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN'){
-        ini_set('include_path',rtrim(ini_get('include_path'),';').';'.dirname(__FILE__).'/pear/');
-    }else{
-        ini_set('include_path',rtrim(ini_get('include_path'),':').':'.dirname(__FILE__).'/pear/');
-    }
-    require_once 'File/CSV.php';
-}
-
-/**
 * Loads scripts for plugin not core
 * 
 * @param string $side, admin, public
@@ -225,7 +169,33 @@ function csv2post_plugin_conflict_prevention(){
     // only change $conflict_found to true if the conflict is critical, if it only effects partial use
     // then allow installation but warn user
     $conflict_found = false;
+
+    # ARRAY OF PLUGINS WHICH WE LOOP THROUGH
     
+    // Wordpress HTTPS  EXAMPLE
+    /*
+    $plugin_profiles[1]['switch'] = 1;//used to use or not use this profile, 0 is no and 1 is use
+    $plugin_profiles[1]['title'] = 'Wordpress HTTPS';
+    $plugin_profiles[1]['slug'] = 'wordpress-https/wordpress-https.php';
+    $plugin_profiles[1]['author'] = 'Mvied';
+    $plugin_profiles[1]['title_active'] = 'Wordpress HTTPS Conflict';
+    $plugin_profiles[1]['message_active'] = __('On 15th August 2012 a critical and persistent conflict was found 
+    between Wordpress HTTPS and CSV 2 POST. It breaks the jQuery UI tabs by making all panels/features show on
+    one screen rather than on individual tabbed screens. A search on Google found many posts regarding the
+    plugin causing JavaScript related conflicts, responded to my the plugins author. So please ensure you
+    have the latest version. One of the posts suggested the fault, was exactly as we found to be causing our
+    broken interface in CSV 2 POST. URL were being re-written, specifically those passed through jQuery UI functions
+    were having a slash removed. It would not just break the interface but submitting some forms would fail
+    because the action location URL would be wrong. This sounds like the fault described by a Wordpress HTTPS user,
+    before the author responded to it. So not sure what is going on but right now we do not feel we can provide the
+    fix. Please still let us know if you are seeing this message, we need to know how popular the conflicting plugin
+    is while using CSV 2 POST for auto-blogging.');
+    $plugin_profiles[1]['title_inactive'] = 'title inactive';
+    $plugin_profiles[1]['message_inactive'] = __('message inactive');
+    $plugin_profiles[1]['type'] = 'info';//passed to the message function to apply styling and set type of notice displayed
+    $plugin_profiles[1]['criticalconflict'] = true;// true indicates that the conflict will happen if plugin active i.e. not specific settings only, simply being active has an effect
+    */
+        
     // we create an array of profiles for plugins we want to check
     $plugin_profiles = array();
 
@@ -250,33 +220,7 @@ function csv2post_plugin_conflict_prevention(){
     $plugin_profiles[0]['message_inactive'] = __('message inactive');
     $plugin_profiles[0]['type'] = 'info';//passed to the message function to apply styling and set type of notice displayed
     $plugin_profiles[0]['criticalconflict'] = true;// true indicates that the conflict will happen if plugin active i.e. not specific settings only, simply being active has an effect
-    
-    // Wordpress HTTPS
-    /*
-    $plugin_profiles[1]['switch'] = 1;//used to use or not use this profile, 0 is no and 1 is use
-    $plugin_profiles[1]['title'] = 'Wordpress HTTPS';
-    $plugin_profiles[1]['slug'] = 'wordpress-https/wordpress-https.php';
-    $plugin_profiles[1]['author'] = 'Mvied';
-    $plugin_profiles[1]['title_active'] = 'Wordpress HTTPS Conflict';
-    $plugin_profiles[1]['message_active'] = __('On 15th August 2012 a critical and persistent conflict was found 
-    between Wordpress HTTPS and CSV 2 POST. It breaks the jQuery UI tabs by making all panels/features show on
-    one screen rather than on individual tabbed screens. A search on Google found many posts regarding the
-    plugin causing JavaScript related conflicts, responded to my the plugins author. So please ensure you
-    have the latest version. One of the posts suggested the fault, was exactly as we found to be causing our
-    broken interface in CSV 2 POST. URL were being re-written, specifically those passed through jQuery UI functions
-    were having a slash removed. It would not just break the interface but submitting some forms would fail
-    because the action location URL would be wrong. This sounds like the fault described by a Wordpress HTTPS user,
-    before the author responded to it. So not sure what is going on but right now we do not feel we can provide the
-    fix. Please still let us know if you are seeing this message, we need to know how popular the conflicting plugin
-    is while using CSV 2 POST for auto-blogging.');
-    $plugin_profiles[1]['title_inactive'] = 'title inactive';
-    $plugin_profiles[1]['message_inactive'] = __('message inactive');
-    $plugin_profiles[1]['type'] = 'info';//passed to the message function to apply styling and set type of notice displayed
-    $plugin_profiles[1]['criticalconflict'] = true;// true indicates that the conflict will happen if plugin active i.e. not specific settings only, simply being active has an effect
-    */
-    
-    /*******  type values =  success,warning,error,question,processing,stop    *****/
-                                  
+                         
     // loop through the profiles now
     if(isset($plugin_profiles) && $plugin_profiles != false){
         foreach($plugin_profiles as $key=>$plugin){   
@@ -298,176 +242,6 @@ function csv2post_plugin_conflict_prevention(){
     }
 
     return $conflict_found;
-}
-
-/**
-* CSV file test - uses the configuration established through fget function and over-rides the configuration
-* established using PEAR CSV. This is to test File_CSV::read works when giving correct config. 
-*/
-function csv2post_test_csvfile_countfields_fgetpriority( $csvfile_name, $separator, $quote ){
-    
-    global $wpdb;
-    
-    //csv2post_pearcsv_include();  
-    
-    ################################################################################################
-    #                                                                                              #
-    #           FGET FIRST - USE COLUMN COUNT IN PEAR CSV TO DETERMINE IF THE RESULT IS EQUAL      #
-    #                                                                                              #
-    ################################################################################################
-    
-    // get the header row
-    if (($handle = fopen(WTG_C2P_CONTENTFOLDER_DIR . '/' . $csvfile_name, "r")) !== FALSE) {
-
-        // one row at a time we will count each possible Separator
-        while (($header_row_string = fgets($handle, 4096)) !== false) {
-            break;                        
-        }  
-
-        fclose($handle); 
-    }    
-
-    // if PEAR CSV somehow could not get header row we end the test here
-    if(!$header_row_string){
-        csv2post_notice('The plugin could not retrieve the header row from your CSV file while running a test. Please ensure you select the correct separator then try again and seek support if you continue to experience problems.','error','Large','Test 4: Count CSV File Column Headers Using fget','','echo');
-        return;
-    } 
-
-    $header_array = explode($separator,$header_row_string);// explode the header row 
-    $fgetcsv_header_count = count( $header_array );// count number of values in array 
-    
-    ###############################################################################################
-    #                                                                                             #
-    #        PEAR CSV NOW - DO NOT USE File_CSV::discoverFormat WE WILL SET $conf ourselves       #
-    #                                                                                             #
-    ###############################################################################################
-    
-    // use pear to read csv file
-    $conf = File_CSV::discoverFormat( WTG_C2P_CONTENTFOLDER_DIR .'/'. $csvfile_name );
-    $conf['fields'] = $fgetcsv_header_count;
-    
-    // apply auto determined or user defined separator and quote values
-    if(isset($dataimportjob_array[$csvfile_name]['separator'])){
-        $conf['sep'] = $separator;        
-    }
-    
-    if(isset($dataimportjob_array[$csvfile_name]['quote'])){
-        $conf['quote'] = $quote;        
-    }    
-
-    // loop through records   
-    while ( ( $record = File_CSV::read( WTG_C2P_CONTENTFOLDER_DIR .'/'. $csvfile_name, $conf ) ) ) {        
-        $PEARCSV_count = count($record);
-    }
-
-    if(!isset($PEARCSV_count)){
-        csv2post_notice('Could not establish CSV file column header number using PEAR CSV, possibly due to the 
-        wrong separator being used. Please ensure the correct separator is in use then run more tests or 
-        seek support.','warning','Large','Test 4: Count CSV File Column Headers Using PEAR CSV','','echo');    
-        return;
-    }else{
-        
-        // compare both counts
-        if($PEARCSV_count != $fgetcsv_header_count){
-            csv2post_notice('Two methods of counting your CSV files returned different results. This is not a fault,
-            it happens with certain formats of CSV file i.e. no quotes or tab instead of comma. This test is to 
-            establish the best method to read your CSV file '.$csvfile_name.'.
-            Below are the returned counts.<br /><br />
-             <ul>
-             <li><strong>PEAR CSV: '.$conf['fields'].'</strong></li>
-             <li><strong>fgetcsv: '.$fgetcsv_header_count.'</strong></li>             
-             </ul><br /><br />You must use the method that has counted the correct number of columns or alter your
-             CSV file so that both methods works. PEAR CSV is the plugins default.','warning','Large','Test 4: Count CSV File Column Headers Using All Methods (fget is priority)','','echo');
-            return;
-        }     
-        csv2post_notice('I counted '.$conf['fields'].' fields/columns in '.$csvfile_name.'. If this happens to be incorrect it must be investigated. This test
-        establishes your files configuration using fget and over-rides the PEAR CSV method.','success','Large','Test 4: Count CSV File Column Headers Using All Methods (fget is priority)','','echo');
-    }  
-}   
-
-/**
-* CSV file test - this test will show a fail if the config from PEAR CSV File_CSV::discoverFormat
-* does not match the fget result. This will usually indicate user needs to use fget method.
-*/
-function csv2post_test_csvfile_countfields_pearcsvpriority( $csvfile_name, $separator, $quote ){
-    
-    global $wpdb;
-    
-    //csv2post_pearcsv_include();  
-    
-    ################################################################################################
-    #                                                                                              #
-    #           FGET FIRST - USE COLUMN COUNT IN PEAR CSV TO DETERMINE IF THE RESULT IS EQUAL      #
-    #                                                                                              #
-    ################################################################################################
-    
-    // get the header row
-    if (($handle = fopen(WTG_C2P_CONTENTFOLDER_DIR . '/' . $csvfile_name, "r")) !== FALSE) {
-
-        // one row at a time we will count each possible Separator
-        while (($header_row_string = fgets($handle, 4096)) !== false) {
-            break;                        
-        }  
-
-        fclose($handle); 
-    }    
-
-    // if PEAR CSV somehow could not get header row we end the test here
-    if(!$header_row_string){
-        csv2post_notice('The plugin could not retrieve the header row from your CSV file while running a test. Please ensure you select the correct separator then try again and seek support if you continue to experience problems.','error','Large','Test 5: Count CSV File Column Headers Using fget','','echo');
-        return;
-    } 
-
-    $header_array = explode($separator,$header_row_string);// explode the header row 
-    $fgetcsv_header_count = count( $header_array );// count number of values in array 
-    
-    ###############################################################################################
-    #                                                                                             #
-    #        PEAR CSV NOW - DO NOT USE File_CSV::discoverFormat WE WILL SET $conf ourselves       #
-    #                                                                                             #
-    ###############################################################################################
-    
-    // use pear to read csv file
-    $conf = File_CSV::discoverFormat( WTG_C2P_CONTENTFOLDER_DIR .'/'. $csvfile_name );
-
-    // apply auto determined or user defined separator and quote values
-    if(isset($dataimportjob_array[$csvfile_name]['separator'])){
-        $conf['sep'] = $separator;        
-    }
-    
-    if(isset($dataimportjob_array[$csvfile_name]['quote'])){
-        $conf['quote'] = $quote;        
-    }    
-
-    // loop through records   
-    while ( ( $record = File_CSV::read( WTG_C2P_CONTENTFOLDER_DIR .'/'. $csvfile_name, $conf ) ) ) {        
-        $PEARCSV_count = count($record);
-    }
-
-    if(!isset($PEARCSV_count) || $PEARCSV_count == 1){
-        csv2post_notice('Could not establish CSV file column headers number using PEAR CSV. If you are sure that
-        all quotes and separators are in the correct place. You should use the fget method for reading your CSV file
-        rather then PEAR CSV.','warning','Large','Test 5: Count CSV File Column Headers Using PEAR CSV','','echo');    
-        return;
-    }else{
-        
-        // compare both counts
-        if($PEARCSV_count != $fgetcsv_header_count){
-            csv2post_notice('Two methods of counting your CSV files returned different results. This is not a fault,
-            it happens with certain formats of CSV file i.e. no quotes or tab instead of comma. This test is to 
-            establish the best method to read your CSV file '.$csvfile_name.'.
-            Below are the returned counts.<br /><br />
-             <ul>
-             <li><strong>PEAR CSV: '.$conf['fields'].'</strong></li>
-             <li><strong>fgetcsv: '.$fgetcsv_header_count.'</strong></li>             
-             </ul><br /><br />You must use the method that has counted the correct number of columns or alter your
-             CSV file so that both methods works. PEAR CSV is the plugins default.','warning','Large','Test 5: Count CSV File Column Headers Using All Methods','','echo');
-            return;
-        }     
-        csv2post_notice('I counted '.$conf['fields'].' fields/columns in '.$csvfile_name.'. If this happens to be incorrect it must be investigated. This test
-        establishes your files configuration using fget and also does it using PEAR CSV. Comparison of field/column count is made
-        to help establish what method of reading CSV files is suitable for '.$csvfile_name.'.','success','Large','Test 5: Count CSV File Column Headers Using All Methods','','echo');
-    }  
 }
 
 /**

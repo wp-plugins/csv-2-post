@@ -4,32 +4,24 @@ if($side == 'public'){
 }elseif($side == 'admin'){
                  
     require_once('csv2post_script_admin_jqueryui.php');
-   
-    /**
-    * @todo CRITICAL, establish depends and apply for each script 
-    * 
-    */
-    function csv2post_ADDACTION_admin_init_registered_scripts() {
-        
-        $version = 'original';// wordpress - original - (nothing in between yet) - latest:gets from google
 
-        #########  I don't think we need to load this anymore, we can use the Wordpress jquery ? seems to work without this
-        wp_deregister_script( 'jquery' );
-            if($version == 'original'){
-                wp_register_script( 'jquery','http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js');
-            }elseif($version == 'latest'){
-                wp_register_script('jquery', ("http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"), false, 'latest', false);
-            }   
-      
+    function csv2post_ADDACTION_admin_init_registered_scripts() {
+        global $csv2post_currentversion;
+        
+        $version = 'latest';// wordpress - stable - (nothing in between yet) - latest:gets from google
+  
+        if($csv2post_currentversion != '6.9.6'){
+            wp_deregister_script( 'jquery' );
+            wp_register_script( 'jquery','http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js');    
+        }else{
+            wp_register_script( 'jquery191','http://code.jquery.com/jquery-1.9.1.js');    
+        }
+        
+   
         wp_deregister_script( 'jquery-ui' );
-            //wp_register_script( 'jquery-ui');
-            if($version == 'original'){
-                
-               // wp_register_script( 'jquery-ui', WTG_C2P_URL.'script/jquery-ui.js',array('jquery'));
-            }elseif($version == 'latest'){ 
-                //wp_register_script( 'jquery-ui', 'http://jquery-ui.googlecode.com/svn/tags/latest/ui/jquery-ui.js');
-            }        
-            
+        //wp_register_script( 'jquery-ui');     
+        wp_register_script( 'jquery-ui', 'http://code.jquery.com/ui/1.10.2/jquery-ui.js',array('jquery')); 
+
         #####################################################################################
         #                                                                                   #
         #                        SCRIPTS NOT PACKAGED WITH WORDPRESS                        #
@@ -55,12 +47,18 @@ if($side == 'public'){
     * This is where new .js files should be added. 
     */
     function csv2post_print_admin_scripts() {
-                      
+        global $csv2post_currentversion;
+                    
          // $csv2post_js_switch and similiar variables set in main file
          $csv2post_js_switch = true;
          if($csv2post_js_switch == true){
-               
-            wp_enqueue_script('jquery');  
+
+            if($csv2post_currentversion != '6.9.6'){
+                wp_enqueue_script('jquery');    
+            }else{
+                wp_enqueue_script('jquery191');    
+            }
+  
             wp_enqueue_script('jquery-ui');
             wp_enqueue_script('jquery-ui-widget');
             wp_enqueue_script('jquery-ui-button');
@@ -98,7 +96,7 @@ if($side == 'public'){
 			autoOpen: false,
 			show: "blind",
 			hide: "clip",
-            modal: true,
+            modal: false,
 			minWidth: 575
 		});
 
@@ -159,7 +157,7 @@ if($side == 'public'){
             // display dialog box
             $(<?php echo '"#'.$jsform_set['dialogbox_id'].'"'; ?>).dialog({
                 autoOpen: false,
-                modal: true,
+                modal: false,
                 width: 800,
                 resizable: true,
                 buttons: {                    
@@ -231,7 +229,7 @@ if($side == 'public'){
             // display dialog box
             $(<?php echo '"#'.$jsform_set['dialogbox_id'].'"'; ?>).dialog({
                 autoOpen: false,
-                modal: true,
+                modal: false,
                 width: 800,
                 resizable: true,
                 buttons: {
@@ -249,7 +247,7 @@ if($side == 'public'){
                 e.preventDefault();
 
                 <?php
-                // TODO: MEDIUMPRIORITY, improve dialog information using inputs
+                // TODO: MEDIUMPRIORITY, improve dialog information using inputs, can use this to display values user selected
                 // loop through the giving array of input ID's
                 /*
                  *       $formobjects_array['testid1']['label'] = 'Test Name One';
@@ -291,7 +289,7 @@ if($side == 'public'){
                 resizable: true,                
                 <?php echo 'height:300,';?>
                 <?php echo 'width:800,';?>
-                modal: true,
+                modal: false,
                 buttons: {                    
                     "View More Help": function() {
                         window.open("<?php echo $panel_url;?>", '_blank', '');       
@@ -331,7 +329,7 @@ if($side == 'public'){
                 resizable: true,                
                 <?php echo 'height:600,';?>
                 <?php echo 'width:800,';?>
-                modal: true,
+                modal: false,
                 buttons: {                    
                     "View More Help": function() {
                         window.open("<?php echo $panel_url;?>", '_blank', '');       
@@ -366,7 +364,7 @@ if($side == 'public'){
                 resizable: false,
                 width:800,
                 autoResize: true,
-                modal: true,
+                modal: false,
                 buttons: { 
                 
                     <?php if($documentlocation == 'default'){ ?>

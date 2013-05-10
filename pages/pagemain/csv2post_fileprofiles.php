@@ -45,7 +45,7 @@ if(!isset($csv2post_file_profiles) || !is_array($csv2post_file_profiles)){
             // add end of form - dialog box does not need to be within the <form>
             //csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
 
-            <?php //csv2post_jquery_form_prompt($jsform_set);?>
+            <?php //csv2post_jquery_form_promptdiv($jsform_set);?>
 
         <?php csv2post_panel_footer();
         

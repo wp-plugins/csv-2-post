@@ -17,21 +17,20 @@ csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_nam
 // add js for dialog on form submission and the dialog <div> itself
 if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
     csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-    csv2post_jquery_form_prompt($jsform_set);
-}
+    csv2post_jquery_form_promptdiv($jsform_set);
+}?>
 
-csv2post_formend_standard('Reset Quick Start Steps',$jsform_set['form_id']);?>
+<?php csv2post_formend_standard('Reset Quick Start Steps',$jsform_set['form_id']);?>
 
-<br />    
-   
 <?php  
 // get eci array, if not installed we display an introduction plus activation button
 // Quick Start Array (tracks progress)
 $csv2post_ecisession_array = csv2post_WP_SETTINGS_get_eciarray();
 
 if(!$csv2post_ecisession_array || !is_array($csv2post_ecisession_array)){
-    csv2post_n_incontent('Required settings for the Quick Start to work do not appear to be installed. 
-    Please re-install the settings using the Install page.','warning','Large','No Quick Start Settings');
+    csv2post_n_incontent('Required settings for the Quick Start to work have not been installed. 
+    Please perform a re-install of the plugin on the Install screen or contact the plugin author
+    for help and advice. This issue should not happen, we would like to hear from you.','warning','Large','No Quick Start Settings');
     return;
 }
        

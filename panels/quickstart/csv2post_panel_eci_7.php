@@ -36,7 +36,9 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
         csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
         ?>
 
-            <h4>Post Status</h4>
+            <p>Fact: CSV 2 POST was the first plugin to allow custom post status to be selected, not just the default ones. We need you help 
+            to keep provide more functionality for free. Please donate to paypal@webtechglobal.co.uk, thank you.</p>
+            
             <script>
             $(function() {
                 $( "#csv2post_eci_poststatus_radios" ).buttonset();
@@ -51,7 +53,7 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
         // add js for dialog on form submission and the dialog <div> itself
         if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
             csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-            csv2post_jquery_form_prompt($jsform_set);
+            csv2post_jquery_form_promptdiv($jsform_set);
         } 
         ?>
             

@@ -25,13 +25,16 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
         csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
         ?> 
        
-       <?php csv2post_display_defaultposttype_radiobuttons();?>      
+        <p>Some plugins restrict features like this to push their premium edition. Instead we offer all post types to be selected
+        even your custom ones. Your donations help us do that.</p>
+        
+        <?php csv2post_display_defaultposttype_radiobuttons();?>      
 
         <?php 
         // add js for dialog on form submission and the dialog <div> itself
         if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
             csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-            csv2post_jquery_form_prompt($jsform_set);
+            csv2post_jquery_form_promptdiv($jsform_set);
         } 
         ?>
             

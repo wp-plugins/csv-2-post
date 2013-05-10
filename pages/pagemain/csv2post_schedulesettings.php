@@ -81,7 +81,7 @@ $jsform_set['noticebox_content'] = 'You are about to change the schedule times, 
     // add js for dialog on form submission and the dialog <div> itself
     if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-        csv2post_jquery_form_prompt($jsform_set);
+        csv2post_jquery_form_promptdiv($jsform_set);
     }
     ?>
         
@@ -169,7 +169,7 @@ $jsform_set['noticebox_content'] = 'These are global settings and will take effe
     // add js for dialog on form submission and the dialog <div> itself
     if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-        csv2post_jquery_form_prompt($jsform_set);
+        csv2post_jquery_form_promptdiv($jsform_set);
     }
     ?>
         
@@ -219,7 +219,7 @@ $jsform_set['noticebox_content'] = 'You are about to change the permitted event 
             }?>
             
             <input type="radio" id="csv2post_focus_event_<?php echo $eventtype;?>" name="csv2post_focus_event" value="1" <?php echo $checked;?>  />
-            <label for="csv2post_focus_event_<?php echo $eventtype;?>"><?php echo $eventtype_array['name'];?></label><?php csv2post_GUI_nbsp();?><?php csv2post_GUI_nbsp();?><?php           
+            <label for="csv2post_focus_event_<?php echo $eventtype;?>"><?php echo $eventtype_array['name'];?></label><?php csv2post_GUI_br();?><?php           
         }
         ?>
         
@@ -238,8 +238,11 @@ $jsform_set['noticebox_content'] = 'You are about to change the permitted event 
     });
     </script>                
     <div id="csv2post_eventtypeactivation_postcreation">
-        <input type="radio" id="csv2post_radio1_eventtypeactivation_postcreation" name="csv2post_eventtype_postcreation" value="1" <?php if(isset($csv2post_schedule_array['eventtypes']['postcreation']['switch']) && $csv2post_schedule_array['eventtypes']['postcreation']['switch'] == 1){echo 'checked';} ?> /><label for="csv2post_radio1_eventtypeactivation_postcreation"> Enabled</label>
-        <input type="radio" id="csv2post_radio2_eventtypeactivation_postcreation" name="csv2post_eventtype_postcreation" value="0" <?php if(isset($csv2post_schedule_array['eventtypes']['postcreation']['switch']) && $csv2post_schedule_array['eventtypes']['postcreation']['switch'] == 0 || !isset($csv2post_schedule_array['eventtypes']['postcreation']['switch'])){echo 'checked';} ?> /><label for="csv2post_radio2_eventtypeactivation_postcreation"> Disabled</label>    
+        <input type="radio" id="csv2post_radio1_eventtypeactivation_postcreation" name="csv2post_eventtype_postcreation" value="1" <?php if(isset($csv2post_schedule_array['eventtypes']['postcreation']['switch']) && $csv2post_schedule_array['eventtypes']['postcreation']['switch'] == 1){echo 'checked';} ?> />
+        <label for="csv2post_radio1_eventtypeactivation_postcreation"> Enabled</label>
+        <?php csv2post_GUI_br();?>
+        <input type="radio" id="csv2post_radio2_eventtypeactivation_postcreation" name="csv2post_eventtype_postcreation" value="0" <?php if(isset($csv2post_schedule_array['eventtypes']['postcreation']['switch']) && $csv2post_schedule_array['eventtypes']['postcreation']['switch'] == 0 || !isset($csv2post_schedule_array['eventtypes']['postcreation']['switch'])){echo 'checked';} ?> />
+        <label for="csv2post_radio2_eventtypeactivation_postcreation"> Disabled</label>    
     </div>    
  
     <h4>Post Update</h4>
@@ -249,8 +252,11 @@ $jsform_set['noticebox_content'] = 'You are about to change the permitted event 
     });
     </script>                
     <div id="csv2post_eventtypeactivation_postupdate">
-        <input type="radio" id="csv2post_radio1_eventtypeactivation_postupdate" name="csv2post_eventtype_postupdate" value="1" <?php if(isset($csv2post_schedule_array['eventtypes']['postupdate']['switch']) && $csv2post_schedule_array['eventtypes']['postupdate']['switch'] == 1){echo 'checked';} ?> /><label for="csv2post_radio1_eventtypeactivation_postupdate">Enabled</label>
-        <input type="radio" id="csv2post_radio2_eventtypeactivation_postupdate" name="csv2post_eventtype_postupdate" value="0" <?php if(isset($csv2post_schedule_array['eventtypes']['postupdate']['switch']) && $csv2post_schedule_array['eventtypes']['postupdate']['switch'] == 0 || !isset($csv2post_schedule_array['eventtypes']['postupdate']['switch'])){echo 'checked';} ?> /><label for="csv2post_radio2_eventtypeactivation_postupdate">Disabled</label>    
+        <input type="radio" id="csv2post_radio1_eventtypeactivation_postupdate" name="csv2post_eventtype_postupdate" value="1" <?php if(isset($csv2post_schedule_array['eventtypes']['postupdate']['switch']) && $csv2post_schedule_array['eventtypes']['postupdate']['switch'] == 1){echo 'checked';} ?> />
+        <label for="csv2post_radio1_eventtypeactivation_postupdate"> Enabled</label>
+        <?php csv2post_GUI_br();?>
+        <input type="radio" id="csv2post_radio2_eventtypeactivation_postupdate" name="csv2post_eventtype_postupdate" value="0" <?php if(isset($csv2post_schedule_array['eventtypes']['postupdate']['switch']) && $csv2post_schedule_array['eventtypes']['postupdate']['switch'] == 0 || !isset($csv2post_schedule_array['eventtypes']['postupdate']['switch'])){echo 'checked';} ?> />
+        <label for="csv2post_radio2_eventtypeactivation_postupdate"> Disabled</label>    
     </div> 
     
      
@@ -263,8 +269,11 @@ $jsform_set['noticebox_content'] = 'You are about to change the permitted event 
     });
     </script>                
     <div id="csv2post_eventtypeactivation_dataimport">
-        <input type="radio" id="csv2post_radio1_eventtypeactivation_dataimport" name="csv2post_eventtype_dataimport" value="1" <?php if(isset($csv2post_schedule_array['eventtypes']['dataimport']['switch']) && $csv2post_schedule_array['eventtypes']['dataimport']['switch'] == 1){echo 'checked';} ?> /><label for="csv2post_radio1_eventtypeactivation_dataimport">Enabled</label>
-        <input type="radio" id="csv2post_radio2_eventtypeactivation_dataimport" name="csv2post_eventtype_dataimport" value="0" <?php if(isset($csv2post_schedule_array['eventtypes']['dataimport']['switch']) && $csv2post_schedule_array['eventtypes']['dataimport']['switch'] == 0 || !isset($csv2post_schedule_array['eventtypes']['dataimport']['switch'])){echo 'checked';} ?> /><label for="csv2post_radio2_eventtypeactivation_dataimport">Disabled</label>    
+        <input type="radio" id="csv2post_radio1_eventtypeactivation_dataimport" name="csv2post_eventtype_dataimport" value="1" <?php if(isset($csv2post_schedule_array['eventtypes']['dataimport']['switch']) && $csv2post_schedule_array['eventtypes']['dataimport']['switch'] == 1){echo 'checked';} ?> />
+        <label for="csv2post_radio1_eventtypeactivation_dataimport"> Enabled</label>
+        <?php csv2post_GUI_br();?>
+        <input type="radio" id="csv2post_radio2_eventtypeactivation_dataimport" name="csv2post_eventtype_dataimport" value="0" <?php if(isset($csv2post_schedule_array['eventtypes']['dataimport']['switch']) && $csv2post_schedule_array['eventtypes']['dataimport']['switch'] == 0 || !isset($csv2post_schedule_array['eventtypes']['dataimport']['switch'])){echo 'checked';} ?> />
+        <label for="csv2post_radio2_eventtypeactivation_dataimport"> Disabled</label>    
     </div>
 
     <h4>Data Update</h4>
@@ -274,8 +283,11 @@ $jsform_set['noticebox_content'] = 'You are about to change the permitted event 
     });
     </script>                
     <div id="csv2post_eventtypeactivation_dataupdate">
-        <input type="radio" id="csv2post_radio1_eventtypeactivation_dataupdate" name="csv2post_eventtype_dataupdate" value="1" <?php if(isset($csv2post_schedule_array['eventtypes']['dataupdate']['switch']) && $csv2post_schedule_array['eventtypes']['dataupdate']['switch'] == 1){echo 'checked';} ?> /><label for="csv2post_radio1_eventtypeactivation_dataupdate">Enabled</label>
-        <input type="radio" id="csv2post_radio2_eventtypeactivation_dataupdate" name="csv2post_eventtype_dataupdate" value="0" <?php if(isset($csv2post_schedule_array['eventtypes']['dataupdate']['switch']) && $csv2post_schedule_array['eventtypes']['dataupdate']['switch'] == 0 || !isset($csv2post_schedule_array['eventtypes']['dataupdate']['switch'])){echo 'checked';} ?> /><label for="csv2post_radio2_eventtypeactivation_dataupdate">Disabled</label>    
+        <input type="radio" id="csv2post_radio1_eventtypeactivation_dataupdate" name="csv2post_eventtype_dataupdate" value="1" <?php if(isset($csv2post_schedule_array['eventtypes']['dataupdate']['switch']) && $csv2post_schedule_array['eventtypes']['dataupdate']['switch'] == 1){echo 'checked';} ?> />
+        <label for="csv2post_radio1_eventtypeactivation_dataupdate"> Enabled</label>
+        <?php csv2post_GUI_br();?>
+        <input type="radio" id="csv2post_radio2_eventtypeactivation_dataupdate" name="csv2post_eventtype_dataupdate" value="0" <?php if(isset($csv2post_schedule_array['eventtypes']['dataupdate']['switch']) && $csv2post_schedule_array['eventtypes']['dataupdate']['switch'] == 0 || !isset($csv2post_schedule_array['eventtypes']['dataupdate']['switch'])){echo 'checked';} ?> />
+        <label for="csv2post_radio2_eventtypeactivation_dataupdate"> Disabled</label>    
     </div> 
  
  
@@ -290,8 +302,11 @@ $jsform_set['noticebox_content'] = 'You are about to change the permitted event 
     });
     </script>                
     <div id="csv2post_eventtypeactivation_twittersend">
-        <input type="radio" id="csv2post_radio1_eventtypeactivation_twittersend" name="csv2post_eventtype_twittersend" value="1" <?php if(isset($csv2post_schedule_array['eventtypes']['twittersend']['switch']) && $csv2post_schedule_array['eventtypes']['twittersend']['switch'] == 1){echo 'checked';} ?> /><label for="csv2post_radio1_eventtypeactivation_twittersend">Enabled</label>
-        <input type="radio" id="csv2post_radio2_eventtypeactivation_twittersend" name="csv2post_eventtype_twittersend" value="0" <?php if(isset($csv2post_schedule_array['eventtypes']['twittersend']['switch']) && $csv2post_schedule_array['eventtypes']['twittersend']['switch'] == 0 || !isset($csv2post_schedule_array['eventtypes']['twittersend']['switch'])){echo 'checked';} ?> /><label for="csv2post_radio2_eventtypeactivation_twittersend">Disabled</label>    
+        <input type="radio" id="csv2post_radio1_eventtypeactivation_twittersend" name="csv2post_eventtype_twittersend" value="1" <?php if(isset($csv2post_schedule_array['eventtypes']['twittersend']['switch']) && $csv2post_schedule_array['eventtypes']['twittersend']['switch'] == 1){echo 'checked';} ?> />
+        <label for="csv2post_radio1_eventtypeactivation_twittersend"> Enabled</label>
+        <?php csv2post_GUI_br();?>
+        <input type="radio" id="csv2post_radio2_eventtypeactivation_twittersend" name="csv2post_eventtype_twittersend" value="0" <?php if(isset($csv2post_schedule_array['eventtypes']['twittersend']['switch']) && $csv2post_schedule_array['eventtypes']['twittersend']['switch'] == 0 || !isset($csv2post_schedule_array['eventtypes']['twittersend']['switch'])){echo 'checked';} ?> />
+        <label for="csv2post_radio2_eventtypeactivation_twittersend"> Disabled</label>    
     </div>
 
     <h4>Twitter Update</h4>
@@ -301,8 +316,11 @@ $jsform_set['noticebox_content'] = 'You are about to change the permitted event 
     });
     </script>                
     <div id="csv2post_eventtypeactivation_twitterupdate">
-        <input type="radio" id="csv2post_radio1_eventtypeactivation_twitterupdate" name="csv2post_eventtype_twitterupdate" value="1" <?php if(isset($csv2post_schedule_array['eventtypes']['twitterupdate']['switch']) && $csv2post_schedule_array['eventtypes']['twitterupdate']['switch'] == 1){echo 'checked';} ?> /><label for="csv2post_radio1_eventtypeactivation_twitterupdate">Enabled</label>
-        <input type="radio" id="csv2post_radio2_eventtypeactivation_twitterupdate" name="csv2post_eventtype_twitterupdate" value="0" <?php if(isset($csv2post_schedule_array['eventtypes']['twitterupdate']['switch']) && $csv2post_schedule_array['eventtypes']['twitterupdate']['switch'] == 0 || !isset($csv2post_schedule_array['eventtypes']['twitterupdate']['switch'])){echo 'checked';} ?> /><label for="csv2post_radio2_eventtypeactivation_twitterupdate">Disabled</label>    
+        <input type="radio" id="csv2post_radio1_eventtypeactivation_twitterupdate" name="csv2post_eventtype_twitterupdate" value="1" <?php if(isset($csv2post_schedule_array['eventtypes']['twitterupdate']['switch']) && $csv2post_schedule_array['eventtypes']['twitterupdate']['switch'] == 1){echo 'checked';} ?> />
+        <label for="csv2post_radio1_eventtypeactivation_twitterupdate"> Enabled</label>
+        <?php csv2post_GUI_br();?>
+        <input type="radio" id="csv2post_radio2_eventtypeactivation_twitterupdate" name="csv2post_eventtype_twitterupdate" value="0" <?php if(isset($csv2post_schedule_array['eventtypes']['twitterupdate']['switch']) && $csv2post_schedule_array['eventtypes']['twitterupdate']['switch'] == 0 || !isset($csv2post_schedule_array['eventtypes']['twitterupdate']['switch'])){echo 'checked';} ?> />
+        <label for="csv2post_radio2_eventtypeactivation_twitterupdate"> Disabled</label>    
     </div>   
     
     <h4>Twitter Get Replies</h4>
@@ -312,15 +330,18 @@ $jsform_set['noticebox_content'] = 'You are about to change the permitted event 
     });
     </script>                
     <div id="csv2post_eventtypeactivation_twitterget">
-        <input type="radio" id="csv2post_radio1_eventtypeactivation_twitterget" name="csv2post_eventtypes_twitterget" value="1" <?php if(isset($csv2post_schedule_array['eventtypes']['twitterget']['switch']) && $csv2post_schedule_array['eventtypes']['twitterget']['switch'] == 1){echo 'checked';} ?> /><label for="csv2post_radio1_eventtypeactivation_twitterget">Enabled</label>
-        <input type="radio" id="csv2post_radio2_eventtypeactivation_twitterget" name="csv2post_eventtypes_twitterget" value="0" <?php if(isset($csv2post_schedule_array['eventtypes']['twitterget']['switch']) && $csv2post_schedule_array['eventtypes']['twitterget']['switch'] == 0 || !isset($csv2post_schedule_array['eventtypes']['twitterget']['switch'])){echo 'checked';} ?> /><label for="csv2post_radio2_eventtypeactivation_twitterget">Disabled</label>    
+        <input type="radio" id="csv2post_radio1_eventtypeactivation_twitterget" name="csv2post_eventtypes_twitterget" value="1" <?php if(isset($csv2post_schedule_array['eventtypes']['twitterget']['switch']) && $csv2post_schedule_array['eventtypes']['twitterget']['switch'] == 1){echo 'checked';} ?> />
+        <label for="csv2post_radio1_eventtypeactivation_twitterget"> Enabled</label>
+        <?php csv2post_GUI_br();?>
+        <input type="radio" id="csv2post_radio2_eventtypeactivation_twitterget" name="csv2post_eventtypes_twitterget" value="0" <?php if(isset($csv2post_schedule_array['eventtypes']['twitterget']['switch']) && $csv2post_schedule_array['eventtypes']['twitterget']['switch'] == 0 || !isset($csv2post_schedule_array['eventtypes']['twitterget']['switch'])){echo 'checked';} ?> />
+        <label for="csv2post_radio2_eventtypeactivation_twitterget"> Disabled</label>    
     </div>  
 
     <?php 
     // add js for dialog on form submission and the dialog <div> itself
     if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
         csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-        csv2post_jquery_form_prompt($jsform_set);
+        csv2post_jquery_form_promptdiv($jsform_set);
     }
     ?>
         

@@ -17,10 +17,16 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
       csv2post_n_incontent('You have completed this step. You selected a CSV file named '.$csv2post_ecisession_array['filename'].' for your new project.','success','Small','Step Complete');
   }else{?>
   
-       <h4><?php _e('Upload CSV File')?> <?php echo ini_get( "upload_max_filesize").'B Limit';?></h4>
+       <h4>You have a <?php echo ini_get( "upload_max_filesize").'B upload limit on your server';?></h4>
+       <p>No changes will be made to your blog on submitting this form.</p>
        
        <form method="post" enctype="multipart/form-data" name="uploadform" class="form-table">                
-            
+                
+            <!-- nonce -->
+            <input type="hidden" name="csv2post_admin_referer" value="quickstartuploadpaid">
+            <?php wp_nonce_field('quickstartuploadpaid');?> 
+            <!-- nonce -->
+                    
             <input type="file" name="file" size="70" /><br /><br />
             <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">
             <input type="hidden" id="csv2post_post_eciuploadcsvfile" name="csv2post_post_eciuploadcsvfile" value="true">
@@ -39,8 +45,8 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
             ?>
             
         </form>
-
-        <?php csv2post_jquery_form_prompt($jsform_set);?>
+           
+        <?php csv2post_jquery_form_promptdiv($jsform_set);?>
         
   <?php 
   }?>

@@ -7,8 +7,6 @@
 
 // install main admin settings option record
 $csv2post_adm_set = array();
-// data
-$csv2post_adm_set['data']['csvimportmethod'] = 'fgetcsv';// fgetcsv|pearcsv
 // interface
 $csv2post_adm_set['interface']['forms']['dialog']['status'] = 'hide';
 // encoding

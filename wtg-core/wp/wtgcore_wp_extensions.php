@@ -14,4 +14,16 @@ function csv2post_is_extensionloaded($giving_extension){
     }
     return false;
 }
+
+/**
+* Checks the extensions version with the version stored in Wordpress options table
+*/
+function csv2post_extension_updaterequired($name,$version){
+    $current_version = get_option($name . '_version');
+    if(!$current_version || $current_version < $version){
+        return true;
+    }else{
+        return false;
+    }
+}  
 ?>

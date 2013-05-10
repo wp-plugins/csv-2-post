@@ -12,11 +12,14 @@ function csv2post_form_installpackage(){
     if(isset( $_POST['csv2post_plugin_install_now'] ) && $_POST['csv2post_plugin_install_now'] == 'z3sx4bhik970'){
         global $csv2post_plugintitle;
         if(!current_user_can('activate_plugins')){
-            csv2post_notice(__('You do not have the required permissions to activate '.$csv2post_plugintitle.'. 
+            csv2post_notice(__('You do not have the required permissions to activate CSV 2 POST.
             The Wordpress role required is activate_plugins, usually granted to Administrators. Please
             contact your Web Master or contact info@csv2post.com if you feel this is a fault.'), 'warning', 'Large', false);
         }else{                  
-            csv2post_install_core();                
+            csv2post_install_core();
+            csv2post_install_plugin();    
+            wp_redirect( get_bloginfo('url') . '/wp-admin/admin.php?page=csv2post' ); 
+            exit;          
         }
         
         return false;
@@ -29,7 +32,7 @@ function csv2post_form_installpackage(){
 * Partial Un-install Plugin Options 
 */
 function csv2post_form_uninstallplugin_partial(){
-    if(isset($_POST[WTG_C2P_ABB.'hidden_pageid']) && $_POST[WTG_C2P_ABB.'hidden_pageid'] == 'install' && isset($_POST[WTG_C2P_ABB.'hidden_panel_name']) && $_POST[WTG_C2P_ABB.'hidden_panel_name'] == 'partialuninstall'){  
+    if(isset($_POST['csv2post_hidden_pageid']) && $_POST['csv2post_hidden_pageid'] == 'main' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'partialuninstall'){  
         global $csv2post_plugintitle;
            
         if(current_user_can('delete_plugins')){
@@ -188,27 +191,22 @@ function csv2post_form_save_scheduletimes_global(){
             }
             
         }else{
-            
             // $schedule_array value is not array, this is first time it is being set
             $csv2post_schedule_array = array();
         }
         
         // loop through all days and set each one to true or false
         if(isset($_POST['csv2post_scheduleday_list'])){
-
             foreach($_POST['csv2post_scheduleday_list'] as $key => $submitted_day){
                 $csv2post_schedule_array['days'][$submitted_day] = true;        
-            }
-               
+            }  
         } 
         
         // loop through all hours and add each one to the array, any not in array will not be permitted                              
         if(isset($_POST['csv2post_schedulehour_list'])){
-            
             foreach($_POST['csv2post_schedulehour_list'] as $key => $submitted_hour){
                 $csv2post_schedule_array['hours'][$submitted_hour] = true;        
-            }            
-            
+            }           
         }    
 
         csv2post_update_option_schedule_array($csv2post_schedule_array);
@@ -225,7 +223,7 @@ function csv2post_form_save_scheduletimes_global(){
 * Contact Form Submission Post Validation 
 */
 function csv2post_form_contactformsubmission(){     
-    if(isset( $_POST[WTG_C2P_ABB.'hidden_pageid'] ) && $_POST[WTG_C2P_ABB.'hidden_pageid'] == 'more' && isset($_POST[WTG_C2P_ABB.'hidden_panel_name']) && $_POST[WTG_C2P_ABB.'hidden_panel_name'] == 'contact'){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'more' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'contact'){
         global $csv2post_plugintitle;
         
         // result and control variables
@@ -249,19 +247,19 @@ function csv2post_form_contactformsubmission(){
         <strong>Contact Methods:</strong> stringreplace_contactmethods <br />'; 
         
         // add $_POST values to email template
-        if(isset($_POST['multiselect_'.WTG_C2P_ABB.'contactmethods'])){
+        if(isset($_POST['multiselect_csv2post_contactmethods'])){
             // loop through contact methods and create comma seperated list    
         }
           
-        if(isset($_POST['multiselect_'.WTG_C2P_ABB.'contactreason'])){
+        if(isset($_POST['multiselect_csv2post_contactreason'])){
             // loop through contact reasons and create comma seperated list    
         }
          
         ### @todo HIGH PRIORITY  check the contact description post value here, it has wtg does it match with form ???   
         $stringreplace_result = str_replace('stringreplace_description',$_POST['wtg_contactdescription'],$email_template);    
-        $stringreplace_result = str_replace('stringreplace_linkone',$_POST[WTG_C2P_ABB.'linkone'],$email_template);    
-        $stringreplace_result = str_replace('stringreplace_linktwo',$_POST[WTG_C2P_ABB.'linktwo'],$email_template);    
-        $stringreplace_result = str_replace('stringreplace_linkthree',$_POST[WTG_C2P_ABB.'linkthree'],$email_template);          
+        $stringreplace_result = str_replace('stringreplace_linkone',$_POST['csv2post_linkone'],$email_template);    
+        $stringreplace_result = str_replace('stringreplace_linktwo',$_POST['csv2post_linktwo'],$email_template);    
+        $stringreplace_result = str_replace('stringreplace_linkthree',$_POST['csv2post_linkthree'],$email_template);          
         if(!stringreplace_result){
             ### @todo log that a failure happened, if ever detected we'll need to add individual log entries       
         }
@@ -408,8 +406,7 @@ function csv2post_form_contactformsubmission(){
 /**
 * Updates existing installation
 * 
-* @todo this procedure is not complete. For now we are not using precise updating. It will require array comparisons possibly, table table alterations etc. So we need a range of functions for this.
-* 
+* @todo TODO:MEDIUMPRIORITY, update should be more precise only changing what needs to be, right now settings are not
 */
 function csv2post_form_plugin_update(){
     if(isset( $_POST['csv2post_plugin_update_now'] ) && $_POST['csv2post_plugin_update_now'] == 'a43bt7695c34'){
@@ -418,9 +415,7 @@ function csv2post_form_plugin_update(){
         csv2post_INSTALL_tabmenu_settings();    
         // re-install admin settings
         csv2post_INSTALL_admin_settings();
-        // initialize csv2post_theme since it changed to jquery OR wordpresscss rather than jquery theme
-        csv2post_option('csv2post_theme','add','jquery');
-        
+
         // update locally stored version number
         global $csv2post_currentversion;
         update_option('csv2post_installedversion',$csv2post_currentversion);        
@@ -443,9 +438,6 @@ function csv2post_form_save_settings_operation(){
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'operationsettings'){
         
         global $csv2post_adm_set;
-
-        // save extension status
-        update_option('csv2post_extensions',$_POST['csv2post_radiogroup_extensionstatus']);
  
         $csv2post_adm_set['reporting']['uselog'] = $_POST['csv2post_radiogroup_logstatus'];
         $csv2post_adm_set['reporting']['loglimit'] = $_POST['csv2post_loglimit'];

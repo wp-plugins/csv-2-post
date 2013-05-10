@@ -1,283 +1,5 @@
 <?php
 /**
-* Display log entries for specific log types
-* 
-* @link http://www.csv2post.com/hacking/log-table
-* 
-* @todo MEDIUMPRIORITY, use jQuery UI and Ajax table to display results
-* 
-* @param string $type general|error
-* @param integer $display_rows number of rows to display in table
-* @param array $display_columns an array holding the column names from csv2post_log table to be displayed
-*/
-function csv2post_log_display_bytype($type = 'all',$display_rows = 100,$display_columns = 'all'){
-    $rows = csv2post_WP_SQL_querylog_bytype($type,$display_rows);
-    
-    if(!$rows){
-        csv2post_n_incontent('No log entries have been made for this.','info','Small','No Log Entries');    
-        return;
-    }
-    
-    // reverse the order of the array
-    $logrows = array_reverse($rows);
-    
-    $rowCount = 0;
-    
-    echo '<table class="widefat post fixed">';
-
-    foreach($logrows as $id => $row){
-        
-        // if first row do header
-        if($rowCount == 0){
-            
-            echo '<tr>';
-            
-            foreach($row as $column => $value){
-
-                // if display_columns is default "all" or specific columns passed we only add those
-                if($display_columns == 'all' || !is_array($display_columns)){
-                    
-                    echo '<td><strong>'.$column.'</strong></td>'; 
-
-                }else{
-                
-                    // only add values in columns passed either by
-                    if(in_array($column,$display_columns)){
-
-                        echo '<td><strong>'.$column.'</strong></td>'; 
-
-                    }   
-                }
-            }
-            
-            echo '</tr>';
-            
-        }else{
-            
-            echo '<tr>';
-            
-            foreach($row as $column => $value){
-
-                // if display_columns is default "all" or specific columns passed we only add those
-                if($display_columns == 'all' || !is_array($display_columns)){
-                    
-                    if($value == NULL){
-                        echo '<td></td>';
-                    }else{
-                        echo '<td>'.$value.'</td>'; 
-                    }
-                    
-                }else{
-                
-                    // only add values in columns passed either by
-                    if(in_array($column,$display_columns)){
-                        
-                        if($value == NULL){
-                            echo '<td></td>';
-                        }else{
-                            echo '<td>'.$value.'</td>'; 
-                        }   
-        
-                    }   
-                }
-            }
-            
-            echo '</tr>';
-        }
-        
-        ++$rowCount;   
-    }
-    
-    echo '</table>'; 
-}
-
-/**
-* Used to build a query history file,intention is to display the history
-* Type Values: general,sql,admin,user,error
-* General History File Filters: install
-* 
-* @global $wpdb
-* @uses extract, shortcode_atts
-*
-* @todo create other constants like the one setup for sql log entries
-* @todo create option to add entries to server error log file
-*/
-function csv2post_log($atts){     
-    global $csv2post_adm_set,$wpdb,$csv2post_currentversion;
-
-    // if ALL logging is off - if ['uselog'] not set then logging for all files is on by default
-    if(isset($csv2post_adm_set['reporting']['uselog']) && $csv2post_adm_set['reporting']['uselog'] == 0){return false;}
-    
-    // if log table does not exist return false
-    if(!csv2post_WP_SQL_does_table_exist('csv2post_log')){return false;}
-    
-    // if a value is false, it will not be added to the insert query, we want the database default to kick in, NULL mainly
-    extract( shortcode_atts( array(  
-        'outcome' => 1, 
-        'line' => false, 
-        'file' => false, 
-        'function' => false, 
-        'sqlresult' => false, 
-        'sqlquery' => false, 
-        'sqlerror' => false, 
-        'wordpresserror' => false, 
-        'screenshoturl' => false, 
-        'userscomment' => false, 
-        'page' => false, 
-        'version' => $csv2post_currentversion, 
-        'panelid' => false, 
-        'panelname' => false, 
-        'tabscreenid' => false, 
-        'tabscreenname' => false, 
-        'dump' => false, 
-        'ipaddress' => false, 
-        'userid' => false,    
-        'noticemessage' => false,      
-        'comment' => false,
-        'type' => false,
-        'category' => false, 
-        'action' => false,
-        'priority' => false                               
-    ), $atts ) );
-    
-    // start query
-    $query = "INSERT INTO `csv2post_log`";
-    
-    // add columns and values
-    $query_columns = '(outcome';
-    $query_values = '(1';
-    
-    if($line){$query_columns .= ',line';$query_values .= ',"'.$line.'"';}
-    if($file){$query_columns .= ',file';$query_values .= ',"'.$file.'"';}                                                                           
-    if($function){$query_columns .= ',function';$query_values .= ',"'.$function.'"';}  
-    if($sqlresult){$query_columns .= ',sqlresult';$query_values .= ',"'.$sqlresult.'"';}     
-    if($sqlquery){$query_columns .= ',sqlquery';$query_values .= ',"'.$sqlquery.'"';}     
-    if($sqlerror){$query_columns .= ',sqlerror';$query_values .= ',"'.$sqlerror.'"';}    
-    if($wordpresserror){$query_columns .= ',wordpresserror';$query_values .= ',"'.$wordpresserror.'"';}     
-    if($screenshoturl){$query_columns .= ',screenshoturl';$query_values .= ',"'.$screenshoturl.'"' ;}     
-    if($userscomment){$query_columns .= ',userscomment';$query_values .= ',"'.$userscomment.'"';}     
-    if($page){$query_columns .= ',page';$query_values .= ',"'.$page.'"';}     
-    if($version){$query_columns .= ',version';$query_values .= ',"'.$version.'"';}     
-    if($panelid){$query_columns .= ',panelid';$query_values .= ',"'.$panelid.'"';}     
-    if($panelname){$query_columns .= ',panelname';$query_values .= ',"'.$panelname.'"';}     
-    if($tabscreenid){$query_columns .= ',tabscreenid';$query_values .= ',"'.$tabscreenid.'"';}     
-    if($tabscreenname){$query_columns .= ',tabscreenname';$query_values .= ',"'.$tabscreenname.'"';}     
-    if($dump){$query_columns .= ',dump';$query_values .= ',"'.$dump.'"';}     
-    if($ipaddress){$query_columns .= ',ipaddress';$query_values .= ',"'.$ipaddress.'"';}     
-    if($userid){$query_columns .= ',userid';$query_values .= ',"'.$userid.'"';}     
-    if($noticemessage){$query_columns .= ',noticemessage';$query_values .= ',"'.$noticemessage.'"';}     
-    if($comment){$query_columns .= ',comment';$query_values .= ',"'.$comment.'"';}     
-    if($type){$query_columns .= ',type';$query_values .= ',"'.$type.'"';}     
-    if($category){$query_columns .= ',category';$query_values .= ',"'.$category.'"';}     
-    if($action){$query_columns .= ',action';$query_values .= ',"'.$action.'"';}     
-    if($priority){$query_columns .= ',priority';$query_values .= ',"'.$priority.'"';}     
-
-    // end columns and values string
-    $query_columns .= ')';
-    $query_values .= ')';
-    
-    // add VALUES
-    $query .= $query_columns .' VALUES '. $query_values;
-        
-    $wpdb->query( $query );     
-}
-
-/**
-* Log form submissions on admin side
-*/
-function csv2post_log_adminform($function,$outcome,$action,$comment = 'unknown',$type = 'general',$priority = 'normal',$dump = 'unknown',$wordpresserror = 'none'){    
-                           
-    $atts = array();             
-    $atts['outcome'] = $outcome;
-    $atts['function'] = $function; 
-    $atts['wordpresserror'] = $wordpresserror;;
-    //$atts['tabscreenname'] = $tabscreenname; # not in use 
-    $atts['dump'] = $dump;
-    $atts['comment'] = $comment;
-    $atts['type'] = $type;
-    $atts['action'] = $action;
-    $atts['priority'] = $priority;          
-    
-    // default values
-    $atts['userid'] = get_current_user_id();       
-    $atts['category'] = 'adminform'; 
-    $atts['page'] = $_POST['csv2post_hidden_pageid'];
-    $atts['panelname'] = $_POST['csv2post_hidden_panel_name'];
-    $atts['paneltitle'] = $_POST['csv2post_hidden_panel_title'];
-    $atts['tabscreenid'] = $_POST['csv2post_hidden_tabnumber'];                              
-            
-    csv2post_log($atts);     
-}
-
-
-/**
-* This will log sql queries and details of any failures in a way that helps debug. 
-*/
-function csv2post_log_sql($comment,$function,$file,$line,$recordid = 'NA',$dump = 'NA',$sqlresult = 'NA',$sqlquery = 'NA',$outcome = 'success'){
-    $atts = array();             
-    $atts['outcome'] = $outcome;// success,failed
-    $atts['comment'] = $comment;
-    $atts['line'] = $line;
-    $atts['file'] = $file;
-    $atts['function'] = $function;
-    $atts['dump'] = $dump;
-    $atts['sqlresult'] = $sqlresult;
-    $atts['sqlquery'] = $sqlquery;
-    $atts['recordid'] = $recordid;
-    // set log type so the log entry is made to the required log file
-    $atts['type'] = 'sql';    
-    csv2post_log($atts);    
-}        
-
-/**
-* Admin log is about tracing admin users actions, tracing staffs use.
-* Place the csv2post_log_user() function in form processing.
-*/
-function csv2post_log_users($message,$ipaddress = 'NA',$userid = 'NA',$panelname = 'NA',$paneltitle = 'NA',$page = 'NA'){
-    $atts = array();              
-    $atts['userid'] = $userid;
-    $atts['message'] = $message;
-    $atts['panelname'] = $panelname;
-    $atts['paneltitle'] = $paneltitle;
-    $atts['page'] = $page;
-    $atts['ipaddress'] = $ipaddress;
-    // set log type so the log entry is made to the required log file
-    $atts['type'] = 'users';    
-    csv2post_log($atts);  
-}
-
-/**
-* Log all errors (these are plugin faults where we reach a place in code we should not and need to know about it)
-* Do not log users own mistakes here (error is a term used in notices but it is not the same type of error)  
-*/
-function csv2post_log_error($message,$line,$function,$file,$dump = 'NA'){
-    $atts = array();             
-    $atts['line'] = $line;
-    $atts['function'] = $function;
-    $atts['file'] = $file;
-    $atts['message'] = $message;
-    $atts['dump'] = $dump;
-    // set log type so the log entry is made to the required log file
-    $atts['type'] = 'error';    
-    csv2post_log($atts);     
-}
-
-/**
-* Make log entry in install log
-*/
-function csv2post_log_install($action,$message,$userid = 'NA'){
-    $atts = array();             
-    $atts['action'] = $action;
-    $atts['userid'] = $userid;
-    $atts['message'] = $message;
-    // set log type so the log entry is made to the required log file
-    $atts['type'] = 'install';    
-    csv2post_log($atts);    
-}
-
-/**
-* @deprecated use csv2post_n()
-* 
 * Creates a new notification with a long list of style options available.
 * Can return the message for echo or add it to an array, which can also be stored for persistent messages.
 * Requires visitor to be logged in and on an admin page, dont need to do prevalidation before calling function
@@ -327,7 +49,9 @@ function csv2post_notice($message,$type = 'success',$size = 'Extra',$title = fal
             $csv2post_notice_array['notifications'][$next_key]['size'] = $size;
             $csv2post_notice_array['notifications'][$next_key]['title'] = $title;
             $csv2post_notice_array['notifications'][$next_key]['helpurl'] = $helpurl; 
-            $csv2post_notice_array['notifications'][$next_key]['clickable'] = $clickable;        
+            $csv2post_notice_array['notifications'][$next_key]['clickable'] = $clickable; 
+            
+            csv2post_update_option_persistentnotifications_array($csv2post_notice_array);       
         }
     }
 }
@@ -369,8 +93,8 @@ function csv2post_n($title,$mes,$style,$size,$atts = array()){
     }
     
     // arriving here means normal, most common output to the backend of Wordpress
-    global $csv2post_notice_array;// this is where notice is stored prior to being output by plugin 
-       
+    $csv2post_notice_array = csv2post_get_option_persistentnotifications_array();
+    
     // set next array key value
     $next_key = 0;
 
@@ -391,10 +115,39 @@ function csv2post_n($title,$mes,$style,$size,$atts = array()){
     $csv2post_notice_array['notifications'][$next_key]['user_mes'] = $user_mes;
     $csv2post_notice_array['notifications'][$next_key]['side'] = $side;
     $csv2post_notice_array['notifications'][$next_key]['clickable'] = $clickable;
+    
+    csv2post_update_option_persistentnotifications_array($csv2post_notice_array);
+}
+
+
+/**
+* Displays persistent notices, the ones users need to delete manually.
+* The parameters allow filtering to display notices in their intended parts of the interface.
+* 
+* @param mixed $placement_type global OR page OR screen OR panel
+* @param mixed $placement_specific page slug OR screens tab number OR panel id
+* @param string $pageid used with screen number, $placement_specific is the screen number
+* 
+* When $placement_type is global, all other parameteres are false
+*/
+function csv2post_persistentnotice_output($placement_type,$placement_specific = false,$pageid = false){
+    $csv2post_notice_array = csv2post_get_option_persistentnotifications_array();
+
+    if(!is_array($csv2post_notice_array) || !isset($csv2post_notice_array['notifications'])){
+        return false;
+    }   
+
+    foreach($csv2post_notice_array['notifications'] as $key => $n){
+        if(isset($n['persistent']) && $n['persistent'] == true){
+            if($placement_type == $n['placement_type'] && $placement_specific == $n['placement_specific'] && $pageid == $n['pageid']){
+                echo csv2post_persistentnotice_display($n['type'],$n['helpurl'],$n['size'],$n['title'],$n['message'],true,$n['id']);
+            }
+        }
+    }
 }
 
 /**
-* Creates a persistent notice
+* Creates a persistent notice that the use must delete manually
 * 
 * @param mixed $title
 * @param mixed $message
@@ -418,8 +171,7 @@ function csv2post_notice_persistent($title,$message,$type,$size,$atts){
     ), $atts ) );
 
     // get persistent notice array
-    global $csv2post_persistent_array;
-    $per = csv2post_get_option_persistentnotifications_array();
+    $csv2post_notice_array = csv2post_get_option_persistentnotifications_array();
 
     // avoid 
     // set next array key value
@@ -430,70 +182,25 @@ function csv2post_notice_persistent($title,$message,$type,$size,$atts){
         $next_key = csv2post_get_array_nextkey($per['notifications']);
     }   
      
-    $per['notifications'][$next_key]['message'] = $message;
-    $per['notifications'][$next_key]['type'] = $type;
-    $per['notifications'][$next_key]['size'] = $size;
-    $per['notifications'][$next_key]['title'] = $title;
-    $per['notifications'][$next_key]['helpurl'] = $url; 
-    $per['notifications'][$next_key]['output'] = $output;
-    $per['notifications'][$next_key]['audience'] = $audience;
-    $per['notifications'][$next_key]['user_mes'] = $user_mes;
-    $per['notifications'][$next_key]['side'] = $side;
-    $per['notifications'][$next_key]['clickable'] = $clickable;
-    $per['notifications'][$next_key]['placement_type'] = $placement_type;      
-    $per['notifications'][$next_key]['placement_specific'] = $placement_specific;  
-    $per['notifications'][$next_key]['pageid'] = $pageid;  
+    $csv2post_notice_array['notifications'][$next_key]['message'] = $message;
+    $csv2post_notice_array['notifications'][$next_key]['type'] = $type;
+    $csv2post_notice_array['notifications'][$next_key]['size'] = $size;
+    $csv2post_notice_array['notifications'][$next_key]['title'] = $title;
+    $csv2post_notice_array['notifications'][$next_key]['helpurl'] = $url; 
+    $csv2post_notice_array['notifications'][$next_key]['output'] = $output;
+    $csv2post_notice_array['notifications'][$next_key]['audience'] = $audience;
+    $csv2post_notice_array['notifications'][$next_key]['user_mes'] = $user_mes;
+    $csv2post_notice_array['notifications'][$next_key]['side'] = $side;
+    $csv2post_notice_array['notifications'][$next_key]['clickable'] = $clickable;
+    $csv2post_notice_array['notifications'][$next_key]['placement_type'] = $placement_type;      
+    $csv2post_notice_array['notifications'][$next_key]['placement_specific'] = $placement_specific;  
+    $csv2post_notice_array['notifications'][$next_key]['pageid'] = $pageid;  
+    $csv2post_notice_array['notifications'][$next_key]['persistent'] = true;
                         
     // generate a unique notice ID, no need to validate it if we use time()
-    $per['notifications'][$next_key]['id'] = $id;
+    $csv2post_notice_array['notifications'][$next_key]['id'] = $id;
 
-    // for persistence we save the notifications array
-    csv2post_update_option_persistentnotifications_array($per);
-}
-
-/**
-* Returns notification HTML.
-* This function has the html and css to make all notifications standard.
-
-* @param mixed $type
-* @param string $helpurl
-* @param string $size
-* @param string $title
-* @param string $message
-* @param bool $clickable
-* @param mixed $persistent
-* @param mixed $id, used for persistent messages which use jQuery UI button, the ID should be the notice ID
-*/
-function csv2post_notice_display($type,$helpurl,$size,$title,$message,$clickable,$persistent = false,$id = false){
-    // begin building output
-    $output = '';
-                    
-    // if clickable (only allowed when no other links being used) - $helpurl will actually be a local url to another plugin or Wordpress page
-    if($clickable){
-        $output .= '<div class="stepLargeTest"><a href="'.$helpurl.'">';
-    }
-
-    // start div
-    $output .= '<div class="'.$type.$size.'">';     
-   
-    // set h4 when required
-    if($size != 'Tiny'){$output .= '<h4>'.$title.'</h4>';}
-
-    $output .= '<p>' . $message . '</p>';
-
-    // if is not clickable (entire div) and help url is not null then display a clickable ico
-    $thelink = '';
-    if($helpurl != '' && $helpurl != false){
-        //$output .= '<a class="jquerybutton" href="'.$helpurl.'" target="_blank">Get Help</a>';
-    }   
-        
-    // complete notice with closing div
-    $output .= '</div>';
-    
-    // end wrapping with link and styled div for making div clickable when required
-    if($clickable){$output .= '</a></div>';}
-
-    return $output;    
+    csv2post_update_option_persistentnotifications_array($csv2post_notice_array);
 }
 
 function csv2post_persistentnotice_display($type,$helpurl,$size,$title,$message,$persistent = false,$id = false){
@@ -542,30 +249,82 @@ function csv2post_persistentnotice_display($type,$helpurl,$size,$title,$message,
     return $output;    
 }
 
-
 /**
 * Outputs the contents of $csv2post_notice_array, used in csv2post_header_page.
 * Will hold new and none persistent notifications. May also hold persistent. 
 */
 function csv2post_notice_output(){
-    global $csv2post_notice_array;
+    $csv2post_notice_array = csv2post_get_option_persistentnotifications_array();
     if(isset($csv2post_notice_array['notifications'])){
        
         foreach($csv2post_notice_array['notifications'] as $key => $notice){
 
-            // set default values where any requires are null
-            if(!isset($notice['type'])){$notice['type'] = 'info';}
-            if(!isset($notice['helpurl'])){$notice['helpurl'] = false;} 
-            if(!isset($notice['size'])){$notice['size'] = 'Large';} 
-            if(!isset($notice['title'])){$notice['title'] = 'Sorry No Title Was Provided';}
-            if(!isset($notice['message'])){$notice['message'] = 'Sorry No Message Was Provided';}
-            if(!isset($notice['clickable'])){$notice['clickable'] = false;} 
-            if(!isset($notice['persistent'])){$notice['persistent'] = false;}
-            if(!isset($notice['id'])){$notice['id'] = false;} 
-              
-            echo csv2post_notice_display($notice['type'],$notice['helpurl'],$notice['size'],$notice['title'],$notice['message'],$notice['clickable'],$notice['persistent'],$notice['id']);                                               
+            // persistent notices are handled by another function as the output is different
+            if(!isset($notice['persistent']) || $notice['persistent'] != false){
+                // set default values where any requires are null
+                if(!isset($notice['type'])){$notice['type'] = 'info';}
+                if(!isset($notice['helpurl'])){$notice['helpurl'] = false;} 
+                if(!isset($notice['size'])){$notice['size'] = 'Large';} 
+                if(!isset($notice['title'])){$notice['title'] = 'Sorry No Title Was Provided';}
+                if(!isset($notice['message'])){$notice['message'] = 'Sorry No Message Was Provided';}
+                if(!isset($notice['clickable'])){$notice['clickable'] = false;} 
+                if(!isset($notice['persistent'])){$notice['persistent'] = false;}
+                if(!isset($notice['id'])){$notice['id'] = false;} 
+                  
+                echo csv2post_notice_display($notice['type'],$notice['helpurl'],$notice['size'],$notice['title'],$notice['message'],$notice['clickable'],$notice['persistent'],$notice['id']);                                               
+            
+                // notice has been displayed so we now removed it
+                unset($csv2post_notice_array['notifications'][$key]);
+            }
         }
+
+        csv2post_update_option_persistentnotifications_array($csv2post_notice_array);
     }  
+}
+
+/**
+* Returns notification HTML.
+* This function has the html and css to make all notifications standard.
+
+* @param mixed $type
+* @param string $helpurl
+* @param string $size
+* @param string $title
+* @param string $message
+* @param bool $clickable
+* @param mixed $persistent
+* @param mixed $id, used for persistent messages which use jQuery UI button, the ID should be the notice ID
+*/
+function csv2post_notice_display($type,$helpurl,$size,$title,$message,$clickable,$persistent = false,$id = false){
+    // begin building output
+    $output = '';
+                    
+    // if clickable (only allowed when no other links being used) - $helpurl will actually be a local url to another plugin or Wordpress page
+    if($clickable){
+        $output .= '<div class="stepLargeTest"><a href="'.$helpurl.'">';
+    }
+
+    // start div
+    $output .= '<div class="'.$type.$size.'">';     
+   
+    // set h4 when required
+    if($size != 'Tiny'){$output .= '<h4>'.$title.'</h4>';}
+
+    $output .= '<p>' . $message . '</p>';
+
+    // if is not clickable (entire div) and help url is not null then display a clickable ico
+    $thelink = '';
+    if($helpurl != '' && $helpurl != false){
+        //$output .= '<a class="jquerybutton" href="'.$helpurl.'" target="_blank">Get Help</a>';
+    }   
+        
+    // complete notice with closing div
+    $output .= '</div>';
+    
+    // end wrapping with link and styled div for making div clickable when required
+    if($clickable){$output .= '</a></div>';}
+
+    return $output;    
 }
 
 /**
@@ -673,28 +432,6 @@ function csv2post_var_dump($v,$h = false){
 }
 
 /**
-* Flags the giving post by adding _csv2post_flagged meta value which is used in the flagging system.
-*     
-* @param integer $post_ID
-* @param integer $priority, 1 = low priority (info style notification), 2 = unsure of priority (warning style notification), 3 = high priority (error style notification)
-* @param string $type, keyword to enhance search ability (USED:updatefailure ) 
-* @param string $reason, as much information as required for user to take the required action or know they can delete the flag
-*/
-function csv2post_flag_post($post_ID,$priority,$type,$reason){
-    // if a value is missing return
-    if(!isset($post_ID) || !isset($priority) || !isset($time) || !isset($reason) || !isset($type)){
-        ### LOG THIS
-        return false;
-    }
-    
-    $testarray['priority'] = $priority;
-    $testarray['time'] = time();
-    $testarray['reason'] = $reason;
-    $testarray['type'] = 'updatefailure';
-    add_post_meta($post_ID,'_csv2post_flagged',$testarray,false);   
-}
-
-/**
 * CSV 2 POST function for logging project changes.
 * The main intention is to aid support. We will use this log to check what the user is doing with their project.
 * 
@@ -772,5 +509,299 @@ function csv2post_get_option_persistentnotifications_array(){
         return array();    
     }
     return $v;    
+}
+
+/**
+* Used to build history, flag items and schedule actions to be performed.
+* 1. it all falls under log as we would probably need to log flags and scheduled actions anyway
+*
+* @global $wpdb
+* @uses extract, shortcode_atts
+*
+* @todo create other constants like the one setup for sql log entries
+* @todo create option to add entries to server error log file
+* @todo create a function for each 'type'
+* 
+* @link http://www.csv2post.com/hacking/log-table
+*/
+function csv2post_log($atts){     
+    global $csv2post_adm_set,$wpdb,$csv2post_currentversion;
+
+    // if ALL logging is off - if ['uselog'] not set then logging for all files is on by default
+    if(isset($csv2post_adm_set['reporting']['uselog']) && $csv2post_adm_set['reporting']['uselog'] == 0){return false;}
+    
+    // if log table does not exist return false
+    if(!csv2post_WP_SQL_does_table_exist('csv2post_log')){return false;}
+    
+    // if a value is false, it will not be added to the insert query, we want the database default to kick in, NULL mainly
+    extract( shortcode_atts( array(  
+        'outcome' => 1,# 0|1 (overall outcome in boolean) 
+        'line' => false,# __LINE__ 
+        'function' => false,# __FUNCTION__
+        'file' => false,# __FILE__ 
+        'sqlresult' => false,# dump of sql query result 
+        'sqlquery' => false,# dump of sql query 
+        'sqlerror' => false,# dump of sql error if any 
+        'wordpresserror' => false,# dump of a wp error 
+        'screenshoturl' => false,# screenshot URL to aid debugging 
+        'userscomment' => false,# beta testers comment to aid debugging (may double as other types of comments if log for other purposes) 
+        'page' => false,# related page 
+        'version' => $csv2post_currentversion, 
+        'panelid' => false,# id of submitted panel
+        'panelname' => false,# name of submitted panel 
+        'tabscreenid' => false,# id of the menu tab  
+        'tabscreenname' => false,# name of the menu tab 
+        'dump' => false,# dump anything here 
+        'ipaddress' => false,# users ip 
+        'userid' => false,# user id if any    
+        'noticemessage' => false,# when using log to create a notice OR if logging a notice already displayed      
+        'comment' => false,# dev comment to help with troubleshooting
+        'type' => false,# general(default)|error(leads to being reported to us)|flag(get admins attention)|schedule(used by schedule system to perform an action much like cron) 
+        'category' => false,#  schedule|posts|data|project|forms|useractions|automation 
+        'action' => false,# if type error action is what was being done i.e. form submission | if type is schedule action is what is to be done i.e. createposts,importdata
+        'priority' => false# if type is general/error priority is high critical the log is | if type is schedule the priority puts the request for action into order                         
+    ), $atts ) );
+    
+    // start query
+    $query = "INSERT INTO `csv2post_log`";
+    
+    // add columns and values
+    $query_columns = '(outcome';
+    $query_values = '(1';
+    
+    if($line){$query_columns .= ',line';$query_values .= ',"'.$line.'"';}
+    if($file){$query_columns .= ',file';$query_values .= ',"'.$file.'"';}                                                                           
+    if($function){$query_columns .= ',function';$query_values .= ',"'.$function.'"';}  
+    if($sqlresult){$query_columns .= ',sqlresult';$query_values .= ',"'.$sqlresult.'"';}     
+    if($sqlquery){$query_columns .= ',sqlquery';$query_values .= ',"'.$sqlquery.'"';}     
+    if($sqlerror){$query_columns .= ',sqlerror';$query_values .= ',"'.$sqlerror.'"';}    
+    if($wordpresserror){$query_columns .= ',wordpresserror';$query_values .= ',"'.$wordpresserror.'"';}     
+    if($screenshoturl){$query_columns .= ',screenshoturl';$query_values .= ',"'.$screenshoturl.'"' ;}     
+    if($userscomment){$query_columns .= ',userscomment';$query_values .= ',"'.$userscomment.'"';}     
+    if($page){$query_columns .= ',page';$query_values .= ',"'.$page.'"';}     
+    if($version){$query_columns .= ',version';$query_values .= ',"'.$version.'"';}     
+    if($panelid){$query_columns .= ',panelid';$query_values .= ',"'.$panelid.'"';}     
+    if($panelname){$query_columns .= ',panelname';$query_values .= ',"'.$panelname.'"';}     
+    if($tabscreenid){$query_columns .= ',tabscreenid';$query_values .= ',"'.$tabscreenid.'"';}     
+    if($tabscreenname){$query_columns .= ',tabscreenname';$query_values .= ',"'.$tabscreenname.'"';}     
+    if($dump){$query_columns .= ',dump';$query_values .= ',"'.$dump.'"';}     
+    if($ipaddress){$query_columns .= ',ipaddress';$query_values .= ',"'.$ipaddress.'"';}     
+    if($userid){$query_columns .= ',userid';$query_values .= ',"'.$userid.'"';}     
+    if($noticemessage){$query_columns .= ',noticemessage';$query_values .= ',"'.$noticemessage.'"';}     
+    if($comment){$query_columns .= ',comment';$query_values .= ',"'.$comment.'"';}     
+    if($type){$query_columns .= ',type';$query_values .= ',"'.$type.'"';}     
+    if($category){$query_columns .= ',category';$query_values .= ',"'.$category.'"';}     
+    if($action){$query_columns .= ',action';$query_values .= ',"'.$action.'"';}     
+    if($priority){$query_columns .= ',priority';$query_values .= ',"'.$priority.'"';}     
+
+    $query_columns .= ')';
+    $query_values .= ')';
+    $query .= $query_columns .' VALUES '. $query_values;  
+    $wpdb->query( $query );     
+}
+
+/**
+* Display log entries for specific log types
+* 
+* @link http://www.csv2post.com/hacking/log-table
+* 
+* @todo MEDIUMPRIORITY, use jQuery UI and Ajax table to display results
+* 
+* @param string $type general|error
+* @param integer $display_rows number of rows to display in table
+* @param array $display_columns an array holding the column names from csv2post_log table to be displayed
+*/
+function csv2post_log_display_bytype($type = 'all',$display_rows = 100,$display_columns = 'all'){
+    $rows = csv2post_WP_SQL_querylog_bytype($type,$display_rows);
+    
+    if(!$rows){
+        csv2post_n_incontent('No log entries have been made for this.','info','Small','No Log Entries');    
+        return;
+    }
+    
+    // reverse the order of the array
+    $logrows = array_reverse($rows);
+    
+    $rowCount = 0;
+    
+    csv2post_GUI_tablestart();
+    
+    foreach($logrows as $id => $row){
+        
+        // if first row do header
+        if($rowCount == 0){
+            
+            echo '<tr>';
+            
+            foreach($row as $column => $value){
+
+                // if display_columns is default "all" or specific columns passed we only add those
+                if($display_columns == 'all' || !is_array($display_columns)){
+                    
+                    echo '<td><strong>'.$column.'</strong></td>'; 
+
+                }else{
+                
+                    // only add values in columns passed either by
+                    if(in_array($column,$display_columns)){
+
+                        echo '<td><strong>'.$column.'</strong></td>'; 
+
+                    }   
+                }
+            }
+            
+            echo '</tr>';
+            
+        }else{
+            
+            echo '<tr>';
+            
+            foreach($row as $column => $value){
+
+                // if display_columns is default "all" or specific columns passed we only add those
+                if($display_columns == 'all' || !is_array($display_columns)){
+                    
+                    if($value == NULL){
+                        echo '<td></td>';
+                    }else{
+                        echo '<td>'.$value.'</td>'; 
+                    }
+                    
+                }else{
+                
+                    // only add values in columns passed either by
+                    if(in_array($column,$display_columns)){
+                        
+                        if($value == NULL){
+                            echo '<td></td>';
+                        }else{
+                            echo '<td>'.$value.'</td>'; 
+                        }   
+        
+                    }   
+                }
+            }
+            
+            echo '</tr>';
+        }
+        
+        ++$rowCount;   
+    }
+    
+    echo '</table>'; 
+}
+
+/**
+* Log form submissions on admin side
+*/
+function csv2post_log_adminform($function,$outcome,$action,$comment = 'unknown',$type = 'general',$priority = 'normal',$dump = 'unknown',$wordpresserror = 'none'){    
+                           
+    $atts = array();             
+    $atts['outcome'] = $outcome;
+    $atts['function'] = $function; 
+    $atts['wordpresserror'] = $wordpresserror;;
+    //$atts['tabscreenname'] = $tabscreenname; # not in use 
+    $atts['dump'] = $dump;
+    $atts['comment'] = $comment;
+    $atts['type'] = $type;
+    $atts['action'] = $action;
+    $atts['priority'] = $priority;          
+    
+    // default values
+    $atts['userid'] = get_current_user_id();       
+    $atts['category'] = 'adminform'; 
+    $atts['page'] = $_POST['csv2post_hidden_pageid'];
+    $atts['panelname'] = $_POST['csv2post_hidden_panel_name'];
+    $atts['paneltitle'] = $_POST['csv2post_hidden_panel_title'];
+    $atts['tabscreenid'] = $_POST['csv2post_hidden_tabnumber'];                              
+            
+    csv2post_log($atts);     
+}
+
+function csv2post_log_urlaction($function,$outcome,$action,$comment = 'unknown',$type = 'general',$priority = 'normal',$dump = 'unknown',$wordpresserror = 'none'){    
+                           
+    $atts = array();             
+    $atts['outcome'] = $outcome;
+    $atts['function'] = $function; 
+    $atts['wordpresserror'] = $wordpresserror;;
+    //$atts['tabscreenname'] = $tabscreenname; # not in use 
+    $atts['dump'] = $dump;
+    $atts['comment'] = $comment;
+    $atts['type'] = $type;
+    $atts['action'] = $action;
+    $atts['priority'] = $priority;          
+    
+    // default values
+    $atts['userid'] = get_current_user_id();       
+    $atts['category'] = 'adminform';                               
+            
+    csv2post_log($atts);     
+}
+
+
+/**
+* This will log sql queries and details of any failures in a way that helps debug. 
+*/
+function csv2post_log_sql($comment,$function,$file,$line,$recordid = 'NA',$dump = 'NA',$sqlresult = 'NA',$sqlquery = 'NA',$outcome = 'success'){
+    $atts = array();             
+    $atts['outcome'] = $outcome;// success,failed
+    $atts['comment'] = $comment;
+    $atts['line'] = $line;
+    $atts['file'] = $file;
+    $atts['function'] = $function;
+    $atts['dump'] = $dump;
+    $atts['sqlresult'] = $sqlresult;
+    $atts['sqlquery'] = $sqlquery;
+    $atts['recordid'] = $recordid;
+    // set log type so the log entry is made to the required log file
+    $atts['type'] = 'sql';    
+    csv2post_log($atts);    
+}        
+
+/**
+* Admin log is about tracing admin users actions, tracing staffs use.
+* Place the csv2post_log_user() function in form processing.
+*/
+function csv2post_log_users($message,$ipaddress = 'NA',$userid = 'NA',$panelname = 'NA',$paneltitle = 'NA',$page = 'NA'){
+    $atts = array();              
+    $atts['userid'] = $userid;
+    $atts['message'] = $message;
+    $atts['panelname'] = $panelname;
+    $atts['paneltitle'] = $paneltitle;
+    $atts['page'] = $page;
+    $atts['ipaddress'] = $ipaddress;
+    // set log type so the log entry is made to the required log file
+    $atts['type'] = 'users';    
+    csv2post_log($atts);  
+}
+
+/**
+* Log all errors (these are plugin faults where we reach a place in code we should not and need to know about it)
+* Do not log users own mistakes here (error is a term used in notices but it is not the same type of error)  
+*/
+function csv2post_log_error($message,$line,$function,$file,$dump = 'NA'){
+    $atts = array();             
+    $atts['line'] = $line;
+    $atts['function'] = $function;
+    $atts['file'] = $file;
+    $atts['message'] = $message;
+    $atts['dump'] = $dump;
+    // set log type so the log entry is made to the required log file
+    $atts['type'] = 'error';    
+    csv2post_log($atts);     
+}
+
+/**
+* Make log entry in install log
+*/
+function csv2post_log_install($action,$message,$userid = 'NA'){
+    $atts = array();             
+    $atts['action'] = $action;
+    $atts['userid'] = $userid;
+    $atts['message'] = $message;
+    // set log type so the log entry is made to the required log file
+    $atts['type'] = 'install';    
+    csv2post_log($atts);    
 }
 ?>

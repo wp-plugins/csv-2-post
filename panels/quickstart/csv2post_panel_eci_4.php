@@ -44,12 +44,17 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
         
         if(!$table_columns){
         
-            echo csv2post_notice('Your imported data table named '.$table_name.' appears to have
-            been deleted. You will need to reset Quick Start. Please report this if you feel something
-            is invalid','error','Small','','','return');
+            echo csv2post_notice('Your imported data table named '.$table_name.' may have
+            been deleted. You will need to reset Quick Start so that a new database table 
+            is created. Please report this if you feel something is wrong.','error','Small','','','return');
             
-        }else{
+        }else{?>
         
+            <p>Below is a list of tokens we call Column Replacement Tokens. Copy and paste them into the editor wherever you want their
+            representing data to appear in each of your posts. Tokens can be used as many times as you like and you can use them
+            in your HTML to populate links and other HTML attributes. You may paste your Google AdSense code</p>            
+            
+            <?php 
             // excluded columns array
             $excluded_columns = array('csv2post_id','csv2post_postid','csv2post_postcontent','csv2post_inuse','csv2post_imported',
             'csv2post_updated','csv2post_changed','csv2post_applied','csv2post_filemoddate','csv2post_filemoddate1','csv2post_filemoddate2',
@@ -81,17 +86,14 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
         
         <input type="hidden" name="csv2post_contentname" value="<?php echo $templatename;?>">
         
-        <P>Your new Content Template will be named "<?php echo $templatename;?>", you may edit it at anytime 
-        by visiting 'Content Template'.</p>
-        
-        <p>If you like this flexability, please consider <a href="paypal@webtechglobal.co.uk">donating</a> and supporting
-        our free plugin so we can continue providing intelligent functionality...for free!</p>
-        
+        <P>Your new Content Template will be named "<strong><?php echo $templatename;?></strong>", you may edit it at anytime 
+        by visiting 'Content Template'. The premium edition allows us to name the template ourselves, <a href="http://www.csvtopost.com" target="_blank">try it here</a>.</p>
+ 
         <?php 
         // add js for dialog on form submission and the dialog <div> itself
         if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
             csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-            csv2post_jquery_form_prompt($jsform_set);
+            csv2post_jquery_form_promptdiv($jsform_set);
         } 
         ?>
             

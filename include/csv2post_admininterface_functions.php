@@ -1,78 +1,4 @@
 <?php
-function csv2post_page_toppage(){require_once( WTG_C2P_DIR.'pages/pagemain/csv2post_main.php' );}
-function csv2post_page_data(){require_once( WTG_C2P_DIR.'pages/data/csv2post_main_data.php' );}
-function csv2post_page_projects(){require_once( WTG_C2P_DIR.'pages/projects/csv2post_main_projects.php' );}                
-function csv2post_page_creation(){require_once( WTG_C2P_DIR.'pages/creation/csv2post_main_creation.php' );}
-function csv2post_page_install(){require_once( WTG_C2P_DIR.'pages/install/csv2post_main_install.php' );}
-function csv2post_page_more(){require_once( WTG_C2P_DIR.'pages/more/csv2post_main_more.php' );}
-
-/**
-* Wordpress navigation menu
-*/
-function csv2post_admin_menu(){
-    global $csv2post_currentversion,$csv2post_mpt_arr,$wtgtp_homeslug,$csv2post_pluginname,$csv2post_is_installed,$csv2post_is_free;
-     
-    $n = $csv2post_pluginname;
-
-    // if file version is newer than install we display the main page only but re-label it as an update screen
-    // the main page itself will also change to offer plugin update details. This approach prevent the problem with 
-    // visiting a page without permission between installation
-    $installed_version = csv2post_WP_SETTINGS_get_version();                
-
-    if(!$csv2post_is_installed && !isset($_POST['csv2post_plugin_install_now'])){   
-       
-        // if URL user is attempting to visit any screen other than page=csv2post then redirect to it
-        if(isset($_GET['page']) && strstr($_GET['page'],'csv2post_')){
-            wp_redirect( get_bloginfo('url') . '/wp-admin/admin.php?page=csv2post' );           
-            exit;    
-        }
-        
-        // if plugin not installed
-        add_menu_page(__('Install',$n.'install'), __('CSV 2 POST Install','home'), 'administrator', 'csv2post', 'csv2post_page_toppage' );
-        
-    }elseif(isset($csv2post_currentversion) 
-    && isset($installed_version) 
-    && $installed_version != false
-    && $csv2post_currentversion > $installed_version 
-    && !isset($_POST['csv2post_plugin_update_now'])){
-        
-        // if URL user is attempting to visit any screen other than page=csv2post then redirect to it
-        if(isset($_GET['page']) && strstr($_GET['page'],'csv2post_')){
-            wp_redirect( get_bloginfo('url') . '/wp-admin/admin.php?page=csv2post' );
-            exit;    
-        }
-                
-        // if $installed_version = false it indicates no installation so we should not be displaying an update screen
-        // update screen will be displayed after installation submission if this is not in place
-        
-        // main is always set in menu, even in extensions main must exist
-        add_menu_page(__('Update',$n.'update'), __('CSV 2 POST Update','home'), 'administrator', 'csv2post', 'csv2post_page_toppage' );
-        
-    }else{
-
-        // main is always set in menu, even in extensions main must exist
-        add_menu_page(__($csv2post_mpt_arr['menu']['main']['title'],$n.$csv2post_mpt_arr['menu']['main']['slug']), __($csv2post_mpt_arr['menu']['main']['menu'],'home'), $csv2post_mpt_arr['menu']['main']['permissions']['defaultcapability'], $n, 'csv2post_page_toppage' ); 
-
-        // loop through sub-pages
-        foreach($csv2post_mpt_arr['menu'] as $k => $a){
-
-            // skip none page values such as ['arrayinfo']
-            if($k != 'arrayinfo'){
-                // skip main page (even extensions use the same main page file but the tab screens may be customised
-                if($csv2post_is_free && $a == 'beta' || $k == 'main'){
-                    // page is either for paid edition only or is added to the menu elsewhere    
-                }else{
-                    // if ['active'] is set and not equal to false, if not set we assume true   
-                    if(!isset($csv2post_mpt_arr['menu'][$k]['active']) || isset($csv2post_mpt_arr['menu'][$k]['active']) && $csv2post_mpt_arr['menu'][$k]['active'] != false){
-                        $required_capability = csv2post_WP_SETTINGS_get_page_capability($k);    
-                        add_submenu_page($n, __($csv2post_mpt_arr['menu'][$k]['title'],$n.$csv2post_mpt_arr['menu'][$k]['slug']), __($csv2post_mpt_arr['menu'][$k]['menu'],$n.$csv2post_mpt_arr['menu'][$k]['slug']), $required_capability, $csv2post_mpt_arr['menu'][$k]['slug'], 'csv2post_page_' . $k);
-                    }
-                }
-            }
-
-        }// end page loop
-    }
-}
 
 /**
 * Displays a table of csv2post_option records with ability to view their value or delete them
@@ -113,7 +39,7 @@ function csv2post_list_optionrecordtrace($form = false,$size = 'Small',$optionty
 * Outputs details of the current project, used under the title 
 */
 function csv2post_GUI_currentproject(){
-    global $csv2post_is_free,$csv2post_dataimportjobs_array;
+    global $csv2post_is_free,$csv2post_dataimportjobs_array,$csv2post_demo_mode;
     // main page header
     if(!$csv2post_is_free){
         $jobcode = csv2post_get_option_currentjobcode();
@@ -123,9 +49,16 @@ function csv2post_GUI_currentproject(){
             $jobname = $jobname_result;
         }
         
-        csv2post_n_screeninfo('Post Creation Project','
+        $currentproject_notice = '
         <strong>Data Import Job:</strong> '. $jobname .'<br />
-        <strong>Post Creation Project:</strong> ' . csv2post_get_current_project_name() );
+        <strong>Post Creation Project:</strong> ' . csv2post_get_current_project_name();
+        
+        if($csv2post_demo_mode){
+            $currentproject_notice .= '<p>Demo Mode: demo mode is not a true reflection of how the plugin works due to security restrictions and 
+            multiple users. You may use the Install screen to reset the installation anytime.</p>';    
+        }
+        
+        csv2post_n_screeninfo( 'Post Creation Project', $currentproject_notice );
     }
 }
 
@@ -193,8 +126,6 @@ function csv2post_panel_support_buttons($panel_array){
 
 /**
 * Easy Configuration Questions
-* 
-* @link http://www.erichynds.com/jquery/jquery-ui-multiselect-widget/
 */
 function csv2post_easy_configuration_questionlist_demo(){
     global $csv2post_ecq_array;
@@ -222,7 +153,7 @@ function csv2post_easy_configuration_questionlist_demo(){
            
                 echo csv2post_notice($question['question'] . ' ' . csv2post_link('?',$question['helpurl'],'','_blank','','return','Click here to get more help for this question') .'
                 <p> 
-                    <select id="csv2post_single'.$singles_created.'" title="Please click on a single option" multiple="multiple" name="example-basic" class="csv2post_multiselect_menu">
+                    <select id="csv2post_single'.$singles_created.'" title="Please click on a single option" multiple="multiple" name="example-basic" >
                         '.$optionlist.'
                     </select>
                 </p>','question','Small','','','return');?>
@@ -239,7 +170,7 @@ function csv2post_easy_configuration_questionlist_demo(){
                              
                 echo csv2post_notice($question['question'] . ' ' . csv2post_link('?',$question['helpurl'],'','_blank','','return','Click here to get more help for this question') .'
                 <p> 
-                    <select id="csv2post_multiple'.$multiple_created.'" title="You may select multiple options" multiple="multiple" name="example-basic" class="csv2post_multiselect_menu">
+                    <select id="csv2post_multiple'.$multiple_created.'" title="You may select multiple options" multiple="multiple" name="example-basic" >
                         '.$optionlist.'
                     </select>
                 </p>','question','Small','','','return');?>
@@ -286,7 +217,7 @@ function csv2post_easy_configuration_questionlist_demo(){
                 </style>
                 <script>
                 $(function() {
-                    $( "#<?php echo WTG_C2P_ABB;?>slider-range-min<?php echo $slider_created;?>" ).slider({
+                    $( "#csv2post_slider-range-min<?php echo $slider_created;?>" ).slider({
                         range: "min",
                         value: 20,
                         min: 1,
@@ -387,9 +318,7 @@ function csv2post_add_dashboard_rsswidget() {
 * 1. displays some statistics of any matching database tables
 * 2. displays the age of files for knowing when a file was last updated
 * 
-* @todo MEDIUMPRIOTITY, use DataTables with ability to click and view more information plus delete files.
-* @todo MEDIUMPRIORITY, a file is caused a blank age result, investigate why it happened when the file was edited then uploaded again 
-* @todo HIGHPRIORITY, add column for field count using fgetcsv method (currently only has pear method) this will greatly help determine which method is best         
+* @todo HIGHPRIORITY, use DataTables jQuery UI with ability to click and view more information plus delete files.      
 */
 function csv2post_available_csv_file_list(){
     $available = 0;
@@ -408,16 +337,25 @@ function csv2post_available_csv_file_list(){
 
         }else{
 
+            csv2post_GUI_tablestart();
             echo '
-            <table class="widefat post fixed">
-                <tr class="first">
-                    <td width="175"><strong>Name</strong></td>
-                    <td width="80"><strong>Separator (plugin)</strong></td>                    
-                    <td width="80"><strong>Separator (pear)</strong></td>
-                    <td width="75"><strong>Columns (pear)</strong></td>                    
-                    <td width="75"><strong>Rows</strong></td>
-                    <td><strong>Size</strong></td>                                                       
-                </tr>';  
+                <thead>
+                    <tr>
+                        <th width="175">Name</th>
+                        <th width="80">Separator (plugin)</th>                                       
+                        <th width="75">Rows</th>
+                        <th>Size</th>                                                       
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th>Name</strong></th>
+                        <th>Separator (plugin)</th>                                        
+                        <th>Rows</th>
+                        <th>Size</th>                                                       
+                    </tr>
+                </tfoot>
+                <tbody>';  
             
             $filesize_total = 0;
                 
@@ -433,15 +371,12 @@ function csv2post_available_csv_file_list(){
                         $thefilesize = filesize($file_path);
                         $filesize_total = $thefilesize;
 
-                        $sep_fget = csv2post_establish_csvfile_separator_fgetmethod($filename,false );                           
-                        $sep_PEARCSV = csv2post_establish_csvfile_separator_PEARCSVmethod($filename,false); 
+                        $sep_fget = csv2post_establish_csvfile_separator_fgetmethod($filename,false );                            
                         
                         echo '
                         <tr>
                             <td>'.$filename.'</td>
-                            <td>'.$sep_fget.'</td>                            
-                            <td>'.$sep_PEARCSV.'</td>
-                            <td>'.csv2post_establish_csvfile_fieldcount_PEAR($filename).'</td>                            
+                            <td>'.$sep_fget.'</td>                                                       
                             <td>'.count(file(WTG_C2P_CONTENTFOLDER_DIR . '/' .$filename)).'</td>
                             <td>'.csv2post_format_file_size($thefilesize).'</td>                                                                                    
                         </tr>';                    
@@ -451,7 +386,7 @@ function csv2post_available_csv_file_list(){
                 }// end if $filename = .  
             }// end while    
                  
-            echo '</table>';
+            echo '</tbody></table>';
             
             csv2post_notice_filesizetotal($filesize_total);
 
@@ -532,14 +467,24 @@ function csv2post_csv_files_status_list(){
             csv2post_notice($csv2post_plugintitle . ' does not have permission to open the plugins content folder','error','Small','','');
 
         }else{
-
+            
+            csv2post_GUI_tablestart();
             echo '
-            <table class="widefat post fixed">
-                <tr class="first">
-                    <td width="175"><strong>Name</strong></td>
-                    <td><strong>Status</strong></td>
-                    <td><strong>Files Age</strong></td>                                                       
-                </tr>';  
+                <thead>
+                    <tr class="first">
+                        <th width="175">Name</th>
+                        <th>Status</th>
+                        <th>Files Age</th>                                                       
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr class="first">
+                        <th width="175">Name</th>
+                        <th>Status</th>
+                        <th>Files Age</th>                                                       
+                    </tr>
+                </tfoot>
+                <tbody>';  
             
             $filesize_total = 0;
                 
@@ -560,10 +505,6 @@ function csv2post_csv_files_status_list(){
                         
                         // if csv file parse methods do not determine the same separator we will display a message
                         $sep_fget = csv2post_establish_csvfile_separator_fgetmethod($filename,false );                           
-                        $sep_PEARCSV = csv2post_establish_csvfile_separator_PEARCSVmethod($filename,false); 
-                        if($sep_fget != $sep_PEARCSV){
-                            $status = 'This files separator needs to be set manually to avoid problems.';    
-                        }
                         
                         // determine files age in a human readable way
                         if(phpversion() < '5.3'){
@@ -585,7 +526,7 @@ function csv2post_csv_files_status_list(){
                 }// end if $filename = .  
             }// end while    
                  
-            echo '</table>';
+            echo '</tbody></table>';
 
             // clear stored values
             clearstatcache();
@@ -608,13 +549,24 @@ function csv2post_list_dataimportjobs(){
         echo '<strong>You do not have any data import jobs</strong><br />';
         return 0;
     }else{
+        
+        csv2post_GUI_tablestart();
         echo '
-        <table class="widefat post fixed">
-            <tr class="first">
-                <td width="25"></td>        
-                <td width="250"><strong>Job Name</strong></td>
-                <td><strong>Job Code</strong></td>                                                          
-            </tr>';  
+            <thead>
+                <tr>
+                    <th width="25"></th>
+                    <th width="250">Job Name</th>       
+                    <th>Job Code</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tfoot>
+                <tr>
+                    <th></th>
+                    <th>Job Name</th>
+                    <th>Job Code</th>
+                </tr>
+            </tfoot>';  
 
         $totaljobs = 0;
         
@@ -640,7 +592,7 @@ function csv2post_list_dataimportjobs(){
             </tr>';
         }
         
-        echo '</table>';
+        echo '</tbody></table>';
     }
     return $totaljobs;    
 }
@@ -1048,8 +1000,7 @@ function csv2post_list_replacement_tokens($currentproject_code){
             
             if(!$table_columns){
             
-                echo csv2post_notice('The database table named '.$table_name.' does not appear to exist anymore. Have you
-                deleted it manually using this plugin or when editing the database directly?','error','Small','','','return');
+                echo csv2post_notice('The database table named '.$table_name.' does not exist, have you possibly manually deleted it?','error','Small','','','return');
                 
             }else{
             
@@ -1169,7 +1120,6 @@ function csv2post_display_headers_menuoptions($headers,$jobcode,$current = 'NOTS
     }    
 }
 
-
 /**
 * Displays checkbox menu holding all the designs for the giving project
 * @todo CRITICAL, improve the id to make it more unique as this menu will be used many times 
@@ -1199,7 +1149,7 @@ function csv2post_display_contenttemplate_menuoptions(){
 */
 function csv2post_selectables_csvfiles($range = 'all',$id = 'noid'){?>
 
-    <select multiple='multiple' id="csv2post_selectcsvfiles_<?php echo $id;?>" name="csv2post_csvfilearray_<?php echo $id;?>[]" class="csv2post_multiselect_menu">
+    <select multiple='multiple' id="csv2post_selectcsvfiles_<?php echo $id;?>" name="csv2post_csvfilearray_<?php echo $id;?>[]" >
         <option value="notselected">Select A CSV File</option>
         <?php csv2post_option_items_csvfiles('all');?>
     </select>
@@ -1372,7 +1322,10 @@ function csv2post_display_defaultposttype_radiobuttons(){
                     $defaultapplied = true;    
                 }
                 echo '<input type="radio" id="csv2post_radio'.$i.'_posttype_objectid" name="csv2post_radio_defaultpostype" value="'.$post_type.'" '.$checked.' />
-                <label for="csv2post_radio'.$i.'_posttype_objectid">'.$post_type.'</label>';    
+                <label for="csv2post_radio'.$i.'_posttype_objectid"> '.$post_type.'</label>';
+                
+                csv2post_GUI_br();
+                    
                 ++$i;
             }
         }
@@ -1398,24 +1351,41 @@ function csv2post_table_customfield_rules_basic(){
     $project_array = csv2post_get_project_array($csv2post_currentproject_code);
     if(!isset($project_array['custom_fields']['basic'])){
         csv2post_notice('You do not have any basic custom field rules for adding meta data to your posts.','info','Large');
-    }else{    
-        echo '<table class="widefat post fixed"><tr class="first">
-            <td width="50"><strong>Delete</strong></td>
-            <td width="200"><strong>Meta-Key</strong></td>
-            <td width="200"><strong>Table</strong></td>
-            <td><strong>Column</strong></td>                                                                       
-        </tr>'; 
+    }else{ 
+    
+        csv2post_GUI_tablestart();
         
-        foreach( $project_array['custom_fields']['basic'] as $key => $rule ){
-            echo '<tr class="first">
-                <td><input type="checkbox" name="csv2post_customfield_rule_arraykey" value="'.$key.'" /></td>
-                <td>'.$rule['meta_key'].'</td>               
-                <td>'.$rule['table_name'].'</td>
-                <td>'.$rule['column_name'].'</td>                                                       
-            </tr>';
-        }
+        echo '
+            <thead>
+                <tr>
+                    <th width="50">Delete</th>
+                    <th width="200">Meta-Key</th>
+                    <th width="200">Table</th>
+                    <th>Column</th>                                                                       
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th width="50">Delete</th>
+                    <th width="200">Meta-Key</th>
+                    <th width="200">Table</th>
+                    <th>Column</th>                                                                       
+                </tr>
+            </tfoot>
+            </tbody>'; 
         
-        echo '</table>';
+            foreach( $project_array['custom_fields']['basic'] as $key => $rule ){
+                echo '<tr>
+                    <td><input type="checkbox" name="csv2post_customfield_rule_arraykey" value="'.$key.'" /></td>
+                    <td>'.$rule['meta_key'].'</td>               
+                    <td>'.$rule['table_name'].'</td>
+                    <td>'.$rule['column_name'].'</td>                                                       
+                </tr>';
+            }
+        
+        echo '
+            </tbody>
+        </table>';
     }   
 }
 
@@ -1439,7 +1409,9 @@ function csv2post_FORMOBJECT_poststatus_radios($i){
         }                              
               
         echo '<input type="radio" id="csv2post_radio'.$status_name.'_poststatus_objectid_'.$i.'" name="csv2post_radio_poststatus" value="'.$status_name.'" '.$statuschecked.' />
-        <label for="csv2post_radio'.$status_name.'_poststatus_objectid_'.$i.'">'.$status_title.'</label>';                                 
+        <label for="csv2post_radio'.$status_name.'_poststatus_objectid_'.$i.'"> '.$status_title.'</label>';  
+        
+        csv2post_GUI_br();                               
     }  
 } 
 
@@ -1463,19 +1435,19 @@ function csv2post_FORMOBJECT_postformat_radios($i){
                 }
                                                     
                 echo '<input type="radio" id="csv2post_radio'.$format.'_postformat_objectid_'.$i.'" name="csv2post_radio_postformat" value="'.$format.'" '.$statuschecked.' />
-                <label for="csv2post_radio'.$format.'_postformat_objectid_'.$i.'">'.$format.'</label>';                                 
+                <label for="csv2post_radio'.$format.'_postformat_objectid_'.$i.'"> '.$format.'</label><br>';                                 
             }
             
             if($statuschecked == ''){$statuschecked = 'checked="checked"';}
             
             echo '<input type="radio" id="csv2post_radiostandard_postformat_objectid_'.$i.'" name="csv2post_radio_postformat" value="standard" '.$statuschecked.' />
-            <label for="csv2post_radiostandard_postformat_objectid_'.$i.'">standard (default)</label>';               
+            <label for="csv2post_radiostandard_postformat_objectid_'.$i.'"> standard (default)</label><br>';               
                 
         }    
       
     }else{
         echo '<input type="radio" id="csv2post_radiostandard_postformat_objectid_'.$i.'" name="csv2post_radio_postformat" value="standard" checked="checked" />
-        <label for="csv2post_radiostandard_postformat_objectid_'.$i.'">Your Theme Does Not Support Post Formats</label>';        
+        <label for="csv2post_radiostandard_postformat_objectid_'.$i.'"> Your Theme Does Not Support Post Formats</label>';        
     }
 }  
 
@@ -1487,16 +1459,31 @@ function csv2post_table_customfield_rules_advanced(){
     
     $project_array = csv2post_get_project_array($csv2post_currentproject_code);
     if(!isset($project_array['custom_fields']['advanced'])){
-        csv2post_notice('You do not have any advanced custom field rules for adding meta data to your posts.','info','Large');
-    }else{    
-        echo '<table class="widefat post fixed"><tr class="first">
-            <td width="50"><strong>Delete</strong></td>
-            <td width="200"><strong>Meta-Key</strong></td>
-            <td width="200"><strong>Table</strong></td>
-            <td><strong>Column</strong></td>
-            <td><strong>Template ID</strong></td>
-            <td><strong>Updating</strong></td>                                                                                               
-        </tr>'; 
+        csv2post_notice('You do not have any advanced custom field rules for adding meta data to your posts.','info','Small');
+    }else{  
+        csv2post_GUI_tablestart();  
+        echo '
+            <thead>
+                <tr>
+                    <th width="50">Delete</th>
+                    <th width="200">Meta-Key</th>
+                    <th width="200">Table</th>
+                    <th>Column</th>
+                    <th>Template ID</th>
+                    <th>Updating</th>                                                                                               
+                </tr>
+            </head>
+            <tfoot>
+                <tr>
+                    <th>Delete</th>
+                    <th>Meta-Key</td>
+                    <th>Table</td>
+                    <th>Column</td>
+                    <th>Template ID</td>
+                    <th>Updating</td>                                                                                               
+                </tr>
+            </tfoot>
+            <tbody>'; 
         
         foreach( $project_array['custom_fields']['advanced'] as $key => $rule ){
 
@@ -1521,7 +1508,8 @@ function csv2post_table_customfield_rules_advanced(){
             $t = 'None';
             if(isset($rule['template_id'])){$t = $rule['template_id'];} 
                        
-            echo '<tr class="first">
+            echo '
+            <tr>
                 <td><input type="checkbox" name="csv2post_customfield_rule_arraykey" value="'.$key.'" /></td>
                 <td>'.$rule['meta_key'].'</td>               
                 <td>'.$table.'</td>
@@ -1531,7 +1519,7 @@ function csv2post_table_customfield_rules_advanced(){
             </tr>';
         }
         
-        echo '</table>';
+        echo '</tbody></table>';
     }   
 }
 
@@ -1547,16 +1535,29 @@ function csv2post_display_posttyperules_byvalue_table(){
         csv2post_notice('You do not have any post type rules by specific values for your current project.','info','Small');
         return 0;
     }else{
-
-        echo '<table class="widefat post fixed"><tr class="first">
-                <td width="150"><strong>Table</strong></td>
-                <td width="150"><strong>Column</strong></td>                
-                <td width="50"><strong>Trigger Value</strong></td>
-                <td width="100"><strong>Post Type</strong></td>                                                       
-            </tr>';
+        csv2post_GUI_tablestart();
+        echo '
+            <thead>
+                <tr>
+                    <th width="150">Table</th>
+                    <th width="150">Column</th>                
+                    <th width="50">Trigger Value</th>
+                    <th width="100">Post Type</th>                                                       
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th width="150">Table</th>
+                    <th width="150">Column</th>                
+                    <th width="50">Trigger Value</th>
+                    <th width="100">Post Type</th>                                                       
+                </tr>
+            </tfoot>
+            <tbody>';
         
         foreach( $project_array['posttyperules']['byvalue'] as $key => $rule ){
-            echo '<tr class="first">
+            echo '
+            <tr>
                 <td width="150">'.$rule['table_name'].'</td>
                 <td width="150">'.$rule['column_name'].'</td>                
                 <td width="50">'.$rule['trigger_value'].'</td>
@@ -1564,7 +1565,7 @@ function csv2post_display_posttyperules_byvalue_table(){
             </tr>';
         }
             
-        echo '</table>';               
+        echo '</tbody></table>';               
     }
 } 
 
@@ -1579,16 +1580,29 @@ function csv2post_display_templatedesignrules_byvalue_table(){
         csv2post_notice('You do not have any dynamic content design rules triggered by specific values.','info','Small');
         return 0;
     }else{
-
-        echo '<table class="widefat post fixed"><tr class="first">
-                <td width="150"><strong>Table</strong></td>
-                <td width="150"><strong>Column</strong></td>                
-                <td width="50"><strong>Trigger Value</strong></td>
-                <td width="100"><strong>Template ID</strong></td>                                                       
-            </tr>';
+        csv2post_GUI_tablestart();
+        echo '
+            <thead>
+                <tr>
+                    <th width="150">Table</th>
+                    <th width="150">Column</th>                
+                    <th width="50">Trigger Value</th>
+                    <th width="100">Template ID</th>                                                       
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th width="150">Table</th>
+                    <th width="150">Column</th>                
+                    <th width="50">Trigger Value</th>
+                    <th width="100">Template ID</th>                                                       
+                </tr>
+            </tfoot>
+            <tbody>';
         
         foreach( $project_array['contenttemplaterules']['byvalue'] as $key => $rule ){
-            echo '<tr class="first">
+            echo '
+            <tr>
                 <td width="150">'.$rule['table_name'].'</td>
                 <td width="150">'.$rule['column_name'].'</td>                
                 <td width="50">'.$rule['trigger_value'].'</td>
@@ -1596,7 +1610,7 @@ function csv2post_display_templatedesignrules_byvalue_table(){
             </tr>';
         }
             
-        echo '</table>';               
+        echo '</tbody></table>';               
     }
 }
 
@@ -1677,19 +1691,38 @@ function csv2post_list_folders(){
 function csv2post_display_jobtables($checkbox_column = false){
     global $csv2post_dataimportjobs_array,$csv2post_jobtable_array;
     
-    echo '<table class="widefat post fixed">
-    <tr class="first">';
+    csv2post_GUI_tablestart();
+    echo '
+    <thead>
+        <tr>';
     
     if($checkbox_column){
-        echo '<td width="50"><strong>Delete Tables</strong></td>';        
+        echo '<th width="50">Delete Tables</th>';        
     }
     
     echo '
-        <td width="170"><strong>Database Table Names</strong></td>
-        <td width="170"><strong>Project Name</strong></td>
-        <td><strong>Tables Records</strong></td>                                                               
-    </tr>'; 
+        <th width="170">Database Table Names</th>
+        <th width="170">Project Name</th>
+        <th>Tables Records</th>                                                               
+    </tr>
+    </thead>'; 
+
+    echo '
+    <tfoot>
+        <tr>';
     
+    if($checkbox_column){
+        echo '<th width="50">Delete Tables</th>';        
+    }
+    
+    echo '
+        <th width="170">Database Table Names</th>
+        <th width="170">Project Name</th>
+        <th>Tables Records</th>                                                               
+    </tr>
+    </tfoot>
+    <tbody>'; 
+        
     $table_count = 0;
     
     if(isset($csv2post_jobtable_array) && $csv2post_jobtable_array != false){
@@ -1729,7 +1762,7 @@ function csv2post_display_jobtables($checkbox_column = false){
         }   
     }
                  
-    echo '</table>';
+    echo '</tbody></table>';
     
     return $table_count;               
 }
@@ -1744,24 +1777,33 @@ function csv2post_postcreationproject_table(){
         echo '<h4>You do not have any projects</h4>';    
     }else{?>
         <br />
-        <table class="widefat post fixed">
-            <tr class="first">
-                <td width="120"><strong>Project Code/ID</strong></td>
-                <td width="200"><strong>Project Name</strong></td>
-                <td><strong>Projects Data Tables</strong></td>                                                                               
-            </tr>
-            
+        <?php csv2post_GUI_tablestart();?>
+            <thead>
+                <tr>
+                    <th width="120">Project Code/ID</th>
+                    <th width="200">Project Name</th>
+                    <th>Projects Data Tables</th>                                                                               
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th>Project Code/ID</th>
+                    <th>Project Name</th>
+                    <th>Projects Data Tables</th>                                                                               
+                </tr>
+            </tfoot>
+            <tbody>            
             <?php
             foreach( $csv2post_projectslist_array as $project_code => $project ){
                 if($project_code != 'arrayinfo'){?>
-                    <tr class="first">
+                    <tr>
                         <td><?php echo $project_code;?></td>
                         <td><?php echo $project['name'];?></td>
                         <td><?php echo csv2post_display_projectstables_commaseparated($project_code);?></td>                                                                               
                     </tr><?php 
                 }    
             }?>
-              
+            </tbody>
         </table><?php
     }     
 }
@@ -1779,14 +1821,23 @@ function csv2post_display_project_database_tables_and_columns(){
     }else{
         
         echo '<br />';
-         
+        csv2post_GUI_tablestart();
         echo '
-        <table class="widefat post fixed">
-            <tr class="first">
-                <td width="120"><strong>Table Names</strong></td>
-                <td width="120"><strong>Records</strong></td>                
-                <td><strong>Column Names</strong></td>                                                                               
-            </tr>';
+            <thead>
+                <tr>
+                    <th width="120">Table Names</th>
+                    <th width="120">Records</th>                
+                    <th>Column Names</th>                                                                               
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th>Table Names</th>
+                    <th>Records</th>                
+                    <th>Column Names</th>                                                                               
+                </tr>
+            </tfoot>
+            <tbody>';
                   
         $project_array = csv2post_get_project_array($csv2post_currentproject_code);
         $table_name_string = '';
@@ -1822,7 +1873,7 @@ function csv2post_display_project_database_tables_and_columns(){
             ++$count;         
         }           
 
-        echo '</table>';
+        echo '</tbody></table>';
     }     
 }
 
@@ -1848,21 +1899,46 @@ function csv2post_display_databasetables_withjobnames($checkbox_column = false,$
         your data. Then return here to create a Post Creation Project.',
         'warning','Small','','','return');    
     }else{
-        
-        echo '<table class="widefat post fixed"><tr class="first">';
-        
-        if($checkbox_column){
-            echo '<td width="25"></td>';        
-        }
-        
-        echo '<td width="200"><strong>Table Names</strong></td>
-            <td width="150"><strong>Data Import Job</strong></td>
-            <td width="100"><strong>Records</strong></td>
-            <td width="100"><strong>Used</strong></td>
-            <td width="100"><strong>Reset Table</strong></td>
-            <td><strong>Reset Posts</strong></td>                                                                              
-        </tr>'; 
-        
+        csv2post_GUI_tablestart();
+        echo '
+            <thead>
+                <tr>';
+                
+                if($checkbox_column){
+                    echo '<th width="25"></th>';        
+                }
+                
+                echo '
+                    <th width="200">Table Names</th>
+                    <th width="150">Data Import Job</th>
+                    <th width="100">Records</th>
+                    <th width="100">Used</th>
+                    <th width="100">Reset Table</th>
+                    <th>Reset Posts</th>                                                                              
+                </tr>';
+                
+        echo '</thead>'; 
+
+        echo '
+            <tfoot>
+                <tr>';
+                
+                if($checkbox_column){
+                    echo '<th width="25"></th>';        
+                }
+                
+                echo '
+                    <th width="200">Table Names</th>
+                    <th width="150">Data Import Job</th>
+                    <th width="100">Records</th>
+                    <th width="100">Used</th>
+                    <th width="100">Reset Table</th>
+                    <th>Reset Posts</th>                                                                              
+                </tr>';
+                
+        echo '</tfoot>
+        <tbody>'; 
+                
         $table_exclusions = array('csv2post_log','csv2post_ryanair_aircraft','csv2post_ryanair_dfformstaff','csv2post_ryanair_eposerrors','csv2post_ryanair_flight','csv2post_ryanair_onlinedf1_products','csv2post_ryanair_producthistory','csv2post_ryanair_session');
         
         $table_count = 0;
@@ -1953,7 +2029,7 @@ function csv2post_display_databasetables_withjobnames($checkbox_column = false,$
             }
         }   
                      
-        echo '</table>';
+        echo '</tbody></table>';
     }
     
     return $table_count;               
@@ -2039,16 +2115,28 @@ function csv2post_display_csvfiles_fornewdataimportjob(){
         return false;
     }
     
-    echo '<table class="widefat post fixed">';
-            
+    csv2post_GUI_tablestart(); 
+           
     echo '
-    <tr>
-        <td width="25"></td>
-        <td width="150">CSV File Name</td>
-        <td width="70">Columns</td>        
-        <td width="90">Separator</td>
-        <td>Quote</td> 
-    </tr>';
+    <thead>
+        <tr>
+            <th width="25"></th>
+            <th width="150">CSV File Name</th>
+            <th width="70">Number of Columns</th>        
+            <th width="90">Separator</th>
+            <th>Quote</th> 
+        </tr>
+    </thead>
+    <tfoot>
+        <tr>
+            <th></th>
+            <th>CSV File Name</th>
+            <th>Number of Columns</th>        
+            <th>Separator</th>
+            <th>Quote</th> 
+        </tr>
+    </tfoot>
+    <tbody>';
     
     @$opendir_result = opendir( WTG_C2P_CONTENTFOLDER_DIR ); 
     while( false != ( $filename = readdir( $opendir_result ) ) ){
@@ -2102,7 +2190,7 @@ function csv2post_display_csvfiles_fornewdataimportjob(){
         }// end if $filename = .  
     }// end while
     
-    echo '</table>';    
+    echo '</tbody></table>';    
 } 
 
 /**
@@ -2113,7 +2201,7 @@ function csv2post_display_csvfiles_fornewdataimportjob(){
 */
 function csv2post_menu_tablecolumns_multipletableproject($table_name,$current_value = false){
     global $csv2post_project_array;?>         
-    <select name="csv2post_multitable_columns_<?php echo $table_name;?>" id="csv2post_multitable_columns_<?php echo $table_name;?>_id" class="csv2post_multiselect_menu">
+    <select name="csv2post_multitable_columns_<?php echo $table_name;?>" id="csv2post_multitable_columns_<?php echo $table_name;?>_id" >
         <?php csv2post_options_columns($table_name,$current_value);?>                                                                                                                     
     </select><?php    
 }
@@ -2187,9 +2275,9 @@ function csv2post_options_columns($table_name,$current_value = false){
 */
 function csv2post_display_menu_keycolumnselection($table_name,$current_table = false,$current_column = false){
     global $csv2post_currentproject_code;?>
-    <select name="csv2post_multitable_pairing_<?php echo $table_name;?>" id="csv2post_multitable_pairing_<?php echo $table_name;?>_id" class="csv2post_multiselect_menu">
+    <select name="csv2post_multitable_pairing_<?php echo $table_name;?>" id="csv2post_multitable_pairing_<?php echo $table_name;?>_id" >
         <option value="notrequired">Not Required</option>
-        <?php csv2post_display_project_columnsandtables_menuoptions($csv2post_currentproject_code,$current_table,$current_column);?>                                                                                                                     
+        <?php csv2post_GUI_project_columnsandtables($csv2post_currentproject_code,$current_table,$current_column);?>                                                                                                                     
     </select><?php    
 }
 
@@ -2214,7 +2302,7 @@ function csv2post_display_designtype_menu($post_id){
         Design Type: 
         <?php $optionmenu = '';?>
         
-        <?php $optionmenu .= '<select name="csv2post_designtype[]" id="csv2post_select_designtype" multiple="multiple" class="csv2post_multiselect_menu">';?>
+        <?php $optionmenu .= '<select name="csv2post_designtype[]" id="csv2post_select_designtype" multiple="multiple" >';?>
  
             <?php
             // loop through all template types 
@@ -2244,8 +2332,6 @@ function csv2post_display_designtype_menu($post_id){
     </p>
 <?php 
 }
-
-
 
 /**
 * Displays a table of the CSV files within the plugins storage paths that have been used
@@ -2283,16 +2369,30 @@ function csv2post_used_csv_file_list(){
 
         }else{
 
+            csv2post_GUI_tablestart();
+            
             echo '
-            <table class="widefat post fixed">
-                <tr class="first">
-                    <td width="200"><strong>Job Name</strong></td>                    
-                    <td width="200"><strong>Filename</strong></td>                    
-                    <td width="75"><strong>Rows</strong></td>
-                    <td width="75"><strong>Size</strong></td>
-                    <td width="100"><strong>Imported Records</strong></td>                   
-                    <td><strong>Files Age</strong></td>                                    
-                </tr>';  
+                <thead>
+                    <tr>
+                        <th width="200"><strong>Job Name</strong></th>                    
+                        <th width="200"><strong>Filename</strong></th>                    
+                        <th width="75"><strong>Rows</strong></th>
+                        <th width="75"><strong>Size</strong></th>
+                        <th width="100"><strong>Imported Records</strong></th>                   
+                        <th><strong>Files Age</strong></th>                                    
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th><strong>Job Name</strong></th>                    
+                        <th><strong>Filename</strong></th>                    
+                        <th><strong>Rows</strong></th>
+                        <th><strong>Size</strong></th>
+                        <th><strong>Imported Records</strong></th>                   
+                        <th><strong>Files Age</strong></th>                                    
+                    </tr>
+                </tfoot>
+                <tbody>';  
             
             $filesize_total = 0;
             
@@ -2363,7 +2463,7 @@ function csv2post_used_csv_file_list(){
                 }
             }
    
-            echo '</table>';
+            echo '</tbody></table>';
             
             csv2post_notice_filesizetotal($filesize_total);
 
@@ -2417,18 +2517,27 @@ function csv2post_csv_files_list(){
             echo csv2post_notice($csv2post_plugintitle . ' does not have permission to open the plugins content folder','error','Small','','','return');
 
         }else{
-
+            csv2post_GUI_tablestart();
             echo '
-            <table class="widefat post fixed">
-                <tr class="first">
-                    <td width="25"></td>
-                    <td width="175"><strong>Name</strong></td>
-                    <td width="80"><strong>Separator (plugin)</strong></td>                    
-                    <td width="80"><strong>Separator (pear)</strong></td>
-                    <td width="75"><strong>Columns (pear)</strong></td>                    
-                    <td width="75"><strong>Rows</strong></td>
-                    <td><strong>Size</strong></td>                                                       
-                </tr>';  
+            <thead>
+                <tr>
+                    <th width="25"></td>
+                    <th width="175">Name</th>
+                    <th width="80">Separator</th>                                        
+                    <th width="75">Rows</th>
+                    <th>Size</th>                                                       
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th></td>
+                    <th>Name</th>
+                    <th>Separator</th>                                        
+                    <th>Rows</th>
+                    <th>Size</th>                                                       
+                </tr>
+            </tfoot>            
+            <tbody>';  
             
             $filesize_total = 0;
                 
@@ -2445,7 +2554,6 @@ function csv2post_csv_files_list(){
                         $filesize_total = $thefilesize;
 
                         $sep_fget = csv2post_establish_csvfile_separator_fgetmethod($filename,false );                           
-                        $sep_PEARCSV = csv2post_establish_csvfile_separator_PEARCSVmethod($filename,false); 
                         
                         echo '
                         <tr>
@@ -2464,9 +2572,7 @@ function csv2post_csv_files_list(){
                         <?php     
                         echo '</td>
                             <td>'.$filename.'</td>
-                            <td>'.$sep_fget.'</td>                            
-                            <td>'.$sep_PEARCSV.'</td>
-                            <td>'.csv2post_establish_csvfile_fieldcount_PEAR($filename).'</td>                            
+                            <td>'.$sep_fget.'</td>                                                        
                             <td>'.count(file(WTG_C2P_CONTENTFOLDER_DIR . '/' .$filename)).'</td>
                             <td>'.csv2post_format_file_size($thefilesize).'</td>                                                                                    
                         </tr>';                    
@@ -2476,7 +2582,7 @@ function csv2post_csv_files_list(){
                 }// end if $filename = .  
             }// end while    
                  
-            echo '</table>';
+            echo '</tbody></table>';
             
             csv2post_notice_filesizetotal($filesize_total);
 
@@ -2494,7 +2600,7 @@ function csv2post_menu_csvfile_headers($id,$jobcode,$f){
     $fc = explode(".", $f);
     
     $menu = '
-    <select id="csv2post_csvfileheader_'.$id.'_'.$fc[0].'" name="csv2post_csvfileheader_'.$id.'_'.$fc[0].'" class="csv2post_multiselect_menu">
+    <select id="csv2post_csvfileheader_'.$id.'_'.$fc[0].'" name="csv2post_csvfileheader_'.$id.'_'.$fc[0].'" >
         <option value="notselected">No Column Header Selected</option>';
 
         foreach($job_array[$f]['headers'] as $key => $c){
@@ -2513,7 +2619,7 @@ function csv2post_menu_csvfile_headers($id,$jobcode,$f){
 * @param mixed $increment
 */
 function csv2post_display_categories_menu($increment){?>
-    <select name="csv2post_createcategorymapping<?php echo $increment;?>_select" id="csv2post_createcategorymapping<?php echo $increment;?>_select_id" class="csv2post_multiselect_menu">                               
+    <select name="csv2post_createcategorymapping<?php echo $increment;?>_select" id="csv2post_createcategorymapping<?php echo $increment;?>_select_id" >                               
         <option value="notselected">Not Selected</option>       
         <?php csv2post_display_categories_options($current_value);?>                                                                                                                   
     </select><?php    
@@ -2543,39 +2649,61 @@ function csv2post_display_sample_data($table_name,$limit = 10,$columns = '*'){
     $records = csv2post_WP_SQL_select($table_name,$limit,$columns);
 
     // build first row of headers
-    echo '<table class="widefat post fixed">
-        <tr class="first">';
+    csv2post_GUI_tablestart();
+    echo '
+        <thead>
+            <tr>';
 
         foreach($records as $key => $r){
 
             foreach($r as $t => $a){
-                echo '<td width="150"><strong>'. $t .'</strong></td>';
+                echo '<th width="150">'. $t .'</th>';
             }
             
             break;
         }
             
-    echo '</tr>';
-        
+        echo '</tr>
+        </thead>';
+
+    echo '
+        <tfoot>
+            <tr>';
+
         foreach($records as $key => $r){
-            
-            echo '<tr>';
-                
+
             foreach($r as $t => $a){
-                echo '<td>'. $a .'</td>';
+                echo '<th width="150">'. $t .'</th>';
             }
             
-            echo '</tr>';
+            break;
         }
-    
-    echo '</table>';           
+            
+        echo '</tr>
+        </tfoot>
+        <tbody>';
+                    
+            foreach($records as $key => $r){
+                
+                echo '<tr>';
+                    
+                foreach($r as $t => $a){
+                    echo '<td>'. $a .'</td>';
+                }
+                
+                echo '</tr>';
+            }
+        
+        echo '
+        </tbody>
+    </table>';           
 } 
 
 /**
 * Loops through giving projects tables and prints <option> item for menu for each column header.
 * Table and column are added to value with comma delimeter. Use csv2post_explode_tablecolumn_returnnode to split the submitted value
 */
-function csv2post_display_project_columnsandtables_menuoptions($project_code,$current_table = 'NOTPROVIDED98723462',$current_column = 'NOTPROVIDED09871237'){
+function csv2post_GUI_project_columnsandtables($project_code,$current_table = 'NOTPROVIDED98723462',$current_column = 'NOTPROVIDED09871237'){
     
     if(!$project_code){
         echo '<option value="nocurrentproject">No Current Project</option>';        

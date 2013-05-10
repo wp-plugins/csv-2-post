@@ -6,13 +6,13 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: CSV 2 POST, CSV2POST, Data Engine, CSV 2 POST Data Engine, wordpress data import,wordpress data importer,auto blogging,auto blogger,autoblog,mass create posts,mass post creation,csv file importer,csv file data import,post injection,import spreadsheet,excel file import,excel import,www.csv2post.com,CSV2POST,wordpresscsv import,wordpress import plugin,wordpress data import tool,wordpress data import plugin,wordpress post creation plugin
 Requires at least: 3.3.1
 Tested up to: 3.5.1
-Stable tag: trunk
+Stable tag: 6.9.6
 
 CSV 2 POST Data Engine
 
 == Description ==
 
-Do you need to create hundreds, maybe thousands of pages within minutes?
+Do you need to create hundreds, maybe thousands of pages within an hour?
 
 CSV 2 POST exists to auto-blog...
 
@@ -33,34 +33,30 @@ Have you considered some text spinning, URL cloaking and scheduling to create a 
 CSV 2 POST premium is on stand by if your needs are far above average...
     
     
-= About Our Plugin =
-CSV 2 POST is a growing box of tools for auto-blogging and managing imported data. 
-Everything added to this plugin is at the request of users who know best including professionals developing true money 
-making websites and even well known companies have made use of CSV 2 POST to help with administration. Those
-include CBS News and Ryanair Ltd. They come to us because
-other plugins which offer a step by step system and assume a lot about what the user wants done with their data
-are simply not good enough. 
+= About Our 'Less BS' Plugin =
+CSV 2 POST is the ultimate CSV importer, a true web tool for auto-blogging and managing imported data.
+We have created an electronic quill, not a pen, not a pencil...a quill. Everything added to this plugin is at the request of users 
+who know best including professionals developing true money 
+making websites or simply hosting large amounts of information as part of their service. Well known companies have even made use of CSV 2 POST 
+to help with administration. It is a fact that CSV 2 POST is in use by Ryanair Ltd staff every day for a very specific admin task. So
+you need to ask yourself why, right?!
 
-This data engine has been designed to out-perform other importers and we have done that with the help of the Wordpress
-community, who have been outstanding. We include a step-by-step system like most (possibly all) other plugins available,
-which takes users through the same process on every single use, every single website no matter what theme or plugins
-we use. However our main interface is more of a workshop or a sandbox and in this sandbox are endless tools, some
-are not obvious because it's hard putting them all on one interface without making it feel over complicated.
+The reason why is that they come to us because we cut out the BS. You won't see any of these 'Build sites in 15 minutes' sales pitches on our website and
+our free edition does not fail to provide basic functionality such as Featured Images. Two or three years down the road we want users
+of the free edition to tell us how their site is a booming success and it started with our plugin. The premium plugin
+and services will do that without a doubt but our goal is to ensure our free edition is an impressive addition to the Wordpress.org
+plugin site.
 
 = Support =
-The plugin is supported by a dedicated
-website at [www.csv2post.com](http://www.csv2post.com/). The interface offers a "Help" button beside every feature. A small hint 
-is giving and users can click another button to open a page on www.csv2post.com specific to the feature
-the user needs help for. Some pages will have video tutorials and screenshots. The online support content is free. We
-also plan to create help content specifically for the free edition so that it is truly supported.
+The plugin is supported by a dedicated website at [www.csv2post.com](http://www.csv2post.com/). Most online support content is free. We
+provide a higher level of priority to premium users. We recommend free users use the plugins forum on Wordpress.org and paid users email us.
 
 = Our Mission =
 It is very important to us that we deliver a useful free plugin for the Wordpress community to use and not
 deliver software that behaves like a trial in order to advertise our paid edition. To ensure we do not make that
 mistake as we have done before, we encourage all potential customers who email us to try the free edition, unless
-thier project is unique and requires changes to the plugin. We have a very long term plan for CSV 2 POST, both free 
-and paid. Most of the time a new feature begins on the free edition and grows in the paid edition. This is how
-we ensure full respect to Wordpress is giving. If you budget is tight just say
+thier project is unique and requires changes to the plugin. Development for CSV 2 POST will continue past 2014 and 
+the plugin core will be shared with other plugins which will push CSV 2 POST further than other importers.
 
 == Installation ==
 
@@ -69,9 +65,8 @@ Initial upload and activation as guided by Wordpress.org standard plugin install
 1. Upload the `csv-2-post` folder to the `/wp-content/plugins/` directory
 1. Activate the CSV 2 POST plugin through the 'Plugins' menu in WordPress
 1. Configure the plugin by going to the Settings screen
-1. Always backup your database before mass creating posts unless working on a test blog
-1. It is recommended you learn the plugin on a test blog first
-1. Always seek support if a CSV file does not appear to work, it is usually something minor
+1. Always backup your database before mass creating posts
+1. Always backup your database before updating the plugin
 
 == Frequently Asked Questions ==
 
@@ -118,6 +113,26 @@ first plugin was created in 2009 and was halted pending re-development.
 6. You can use up to 3 columns of data to create 3 levels of categories.
 
 == Changelog ==
+= 6.9.6 =
+* From The Developers
+    * Released 10th May 2013
+    * Wordpress 3.6 and jQuery updates have forced some key changes regarding the plugins theme and menu but the good thing is that we are prepared. Please back up your Wordpress files and database before updating.
+    * Free edition reduced to the Quick Start screen. Feedback suggests that a free plugin is expected to be a bit more basic so that it is easier to use. Improvements will continue to be made to free features.
+* Fixes     
+    * Quick Start: the late addition of a WYSWYG editor to Quick Start was bugged on submission (submission of Step 4)
+    * Overlay: we had an issue with overlay not showing properly and jQuery 1.9.1 made it worse, the overlay was appearing over the top of dialog. As a work around we have disabled all overlay but we would reward 50% discount on premium edition for anyone who finds a real solution.
+    * Installation Refresh: wp_redirect() is used to refresh the screen after initial installation so that all settings kick-in. On initial installation we will no longer see multiple screens merged into one screen. This did not effect the operation of the plugin providing the user refreshed after install.
+* Feature Changes
+    * Templates: clicking on an existing template to assign as a projects main default content or title template now makes the selected template associated with the project. Previously only templates created when a project is active are associated with it.
+    * Tables: Wordpress styling applied to tables. Some tables could probably do with the footer removed and accordion panels that only contain a table with a submit button will be removed so that only the table with button is displayed on screen.
+    * Wordpress CSS Mode: the plugin allows jQuery or Wordpress theming. Improvements made to Wordpress mode which may become the default theming also. 
+    * Nonce Security: is now in use for all themes. A generic approach to suit all submissions is in play (apart from a few forms that are fully coded in html so we need feedback on any issues)
+    * jQuery UI Mode: Support buttons in accordions (Info and Video) have been moved to the right and forms moved upwards. This is to make things a little more compact but mostly to make vertical scrolling more fluent as we move from form to form.
+    * Updates Screen Renamed: to News to avoid confusion with post and data updating (screen file renamed, requires menu array to be updated)
+    * Quick Start: instructional text added to many Quick Start steps
+    * About Screen: video removed, text changed to suit free edition more as it was more suited to the premium version only previously, list of links added
+    * Installation Screen Changes: installation screens have been merged into one screen which can be found on the main plugin page
+    * Removed form for testing CSV files (improved testing will be added later)
 
 = 6.9.5 =
 * From The Developers
@@ -161,7 +176,9 @@ first plugin was created in 2009 and was halted pending re-development.
     * Screen file csv2post_tab4_install.php and csv2post_tab5_install.php deleted. Entries in menu array also removed. These screens were not yet in use and will not be in use for many weeks.
     * New columns added to Data Import Job tables. csv2post_cat1 through to csv2post_cat5. These are for category splitting i.e. we will split a single column of categories into multiple columns. This way the user can use all category tools that expect multiple columns.
     * Excerpt function now requires $my_post object and returns it
-    
+    * CSS menu class renamed to csv2post_cssmenu and the CSS itself moved to admin.css rather than the menu function itself
+    * pear folder and contents deleted, fgetcsv() is now in use
+
 = 6.9.4 =
 * From The Developers
     * Released 26th March 2013

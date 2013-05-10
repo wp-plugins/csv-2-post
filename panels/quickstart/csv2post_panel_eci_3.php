@@ -15,7 +15,7 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
     if($csv2post_ecisession_array['nextstep'] > 3){
 
         csv2post_n_incontent('All rows in your file CSV file named '.$csv2post_ecisession_array['filename'].' 
-        were processed, you should have data for working with.','success','Small','Step Complete');
+        were imported, you should have data for creating posts with.','success','Small','Step Complete');
 
     }else{?>
 
@@ -23,16 +23,18 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
         // begin form and add hidden values
         csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
         csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
-        ?> 
+        
+        global $csv2post_currentjob_code;?> 
 
-        <p>Submission will import your data to a temporary database table where
-        you can work with it if you need to before continuing.</p>
+        <p>Submission will import your data from CSV file named <strong><?php echo $csv2post_ecisession_array['filename'];?></strong> 
+        to your new database table named <strong><?php echo 'csv2post_'.$csv2post_currentjob_code; ?></strong>. CSV 2 POST works with the data
+        from there and you can create posts more effeciently.</p>
                 
         <?php 
         // add js for dialog on form submission and the dialog <div> itself
         if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
             csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-            csv2post_jquery_form_prompt($jsform_set);
+            csv2post_jquery_form_promptdiv($jsform_set);
         } 
         ?>
             

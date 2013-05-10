@@ -25,7 +25,8 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
         csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
         ?>
 
-            <p>Your theme <?php echo get_current_theme();?> is supported.</p>
+            <p>CSV 2 POST fully supports <?php echo get_current_theme();?> by allowing custom fields to be created. This panel trys to offer
+            even more support where possible.</p>
 
             <h4>Post Formats</h4>
             <?php 
@@ -44,15 +45,17 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
 
             <?php 
             }else{
-                csv2post_n_incontent('Your theme does not support Post Formats. This is something you must speak to your theme author about.',
-                'info','Tiny','No Post Format Support');        
+                csv2post_n_incontent('Post Formats were added to Wordpress 3.6 Beta in April 2013. Your theme does not yet support Post Formats.','info','Tiny','No Post Format Support');        
             }?> 
+            
+            <h4>Other Integration Abilities</h4>
+            <p>Your theme does not have anymore features that require integration.</p>
          
         <?php 
         // add js for dialog on form submission and the dialog <div> itself
         if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
             csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-            csv2post_jquery_form_prompt($jsform_set);
+            csv2post_jquery_form_promptdiv($jsform_set);
         } 
         ?>
             

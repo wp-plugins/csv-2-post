@@ -1,16 +1,25 @@
 <?php 
-global $csv2post_guitheme,$csv2post_extension_loaded,$csv2post_adm_set,$csv2post_is_installed,$csv2post_currentversion,$csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$wtgtp_pluginforum,$wtgtp_pluginblog,$csv2post_options_array,$csv2post_is_free,$csv2post_projectslist_array,$csv2post_schedule_array;
+global $csv2post_guitheme,$csv2post_adm_set,$csv2post_currentversion,$csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$wtgtp_pluginforum,$wtgtp_pluginblog,$csv2post_options_array,$csv2post_is_free,$csv2post_projectslist_array,$csv2post_schedule_array;
+// global boolean
+global $csv2post_beta_mode,$csv2post_is_installed,$csv2post_extension_loaded,$csv2post_demo_mode;
                         
 $installing_software_name = WTG_C2P_NAME;
 $installing_software_name_plus = '';
-$installing_message = '';
+$installing_message = 'Thank you for choosing CSV 2 POST, we look forward to working with you and reading your feedback.';
 
 // load extension globals
 if($csv2post_extension_loaded){
     $installing_software_name = WTG_C2P_RYANAIR_NAME;
     $installing_software_name_plus = ' and ' . WTG_C2P_RYANAIR_NAME;
-    $installing_message = 'You are using the ' . $installing_software_name . ' extension files.
+    $installing_message .= '<br><br>You are using the <strong>' . $installing_software_name . '</strong> extension files.
     This extension will also be installed. Remove the extension files to install CSV 2 POST on its own.';
+}
+
+// notify user if in beta mode
+if($csv2post_beta_mode){
+    $installing_message .= '<br><br>You are in <strong>Beta Mode</strong> which is a setting coded near the top of the file
+    named csv2post.php, please disable it if you are using a live blog. Disable before installing as beta related settings
+    and configuration will be added to your blog if you do not.';   
 }
 
 // set the installation software name, CSV 2 POST or extension name
@@ -29,25 +38,19 @@ if(!$csv2post_is_installed && !isset($_POST['csv2post_plugin_install_now'])){# w
     // hide the main screens until update complete
     $display_main_screens = false;
     
-    ### TODO:MEDIUMPRIORITY, add link to forum page and form for feedback
-    csv2post_n_incontent('<p>Thank you for using our plugin, we look forward to working with you.</p>
-    
-    <h4>Limited Time Offers (end 31st May)</h4>
-    <p>We are preparing for Wordperss 3.6 and already added features to support it. Now we really want more
-    testing done to ensure a smooth transition. If you would like to 
-    beta test our free edition version 6.9.6 Beta with Wordpress 3.6 Beta, for the chance to get some free web hosting
-    please let us know. We will email a nightly build to you and provide the link to download Wordpress 3.6.
-     We are also offering one time 50% discount on the premium edition of 6.9.6 which you can read about
-    href="http://www.csv2post.com/updates-news/wordpress-3-6-discount-offer-save-50-off-csv-2-post">on the plugins main website</a>.
-    Another offer like this will not come again until December.</p>
-    
-    <p><strong>' . $installing_message .'</strong></p>','info','Large','Welcome To CSV 2 POST');
-        
+    csv2post_n_incontent($installing_message,'info','Large','Welcome To CSV 2 POST');
+
     csv2post_jquery_button();?>
 
     <form class="csv2post_form" method="post" name="csv2post_plugin_install" action="">
-        <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">
-        <input type="hidden" id="csv2post_plugin_install_now" name="csv2post_plugin_install_now" value="z3sx4bhik970">
+        
+        <!-- nonce -->
+        <input type="hidden" name="csv2post_admin_referer" value="installform">
+        <?php wp_nonce_field('installform');?> 
+        <!-- nonce -->
+        
+        <input type="hidden" name="csv2post_post_processing_required" value="true">
+        <input type="hidden" name="csv2post_plugin_install_now" value="z3sx4bhik970">
         <input type="hidden" name="csv2post_hidden_pageid" value="main">
         <input type="hidden" name="csv2post_hidden_panel_name" value="installationscreen">
         <input type="hidden" name="csv2post_hidden_panel_title" value="Welcome To CSV 2 POST">
@@ -117,6 +120,12 @@ if(!$csv2post_is_installed && !isset($_POST['csv2post_plugin_install_now'])){# w
     csv2post_jquery_button();?>
 
     <form class="csv2post_form" method="post" name="csv2post_plugin_update" action="">
+    
+        <!-- nonce -->
+        <input type="hidden" name="csv2post_admin_referer" value="updateform">
+        <?php wp_nonce_field('updateform');?> 
+        <!-- nonce -->
+            
         <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">
         <input type="hidden" id="csv2post_plugin_update_now" name="csv2post_plugin_update_now" value="a43bt7695c34">
         <input type="hidden" name="csv2post_hidden_pageid" value="<?php echo $pageid;?>">
@@ -144,7 +153,7 @@ if($display_main_screens){
 
     // main page header
     $a = 'Premium Edition';
-    if($csv2post_is_free){$a = 'Free Edition';}
+    if($csv2post_is_free){$a = 'Free Edition';}elseif($csv2post_demo_mode){$a = 'Demo';}
     csv2post_header_page($csv2post_mpt_arr['menu'][$pageid]['title'].' '.$a,0);
                 
     // create tab menu for the giving page
@@ -156,9 +165,9 @@ if($display_main_screens){
     // set tab number variable, a common use is in form hidden values
     $csv2post_tab_number = csv2post_get_tabnumber();
 
-    if($csv2post_guitheme == 'wordpresscss' ){### TODO:CRITICAL, complete css menu 
+    if($csv2post_guitheme == 'wordpresscss' ){
 
-        csv2post_GUI_css_screen_include($pageid,$panel_number,$csv2post_tab_number);
+        csv2post_GUI_wordpresscss_screen_include($pageid,$panel_number,$csv2post_tab_number);
 
     }elseif($csv2post_guitheme == 'jquery'){
         

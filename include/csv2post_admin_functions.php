@@ -95,10 +95,7 @@ function csv2post_count_projects(){
 * Called from main file using add_action. 
 * 1. Is and must always be within an admin check for security. We do the check in the main file so we dont need to do it multiple times in many functions.
 * 
-* @todo HIGHPRIORITY, this function does not appear to be finished and overall export ability could be improved on interface
-* @todo HIGHPRIORITY, Ajax wont do anything with this but add the code for avoiding it when ajax call
-* @todo LOWPRIORITY, consider another approach using fputcsv as used in csv2post_dfone_csvexport_finishedsubmissions()
-* @todo LOWPRIORITY, Ryanair DF extension uses a different approach and I think its better
+* @todo MEDIUMPRIORITY, Ryanair DF extension uses a different approach and I think its better so we need to switch to that
 */
 function csv2post_export_singlesqltable_as_csvfile(){
     if(isset($_POST['csv2post_post_processing_required'])){
@@ -111,7 +108,6 @@ function csv2post_export_singlesqltable_as_csvfile(){
                 the database to be exported. Only the paid edition, created with developers in mind, offers this feature.','warning','Large','Export Not Permitted','','echo');
             }else{
                 
-                ### TODO:CRITICAL, check of a table has any records, else exit
                 global $wpdb;
                 
                 // get string of column names for using in SELECT query and CSV file header
@@ -181,7 +177,7 @@ function csv2post_install_contentfolder_wpcsvimportercontent($pathdir,$output = 
 function csv2post_delete_contentfolder($pathdir,$output = false){
     if(!is_dir($pathdir)){
         global $csv2post_plugintitle;
-        csv2post_notice($csv2post_plugintitle . ' could not find the main content folder, it appears it
+        csv2post_notice($csv2post_plugintitle . ' could not find the main content folder, it
         may have already been deleted or moved.', 'warning', 'Tiny','Content Folder Not Found');
         return false;
     }else{
@@ -802,4 +798,34 @@ function csv2post_WP_CATEGORIES_description( $lev,$rec_ID){
     }
 
     return $d;
-}?>
+}
+
+/**
+* warn user about having automated plugins active while post creating if one is installed and active
+* 
+* @todo LOWPRIORITY, add more plugins to this check, mainly sticking to those that are popular 
+*/
+function csv2post_automation_warning(){
+    // warn user about having automated plugins active while post creating if one is installed and active
+    $warn = false;
+    // seo by yoast
+    if(is_plugin_active('wordpress-seo/wp-seo.php')){
+        $score = get_option( 'wpseo_xml' ); 
+        if(isset($score['enablexmlsitemap']) && $score['enablexmlsitemap'] == 'on'){
+            $warn = true;
+        }       
+    }
+    
+    // WP to Twitter
+    if(is_plugin_active('wp-to-twitter/wp-to-twitter.php')){
+        $warn = true;
+    }
+       
+    if($warn){
+        csv2post_n_incontent('You have a plugin installed that performs automatic processing in reaction to posts being
+        created. This may include a Twitter plugin or a plugin that updates XML sitemaps. It is recommended that you
+        disable the functionality that performs the automation or temporarily disable the plugin until you have generated 
+        posts manually in large numbers.','warning','Small','Risk of Increased Processing');
+    }               
+}
+?>

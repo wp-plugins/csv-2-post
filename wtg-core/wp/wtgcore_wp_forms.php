@@ -17,7 +17,7 @@
 * @param mixed $current
 */
 function csv2post_FORM_menu_capabilities($csv2post_ARRAY_capabilities,$page_name,$key,$current){?>
-    <select name="csv2post_capabilitiesmenu_<?php echo $page_name;?>_<?php echo $key;?>" id="csv2post_capabilitiesmenu_<?php echo $page_name;?>_<?php echo $key;?>" class="csv2post_multiselect_menu">
+    <select name="csv2post_capabilitiesmenu_<?php echo $page_name;?>_<?php echo $key;?>" id="csv2post_capabilitiesmenu_<?php echo $page_name;?>_<?php echo $key;?>" >
         <?php 
            foreach($csv2post_ARRAY_capabilities as $cap){
                $selected = '';

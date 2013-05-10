@@ -30,8 +30,11 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
         </script>
 
         <div id="csv2post_eci_freedates_method">
-            <input type="radio" id="csv2post_eci_freedates_default" name="csv2post_eci_freedates_methods" value="default" checked /><label for="csv2post_eci_freedates_default">Use Wordpress Default Date</label>
-            <input type="radio" id="csv2post_eci_freedates_data" name="csv2post_eci_freedates_methods" value="data" /><label for="csv2post_eci_freedates_data">Use My Dates Data</label>               
+            <input type="radio" id="csv2post_eci_freedates_default" name="csv2post_eci_freedates_methods" value="default" checked />
+            <label for="csv2post_eci_freedates_default"> Use Wordpress Default Dates</label>
+            <?php csv2post_GUI_br();?>
+            <input type="radio" id="csv2post_eci_freedates_data" name="csv2post_eci_freedates_methods" value="data" />
+            <label for="csv2post_eci_freedates_data"> Use My Dates Data</label>               
         </div>
 
         <br />
@@ -42,7 +45,7 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
         // add js for dialog on form submission and the dialog <div> itself
         if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
             csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-            csv2post_jquery_form_prompt($jsform_set);
+            csv2post_jquery_form_promptdiv($jsform_set);
         } 
         ?>
             

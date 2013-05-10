@@ -25,58 +25,76 @@ function csv2post_css_core($side = 'admin',$csv2post_css_side_override = false){
     include_once(WTG_C2P_DIR . 'wtg-core/wp/css/csv2post_css_parent.php');
 }
 
-function csv2post_include_form_processing_php(){
+function csv2post_process(){
+    // establish if form processing is permitted to continue
+    $permission_granted = false;
+
+    // form submission
     if(isset($_POST['csv2post_post_processing_required']) && $_POST['csv2post_post_processing_required'] == true){
-
-        global $csv2post_debug_mode,$cont,$csv2post_is_free;
-                                      
-        // if $csv2post_debug_mode set to true or 1 on CSV2POST.php we dump $_POST
-        if($csv2post_debug_mode){
-            echo '<h1>$_POST</h1>';
-            csv2post_var_dump($_POST);           
-            echo '<h1>$_GET</h1>';
-            csv2post_var_dump($_GET);    
-        }
-
-        csv2post_log_adminform(__FUNCTION__,1,'Form Submitted','form submission about to be processed','general','low',$_GET);
-  
-        // set a variable used to skip further processing
-        // we can use this to allow more than one part of the
-        // installation to process $_POST values
-        // i.e. plugin or extension can re-process core form submissions
-        $cont = true;# change to false and it ends $_POST processing
-
-        /**
-        * I named plugin, core and extension processing files 
-        * different to help avoid confusion between each.
-        * 
-        * Core: core settings, main installation procedures
-        * Plugin: all custom settings
-        * Extension: again more custom settings for extension only 
-        */
-        
-        # TODO:MEDIUMPRIORITY, this is where we should apply
-        # more security to all submission values 
-        
-        # TODO:MEDIUMPRIORITY,  
-        
-        // include file that checkes $_POST values and takes required actions    
-        require_once(WTG_C2P_DIR.'include/csv2post_form_processing.php');
-
-        // include core post processing
-        require_once(WTG_C2P_WPCORE_PATH.'wtgcore_wp_formsubmit.php');       
-
-        // include paid form processing
-        if(!$csv2post_is_free){
-            require_once(WTG_C2P_PAID_PATH.'csv2post_paid_formsubmit.php');        
-        }         
-        
-        // include extension post processing file, allowing us to keep post processing all together    
-        if(WTG_C2P_EXTENSIONS != 'disable' && defined("WTG_C2P_EXT")){  
-            require_once(WTG_C2P_CONTENTFOLDER_DIR . '/extensions/'.WTG_C2P_EXT.'/formprocessing.php');
-        }      
+        if(isset($_POST['csv2post_admin_referer'])){  
+            // a few forms have the csv2post_admin_referer where the default hidden values are not in use
+            check_admin_referer( $_POST['csv2post_admin_referer'] );        
+        }else{                             
+            // 99% of forms will use this method
+            check_admin_referer( $_POST['csv2post_hidden_panel_name'] );
+        } 
+                             
+        csv2post_log_adminform(__FUNCTION__,1,'Form Submitted','form submission about to be processed','general','low',$_GET);       
     }
-}
+ 
+    // url submission
+    if(isset($_GET['csv2postprocsub']) && isset($_GET['action'])){        
+        check_admin_referer( $_GET['action'] );  
+        csv2post_log_urlaction(__FUNCTION__,1,'URL Action Submitted','url action submission about to be processed','general','low',$_GET);       
+    }     
+
+    // arriving here means check_admin_referer() security is positive       
+    global $csv2post_debug_mode,$cont,$csv2post_is_free;
+                                  
+    // if $csv2post_debug_mode set to true or 1 on CSV2POST.php we dump $_POST
+    if($csv2post_debug_mode){
+        echo '<h1>$_POST</h1>';
+        csv2post_var_dump($_POST);           
+        echo '<h1>$_GET</h1>';
+        csv2post_var_dump($_GET);    
+    }
+
+    // set a variable used to skip further processing
+    // we can use this to allow more than one part of the
+    // installation to process $_POST values
+    // i.e. plugin or extension can re-process core form submissions
+    $cont = true;# change to false and it ends $_POST processing
+
+    /**
+    * I named plugin, core and extension processing files 
+    * different to help avoid confusion between each.
+    * 
+    * Core: core settings, main installation procedures
+    * Plugin: all custom settings
+    * Extension: again more custom settings for extension only 
+    */
+        
+    // include file that checkes $_POST values and takes required actions    
+    require_once(WTG_C2P_DIR.'include/csv2post_form_processing.php');
+
+    // include core processing
+    require_once(WTG_C2P_WPCORE_PATH.'wtgcore_wp_formsubmit.php');       
+
+    // include paid processing
+    if(!$csv2post_is_free){
+        require_once(WTG_C2P_PAID_PATH.'csv2post_paid_formsubmit.php');        
+    }         
+    
+    # we will need to loop through all extensions, including all of their form processing files
+    # this allows multiple extensions to intercept the same submission which could be very good for integration
+    
+    // include extension processing file, allowing us to keep post processing all together    
+    if(WTG_C2P_EXTENSIONS != 'disable'){        
+        if(csv2post_extension_activation_status('df1')){          
+            require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/formprocessing.php');
+        }
+    }      
+}                     
 
 /**
 * When request will display maximum php errors including Wordpress errors 

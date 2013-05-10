@@ -49,8 +49,9 @@ function csv2post_WP_SQL_select($table_name,$limit = 10,$columns = '*',$where = 
 /**
 * Gets posts with the giving meta value
 */
-function csv2post_WP_SQL_get_posts_join_meta($meta_key,$meta_value,$limit = 1,$select = '*',$where = ''){
+function csv2post_WP_SQL_get_posts_join_meta($meta_key,$meta_value,$limit = 1,$select = '*',$where = '',$query = 'get_results'){
     global $wpdb;
+    
     $q = "SELECT wposts.".$select."
     FROM ".$wpdb->posts." AS wposts
     INNER JOIN ".$wpdb->postmeta." AS wpostmeta
@@ -59,7 +60,18 @@ function csv2post_WP_SQL_get_posts_join_meta($meta_key,$meta_value,$limit = 1,$s
     AND wpostmeta.meta_value = '".$meta_value."' 
     ".$where."
     LIMIT ".$limit."";
-    return $wpdb->get_results($q, OBJECT);    
+ 
+    if($query == 'query'){
+        $result = $wpdb->query($q);    
+    }elseif($query == 'get_var'){
+        $result = $wpdb->get_var($q);    
+    }elseif($query == 'get_row'){
+        $result = $wpdb->get_row($q, OBJECT);    
+    }else{
+        $result = $wpdb->get_results($q, OBJECT);    
+    }
+    
+    return $result;
 }
 
 /**
@@ -240,11 +252,21 @@ function csv2post_WP_SQL_count_records( $table_name ){
  * counts total records in giving project table
  * @return 0 on fail or no records or the number of records in table
  */
-function csv2post_WP_SQL_counttablerecords( $table_name ){
+function csv2post_WP_SQL_counttablerecords( $table_name,$where = '' ){
     global $wpdb;
-    $query = "SELECT COUNT(*) FROM ". $table_name . ";";
-    $records = $wpdb->get_var( $query );
-    if( $records ){return $records;}else{return '0';}    
+    $records = $wpdb->get_var( 
+        "
+            SELECT COUNT(*) 
+            FROM ". $table_name . "
+            ".$where." 
+        "
+    );
+    
+    if( $records ){
+        return $records;
+    }else{
+        return '0';
+    }    
 }
 
 /**
@@ -378,5 +400,20 @@ function csv2post_database_table_exist( $table_name ){
     }else{
             return true;
     }
+}
+
+/**
+* Drops the giving database table and displays result in notice 
+* 
+* @param mixed $table_name
+*/
+function csv2post_WP_SQL_drop_table($table_name){
+    global $wpdb;
+    $r = $wpdb->query("DROP TABLE IF EXISTS ".$table_name."");
+    if( $r ){
+        csv2post_notice('Database table named '.$table_name.' has been deleted.','success','Tiny','','','echo');
+    }else{
+        csv2post_notice('Database table named '.$table_name.' has already been deleted.','error','Tiny','','','echo');
+    }    
 }
 ?>

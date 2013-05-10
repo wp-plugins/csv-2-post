@@ -26,23 +26,38 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
         csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
         ?> 
         
+        <p>Please count the number of columns your CSV file has and enter the exact number or things will go very wrong.</p>
+        
         <?php   
         global $csv2post_is_free;  
 
         // remove .csv from filename
         $filename_array = explode('.',$csv2post_ecisession_array['filename']);
               
-        echo '<table class="widefat post fixed">';
+        csv2post_GUI_tablestart();
                 
         echo '
-        <tr>
-            <td width="200">CSV File Name</td>
-            <td width="70">Columns</td>        
-            <td width="110">Separator</td>
-            <td width="80">Quote</td> 
-        </tr>';
-           
+        <thead>
+            <tr>
+                <th width="200">CSV File Name</th>
+                <th width="70">Columns</th>        
+                <th width="110">Separator</th>
+                <th width="80">Quote</th> 
+            </tr>
+        </thead>';
+        
         echo '
+        <tfoot>
+            <tr>
+                <th>CSV File Name</th>
+                <th>Columns</th>        
+                <th>Separator</th>
+                <th>Quote</th> 
+            </tr>
+        </tfoot>';
+                   
+        echo '
+        <tbody>
         <tr>
             <td>'.$csv2post_ecisession_array['filename'].'</td>
             <td><input type="text" name="csv2post_csvfile_fieldcount_'.$filename_array[0].'" size="2" maxlength="2" value="" /></td>
@@ -55,9 +70,11 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
                 </script>
 
                 <div id="csv2post_newjob_separator_radios_<?php echo $filename_array[0];?>">
-                    <input type="radio" id="csv2post_separator_comma_<?php echo $filename_array[0];?>" name="csv2post_newjob_separators<?php echo $filename_array[0];?>" value="," checked /><label for="csv2post_separator_comma_<?php echo $filename_array[0];?>">,</label>
-                    <input type="radio" id="csv2post_separator_semicolon_<?php echo $filename_array[0];?>" name="csv2post_newjob_separators<?php echo $filename_array[0];?>" value=";" /><label for="csv2post_separator_semicolon_<?php echo $filename_array[0];?>">;</label>
-                    <input type="radio" id="csv2post_separator_tab_<?php echo $filename_array[0];?>" name="csv2post_newjob_separators<?php echo $filename_array[0];?>" value="|" /><label for="csv2post_separator_tab_<?php echo $filename_array[0];?>">|</label>                
+                    <input type="radio" id="csv2post_separator_comma_<?php echo $filename_array[0];?>" name="csv2post_newjob_separators<?php echo $filename_array[0];?>" value="," checked /><label for="csv2post_separator_comma_<?php echo $filename_array[0];?>">Comma ,</label>
+                    <br>
+                    <input type="radio" id="csv2post_separator_semicolon_<?php echo $filename_array[0];?>" name="csv2post_newjob_separators<?php echo $filename_array[0];?>" value=";" /><label for="csv2post_separator_semicolon_<?php echo $filename_array[0];?>">Semi-colon ;</label>
+                    <br>
+                    <input type="radio" id="csv2post_separator_tab_<?php echo $filename_array[0];?>" name="csv2post_newjob_separators<?php echo $filename_array[0];?>" value="|" /><label for="csv2post_separator_tab_<?php echo $filename_array[0];?>">Pipe/Tab |</label>                
                 </div>
 
             </td>
@@ -69,13 +86,14 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
                 </script>
 
                 <div id="csv2post_newjob_quote_radios_<?php echo $filename_array[0];?>">
-                    <input type="radio" id="csv2post_quote_double_<?php echo $filename_array[0];?>" name="csv2post_newjob_quote<?php echo $filename_array[0];?>" value="doublequote" checked /><label for="csv2post_quote_double_<?php echo $filename_array[0];?>">"</label>
-                    <input type="radio" id="csv2post_quote_single_<?php echo $filename_array[0];?>" name="csv2post_newjob_quote<?php echo $filename_array[0];?>" value="singlequote" /><label for="csv2post_quote_single_<?php echo $filename_array[0];?>">'</label>                
+                    <input type="radio" id="csv2post_quote_double_<?php echo $filename_array[0];?>" name="csv2post_newjob_quote<?php echo $filename_array[0];?>" value="doublequote" checked /><label for="csv2post_quote_double_<?php echo $filename_array[0];?>">Double Quote "</label>
+                    <br>
+                    <input type="radio" id="csv2post_quote_single_<?php echo $filename_array[0];?>" name="csv2post_newjob_quote<?php echo $filename_array[0];?>" value="singlequote" /><label for="csv2post_quote_single_<?php echo $filename_array[0];?>">Single Quote '</label>                
                 </div>                        
             
             </td>
         </tr><?php                         
-        echo '</table>';?>
+        echo '</tbody></table>';?>
         
         <h4>Ping Status</h4>
         <script>
@@ -128,12 +146,14 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
             <input type="radio" id="csv2post_commentstatus_open_id" name="csv2post_commentstatus" value="open" <?php echo $o;?> /><label for="csv2post_commentstatus_open_id">Open</label>
             <input type="radio" id="csv2post_commentstatus_closed_id" name="csv2post_commentstatus" value="closed" <?php echo $c;?> /><label for="csv2post_commentstatus_closed_id">Closed</label>          
         </div>
+        
+        <p>Submitting this form will create a new database table, ready for your data to be imported to and CSV 2 POST will continue to work with it from there.</p>
             
         <?php 
         // add js for dialog on form submission and the dialog <div> itself
         if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
             csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-            csv2post_jquery_form_prompt($jsform_set);
+            csv2post_jquery_form_promptdiv($jsform_set);
         } 
         ?>
             

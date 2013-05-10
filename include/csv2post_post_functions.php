@@ -108,9 +108,8 @@ function csv2post_create_posts_basic($project_code,$request_method){
 
     if(!$records){
         if($request_method == 'manual'){
-            csv2post_notice('No posts were created as your project does not have any unused records. No project statistics were changed either.','info','Large','No Posts Created','','echo');    
-        }else{
-            ### TODO:MEDIUMPRIORITY, log this event when log system complete
+            csv2post_notice('No posts were created as your project does not have any unused records. 
+            No project statistics were changed either.','info','Large','No Posts Created','','echo');    
         }
         return false;        
     }
@@ -321,9 +320,9 @@ function csv2post_post_add_metadata_basic_seo($project_array,$project_code,$reco
 function csv2post_parse_columnreplacement_basic($record_array,$value){
     // loop through record array values
     foreach( $record_array as $column => $data ){
-        $value = str_replace('#'. $column, $data, $value); 
+        $subject = str_replace('#'. $column, $data, $value); 
     } 
-    return $value;
+    return $subject;
 }
 
 /**
