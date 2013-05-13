@@ -6,7 +6,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: CSV 2 POST, CSV2POST, Data Engine, CSV 2 POST Data Engine, wordpress data import,wordpress data importer,auto blogging,auto blogger,autoblog,mass create posts,mass post creation,csv file importer,csv file data import,post injection,import spreadsheet,excel file import,excel import,www.csv2post.com,CSV2POST,wordpresscsv import,wordpress import plugin,wordpress data import tool,wordpress data import plugin,wordpress post creation plugin
 Requires at least: 3.5.0
 Tested up to: 3.6.0
-Stable tag: 6.9.6
+Stable tag: 6.9.7
 
 CSV 2 POST Data Engine
 
@@ -113,7 +113,9 @@ first plugin was created in 2009 and was halted pending re-development.
 6. You can use up to 3 columns of data to create 3 levels of categories.
 
 == Changelog ==
-    
+= 6.9.7 =
+* Added missing file csv2post_seoplugins_array.php 
+ 
 = 6.9.6 =
 * From The Developers
     * Released 10th May 2013

@@ -1,7 +1,7 @@
 <?php         
 /*
 Plugin Name: CSV 2 POST
-Version: 6.9.5
+Version: 6.9.7
 Plugin URI: http://www.csv2post.com
 Description: CSV 2 POST released 2012 by Zara Walsh and Ryan Bayne
 Author: Zara Walsh
@@ -28,7 +28,7 @@ services not just software. License and agreement is seperate.
 */         
                             
 // package variables (frequently changed)
-$csv2post_currentversion = '6.9.6';
+$csv2post_currentversion = '6.9.7';
 $csv2post_php_version_tested = '5.4.12';// current version the plugin is being developed on
 $csv2post_php_version_minimum = '5.3.0';// minimum version required for plugin to operate
 $csv2post_is_free_override = false;// change to true for free edition setup when fulledition folder present 
