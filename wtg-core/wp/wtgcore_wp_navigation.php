@@ -232,15 +232,13 @@ function csv2post_menu_should_tab_be_displayed($page,$tab){
         return false;    
     }    
                 
-    // if package is free and screen is free OR if package is not free and screen is not free = return false
-    if($csv2post_is_free && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'] == 'free'  
-    || !$csv2post_is_free && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'] == 'paid'){   
+    // if package is free and screen is free return true
+    if($csv2post_is_free && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'] == 'free'){   
         return true;
     }
-
-    // if package is not free and screen is free = return true
-    if(!$csv2post_is_free && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'] == 'free'){   
-        return true;
+    
+    if($csv2post_is_free && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'] == 'paid'){   
+        return false;
     }   
                  
     return true;      

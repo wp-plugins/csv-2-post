@@ -88,12 +88,14 @@ function csv2post_process(){
     # we will need to loop through all extensions, including all of their form processing files
     # this allows multiple extensions to intercept the same submission which could be very good for integration
     
-    // include extension processing file, allowing us to keep post processing all together    
-    if(WTG_C2P_EXTENSIONS != 'disable'){        
-        if(csv2post_extension_activation_status('df1')){          
-            require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/formprocessing.php');
-        }
-    }      
+    // include extension processing file, allowing us to keep post processing all together 
+	if(!$csv2post_is_free){	
+		if(WTG_C2P_EXTENSIONS != 'disable'){        
+			if(csv2post_extension_activation_status('df1')){          
+				require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/formprocessing.php');
+			}
+		}      
+	}
 }                     
 
 /**

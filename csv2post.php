@@ -162,7 +162,6 @@ require_once(WTG_C2P_DIR.'include/csv2post_file_functions.php');// file manageme
 require_once(WTG_C2P_DIR.'include/csv2post_post_functions.php');// post creation,update related functions              
 require_once(WTG_C2P_DIR.'include/csv2post_formsubmit_functions.php');
 require_once(WTG_C2P_DIR.'include/variables/csv2post_seoplugins_array.php');
-require_once(WTG_C2P_DIR.'include/variables/csv2post_variables_templatesystemfiles_array.php');
 require_once(WTG_C2P_DIR.'include/variables/csv2post_wordpressoptionrecords_array.php'); 
 require_once(WTG_C2P_DIR.'include/variables/csv2post_array_logtypes.php');
 require_once(WTG_C2P_DIR.'wtg-core/wp/wparrays/wtgcore_wp_tables_array.php');
