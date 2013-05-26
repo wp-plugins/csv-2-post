@@ -139,62 +139,6 @@ function csv2post_export_singlesqltable_as_csvfile(){
 } 
                           
 /**
- * Install main content folder in wp-content directory for holding uploaded items
- * Called from install function in install.php if constant is not equal to false WTG_C2P_CONTENTFOLDER_DIR
- *
- * @return boolean true if folder installed or already exists false if failed
- */
-function csv2post_install_contentfolder_wpcsvimportercontent($pathdir,$output = false){
-    $contentfolder_outcome = true;
-
-    // does folder already exist
-    if(!is_dir($pathdir)){
-        $contentfolder_outcome = csv2post_createfolder($pathdir);
-    }else{
-        return true;
-    }
-
-    if(!$contentfolder_outcome){
-        $contentfolder_outcome = false;
-        if($output){
-            csv2post_notice('Plugins content folder could be not created:'.$pathdir, 'error', 'Tiny');
-        }
-    }elseif($contentfolder_outcome){
-         if($output){
-            csv2post_notice('Plugin content folder has been created here: '.$pathdir, 'success', 'Tiny');
-         }
-    }
-
-    return $contentfolder_outcome;
-}
-
-/**
-* Deletes the plugins main content folder
-* 
-* @param mixed $pathdir (the path to be deleted)
-* @param mixed $output (boolean true means that the file was found and deleted)
-*/
-function csv2post_delete_contentfolder($pathdir,$output = false){
-    if(!is_dir($pathdir)){
-        global $csv2post_plugintitle;
-        csv2post_notice($csv2post_plugintitle . ' could not find the main content folder, it
-        may have already been deleted or moved.', 'warning', 'Tiny','Content Folder Not Found');
-        return false;
-    }else{
-    
-        if (csv2post_dir_is_empty($pathdir)) {
-            rmdir($pathdir);
-            csv2post_notice('Content folder has been deleted after confirming it did not contain any files.', 'success', 'Tiny','Content Folder Removed');                
-            return true; 
-        }else{
-            csv2post_notice('Content folder cannot be deleted as it contains files.', 'warning', 'Tiny','Content Folder Not Removed');                      
-        }
-    }
-}
-
-
-
-/**
 * Validates the string entered as a name and ensures it does not already exist to
 * help avoid the user confusing two different data import jobs 
 * 

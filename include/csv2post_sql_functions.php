@@ -202,9 +202,7 @@ function csv2post_WP_SQL_row_id_check($table_name,$id){
  */
 function csv2post_WP_SQL_update_record( $row, $csvfile_name, $column_total, $jobcode, $record_id, $header_array, $filegrouping){        
     global $csv2post_is_free;
-    
-    $col = 0;
-    
+   
     // establish csv file id - if free edition there is no file id
     if($csv2post_is_free || $filegrouping == 'single'){
         $file_id = '';    
@@ -220,7 +218,7 @@ function csv2post_WP_SQL_update_record( $row, $csvfile_name, $column_total, $job
     
     // count how many keys are used
     $keysused = 0;      
-                     
+    $col = 0;                 
     foreach( $header_array as $header_key => $header ){
         
         if($csv2post_is_free){
@@ -320,7 +318,7 @@ function csv2post_WP_SQL_create_dataimportjob_table($jobcode,$job_file_group,$ma
                 
                 // is header null, this indicates incorrect separator/quote/column number entered
                 if($header['sql'] == NULL || $header['sql'] == '' || $header['sql'] == ' '){
-                    csv2post_notice('An incorrect separator, quote or the number of columns has been
+                    csv2post_notice('An incorrect separator, Enclosure Character or the number of columns has been
                     entered for your file. A blank/empty header was found. Please ensure the correct values are
                     submitted and that your CSV file does not actually have a column with no text in the header/title.',
                     'error','Large','Blank Header Detected','http://www.csv2post.com/notifications/database-query-failure-on-creating-data-import-job','echo','');
@@ -363,11 +361,42 @@ function csv2post_WP_SQL_create_dataimportjob_table($jobcode,$job_file_group,$ma
         csv2post_add_jobtable('csv2post_' . $jobcode);  
         return true; 
     }else{
-        csv2post_notice('Database query failed. Usually this is due to incorrect separator, quote or number of 
-        columns for your CSV file that may be the cause:<br /><br />' . csv2post_WP_SQL_formatter($table),
-        'error','Large','Incorrect Separator or Quote','http://www.csv2post.com/notifications/database-query-failure-on-creating-data-import-job','echo','');
+        csv2post_notice('Database query not correct. Usually this is due to incorrect Separator/Delimiter, Enclosure Character or number of 
+        columns for your CSV file being wrong. 50% of the time this is caused by an extra separator (comma)
+        in the header row which causes a blank column and MySQL cannot accept a blank header in the column. Here is your query, feel
+        free to send it to us along with your CSV file for advice:<br /><br />' . csv2post_WP_SQL_formatter($table),
+        'error','Small','Possible Incorrect Separator or Enclosure Character','http://www.csv2post.com/notifications/database-query-failure-on-creating-data-import-job','echo','');
         return false;
     }        
+}
+
+/**
+* Updates empty premade record in data job table using CSV file row.
+* Reports errors to server log.
+* 
+* @returns boolean, true if an update was done with success else returns false
+* 
+* @param mixed $record
+* @param mixed $csvfile_name
+* @param mixed $fields
+* @param mixed $jobcode
+* @param mixed $record_id
+* @param mixed $headers_array
+*/
+function csv2post_WP_SQL_update_record_dataimportjob( $record, $csvfile_name, $fields, $jobcode,$record_id, $headers_array,$filegrouping ){
+    global $csv2post_plugintitle;
+    // using new record id - update the record
+    $updaterecord_result = csv2post_WP_SQL_update_record( $record, $csvfile_name, $fields, $jobcode,$record_id, $headers_array, $filegrouping );
+    // increase $inserted counter if the update was a success, the full process counts as a new inserted record            
+    if($updaterecord_result === false){
+        csv2post_error_log($csv2post_plugintitle . ': csv2post_WP_SQL_update_record() returned FALSE for JOB:'.$jobcode.' FILE:'.$csvfile_name.'. Please investigate.');                
+        return false;
+    }elseif($updaterecord_result === 1){ 
+        return true;  
+    }elseif($updaterecord_result === 0){
+        csv2post_error_log($csv2post_plugintitle . ': csv2post_WP_SQL_update_record() returned 0 for JOB:'.$jobcode.' FILE:'.$csvfile_name.'. Please investigate.');
+        return false;
+    }  
 }
 
 /**

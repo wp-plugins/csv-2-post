@@ -452,7 +452,7 @@ function csv2post_form_ECI_free_step2_confirmformat(){
         
         // if user did not select quote
         if(!isset($_POST['csv2post_newjob_quote' . $file])){
-            csv2post_notice_postresult('error','No Quote Selected','Please select the quote used in your CSV file.');
+            csv2post_notice_postresult('error','No Enclosure Character Selected','Please select the Enclosure Character used in your CSV file.');
             return;
         }            
 
@@ -1670,81 +1670,7 @@ function csv2post_form_insert_title_template(){
     }else{
         return true;
     }    
-} 
-
-/**
-* Updates current projects default template
-*/
-function csv2post_form_change_default_contenttemplate(){
-    global $csv2post_currentproject_code;
-    if(isset($_POST['csv2post_change_default_contenttemplate']) && isset($_POST['csv2post_templatename_and_id'])){
-  
-        // extract template id from string
-        $template_id = csv2post_PHP_STRINGS_get_between_two_values('(',')',$_POST['csv2post_templatename_and_id']);        
-
-        if(!is_numeric($template_id)){
-            csv2post_notice('The template ID could not be extracted from the submission, please try again then report this issue.','error','Large','Error Saving Default Content Template');
-        }else{
-            
-            // link the template to the project by adding csv2post_project_id custom meta field 
-            add_post_meta($template_id, 'csv2post_project_id', $csv2post_currentproject_code, false);
-                        
-            csv2post_update_default_contenttemplate($csv2post_currentproject_code,$template_id);
-            csv2post_notice('The template you selected has been saved as your current projects default template design.','success','Large','Default Content Template Saved');
-        }
-        
-        return false;
-    }else{
-        return true;
-    }    
-}
-
-function csv2post_form_change_default_titletemplate(){
-    global $csv2post_currentproject_code;
-    if(isset($_POST['csv2post_change_default_titletemplate']) && isset($_POST['csv2post_templatename_and_id'])){
-  
-        // extract template id from string
-        $template_id = csv2post_PHP_STRINGS_get_between_two_values('(',')',$_POST['csv2post_templatename_and_id']);        
-
-        if(!is_numeric($template_id)){
-            csv2post_notice('The title template ID (also post id) could not be extracted from the submission, please try again then report this issue.','error','Large','Error Saving Default Title Template');
-        }else{
-            // link the template to the project by adding csv2post_project_id custom meta field 
-            add_post_meta($template_id, 'csv2post_project_id', $csv2post_currentproject_code, false);
-                        
-            csv2post_update_default_titletemplate($csv2post_currentproject_code,$template_id);
-            csv2post_notice('The title template you selected has been saved as your current projects default template design.','success','Large','Default Title Template Saved');
-        }
-        
-        return false;
-    }else{
-        return true;
-    }    
-} 
-
-function csv2post_form_change_default_excerpttemplate(){
-    global $csv2post_currentproject_code;
-    if(isset($_POST['csv2post_change_default_excerpttemplate']) && isset($_POST['csv2post_change_default_excerpttemplate'])){
-  
-        // extract template id from string
-        $template_id = csv2post_PHP_STRINGS_get_between_two_values('(',')',$_POST['csv2post_templatename_and_id']);        
-
-        if(!is_numeric($template_id)){
-            csv2post_notice('The excerpt template ID could not be extracted from the submission, please try again then report this issue.','error','Large','Error Saving Default Excerpt Template');
-        }else{
-            
-            // link the template to the project by adding csv2post_project_id custom meta field 
-            add_post_meta($template_id, 'csv2post_project_id', $csv2post_currentproject_code, false);
-                            
-            csv2post_update_default_excerpttemplate($csv2post_currentproject_code,$template_id);
-            csv2post_notice('The excerpt template you selected has been saved as your current projects default excerpt template design.','success','Large','Default Excerpt Template Saved');
-        }
-        
-        return false;
-    }else{
-        return true;
-    }    
-}    
+}  
   
 /**
 * Saves content template design - new or old (update or insert), will create new post or update existing one.
@@ -1901,7 +1827,7 @@ function csv2post_form_delete_post_creation_projects(){
                 // Do not try to get around this limitation, required functions for later processes are not included with the free download
                 csv2post_delete_postcreationproject($csv2post_currentproject_code);
                 csv2post_delete_option_currentprojectcode();
-                csv2post_notice('Your project with code '.$csv2post_currentproject_code.' has been deleted.','success','Large','Project ('.$csv2post_currentproject_code.') Deleted');                
+                csv2post_notice('Your project with the code '.$csv2post_currentproject_code.' has been deleted.','success','Large','Project ('.$csv2post_currentproject_code.') Deleted');                
 
             }else{
                 
@@ -1985,8 +1911,8 @@ function csv2post_form_createdataimportjob(){
                 
                 // if user did not select quote
                 if(!isset($_POST['csv2post_newjob_quote' . $filename])){
-                    csv2post_notice('You never selected a quote. The plugin will attempt to guess it but if you
-                    experience problems please select it manually.','warning','Large','No Quote Selected','','echo');
+                    csv2post_notice('You never selected an Enclosure Character. The plugin will attempt to guess it but if you
+                    experience problems please select it manually.','warning','Large','No Enclosure Character Selected','','echo');
                 }            
             }      
         }
@@ -2319,6 +2245,11 @@ function csv2post_form_start_post_creation(){
             $csv2post_project_array['poststatus'] = $_POST['csv2post_radio_poststatus'];
         }
         
+        // post duplicate prevention
+        if(isset($_POST['csv2post_radio_postduplicateprevention']) && $_POST['csv2post_radio_postduplicateprevention'] == 'notrequired'){
+            $csv2post_project_array['duplicateprevention']['action']['type'] = $_POST['csv2post_radio_postduplicateprevention'];    
+        }
+    
         csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
           
         // free edition processes all records at once, $_POST['csv2post_postsamount'] will not be set
@@ -2335,20 +2266,24 @@ function csv2post_form_start_post_creation(){
         }
         
         // call create posts function     
-        $post_id = csv2post_create_posts($_POST['csv2post_project_code'],$target_posts,'manual',$subpagelevel);
-        if($post_id){
+        ### TODO:HIGHPRIORITY, we can use the new approach with $my_post and data above to improve the output
+        ### we need a message indicating failure, one indicating multiple posts created, possibly a link to last post
+        ### possibly display a list of posts for extra confirmation
+        $my_post = csv2post_create_posts($_POST['csv2post_project_code'],$target_posts,'manual',$subpagelevel);
+        if(isset($my_post['ID'])){
             
             // no false returned (false indicates a failure)
             // $post_id will be the last post ID created
-            csv2post_notice('Post creation went smoothly, no problems were detected. The last post ID created was <strong>'.$post_id.'</strong>.','success','Large','Post Creation Complete','','echo');
+            csv2post_notice('Post creation went smoothly, no problems were detected. The last 
+            post ID created was <strong>'.$my_post['ID'].'</strong>.','success','Small','Post Creation Complete','','echo');
             ### TODO:LOWPRIORITY, add link and url to last created post to the output
                 
         }else{
-           // must be a failure, if multiple posts were requests the failure is big enough to output it to the user
-           csv2post_notice('No post ID was returned during post creation. This is usually because all 
-           records have been used to create posts and the project is finished. This warning is simply 
-           to recommend that you confirm all records used or report a discrepancy.','warning','Small',
-           'Projects Post Creation Complete','','echo');
+           
+            // more than one post requested or no records to create posts
+           csv2post_notice('Please review your new posts. If your not happy, please let us know
+           so we can help you perfect them.','success','Small',
+           'Projects Post Creation Finished','','echo');
         }
          
         return false;
@@ -2799,5 +2734,64 @@ function csv2post_form_undo_posts(){
     }else{
         return true;
     }       
-}       
+}   
+
+
+/**
+* Updates current projects default template
+*/
+function csv2post_form_change_default_contenttemplate(){
+    if(isset($_GET['csv2postprocsub']) && isset($_GET['action']) && $_GET['action'] == 'defaultcontent'){  
+        if(isset($_GET['postid']) && is_numeric($_GET['postid'])){
+            
+            global $csv2post_currentproject_code;
+  
+            // link the template to the project by adding csv2post_project_id custom meta field 
+            add_post_meta($_GET['postid'], 'csv2post_project_id', $csv2post_currentproject_code, false);
+                        
+            csv2post_update_default_contenttemplate($csv2post_currentproject_code,$_GET['postid']);
+            csv2post_notice('The template you selected has been saved as your current projects default template design.','success','Large','Default Content Template Saved');
+        }
+        
+        return false;
+    }else{
+        return true;
+    }    
+}
+
+function csv2post_form_change_default_titletemplate(){
+    if(isset($_GET['csv2postprocsub']) && isset($_GET['action']) && $_GET['action'] == 'defaulttitle'){  
+        if(isset($_GET['postid']) && is_numeric($_GET['postid'])){
+        
+            global $csv2post_currentproject_code;
+
+            // link the template to the project by adding csv2post_project_id custom meta field 
+            add_post_meta($_GET['postid'], 'csv2post_project_id', $csv2post_currentproject_code, false);
+                        
+            csv2post_update_default_titletemplate($csv2post_currentproject_code,$_GET['postid']);
+            csv2post_notice('The title template you selected has been saved as your current projects default template design.','success','Large','Default Title Template Saved');
+        }
+        return false;
+    }else{
+        return true;
+    }    
+} 
+
+function csv2post_form_change_default_excerpttemplate(){
+    if(isset($_GET['csv2postprocsub']) && isset($_GET['action']) && $_GET['action'] == 'defaultexcerpt'){  
+        if(isset($_GET['postid']) && is_numeric($_GET['postid'])){
+                
+            global $csv2post_currentproject_code;
+
+            // link the template to the project by adding csv2post_project_id custom meta field 
+            add_post_meta($_GET['postid'], 'csv2post_project_id', $csv2post_currentproject_code, false);
+                            
+            csv2post_update_default_excerpttemplate($csv2post_currentproject_code,$_GET['postid']);
+            csv2post_notice('The excerpt template you selected has been saved as your current projects default excerpt template design.','success','Large','Default Excerpt Template Saved');
+        }
+        return false;
+    }else{
+        return true;
+    }    
+}      
 ?>

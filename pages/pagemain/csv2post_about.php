@@ -10,7 +10,9 @@
 
 <h4>Popular Tutorials</h4>
 <ul>
-    <li><a class="button" href="http://www.csv2post.com/how-to-articles/tutorial-common-post-creation-project" title="WP e-Member Plugin" target="_blank">Common Post Creation Project</a></li>
+    <li><a class="button" href="http://www.csv2post.com/tutorials/tutorial-how-to-import-data-into-wordpress/" title="Tutorial: How To Import Data Into Wordpress" target="_blank">How To Import Data Into Wordpress</a></li>
+    <li><a class="button" href="http://www.csv2post.com/how-to-articles/tutorial-common-post-creation-project/" title="Tutorial: Common Post Creation Project" target="_blank">Create Common Post Creation Projects</a></li>
+    <li><a class="button" href="http://www.csv2post.com/tutorials/how-to-cloak-url-in-wordpress-using-csv-2-post/" title="Tutorial: Cloaking URL" target="_blank">Cloaking URL's</a></li>
 </ul>
 
 <h4>Our Links</h4>
@@ -22,7 +24,6 @@
     <li><a class="button" href="http://www.webtechglobal.co.uk" title="Plugin authors own website" target="_blank">Authors Website "WebTechGlobal"</a></li>
     <li><a class="button" href="http://www.csv2post.com/prices/" title="CSV 2 POST premium edition price list" target="_blank">Premium Prices</a></li>
     <li><a class="button" href="http://www.twitter.com/CSV2POST/" title="CSV 2 POST Twitter Profile" target="_blank">Plugin Twitter Profile</a></li>
-    <li><a class="button" href="http://fiverr.com/webtechglobal" title="Visit WebTechGlobal Fiverr Profile" target="_blank">Fiverr</a></li>
     <li><a class="button" href="http://www.linkedin.com/company/webtechglobal-ltd" title="Visit WebTechGlobal LinkedIn Profile" target="_blank">LinkedIn</a></li>
 </ul>
                 

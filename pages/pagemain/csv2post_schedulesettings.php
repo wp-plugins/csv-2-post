@@ -19,37 +19,39 @@ $jsform_set['noticebox_content'] = 'You are about to change the schedule times, 
     csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
     ?> 
 
-    <h4>Allowed Days</h4>    
+    <h4><?php c2p_tt('Allowed Days','These settings can be used to make your auto-blogging more natural by decided which days auto-blogging does and does not happen on');?></h4>   
+     
     <script>
     $(function() {
         $( "#csv2post_dripfeed_days_format" ).buttonset();
     });
     </script>
+    
     <style>
     #csv2post_dripfeed_days_format { margin-top: 2em; }
     </style>
 
     <div id="csv2post_dripfeed_days_format">    
-    <?php 
-    $days_array = array('monday','tuesday','wednesday','thursday','friday','saturday','sunday');
-    $days_counter = 1;
-    foreach($days_array as $key => $day){
-        
-        // set checked status
-        if(isset($csv2post_schedule_array['days'][$day])){
-            $day_checked = 'checked';
-        }else{
-            $day_checked = '';            
+        <?php 
+        $days_array = array('monday','tuesday','wednesday','thursday','friday','saturday','sunday');
+        $days_counter = 1;
+        foreach($days_array as $key => $day){
+            
+            // set checked status
+            if(isset($csv2post_schedule_array['days'][$day])){
+                $day_checked = 'checked';
+            }else{
+                $day_checked = '';            
+            }
+                 
+            echo '<input type="checkbox" name="csv2post_scheduleday_list[]" id="daycheck'.$days_counter.'" value="'.$day.'" '.$day_checked.' />
+            <label for="daycheck'.$days_counter.'">'.ucfirst($day).'</label>'.csv2post_GUI_br();    
+            ++$days_counter;
         }
-             
-        echo '<input type="checkbox" name="csv2post_scheduleday_list[]" id="daycheck'.$days_counter.'" value="'.$day.'" '.$day_checked.' />
-        <label for="daycheck'.$days_counter.'">'.ucfirst($day).'</label>'.csv2post_GUI_br();    
-        ++$days_counter;
-    }
-    ?>
+        ?>
     </div>
     
-    <h4>Allowed Hours</h4>    
+    <h4><?php c2p_tt('Allowed Hours','Most people do not blog 24 hours a day, use these settings to make your blog appear more natural and avoid posting constantly while your sleeping');?></h4>    
     <script>
     $(function() {
         $( "#csv2post_dripfeed_hours_format" ).buttonset();
@@ -110,7 +112,7 @@ $jsform_set['noticebox_content'] = 'These are global settings and will take effe
     csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
     ?> 
 
-    <h4>Maximum Per Day</h4>
+    <h4><?php c2p_tt('Maximum Per Day','This controls the maximum posts created and update per day. We have predefined daily limits for speed but they are easily cutomized should you need more specific limits');?></h4>
     <script>
     $(function() {
         $( "#csv2post_dripfeedrate_maximumperday" ).buttonset();
@@ -129,7 +131,7 @@ $jsform_set['noticebox_content'] = 'These are global settings and will take effe
         <input type="radio" id="csv2post_radio8_dripfeedrate_maximumperday" name="day" value="5000" <?php if(isset($csv2post_schedule_array['limits']['day']) && $csv2post_schedule_array['limits']['day'] == 5000){echo 'checked';} ?> /><label for="csv2post_radio8_dripfeedrate_maximumperday"> 5000 </label><?php csv2post_GUI_nbsp();?>   
     </div>
                 
-    <h4>Maximum Per Hour</h4>
+    <h4><?php c2p_tt('Maximum Per Hour','The hourly limit helps to control processing a little more especially in busy Wordpress sites. This is a strict limit, not a goal and neither is the daily limit. The plugin will not try to reach your daily number if the hourly limit number is lower per 24 hours than your daily limit');?></h4>
     <script>
     $(function() {
         $( "#csv2post_dripfeedrate_maximumperhour" ).buttonset();
@@ -148,7 +150,7 @@ $jsform_set['noticebox_content'] = 'These are global settings and will take effe
         <input type="radio" id="csv2post_radio8_dripfeedrate_maximumperhour" name="hour" value="1000" <?php if(isset($csv2post_schedule_array['limits']['hour']) && $csv2post_schedule_array['limits']['hour'] == 1000){echo 'checked';} ?> /><label for="csv2post_radio8_dripfeedrate_maximumperhour"> 1000 </label><?php csv2post_GUI_nbsp();?>                                                                                                                        
     </div>
                     
-    <h4>Maximum Per Session</h4>
+    <h4><?php c2p_tt('Maximum Per Session/Event','Sessions/events are triggered by visits to the blog. On loading Wordpress loads all plugins and while this plugin loads it checks your schedule. If something needs done the procedure is referred to as an event. You get to determine how many posts are created during a single event. Use this to avoid your blog loading time slowing down a lot or sacrifice a quick loading blog for some speedy auto-blogging');?></h4>
     <script>
     $(function() {
         $( "#csv2post_dripfeedrate_maximumpersession" ).buttonset();
@@ -199,8 +201,7 @@ $jsform_set['noticebox_content'] = 'You are about to change the permitted event 
     csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
     ?> 
     
-    <h1>Focus</h1>                                                                                                                           
-    <p>Focus selection currently disables all other even types.</p>
+    <h4><?php c2p_tt('Focus','Make the plugin focus on a specific type of event. If you would like it to tweet auto-blogged posts that have not yet been tweeted before making even more posts than you would select Twitter Send');?></h4>                                                                                                                           
 
     <script>
     $(function() {
@@ -229,9 +230,8 @@ $jsform_set['noticebox_content'] = 'You are about to change the permitted event 
     </div> 
     
     <br />
-    
-    <h1>Posts</h1>                                                                                                                            
-    <h4>Post Creation</h4>
+                                                                                                                                
+    <h4><?php c2p_tt('Post Creation','Enable or disable automatic post creation, also known as drip-feeding, within this plugins schedule');?></h4>
     <script>
     $(function() {
         $( "#csv2post_eventtypeactivation_postcreation" ).buttonset();
@@ -245,7 +245,7 @@ $jsform_set['noticebox_content'] = 'You are about to change the permitted event 
         <label for="csv2post_radio2_eventtypeactivation_postcreation"> Disabled</label>    
     </div>    
  
-    <h4>Post Update</h4>
+    <h4><?php c2p_tt('Post Update','Enable or disable automatic post updating controlled by the plugins schedule');?></h4>
     <script>
     $(function() {
         $( "#csv2post_eventtypeactivation_postupdate" ).buttonset();
@@ -259,10 +259,7 @@ $jsform_set['noticebox_content'] = 'You are about to change the permitted event 
         <label for="csv2post_radio2_eventtypeactivation_postupdate"> Disabled</label>    
     </div> 
     
-     
-    <br />
-    <h1>Data</h1>    
-    <h4>Data Import</h4>
+    <h4><?php c2p_tt('Data Import','Enable or disable automatic data import controlled by the plugins schedule');?></h4>
     <script>
     $(function() {
         $( "#csv2post_eventtypeactivation_dataimport" ).buttonset();
@@ -276,7 +273,7 @@ $jsform_set['noticebox_content'] = 'You are about to change the permitted event 
         <label for="csv2post_radio2_eventtypeactivation_dataimport"> Disabled</label>    
     </div>
 
-    <h4>Data Update</h4>
+    <h4><?php c2p_tt('Data Update','Enable or disable automatic data updating controlled by the plugins own schedule system');?></h4>
     <script>
     $(function() {
         $( "#csv2post_eventtypeactivation_dataupdate" ).buttonset();
@@ -289,53 +286,6 @@ $jsform_set['noticebox_content'] = 'You are about to change the permitted event 
         <input type="radio" id="csv2post_radio2_eventtypeactivation_dataupdate" name="csv2post_eventtype_dataupdate" value="0" <?php if(isset($csv2post_schedule_array['eventtypes']['dataupdate']['switch']) && $csv2post_schedule_array['eventtypes']['dataupdate']['switch'] == 0 || !isset($csv2post_schedule_array['eventtypes']['dataupdate']['switch'])){echo 'checked';} ?> />
         <label for="csv2post_radio2_eventtypeactivation_dataupdate"> Disabled</label>    
     </div> 
- 
- 
-    <br />
-    <h1>Twitter</h1>
-    <p><strong>Experimental only. Our plan is to allow posts to be tweeted automatically.</strong></p>
- 
-    <h4>Twitter Send</h4>
-    <script>
-    $(function() {
-        $( "#csv2post_eventtypeactivation_twittersend" ).buttonset();
-    });
-    </script>                
-    <div id="csv2post_eventtypeactivation_twittersend">
-        <input type="radio" id="csv2post_radio1_eventtypeactivation_twittersend" name="csv2post_eventtype_twittersend" value="1" <?php if(isset($csv2post_schedule_array['eventtypes']['twittersend']['switch']) && $csv2post_schedule_array['eventtypes']['twittersend']['switch'] == 1){echo 'checked';} ?> />
-        <label for="csv2post_radio1_eventtypeactivation_twittersend"> Enabled</label>
-        <?php csv2post_GUI_br();?>
-        <input type="radio" id="csv2post_radio2_eventtypeactivation_twittersend" name="csv2post_eventtype_twittersend" value="0" <?php if(isset($csv2post_schedule_array['eventtypes']['twittersend']['switch']) && $csv2post_schedule_array['eventtypes']['twittersend']['switch'] == 0 || !isset($csv2post_schedule_array['eventtypes']['twittersend']['switch'])){echo 'checked';} ?> />
-        <label for="csv2post_radio2_eventtypeactivation_twittersend"> Disabled</label>    
-    </div>
-
-    <h4>Twitter Update</h4>
-    <script>
-    $(function() {
-        $( "#csv2post_eventtypeactivation_twitterupdate" ).buttonset();
-    });
-    </script>                
-    <div id="csv2post_eventtypeactivation_twitterupdate">
-        <input type="radio" id="csv2post_radio1_eventtypeactivation_twitterupdate" name="csv2post_eventtype_twitterupdate" value="1" <?php if(isset($csv2post_schedule_array['eventtypes']['twitterupdate']['switch']) && $csv2post_schedule_array['eventtypes']['twitterupdate']['switch'] == 1){echo 'checked';} ?> />
-        <label for="csv2post_radio1_eventtypeactivation_twitterupdate"> Enabled</label>
-        <?php csv2post_GUI_br();?>
-        <input type="radio" id="csv2post_radio2_eventtypeactivation_twitterupdate" name="csv2post_eventtype_twitterupdate" value="0" <?php if(isset($csv2post_schedule_array['eventtypes']['twitterupdate']['switch']) && $csv2post_schedule_array['eventtypes']['twitterupdate']['switch'] == 0 || !isset($csv2post_schedule_array['eventtypes']['twitterupdate']['switch'])){echo 'checked';} ?> />
-        <label for="csv2post_radio2_eventtypeactivation_twitterupdate"> Disabled</label>    
-    </div>   
-    
-    <h4>Twitter Get Replies</h4>
-    <script>
-    $(function() {
-        $( "#csv2post_eventtypeactivation_twitterget" ).buttonset();
-    });
-    </script>                
-    <div id="csv2post_eventtypeactivation_twitterget">
-        <input type="radio" id="csv2post_radio1_eventtypeactivation_twitterget" name="csv2post_eventtypes_twitterget" value="1" <?php if(isset($csv2post_schedule_array['eventtypes']['twitterget']['switch']) && $csv2post_schedule_array['eventtypes']['twitterget']['switch'] == 1){echo 'checked';} ?> />
-        <label for="csv2post_radio1_eventtypeactivation_twitterget"> Enabled</label>
-        <?php csv2post_GUI_br();?>
-        <input type="radio" id="csv2post_radio2_eventtypeactivation_twitterget" name="csv2post_eventtypes_twitterget" value="0" <?php if(isset($csv2post_schedule_array['eventtypes']['twitterget']['switch']) && $csv2post_schedule_array['eventtypes']['twitterget']['switch'] == 0 || !isset($csv2post_schedule_array['eventtypes']['twitterget']['switch'])){echo 'checked';} ?> />
-        <label for="csv2post_radio2_eventtypeactivation_twitterget"> Disabled</label>    
-    </div>  
 
     <?php 
     // add js for dialog on form submission and the dialog <div> itself

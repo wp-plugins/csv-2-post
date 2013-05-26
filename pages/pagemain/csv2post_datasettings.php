@@ -4,7 +4,6 @@ $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_
 $panel_array['panel_name'] = 'panelone';// slug to act as a name and part of the panel ID 
 $panel_array['panel_title'] = __('Panel One');// user seen panel header text  
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_help'] = __('Settings related to data import, manipulation and updating.');
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);     
@@ -21,7 +20,7 @@ $jsform_set['noticebox_content'] = 'It is recommended you monitor the plugin for
   
         <!-- Option Start -->
         <tr valign="top">
-            <th scope="row">Detect New CSV Files Status</th>
+            <th scope="row"><?php c2p_tt('Detect New CSV Files Status','If you want automatic import and update from new CSV files you need to tell the plugin to monitor changes in CSV files');?></th>
             <td>
                 <script>
                     $(function() {
@@ -57,7 +56,7 @@ $jsform_set['noticebox_content'] = 'It is recommended you monitor the plugin for
 
         <!-- Option Start -->
         <tr valign="top">
-            <th scope="row">Detect New CSV Files Output</th>
+            <th scope="row"><?php c2p_tt('Detect New CSV Files Output','Only applicable when the plugin is monitoring CSV file status. The plugin will display a notice indicating a change was a detected');?></th>
             <td>
 
                 <script>
@@ -94,7 +93,7 @@ $jsform_set['noticebox_content'] = 'It is recommended you monitor the plugin for
 
         <!-- Option Start -->
         <tr valign="top">
-            <th scope="row">Post Filter</th>
+            <th scope="row"><?php c2p_tt('Post Update Filter','Activate this when you want all text spinning, post updating and general content changes to be applied when a post is being opened. Essentially posts are put through a filter that picks up anything requiring change');?></th>
             <td>
             
                 <script>
@@ -126,7 +125,7 @@ $jsform_set['noticebox_content'] = 'It is recommended you monitor the plugin for
 
         <!-- Option Start -->
         <tr valign="top">
-            <th scope="row">Spinner Token Re-spin (requires Post Filter)</th>
+            <th scope="row"><?php c2p_tt('Spinner Token Re-spin (requires Post Filter)','We can use this option to disable all spinners that re-spin their value. Handy to reduce processing if you find there is too much happening in your Wordpress');?></th>
             <td>
         
                 <script>
@@ -158,7 +157,7 @@ $jsform_set['noticebox_content'] = 'It is recommended you monitor the plugin for
 
         <!-- Option Start -->
         <tr valign="top">
-            <th scope="row">Encoding</th>
+            <th scope="row"><?php c2p_tt('Encoding','UTF-8 encoding is usually the default and this option exists for anyone who wants to customize encoding rather than us providing a range of encoding options');?></th>
             <td>
         
                 <script>

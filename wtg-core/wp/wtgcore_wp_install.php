@@ -4,25 +4,18 @@
  */
 function csv2post_install_core(){
     
-    ######################
-    #                    #                          
-    #     CORE FIRST     #
-    #                    #                           
-    ######################
-    
-    /**
-    * We install the core first. 
-    * 1. tab menu array
-    * 2. initial admin options (we)
-    * 3. log table
-    * 4. other core elements used by ALL packages
-    */
-    
     // settings arrays are includes by 
     global $csv2post_extension_loaded,$csv2post_pub_set,$csv2post_mpt_arr,$csv2post_currentversion,$csv2post_is_free;
 
     $minor_fails = 0;// count minor number of failures, if 3 or more then we'll call it a failed install
     $overall_install_result = true;// used to indicate overall result
+
+    #################################################
+    #                                               #
+    #         INSTALL DATABASE TABLES FIRST         #
+    #                                               #
+    #################################################    
+    csv2post_INSTALL_table_log();
         
     #################################################
     #                                               #
@@ -50,7 +43,7 @@ function csv2post_install_core(){
     #         INSTALL PERSISTENT NOTICE ARRAY       #
     #                                               #
     #################################################
-    require(WTG_C2P_DIR.'include/variables/csv2post_variables_notices_array.php');
+    $csv2post_persistent_array = array();
     if( !csv2post_option('csv2post_notifications','add',serialize($csv2post_persistent_array)) ){
         // should never happen - _uninstall() used at the beginning of _install_core()
         csv2post_notice('Notification settings are already installed, no changes were made to those settings.','warning','Tiny',false,'','echo');
@@ -77,40 +70,6 @@ function csv2post_install_core(){
     csv2post_option('csv2post_activationdate','add',time());# this date never changes, we also want to avoid user deleted it
 
     return $overall_install_result;
-}
-
-/**
-* Checks all critical template system files and returns
-* @return boolean, true if all files found or false if any are missing 
-*/
-function csv2post_templatefiles_missing($output = false){
-    global $csv2post_templatesystem_files;
-
-    if(!isset($csv2post_templatesystem_files) || !is_array($csv2post_templatesystem_files)){
-        return false;
-    }
-        
-    foreach( $csv2post_templatesystem_files as $key => $fileitem ){
-        
-        $path = '';          
-        $path .= WTG_C2P_DIR . $fileitem['path'] . $fileitem['name'];
-         
-        if($fileitem['extension'] != 'folder'){        
-            $path .= '.' . $fileitem['extension']; 
-        }
-
-        if(!file_exists($path)){ 
-              
-            if($output){
-                csv2post_notice('A file important for the plugin to operate could not be located. The expected
-                file should be on the follow path...<br /><br />' . $path,'error','Small',' Core File Missing: ','','echo');             
-            }
-              
-            return true;// yes file is missing
-        } 
-    }
-        
-    return false; 
 }
 
 /**
@@ -165,53 +124,6 @@ function csv2post_INSTALL_table_log(){
          
         if( $result ){
             csv2post_notice('Database table named '.$table_name.' has been created.','success','Tiny','','','echo');
-            return true;
-        }else{
-            csv2post_notice('Database table named '.$table_name.' could not be created. This must be investigated before using the plugin','error','Tiny','','','echo');
-            return false;
-        }
-    }  
-}
-
-function csv2post_INSTALL_table_flags(){
-    $table_name = 'csv2post_flags';
-
-    if(csv2post_WP_SQL_does_table_exist($table_name)){
-        csv2post_notice('Database table named '.$table_name.' already exists.','warning','Tiny','','','echo');    
-    }else{ 
-        global $wpdb;
-        
-        // table name and index 
-        $create = 'CREATE TABLE `'.$table_name.'` (
-        `rowid` int(11) NOT NULL AUTO_INCREMENT,';
-        
-        // columns set by flag call
-        $create .= '`timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,';
-        $create .= '`phpline` int(11) DEFAULT NULL,';#__LINE__
-        $create .= '`phpfunction` int(11) DEFAULT NULL,';#__FUNCTION__       
-        $create .= '`priority` varchar(45) DEFAULT NULL,';# low|normal|high 
-        $create .= '`type` varchar(45) DEFAULT NULL,';# file|data|user|error (errors will be displayed in beta mode only)
-        $create .= '`fileurl` varchar(250) DEFAULT NULL,';# flagged file - could be an attachment or file front end user uploaded
-        $create .= '`dataid` varchar(250) DEFAULT NULL,';# if type = data, this holds the row id being flagged
-        $create .= '`userid` varchar(250) DEFAULT NULL,';# if type = user, this is the user being flagged
-        $create .= '`errortext` varchar(250) DEFAULT NULL,';# if type = error, this is a dump of the error
-        $create .= '`projectid` varchar(250) DEFAULT NULL,';# i.e. data import job ID or post creation project ID involved 
-        $create .= '`reason` varchar(250) DEFAULT NULL,';# why has it been flagged?
-        $create .= '`action` varchar(250) DEFAULT NULL,';# what should or could user do about the flag?        
-  
-        // default columns (set by flagging function)
-        $create .= '`version` varchar(45) DEFAULT NULL,';# plugin version
-        
-        // table config 
-        $create .= '   
-        PRIMARY KEY (`rowid`),
-        UNIQUE KEY `rowid` (`rowid`)) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8';
-        
-        $result = $wpdb->query( $create ); 
-         
-        if( $result ){
-            csv2post_notice('Database table named '.$table_name.' has been created. This table is part of
-            the flagging system which will notify or remind you about things happening in your blog.','success','Tiny','','','echo');
             return true;
         }else{
             csv2post_notice('Database table named '.$table_name.' could not be created. This must be investigated before using the plugin','error','Tiny','','','echo');
@@ -329,14 +241,6 @@ function csv2post_is_installed(){
             }
         } 
     }
-
-    // check plugins required files but do not display message, we only want a true or false outcome
-    $templatefiles_result = csv2post_templatefiles_missing(false);
-    if($templatefiles_result){         
-        // a template file is missing, user will find more info on status screen
-        $returnresult = false;
-        $failcause = 'Core File Missing';        
-    }
      
     return $returnresult;
 }   
@@ -363,7 +267,7 @@ function csv2post_remove_contentfolder(){
  * Checks if plugin has been installed before (not security and not indication of full existing installation)
  */
 function csv2post_was_installed(){
-    global $csv2post_options_array,$csv2post_templatesystem_files;
+    global $csv2post_options_array;
     
     $result = false;
     
@@ -393,4 +297,58 @@ function csv2post_was_installed(){
      
     return $result;
 }  
+
+/**
+* Deletes the plugins main content folder
+* 
+* @param mixed $pathdir (the path to be deleted)
+* @param mixed $output (boolean true means that the file was found and deleted)
+*/
+function csv2post_delete_contentfolder($pathdir,$output = false){
+    if(!is_dir($pathdir)){
+        global $csv2post_plugintitle;
+        csv2post_notice($csv2post_plugintitle . ' could not find the main content folder, it
+        may have already been deleted or moved.', 'warning', 'Tiny','Content Folder Not Found');
+        return false;
+    }else{
+    
+        if (csv2post_dir_is_empty($pathdir)) {
+            rmdir($pathdir);
+            csv2post_notice('Content folder has been deleted after confirming it did not contain any files.', 'success', 'Tiny','Content Folder Removed');                
+            return true; 
+        }else{
+            csv2post_notice('Content folder cannot be deleted as it contains files.', 'warning', 'Tiny','Content Folder Not Removed');                      
+        }
+    }
+}
+
+/**
+ * Install main content folder in wp-content directory for holding uploaded items
+ * Called from install function in install.php if constant is not equal to false WTG_C2P_CONTENTFOLDER_DIR
+ *
+ * @return boolean true if folder installed or already exists false if failed
+ */
+function csv2post_install_contentfolder_wpcsvimportercontent($pathdir,$output = false){
+    $contentfolder_outcome = true;
+
+    // does folder already exist
+    if(!is_dir($pathdir)){
+        $contentfolder_outcome = csv2post_createfolder($pathdir);
+    }else{
+        return true;
+    }
+
+    if(!$contentfolder_outcome){
+        $contentfolder_outcome = false;
+        if($output){
+            csv2post_notice('Plugins content folder could be not created:'.$pathdir, 'error', 'Tiny');
+        }
+    }elseif($contentfolder_outcome){
+         if($output){
+            csv2post_notice('Plugin content folder has been created here: '.$pathdir, 'success', 'Tiny');
+         }
+    }
+
+    return $contentfolder_outcome;
+}
 ?>

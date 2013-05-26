@@ -9,15 +9,15 @@ if($side == 'public'){
         global $csv2post_currentversion;
         
         $version = 'latest';// wordpress - stable - (nothing in between yet) - latest:gets from google
-  
-        if($csv2post_currentversion != '6.9.6'){
+                
+        // this version approach is a quick fix, I plan to make full transition to 1.9.1 once WP 3.6 has been released
+        if( csv2post_get_wp_version() < '3.6' ){
             wp_deregister_script( 'jquery' );
-            wp_register_script( 'jquery','http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js');    
+            wp_register_script( 'jquery','http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js');                
         }else{
-            wp_register_script( 'jquery191','http://code.jquery.com/jquery-1.9.1.js');    
+            wp_register_script( 'jquery191','http://code.jquery.com/jquery-1.9.1.js');
         }
-        
-   
+
         wp_deregister_script( 'jquery-ui' );
         //wp_register_script( 'jquery-ui');     
         wp_register_script( 'jquery-ui', 'http://code.jquery.com/ui/1.10.2/jquery-ui.js',array('jquery')); 
@@ -53,7 +53,7 @@ if($side == 'public'){
          $csv2post_js_switch = true;
          if($csv2post_js_switch == true){
 
-            if($csv2post_currentversion != '6.9.6'){
+            if( csv2post_get_wp_version() < '3.6' ){
                 wp_enqueue_script('jquery');    
             }else{
                 wp_enqueue_script('jquery191');    

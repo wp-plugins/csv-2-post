@@ -1,41 +1,6 @@
 <?php
 
 /**
-* Displays a table of csv2post_option records with ability to view their value or delete them
-
-* @todo LOWPRIORITY, allow output of specific types of options then make use of this on the Un-Install screen
-* @param boolean $form true adds checkbox object to each option record (currently used on uninstall panel) 
-*/
-function csv2post_list_optionrecordtrace($form = false,$size = 'Small',$optiontype = 'all'){
-    
-    // first get all records that begin with csv2post_
-    $csv2postrecords_result = csv2post_WP_SQL_options_beginning_with('csv2post_');
-    $counter = 1;?>
-        
-        <script language="JavaScript">
-        function csv2post_deleteoptions_checkboxtoggle(source) {
-          checkboxes = document.getElementsByName('csv2post_deleteoptions_array[]');
-          for(var i in checkboxes)
-            checkboxes[i].checked = source.checked;
-        }
-        </script>
-
-        <input type="checkbox" onClick="csv2post_deleteoptions_checkboxtoggle(this)" /> Select All Options<br/>
-    
-    <?php       
-    foreach($csv2postrecords_result as $key => $option ){
-        
-        if($form){
-            $form = '<input type="checkbox" name="csv2post_deleteoptions_array[]" value="'.$option.'" />';
-        }
-        
-        echo csv2post_notice($form . ' ' . $counter . '. ' . $option,'success',$size,'','','return');
-        
-        ++$counter;
-    }
-}
-
-/**
 * Outputs details of the current project, used under the title 
 */
 function csv2post_GUI_currentproject(){
@@ -99,201 +64,6 @@ function csv2post_get_current_job_name(){
     }else{
         return $csv2post_job_array['name'];
     }    
-}
-
-/**
-* Uses installation and activation state checkers to determine if the plugin
-* 1. is being activated in Wordpress
-* and
-* 2. it is the FIRST time it is being activated (due to no trace of previous installation)
-*/
-function csv2post_first_activation_check(){
-    ### TODO:HIGHPRIORITY, use  csv2post_was_installed  then display message according to result
-}
-
-/**
- * Calls wtgtp_jquery_opendialog (with close button)
- * 
- * Intended use is to display information, tutorial video etc
- *
- * @param array
- * 
- * @deprecated 16th February 2013 use csv2post_display_accordianpanel_buttons()
- */
-function csv2post_panel_support_buttons($panel_array){
-    csv2post_display_accordianpanel_buttons($panel_array);  
-}
-
-/**
-* Easy Configuration Questions
-*/
-function csv2post_easy_configuration_questionlist_demo(){
-    global $csv2post_ecq_array;
-             
-    // count number of each type of question added for adding ID value to script
-    $singles_created = 0;// count number of single answer questions added (radio button)
-    $multiple_created = 0;
-    $text_created = 0;
-    $slider_created = 0;
-    $noneactive = 0; 
-            
-    foreach($csv2post_ecq_array as $key => $question){
-        
-        if($question['active'] != true){
-        
-            ++$slider_created;
-            
-        }else{
-                
-            if($question['type'] == 'single'){
-                $optionlist = '';
-                foreach($question['answers'] as $key => $optanswer){
-                    $optionlist .= '<option value="'.$optanswer['value'].'"> '.$optanswer['text'].' </option> ';     
-                } 
-           
-                echo csv2post_notice($question['question'] . ' ' . csv2post_link('?',$question['helpurl'],'','_blank','','return','Click here to get more help for this question') .'
-                <p> 
-                    <select id="csv2post_single'.$singles_created.'" title="Please click on a single option" multiple="multiple" name="example-basic" >
-                        '.$optionlist.'
-                    </select>
-                </p>','question','Small','','','return');?>
-
-                <?php ++$singles_created;
-                
-            }elseif($question['type'] == 'multiple'){
-                // build list of option values
-                $opt_array = explode(",", $question['answers']);
-                $optionlist = '';
-                foreach($opt_array as $key => $optanswer){
-                    $optionlist .= '<option value="'.$optanswer.'"> '.$optanswer.' </option> ';     
-                } 
-                             
-                echo csv2post_notice($question['question'] . ' ' . csv2post_link('?',$question['helpurl'],'','_blank','','return','Click here to get more help for this question') .'
-                <p> 
-                    <select id="csv2post_multiple'.$multiple_created.'" title="You may select multiple options" multiple="multiple" name="example-basic" >
-                        '.$optionlist.'
-                    </select>
-                </p>','question','Small','','','return');?>
-                                
-                <?php ++$multiple_created;
-                
-            }elseif($question['type'] == 'text'){?>
-                
-                <script>
-                $(function() {
-                    
-                        <?php
-                        $opt_array = explode(",", $question['answers']);
-                        $optionlist = 'var availableTags = [';
-                        $first = true;
-                        foreach($opt_array as $key => $optanswer){
-                            if($first == false){$optionlist .= ',';} 
-                            $optionlist .= '"'.$optanswer.'"';
-                            $first = false;   
-                        }
-                        $optionlist .= '];';
-                        echo $optionlist;?>
-                    
-                    $( "#<?php echo WTG_C2P_ABB . 'text'.$text_created;?>" ).autocomplete({
-                        source: availableTags
-                    });
-                });
-                </script>
-
-                <?php  
-                echo csv2post_notice($question['question'] . ' ' . csv2post_link('?',$question['helpurl'],'','_blank','','return','Click here to get more help for this question') .'
-                <div class="ui-widget">
-                    <p>
-                        <label for="csv2post_text'.$text_created .'">Tags: </label>
-                        <input id="csv2post_text'.$text_created .'" />
-                    </p>
-                </div>','question','Small','','','return');?>
-
-                <?php ++$text_created;
-            }elseif($question['type'] == 'slider'){?>
-
-                <style>
-                #demo-frame > div.demo { padding: 10px !important; };
-                </style>
-                <script>
-                $(function() {
-                    $( "#csv2post_slider-range-min<?php echo $slider_created;?>" ).slider({
-                        range: "min",
-                        value: 20,
-                        min: 1,
-                        max: 5000,
-                        slide: function( event, ui ) {
-                            $( "#amount<?php echo $slider_created;?>" ).val( "" + ui.value );
-                            //                   ^ prepend value
-                        }
-                    });
-                                      
-                    $( "#amount<?php echo $slider_created;?>" ).val( "" + $( "#csv2post_slider-range-min<?php echo $slider_created;?>" ).slider( "value" ) );
-                    //                   ^ prepend value
-                });
-                </script>
-
-                <?php  
-                echo csv2post_notice($question['question'] . ' ' . csv2post_link('?',$question['helpurl'],'','_blank','','return','Click here to get more help for this question') .'
-                <p> 
-                    <div id="csv2post_slider-range-min'. $slider_created .'"></div> 
-                </p>
-                <p>
-                    <label for="amount'. $slider_created .'">Maximum price:</label>
-                    <input type="text" id="amount'. $slider_created .'" style="border:0; color:#f6931f; font-weight:bold;" />
-                </p>','question','Small','','','return');
-                
-                ++$slider_created;
-            }
-        }//
-    }// end for each question
-        
-    // output total number of questions if developer information active 
-    $csv2post_is_dev = true;// ### TODO:HIGHPRIORITY, change this to the global   
-    if($csv2post_is_dev){
-        
-        echo '<h4>Total Questions</h4>';
-        echo '<p>';
-        $total = $singles_created + $multiple_created + $text_created + $slider_created;
-        echo 'All Questions: '.$total;// count number of single answer questions added (radio button)
-        echo '<br />';                       
-        echo 'Single Answer Questions: '.$singles_created;// count number of single answer questions added (radio button)
-        echo '<br />';
-        echo 'Multiple Answer Questions: '.$multiple_created;
-        echo '<br />';
-        echo 'Text Answer Questions: '.$text_created;
-        echo '<br />';
-        echo 'Slider Questions:'.$slider_created; 
-        echo '</p>';  
-        echo '<br />';
-        echo 'Inactive Questions:'.$noneactive; 
-        echo '</p>';  
-         
-    }    
-}
-
-/**
-* Displays the status of the content folder with buttons to delete or create the folder
-* 
-* @param mixed $logtype
-*/
-function csv2post_contentfolder_display_status(){
-    
-    $contentfolder_exists = csv2post_contentfolder_exist();
-    
-    if($contentfolder_exists){
-
-        echo csv2post_notice('Content folder exists'.
-        csv2post_formstart_standard('csv2post_deletecontentfolder_form','none','post','').'
-            <button class="button" name="csv2post_contentfolder_delete">Delete</button>                        
-        </form>', 'success', 'Small', false,'','return');
-
-    }elseif(!$contentfolder_exists){
-        echo csv2post_notice('Content folder does not exist please create it'.
-        csv2post_formstart_standard('csv2post_createcontentfolder_form','none','post','').'
-            <button class="button" name="csv2post_contentfolder_create">Create</button>        
-        </form>', 'error', 'Small', false,'','return');
-    }
 }
 
 /**
@@ -639,11 +409,11 @@ function csv2post_display_all_post_contentdesigns_buttonlist(){
     if(count($myposts) == 0){
         echo 'You do not have any content templates';
     }
-        
+                                                       
+    if(isset($_GET['page'])){$p = $_GET['page'];}else{$p = 'csv2post';}
+    
     foreach( $myposts as $post ){?>
-        <div class="jquerybutton">
-            <input type='submit' value='<?php echo $post->post_title;?> (<?php echo $post->ID;?>)' name="csv2post_templatename_and_id" />
-        </div><?php 
+        <a class="button" href="<?php echo wp_nonce_url(admin_url().'admin.php?page='.$p.'&csv2postprocsub=true&action=defaultcontent&postid='.$post->ID, 'defaultcontent' );?>"><?php echo $post->post_title;?> (ID:<?php echo $post->ID;?>)</a><?php 
     }; 
 }
 
@@ -666,11 +436,9 @@ function csv2post_display_all_post_excerptdesigns_buttonlist(){
     if(count($myposts) == 0){
         echo 'You do not have any excerpt templates';
     }
-        
+    if(isset($_GET['page'])){$p = $_GET['page'];}else{$p = 'csv2post';}    
     foreach( $myposts as $post ){?>
-        <div class="jquerybutton">
-            <input type='submit' value='<?php echo $post->post_title;?> (<?php echo $post->ID;?>)' name="csv2post_templatename_and_id" />
-        </div><?php 
+        <a class="button" href="<?php echo wp_nonce_url(admin_url().'admin.php?page='.$p.'&csv2postprocsub=true&action=defaultexcerpt&postid='.$post->ID, 'defaultexcerpt' );?>"><?php echo $post->post_title;?> (ID:<?php echo $post->ID;?>)</a><?php 
     }; 
 }
 
@@ -687,11 +455,9 @@ function csv2post_display_all_contentdesigns_buttonlist(){
     if(count($myposts) == 0){
         echo 'You do not have any content templates linked in your current project';
     }
-        
+    if(isset($_GET['page'])){$p = $_GET['page'];}else{$p = 'csv2post';}    
     foreach( $myposts as $post ){?>
-        <div class="jquerybutton">
-            <input type='submit' value='<?php echo $post->post_title;?> (<?php echo $post->ID;?>)' name="csv2post_templatename_and_id" />
-        </div><?php 
+        <a class="button" href="<?php echo wp_nonce_url(admin_url().'admin.php?page='.$p.'&csv2postprocsub=true&action=defaultcontent&postid='.$post->ID, 'defaultcontent' );?>"><?php echo $post->post_title;?> (ID:<?php echo $post->ID;?>)</a><?php 
     }; 
 }
 
@@ -713,11 +479,9 @@ function csv2post_display_all_titledesigns_buttonlist(){
     if(count($myposts) == 0){
         echo 'You do not have any title templates linked in your current project';
     }
-        
+    if(isset($_GET['page'])){$p = $_GET['page'];}else{$p = 'csv2post';}    
     foreach( $myposts as $post ){?>
-        <div class="jquerybutton">
-            <input type='submit' value='<?php echo $post->post_title;?> (<?php echo $post->ID;?>)' name="csv2post_templatename_and_id" />
-        </div><?php 
+        <a class="button" href="<?php echo wp_nonce_url(admin_url().'admin.php?page='.$p.'&csv2postprocsub=true&action=defaulttitle&postid='.$post->ID, 'defaulttitle' );?>"><?php echo $post->post_title;?> (ID:<?php echo $post->ID;?>)</a><?php 
     }; 
 }
 
@@ -764,17 +528,14 @@ function csv2post_displayproject_templates_buttonlist($form_id,$template_type = 
     if(count($myposts) == 0){
         echo 'You do not have any of these templates linked in your current project';
     }
-
+    if(isset($_GET['page'])){$p = $_GET['page'];}else{$p = 'csv2post';}
     foreach( $myposts as $post ){
         
         if( $post->ID == $default_template_id){
             $current_default_template_text = 'Current Default';    
         }
-             
-        ?>
-        <div class="jquerybutton">
-                <input type='submit' value='<?php echo $post->post_title;?> (<?php echo $post->ID;?>) <?php echo $current_default_template_text;?>' name="csv2post_templatename_and_id" />
-        </div><?php 
+                                                                                        
+        ?><a class="button" href="<?php echo wp_nonce_url(admin_url().'admin.php?page='.$p.'&csv2postprocsub=true&action=defaultcontent&postid='.$post->ID, 'defaultcontent' );?>"><?php echo $post->post_title;?> (ID:<?php echo $post->ID;?>)</a><?php 
     };
 }
 
@@ -826,140 +587,11 @@ function csv2post_displayproject_titletemplates_buttonlist($form_id){
         if( $post->ID == $default_template_id){
             $current_default_template_text = 'Current Default';    
         }
-             
+        if(isset($_GET['page'])){$p = $_GET['page'];}else{$p = 'csv2post';}     
         ?>
-        <div class="jquerybutton">
-                <input type='submit' value='<?php echo $post->post_title;?> (<?php echo $post->ID;?>) <?php echo $current_default_template_text;?>' name="csv2post_templatename_and_id" />
-        </div><?php 
+        <a class="button" href="<?php echo wp_nonce_url(admin_url().'admin.php?page='.$p.'&csv2postprocsub=true&action=defaultcontent&postid='.$post->ID, 'defaultcontent' );?>"><?php echo $post->post_title;?> (ID:<?php echo $post->ID;?>)</a> <?php 
     };
 } 
-
-/**
-* Adds a box to the Content Design edit page. 
-*/
-function csv2post_add_custom_boxes_contenttemplate() {
-    add_meta_box( 
-        'csv2post_custombox_templatetype_id',// a unique id of the box being displayed on edit page
-        'Template Design Types',// TODO: translate
-        'csv2post_custombox_contenttemplatetype',// callback to function that displays html content insie box on page
-        'wtgcsvcontent'// post type to display meta box on 
-    );
-}
-        
-/**
-* Prints html content of custom meta box.
-* Displays template type checkboxes.
-* 
-* @param object $post, Wordpress post object
-* @todo HIGHPRIORITY, change the input name and id with proper testing
-*/
-function csv2post_custombox_contenttemplatetype( $post ) {
-
-    // Use nonce for verification
-    wp_nonce_field( plugin_basename( __FILE__ ), 'csv2post_CSV2POST_noncename' );
-
-    // The actual fields for data entry
-    echo '<label for="myplugin_new_field">';
-    echo '<strong>Design can be used for the following purposes:</strong>';
-    echo '</label> ';
-
-    // get template types - may return an array of values
-    $meta_values = get_post_meta($_GET['post'], '_csv2post_templatetypes', false); 
-
-    if(!$meta_values){
-        echo '<p>Error: could not establish the content designs purpose</p>';
-        return;    
-    }
-
-    echo '<ol>';
-    
-    foreach($meta_values as $key => $type){
-               
-        switch ($type[0]) {
-            case 'postcontent':
-                echo '<li>Post/Page Content</li>';
-                break;
-            case 'customfieldvalue':
-                echo '<li>Custom Field Value</li>';
-                break;
-            case 'categorydescription':
-                echo '<li>Category Description</li>';
-                break;
-            case 'postexcerpt':
-                echo '<li>Post Excerpt</li>';
-                break;                
-            case 'keywordstring':
-                echo '<li>Keyword String</li>';
-                break;                
-            case 'dynamicwidgetcontent':
-                echo '<li>Dynamic Widget Content</li>';
-                break;               
-            case 'seovalue':
-                echo '<li>SEO Meta</li>';
-                break;                 
-        }
-    }
-    
-    echo '</ol>';    
-}
-
-/**
-* When Content Template Design post type (wtgcsvcontent) is saved, saves our custom data entered in form output by csv2post_custombox_templatetype#
-*/
-function csv2post_save_postdata_contenttemplate( $post_id ) {
-  // if auto-save routine happening, do nothing, also if nonename not set also do nothing else the New Template editor panel will call this
-  if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE || !isset($_POST['csv2post_CSV2POST_noncename']) ){
-      return;
-  }
-
-  // use plugin nonce name to verify this came from the our screen and with proper authorization (save_post can be triggered at other times)
-  if ( !wp_verify_nonce( $_POST['csv2post_CSV2POST_noncename'], plugin_basename( __FILE__ ) ) ){
-      return;
-  }
-
-  // Check permissions
-  if ( !current_user_can( 'edit_post', $post_id ) ){
-      return;    
-  }
-
-  // we're authenticated: we need to find and save the data
-
-  $mydata = $_POST['myplugin_new_field'];
-
-  ### TODO:CRITICAL
-  // Do something with $mydata 
-  // probably using add_post_meta(), update_post_meta(), or 
-  // a custom table (see Further Reading section below)
-}
-
-/**
-* When Title Template Design (wtgcsvtitle) post type is saved, saves our custom data entered in form output by csv2post_custombox_templatetype#
-*/
-function csv2post_save_postdata_titletemplate( $post_id ) {
-  // if auto-save routine happening, do nothing, also if nonename not set also do nothing else the New Template editor panel will call this
-  if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE || !isset($_POST['csv2post_CSV2POST_noncename']) ){
-      return;
-  }
-
-  // use plugin nonce name to verify this came from the our screen and with proper authorization (save_post can be triggered at other times)
-  if ( !wp_verify_nonce( $_POST['csv2post_CSV2POST_noncename'], plugin_basename( __FILE__ ) ) ){
-      return;
-  }
-
-  // Check permissions
-  if ( !current_user_can( 'edit_post', $post_id ) ){
-      return;    
-  }
-
-  // we're authenticated: we need to find and save the data
-
-  $mydata = $_POST['myplugin_new_field'];
-
-  ### TODO:CRITICAL
-  // Do something with $mydata 
-  // probably using add_post_meta(), update_post_meta(), or 
-  // a custom table (see Further Reading section below)
-}
 
 /**
 * If current_project_code is false, will return a string holding "None", for using in strings 
@@ -1072,8 +704,6 @@ function csv2post_list_titletemplate_foredit(){
     <input type="hidden" name="csv2post_titletemplate_total" value="<?php echo $i;?>"><?php    
 }
 
-
-
 ###########################################################################################
 #                                                                                         #
 #                                       FORM MENUS                                        #
@@ -1162,22 +792,6 @@ function csv2post_selectables_csvfiles($range = 'all',$id = 'noid'){?>
             });
         });
     </script><?php    
-}
-
-/**
-* Use within a form to add a menu of CSV files
-* 
-* @param mixed $range
-* 
-* @todo LOWPRIORITY, add ability to create single select or multiselect (once bug fixed to apply single)
-*/
-function csv2post_menu_csvfiles($range = 'all',$id = 'noid'){?>
-    <p>
-        <select id="csv2post_multiselect<?php echo $id;?>" name="<?php echo WTG_C2P_ABB . 'csvfiles_menu';?>">
-            <option value="notselected">No File Selected</option>
-            <?php //csv2post_option_items_csvfiles('all');?>
-        </select>
-    </p><?php    
 }
 
 /**
@@ -1435,13 +1049,17 @@ function csv2post_FORMOBJECT_postformat_radios($i){
                 }
                                                     
                 echo '<input type="radio" id="csv2post_radio'.$format.'_postformat_objectid_'.$i.'" name="csv2post_radio_postformat" value="'.$format.'" '.$statuschecked.' />
-                <label for="csv2post_radio'.$format.'_postformat_objectid_'.$i.'"> '.$format.'</label><br>';                                 
+                <label for="csv2post_radio'.$format.'_postformat_objectid_'.$i.'"> '.$format.'</label>';
+                
+                csv2post_GUI_br();                                 
             }
             
             if($statuschecked == ''){$statuschecked = 'checked="checked"';}
             
             echo '<input type="radio" id="csv2post_radiostandard_postformat_objectid_'.$i.'" name="csv2post_radio_postformat" value="standard" '.$statuschecked.' />
-            <label for="csv2post_radiostandard_postformat_objectid_'.$i.'"> standard (default)</label><br>';               
+            <label for="csv2post_radiostandard_postformat_objectid_'.$i.'"> standard (default)</label>';
+            
+            csv2post_GUI_br();               
                 
         }    
       
@@ -1459,7 +1077,7 @@ function csv2post_table_customfield_rules_advanced(){
     
     $project_array = csv2post_get_project_array($csv2post_currentproject_code);
     if(!isset($project_array['custom_fields']['advanced'])){
-        csv2post_notice('You do not have any advanced custom field rules for adding meta data to your posts.','info','Small');
+        echo 'You do not have any advanced custom field rules for adding meta data to your posts.';
     }else{  
         csv2post_GUI_tablestart();  
         echo '
@@ -1532,7 +1150,7 @@ function csv2post_display_posttyperules_byvalue_table(){
     $project_array = csv2post_get_project_array($csv2post_currentproject_code);
     
     if(!isset($project_array['posttyperules']['byvalue'])){
-        csv2post_notice('You do not have any post type rules by specific values for your current project.','info','Small');
+        echo 'You do not have any post type rules by specific values for your current project.';
         return 0;
     }else{
         csv2post_GUI_tablestart();
@@ -1577,7 +1195,7 @@ function csv2post_display_templatedesignrules_byvalue_table(){
     
     $project_array = csv2post_get_project_array($csv2post_currentproject_code);
     if(!isset($project_array['contenttemplaterules']['byvalue'])){
-        csv2post_notice('You do not have any dynamic content design rules triggered by specific values.','info','Small');
+        echo 'You do not have any dynamic content design rules triggered by specific values.';
         return 0;
     }else{
         csv2post_GUI_tablestart();
@@ -1651,30 +1269,6 @@ function csv2post_list_jobtables(){
             
             ++$counter;     
         }   
-    }
-}
-
-/**
-* List of notification boxes displaying folders created by CSV 2 POST.
-*/
-function csv2post_list_folders(){
-    global $csv2post_dataimportjobs_array,$csv2post_jobtable_array;
-
-    $contentfolder_exists = csv2post_contentfolder_exist();
-    
-    if($contentfolder_exists){?>
-        
-        <script language="JavaScript">
-        function csv2post_deletefolders_checkboxtoggle(source) {
-          checkboxes = document.getElementsByName('csv2post_deletefolders_array[]');
-          for(var i in checkboxes)
-            checkboxes[i].checked = source.checked;
-        }
-        </script>
-
-        <input type="checkbox" onClick="csv2post_deletefolders_checkboxtoggle(this)" /> Select All Folders<br/>
-        
-        <?php echo csv2post_notice('<input type="checkbox" name="csv2post_deletefolders_array[]" value="wpcsvimportercontent" />' . ' 1. wpcsvimportercontent','success','Tiny','','','return');                
     }
 }
 
@@ -2099,7 +1693,7 @@ function csv2post_display_template_options($current_value,$template_type = false
 
 /**
 * Displays a list of CSV file for selection. 
-* User can select separator and quote also. The table also displays the auto determined separator and quote using PEAR CSV.
+* User can select separator and Enclosure Character also. The table also displays the auto determined separator and Enclosure Character using PEAR CSV.
 * 
 * @todo LOWPRIORITY, consider using pathinfo() to check if file has .csv and use  RecursiveDirectoryIterator to cycle through files
 */
@@ -2165,21 +1759,24 @@ function csv2post_display_csvfiles_fornewdataimportjob(){
                             <input type="<?php echo $object_type;?>" name="csv2post_newjob_included_csvfiles[]" id="csv2post_newjob_includefile_<?php echo $fileChunks[0];?>" value="<?php echo $filename;?>" />
                    
                         <?php 
-                        ### TODO:HIGHPRIORITY, change the PEARCSVmethod for quote in the fget column
+                        ### TODO:HIGHPRIORITY, change the PEARCSVmethod for Enclosure Character in the fget column
                         echo '</td>
                         <td>'.$filename.'</td>
                         <td><input type="text" name="csv2post_csvfile_fieldcount_'.$fileChunks[0].'" size="2" maxlength="2" value="" /></td>
                         <td>'; ?>
                   
-                            <input type="radio" id="csv2post_separator_comma_<?php echo $fileChunks[0];?>" name="csv2post_newjob_separators<?php echo $fileChunks[0];?>" value="," /><label for="csv2post_separator_comma_<?php echo $fileChunks[0];?>"> <strong>,</strong> </label>
-                            <br><input type="radio" id="csv2post_separator_semicolon_<?php echo $fileChunks[0];?>" name="csv2post_newjob_separators<?php echo $fileChunks[0];?>" value=";" /><label for="csv2post_separator_semicolon_<?php echo $fileChunks[0];?>"> <strong>;</strong> </label>
-                            <br><input type="radio" id="csv2post_separator_tab_<?php echo $fileChunks[0];?>" name="csv2post_newjob_separators<?php echo $fileChunks[0];?>" value="|" /><label for="csv2post_separator_tab_<?php echo $fileChunks[0];?>"> <strong>|</strong> </label>                
+                            <input type="radio" id="csv2post_separator_comma_<?php echo $fileChunks[0];?>" name="csv2post_newjob_separators<?php echo $fileChunks[0];?>" value="," checked /><label for="csv2post_separator_comma_<?php echo $fileChunks[0];?>"> <strong>,</strong> </label>
+                            <br>
+                            <input type="radio" id="csv2post_separator_semicolon_<?php echo $fileChunks[0];?>" name="csv2post_newjob_separators<?php echo $fileChunks[0];?>" value=";" /><label for="csv2post_separator_semicolon_<?php echo $fileChunks[0];?>"> <strong>;</strong> </label>
+                            <br>
+                            <input type="radio" id="csv2post_separator_tab_<?php echo $fileChunks[0];?>" name="csv2post_newjob_separators<?php echo $fileChunks[0];?>" value="|" /><label for="csv2post_separator_tab_<?php echo $fileChunks[0];?>"> <strong>|</strong> </label>                
                   
                         </td>
                         <td>
           
-                            <input type="radio" id="csv2post_quote_double_<?php echo $fileChunks[0];?>" name="csv2post_newjob_quote<?php echo $fileChunks[0];?>" value="doublequote" /><label for="csv2post_quote_double_<?php echo $fileChunks[0];?>"> <strong>"</strong></label>
-                            <br><input type="radio" id="csv2post_quote_single_<?php echo $fileChunks[0];?>" name="csv2post_newjob_quote<?php echo $fileChunks[0];?>" value="singlequote" /><label for="csv2post_quote_single_<?php echo $fileChunks[0];?>"> <strong>'</strong></label>                
+                            <input type="radio" id="csv2post_quote_double_<?php echo $fileChunks[0];?>" name="csv2post_newjob_quote<?php echo $fileChunks[0];?>" value="doublequote" checked /><label for="csv2post_quote_double_<?php echo $fileChunks[0];?>"> <strong>"</strong></label>
+                            <br>
+                            <input type="radio" id="csv2post_quote_single_<?php echo $fileChunks[0];?>" name="csv2post_newjob_quote<?php echo $fileChunks[0];?>" value="singlequote" /><label for="csv2post_quote_single_<?php echo $fileChunks[0];?>"> <strong>'</strong></label>                
                                                
                         </td>
                     </tr><?php                         

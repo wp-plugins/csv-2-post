@@ -4,8 +4,6 @@ $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_
 $panel_array['panel_name'] = 'operationsettings';// slug to act as a name and part of the panel ID 
 $panel_array['panel_title'] = __('Operation Settings');// user seen panel header text  
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_help'] = __('A mix of settings that change how
-the plugin operates. These are global settings and apply to all projects.');
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);     
@@ -28,7 +26,7 @@ $jsform_set['noticebox_content'] = 'It is recommended you monitor the plugin for
         </script>  
           
         <tr valign="top">
-            <th scope="row">Log</th>
+            <th scope="row"> <?php c2p_tt('Log','The plugin creates a lot of user actions and automation. The purpose of the log is for tracking users, debugging during development and monitoring automation is happening when needed. Log entries are stored in a database table named csv2post_log');?> </th>
             <td>
                 <?php 
                 // if is not set ['admintriggers']['newcsvfiles']['status'] then it is enabled by default
@@ -63,17 +61,17 @@ $jsform_set['noticebox_content'] = 'It is recommended you monitor the plugin for
             $log_file_limit = $csv2post_adm_set['reporting']['loglimit'];
         } ?>         
         <tr valign="top">
-            <th scope="row">Log Records Limit</th>
+            <th scope="row"> <?php c2p_tt('Log Entries Limit','Control the number of rows stored in the log table. A low number will have little or no different to the performance of your Wordpress but it will improve performance when using the Log screen to perform searches');?> </th>
             <td>
                 <label for="csv2post_<?php echo $panel_array['panel_name'];?>_loglimit">
-                <input type="text" name="csv2post_loglimit" id="csv2post_<?php echo $panel_array['panel_name'];?>_loglimit" value="<?php echo $log_file_limit;?>"> records</label>
+                <input type="text" name="csv2post_loglimit" id="csv2post_<?php echo $panel_array['panel_name'];?>_loglimit" value="<?php echo $log_file_limit;?>"> rows</label>
             </td>
         </tr>
         <!-- Option End -->     
 
         <!-- Option Start -->
         <tr valign="top">
-            <th scope="row">Extension Status</th>
+            <th scope="row"> <?php c2p_tt('Extension System','If you have extension files installed you will need to activate the extension system. You can then use the Extensions screen to manage your extension');?> </th>
             <td>
             
                 <script>
@@ -123,8 +121,7 @@ $jsform_set['noticebox_content'] = 'It is recommended you monitor the plugin for
 $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'interfacesettings';// slug to act as a name and part of the panel ID 
 $panel_array['panel_title'] = __('Interface Settings');// user seen panel header text  
-$panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_help'] = __('Change how the plugins interface operates and how it is displayed.'); 
+$panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique 
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);
@@ -137,7 +134,8 @@ $jsform_set['noticebox_content'] = 'Do you want to change interface settings?';?
     csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
     csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
     ?> 
-                       
+    
+    <h4><?php c2p_tt('Plugin Admin Theme','The plugin offers a jQuery theme and Wordpress styled theme. It is possible to add custom themes also');?></h4>                   
     <?php if($csv2post_guitheme == 'jquery'){?>
     <script>
     $(function() {
@@ -170,7 +168,7 @@ $jsform_set['noticebox_content'] = 'Do you want to change interface settings?';?
         echo ' Wordpress CSS</label>';?>                      
     </div>
      
-    <h4>Form Submission Dialog Popups</h4>
+    <h4><?php c2p_tt('Form Submission Dialog Popups','Some forms will display dialog before being fully submitted. Use this option to disable most of those dialog. Forms that make critical changes such as reinstalling database tables may still display a dialog popup for safety');?></h4>
     <?php  
     $hide = '';
     $display = 'checked';    
@@ -198,7 +196,7 @@ $jsform_set['noticebox_content'] = 'Do you want to change interface settings?';?
         <label for="csv2post_<?php echo $panel_array['panel_name'];?>_dialog_display"> Display</label>
     </div>
     
-    <h4>Panel Support Buttons</h4>
+    <h4> <?php c2p_tt('Panel Support Buttons','The support buttons are displayed at the top of panels. They include an Info and Video button. Use this option to hide all of them');?> </h4>
     <?php  
     $hide = '';
     $display = 'checked';    

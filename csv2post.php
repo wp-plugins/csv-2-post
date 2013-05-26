@@ -1,9 +1,9 @@
 <?php         
 /*
 Plugin Name: CSV 2 POST
-Version: 6.9.7
+Version: 6.9.8
 Plugin URI: http://www.csv2post.com
-Description: CSV 2 POST released 2012 by Zara Walsh and Ryan Bayne
+Description: CSV 2 POST Data Engine for Wordpress is the professional choice for data import, auto-blogging, text spinning and more
 Author: Zara Walsh
 Author URI: http://www.csv2post.com
 
@@ -28,7 +28,7 @@ services not just software. License and agreement is seperate.
 */         
                             
 // package variables (frequently changed)
-$csv2post_currentversion = '6.9.7';
+$csv2post_currentversion = '6.9.8';
 $csv2post_php_version_tested = '5.4.12';// current version the plugin is being developed on
 $csv2post_php_version_minimum = '5.3.0';// minimum version required for plugin to operate
 $csv2post_is_free_override = false;// change to true for free edition setup when fulledition folder present 
@@ -58,18 +58,12 @@ $csv2post_plugintitle = 'CSV 2 POST';// requires so that extensions can re-brand
 $csv2post_pluginname = 'csv2post';// should not be used to make up paths
 $csv2post_homeslug = $csv2post_pluginname;// @todo page slug for plugin main page used in building menus
 $csv2post_isbeingactivated = false;// changed to true during activation, used to avoid certain processing especially the schedule and automation system
-$csv2post_disableapicalls = 0;// 1 = yes, disable all api calls 0 allows api calls
 $csv2post_is_event = false;// when true, an event is running or has ran, used to avoid over processing         
-$csv2post_installation_required = true;
-$csv2post_apiservicestatus = 'unknown';
-$csv2post_is_webserviceavailable = false;                                                       
-$csv2post_is_subscribed = false;
+$csv2post_installation_required = true;                                                     
 $csv2post_is_installed = false;        
 $csv2post_was_installed = false;
-$csv2post_is_domainregistered = false;
 $csv2post_is_emailauthorised = false;
 $csv2post_log_maindir = 'unknown';
-$csv2post_callcode = '000000000000';
 $csv2post_currentproject = 'No Project Set';
 $csv2post_notice_array = array();// set notice array for storing new notices in (not persistent notices)
 $csv2post_extension_loaded = false;
@@ -151,20 +145,16 @@ foreach (scandir( WTG_C2P_DIR . 'wtg-core/wp/' ) as $wtgcore_filename) {
 #                     functions and arrays applicable to all editions                    #
 ##########################################################################################
 require_once(WTG_C2P_DIR.'include/csv2post_core_functions.php');### move functions from this file to either wtgcore or admin functions.php then delete it 
-require_once(WTG_C2P_DIR.'include/webservices/csv2post_api_parent.php');
 require_once(WTG_C2P_DIR.'include/csv2post_admininterface_functions.php');
 require_once(WTG_C2P_DIR.'include/csv2post_settings_functions.php');
 require_once(WTG_C2P_DIR.'include/csv2post_ajax_admin_functions.php');  
 require_once(WTG_C2P_DIR.'include/csv2post_install_functions.php');
 require_once(WTG_C2P_DIR.'include/csv2post_admin_functions.php');
 require_once(WTG_C2P_DIR.'include/csv2post_sql_functions.php');
-require_once(WTG_C2P_DIR.'include/csv2post_file_functions.php');// file management related functions
 require_once(WTG_C2P_DIR.'include/csv2post_post_functions.php');// post creation,update related functions              
 require_once(WTG_C2P_DIR.'include/csv2post_formsubmit_functions.php');
 require_once(WTG_C2P_DIR.'include/variables/csv2post_seoplugins_array.php');
-require_once(WTG_C2P_DIR.'include/variables/csv2post_variables_templatesystemfiles_array.php');
 require_once(WTG_C2P_DIR.'include/variables/csv2post_wordpressoptionrecords_array.php'); 
-require_once(WTG_C2P_DIR.'include/variables/csv2post_array_logtypes.php');
 require_once(WTG_C2P_DIR.'wtg-core/wp/wparrays/wtgcore_wp_tables_array.php');
                                
 ##########################################################################################
@@ -223,51 +213,58 @@ if(is_admin()){
               
 ##########################################################################################
 #                                                                                        #
-#                              LOAD EXTENSION CONFIGURATION                              #
-#                                                                                        #
+#                                    LOAD EXTENSIONS                                     #
+#      Free users can adapt this to load their own custom extension or other files       #
 ##########################################################################################
-if(WTG_C2P_EXTENSIONS != 'disable' && file_exists(WP_CONTENT_DIR . '/csv2postextensions')){ 
-    
-    // if the extension is to be loaded, we will double check the files exist and install if required
-    if(csv2post_extension_activation_status('df1') == 3 
-    || isset($_GET['csv2postprocsub']) && isset($_GET['action']) && isset($_GET['extension']) && $_GET['extension'] == 'df1'){    
+if(!$csv2post_is_free){
+    if(WTG_C2P_EXTENSIONS != 'disable' && file_exists(WP_CONTENT_DIR . '/csv2postextensions')){ 
         
-        // ensure extension files actually exist
-        if(file_exists(WP_CONTENT_DIR . '/csv2postextensions/df1')){
+        /*
+                this system is 95% complete. Where "df1" is used we need to use variables
+                and load multiple extensions within a loop, for now a single extension can be loaded
+        */
+        
+        // if the extension is to be loaded, we will double check the files exist and install if required
+        if(csv2post_extension_activation_status('df1') == 3 
+        || isset($_GET['csv2postprocsub']) && isset($_GET['action']) && isset($_GET['extension']) && $_GET['extension'] == 'df1'){    
             
-            $name = 'df1';
+            // ensure extension files actually exist
+            if(file_exists(WP_CONTENT_DIR . '/csv2postextensions/df1')){
+                
+                $name = 'df1';
 
-            // set a variable to tell CSV 2 POST scripts to consider an active extension
-            $csv2post_extension_loaded = true;
-            // include functions
-            require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/extension.php');
-            require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/functions.php');  
-            require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/functions/interface.php');
-            require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/functions/shortcodes.php');
-            require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/functions/sql.php');
-            require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/functions/post.php');
-            require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/functions/installation.php');
-            
-            // include configuration (this makes changes required for the Wordpress installation)
-            include_once(WP_CONTENT_DIR . '/csv2postextensions/df1/configuration.php');   
+                // set a variable to tell CSV 2 POST scripts to consider an active extension
+                $csv2post_extension_loaded = true;
+                // include functions
+                require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/extension.php');
+                require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/functions.php');  
+                require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/functions/interface.php');
+                require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/functions/shortcodes.php');
+                require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/functions/sql.php');
+                require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/functions/post.php');
+                require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/functions/installation.php');
+                
+                // include configuration (this makes changes required for the Wordpress installation)
+                include_once(WP_CONTENT_DIR . '/csv2postextensions/df1/configuration.php');   
 
-            $installedversion = get_option($name . '_version');
+                $installedversion = get_option($name . '_version');
 
-            $extension_version = ${"csv2post_extension_" . $name ."_version"};
-            
-            // do a version check on the installation compared to the files - disable extension until update performed by user
-            if(!isset($_GET['action']) || $_GET['action'] != 'extensionupdate'){# avoid repeating this message during the update processing
-                $update_required = csv2post_extension_updaterequired('df1',$extension_version);
-                if($update_required){
-                    // disable extension
-                    update_option('ext_activated_DF1','no');
-                    // notify user
-                    csv2post_n('DF1 Extension Update Required','An extension installed and active has new files. The database
-                    tables and option records that make the extensions installation must be updated. Please go to the Extension
-                    screen and perform an update on the DF1 Extension if you wish to continue using the extension. The extension
-                    will stay disabled until this is done.','warning','Large');                   
-                }
-            }                
+                $extension_version = ${"csv2post_extension_" . $name ."_version"};
+                
+                // do a version check on the installation compared to the files - disable extension until update performed by user
+                if(!isset($_GET['action']) || $_GET['action'] != 'extensionupdate'){# avoid repeating this message during the update processing
+                    $update_required = csv2post_extension_updaterequired('df1',$extension_version);
+                    if($update_required){
+                        // disable extension
+                        update_option('ext_activated_DF1','no');
+                        // notify user
+                        csv2post_n('DF1 Extension Update Required','An extension installed and active has new files. The database
+                        tables and option records that make the extensions installation must be updated. Please go to the Extension
+                        screen and perform an update on the DF1 Extension if you wish to continue using the extension. The extension
+                        will stay disabled until this is done.','warning','Large');                   
+                    }
+                }                
+            }
         }
     }
 }
@@ -283,41 +280,20 @@ if(is_admin()){
     $csv2post_guitheme = csv2post_get_theme();
                        
     register_activation_hook( __FILE__ ,'csv2post_register_activation_hook');
-
+    
     // content template custom post type
-    add_action( 'init', 'csv2post_register_customposttype_contentdesigns' );
-    add_action( 'add_meta_boxes', 'csv2post_add_custom_boxes_contenttemplate' );
-    add_action( 'save_post', 'csv2post_save_postdata_contenttemplate' );
+    add_action( 'init', 'csv2post_init_posttype_contentdesigns' );
+    add_action( 'add_meta_boxes', 'csv2post_add_meta_boxes_contenttemplates' );
+    add_action( 'save_post', 'csv2post_save_meta_boxes_contenttemplates',10,2 );
     // title template custom post type
     add_action( 'init', 'csv2post_register_customposttype_titledesigns' );
-    add_action( 'save_post', 'csv2post_save_postdata_titletemplate' );
-
+    // title template custom post type
+    add_action( 'init', 'csv2post_register_customposttype_flags' );
+    add_action( 'add_meta_boxes', 'csv2post_add_meta_boxes_flags' );
+    add_action( 'save_post', 'csv2post_save_meta_boxes_flags',10,2 );
+    
     //$csv2post_activationcode = csv2post_get_activationcode(); ### TODO:MEDIUMPRIORITY, part of activation code system 
     $csv2post_is_installed = csv2post_is_installed();// boolean - if false either plugin has never been installed or installation has been tampered with 
-         
-    if(!$csv2post_is_free){
-        //$csv2post_is_webserviceavailable = csv2post_is_webserviceavailable();
-    }else{
-        $csv2post_is_webserviceavailable == false;
-    }
-    
-    // if web services are available, we can then check if domain is registered or not
-    if(!$csv2post_is_free && $csv2post_is_webserviceavailable){
-        
-        # TODO: CRITICAL, change call code design so that it does not expire but may be changed from time to time
-        # TODO: CRITICAL, once call code does not expire, avoid using csv2post_is_domainregistered() every page call, leave a local value indicating domain is registered 
-        
-        $csv2post_is_domainregistered = csv2post_is_domainregistered();// returns boolean AND stores call code 
-        
-        // if domain is within membership then we can continue doing further api calls 
-        if($csv2post_is_domainregistered){
-            
-            // continue other api calls
-            $csv2post_callcode = get_option('csv2post_callcode');                              
-            $csv2post_is_callcodevalid = csv2post_is_callcodevalid();
-            //$csv2post_is_subscribed = csv2post_is_subscribed();// returns boolean       
-        }
-    }
 }   
              
 ###############################################################################
@@ -398,7 +374,10 @@ if(is_admin() && isset($_GET['page']) && csv2post_is_plugin_page($_GET['page']))
     // process form submission - moved to here 11th January 2013
     // this includes files that call every processing function one after the other, a simple approach until we add something faster
     add_action('admin_init','csv2post_process');
-        
+    
+    // add admin page scripts to footer
+    add_action('admin_footer', 'csv2post_WP_adminpage_script');
+    
 }elseif(!is_admin()){// default to public side script and css      
     csv2post_script_core('public');          
     csv2post_script_plugin('public');

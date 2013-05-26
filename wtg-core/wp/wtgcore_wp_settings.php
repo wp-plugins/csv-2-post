@@ -206,4 +206,14 @@ function csv2post_update_option_adminsettings($csv2post_adm_set){
     $admin_settings_array_serialized = maybe_serialize($csv2post_adm_set);
     return update_option('csv2post_adminset',$admin_settings_array_serialized);    
 }
+
+/**
+* Returns Wordpress version in short
+* 1. Default returned example by get_bloginfo('version') is 3.6-beta1-24041
+* 2. We remove everything after the first hyphen
+*/
+function csv2post_get_wp_version(){
+    $longversion = get_bloginfo('version');
+    return strstr( $longversion , '-', true );
+}
 ?>

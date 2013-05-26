@@ -59,7 +59,14 @@ function csv2post_form_uninstallplugin_partial(){
                     } 
                 }
             }
-                     
+            
+            // if delete core plugin tables
+            if(isset($_POST['csv2post_deletecoretables_array'])){
+                foreach($_POST['csv2post_deletecoretables_array'] as $key => $table_name){
+                    csv2post_WP_SQL_drop_table($table_name);
+                }
+            }
+       
             // if delete csv files
             if(isset($_POST['csv2post_deletecsvfiles_array'])){
                 foreach($_POST['csv2post_deletecsvfiles_array'] as $k => $csv_file_name){
@@ -93,16 +100,17 @@ function csv2post_form_uninstallplugin_partial(){
                     csv2post_notice('Option record ' . $o . ' has been deleted.','success','Tiny','Option Record Deleted','','echo'); 
                 }      
             }
-                             
+            
+            wp_redirect( get_bloginfo('url') . '/wp-admin/admin.php?page=csv2post' );
+            exit;
+                                                
         }else{           
             csv2post_notice(__('You do not have the required permissions to un-install '.$csv2post_plugintitle.'. The Wordpress role required is delete_plugins, usually granted to Administrators.'), 'warning', 'Large','No Permission To Uninstall ' . $csv2post_plugintitle,'','echo');
             return false;
         }
                  
-        // return false to stop all further post validation function calls
-        return false;// must go inside $_POST validation, not at end of function
-
-        
+        return false;
+ 
     }else{
         return true;
     } 
@@ -220,190 +228,6 @@ function csv2post_form_save_scheduletimes_global(){
 }
 
 /**
-* Contact Form Submission Post Validation 
-*/
-function csv2post_form_contactformsubmission(){     
-    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'more' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'contact'){
-        global $csv2post_plugintitle;
-        
-        // result and control variables
-        $failed = false;
-        $failurereason = 'Unknown';
-        
-        // email output list - a simple unordered list to add entries to regarding the output of this contact
-        $email_list_start = '<h4>Contact Outcome</h4><ul>'; 
-        
-        // email template - the main template for all details
-        $email_template = '<strong>Contact Reason:</strong>stringreplace_contactreasons <br />
-        <strong>Contact Methods:</strong> stringreplace_contactmethods <br />
-        <strong>Contact Priority:</strong> stringreplace_priority <br />
-        <h4>Description</h4>
-        <strong>Contact Description:</strong> stringreplace_description <br />
-        <h4>Links</h4>
-        <strong>Link 1:</strong> stringreplace_linkone <br />
-        <strong>Link 2:</strong> stringreplace_linktwo <br />
-        <strong>Link 3:</strong> stringreplace_linkthree <br />
-        <strong>Contact Methods:</strong> stringreplace_contactmethods <br />
-        <strong>Contact Methods:</strong> stringreplace_contactmethods <br />'; 
-        
-        // add $_POST values to email template
-        if(isset($_POST['multiselect_csv2post_contactmethods'])){
-            // loop through contact methods and create comma seperated list    
-        }
-          
-        if(isset($_POST['multiselect_csv2post_contactreason'])){
-            // loop through contact reasons and create comma seperated list    
-        }
-         
-        ### @todo HIGH PRIORITY  check the contact description post value here, it has wtg does it match with form ???   
-        $stringreplace_result = str_replace('stringreplace_description',$_POST['wtg_contactdescription'],$email_template);    
-        $stringreplace_result = str_replace('stringreplace_linkone',$_POST['csv2post_linkone'],$email_template);    
-        $stringreplace_result = str_replace('stringreplace_linktwo',$_POST['csv2post_linktwo'],$email_template);    
-        $stringreplace_result = str_replace('stringreplace_linkthree',$_POST['csv2post_linkthree'],$email_template);          
-        if(!stringreplace_result){
-            ### @todo log that a failure happened, if ever detected we'll need to add individual log entries       
-        }
-            
-        // arrays holding expected values
-        $methods_array = array('email','ticket','forum','testimonial');
-        $apimethods_array = array('ticket','forum','testimonial');
-        $reason_array = array('hire','pluginhelp','testimonial','bug','generaladvice','requestchanges','requestfeature','requesttutorial','affiliateenquiry','provideftp','provideadmin','providemysql','providehosting');
-        $priority_array = array('low','medium','high');
-                     
-        // ensure all submitted values are in expected value arrays (will be done again on the server as required security)
-        // we also check values to decide if we need to use the WebTechGlobal Contact Web Service
-        foreach($_POST['multiselect_csv2post_contactmethods'] as $amethod){
-            if(!is_string($amethod) || !in_array($methods_array)){
-                $failed = true;
-                $failurereason = 'the giving contact method '.$methods_array.' is invalid.';   
-            }  
-        }
-        
-        foreach($_POST['multiselect_csv2post_contactreason'] as $areason){
-            if(!is_string($areason) || !in_array($reason_array)){
-                $failed = true;
-                $failurereason = 'the giving contact reason '.$areason.' is invalid.';   
-            }  
-        }
-
-        foreach($_POST['multiselect_csv2post_contactpriority'] as $apriority){
-            if(!is_string($apriority) || !in_array($priority_array)){
-                $failed = true;
-                $failurereason = 'a submitted priority value,'.$apriority.', is invalid.';   
-            }  
-        }
-        
-        // output result if $failed so far
-        if($failed == true){
-            csv2post_notice('Contact attempt failed. This has happened because '.$failurereason);
-        }
-        
-        ######################################## Contact method for gold users only
-        ####      CONTACT WEB SERVICE      ##### Stores sensitive information in WebTechGlobal database
-        ######################################## Ticket, Forum and sending data requires this else it is all sent by email
-        
-        /*  @todo Contact Web Services to be complete on server
-        if($failed == true){
-            
-            // is the api required, did user selected contact methods that require it?
-            // compare each contact method that requires the api against those submitted in POST
-            foreach($_POST['multiselect_csv2post_contactmethods'] as $amethod){
-                if(in_array($apimethods_array,$_POST['multiselect_csv2post_contactmethods'])){
-                    $apirequired = true;
-                    break;   
-                }  
-            }  
-            
-            // check if soap connection should be attempted or not (based on users api session which is decide from service status and subscription)
-            if($apirequired && csv2post_api_canIconnect()){
-            
-                // decide which web service to use (ticket takes priority)
-                if(in_array('ticket',$_POST['multiselect_csv2post_contactmethods'])){
-                
-                    // is none in the contact include, is so we do not send any sensitive data
-                    if(in_array('none',$_POST['multiselect_csv2post_contactinclude'])){
-                        $email_list_start .= '<li>You had the None option selected, no login details or sensitive data will be sent to the Ticket Web Service</li>';                                
-                    }else{
-
-                        // do SOAP call to WebTechGlobal Ticket Web Service and create ticket
-                        $ticket_array = array();
-                        
-                        if(in_array('admin',$_POST['multiselect_csv2post_contactinclude'])){
-                            // ensure user has permission to edit users and maybe other permission
-                            // they may have plugin access but not permission to be sending details via email
-                            if(USER HAS REQUIRED PERMISSION){
-                                $email_list_start .= '<li>You will send login details for '.PUT USERNAME HERE.', the password will be included (not shown here for security)</li>';                    
-                                // get current users admin details else get the default admin user details
-                                $ticket_array['adminusername'] = 'TO BE COMPLETE';
-                                $ticket_array['adminpassword'] = 'TO BE COMPLETE';
-                            }else{
-                                // add entry to output to tell user they are not allowed to send login details
-                                $email_list_start .= '<li>You do not have the require permission to send login details</li>';
-                            }
-                        }  
-                        
-                        if(in_array('ftp',$_POST['multiselect_csv2post_contactinclude'])){  
-                            // include ftp details, can we get them from Wordpress or Server automatically???
-                            // if not auto, user must enter ftp details in settings (may be used for other features) 
-                            if(csv2post_contact_ftpstored() || csv2post_contact_ftpsubmitted()){
-                                $email_list_start .= '<li>FTP login are being sent to help support access your Wordpress</li>';
-                            }else{
-                                $email_list_start .= '<li>FTP details canot be sent, they have not been provided</li>';                        
-                            }
-                        }   
-                                                
-                        if(in_array('hosting',$_POST['multiselect_csv2post_contactinclude'])){  
-                            // include hosting details - user must enter them in settings
-                            // if not already in settings, display more form fields for this
-                        }    
-                                             
-                        if(in_array('mysql',$_POST['multiselect_csv2post_contactinclude'])){  
-                            // include mysql database login details
-                        }     
-                    }// end if none in contact include - user must uncheck the none option to send data               
-                                  
-                    // call the ticket web service function which validates values first before using soapcall function     
-                    csv2post_api_webservice_ticket('create',null,$ticket_array,true);   
-                }         
-            }
-        }  */
-        
-        ######################### Send email last so we can include information about Contact
-        ####                 ####
-        ####   SEND EMAIL    ####
-        ####                 ####
-        ######################### 
-        
-        $emailmessage_start = '<html><body>
-        
-        <p>Sent from ' . $csv2post_plugintitle .'</p>
-        
-        <p><strong>Reason:</strong> ' . $csv2post_plugintitle .'</p>   
-            
-        <p><strong>Priority:</strong> unknown tbc @todo</p>
-
-        <h3>Description</h3>
-        <p>DESCRIPTION HERE</p>';
-        
-        // add further details depending on the reason for contact and fields completed
-        ### @todo LOW PRIORITY complete email layout
-        $emailmessage_middle = '';
-              
-        $emailmessage_end = '</body></html>';    
-     
-        $finalemailmessage = $emailmessage_start . $emailmessage_middle . $emailmessage_end;
-        
-        wp_mail('help@csv2post.com','Contact From '.$csv2post_plugintitle,$emailmessage); 
-        
-       // return false to stop all further post validation function calls
-       return false;// must go inside $_POST validation, not at end of function         
-    }else{
-        // return true for the form validation system, tells it to continue checking other functions for validation form submissions
-        return true;
-    } 
-}
-
-/**
 * Updates existing installation
 * 
 * @todo TODO:MEDIUMPRIORITY, update should be more precise only changing what needs to be, right now settings are not
@@ -455,7 +279,7 @@ function csv2post_form_save_settings_operation(){
 }  
 
 function csv2post_form_save_settings_interface(){
-    if(isset($_POST[WTG_C2P_ABB.'hidden_pageid']) && $_POST[WTG_C2P_ABB.'hidden_pageid'] == 'main' && isset($_POST[WTG_C2P_ABB.'hidden_panel_name']) && $_POST[WTG_C2P_ABB.'hidden_panel_name'] == 'interfacesettings'){
+    if(isset($_POST['csv2post_hidden_pageid']) && $_POST['csv2post_hidden_pageid'] == 'main' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'interfacesettings'){
         global $csv2post_plugintitle;
         
         // save theme change
@@ -472,6 +296,114 @@ function csv2post_form_save_settings_interface(){
         keep this in mind and ask us if you are unsure about something.');
 
          // return false to stop all further post validation function calls
+        return false;// must go inside $_POST validation, not at end of function         
+    }else{
+        // return true for the form validation system, tells it to continue checking other functions for validation form submissions
+        return true;
+    }                 
+}   
+
+function csv2post_form_savelogcriteria(){
+    if(isset($_POST['csv2post_hidden_pageid']) && $_POST['csv2post_hidden_pageid'] == 'main' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'logsearchoptions'){
+        global $csv2post_adm_set;
+        
+        // first unset all criteria
+        if(isset($csv2post_adm_set['log']['logscreen'])){
+            unset($csv2post_adm_set['log']['logscreen']);
+        }
+        
+        ##################################################
+        #                                                #
+        #         COLUMN DISPlAY SETTINGS FIRST          #
+        #                                                #
+        ##################################################
+        // if a column is set in the array, it indicates that it is to be displayed, we unset those not to be set, we dont set them to false
+        if(isset($_POST['csv2post_logfields'])){
+            foreach($_POST['csv2post_logfields'] as $column){
+                $csv2post_adm_set['log']['logscreen']['displayedcolumns'][$column] = true;                   
+            }
+        }
+            
+        ############################################################
+        #                                                          #
+        #          SAVE CUSTOM SEARCH CRITERIA CHECK BOXES         #
+        #                                                          #
+        ############################################################              
+        // outcome criteria
+        if(isset($_POST['csv2post_log_outcome'])){    
+            foreach($_POST['csv2post_log_outcome'] as $outcomecriteria){
+                $csv2post_adm_set['log']['logscreen']['outcomecriteria'][$outcomecriteria] = true;                   
+            }            
+        } 
+        
+        // type criteria
+        if(isset($_POST['csv2post_log_type'])){
+            foreach($_POST['csv2post_log_type'] as $typecriteria){
+                $csv2post_adm_set['log']['logscreen']['typecriteria'][$typecriteria] = true;                   
+            }            
+        }         
+
+        // category criteria
+        if(isset($_POST['csv2post_log_category'])){
+            foreach($_POST['csv2post_log_category'] as $categorycriteria){
+                $csv2post_adm_set['log']['logscreen']['categorycriteria'][$categorycriteria] = true;                   
+            }            
+        }         
+   
+        // priority criteria
+        if(isset($_POST['csv2post_log_priority'])){
+            foreach($_POST['csv2post_log_priority'] as $prioritycriteria){
+                $csv2post_adm_set['log']['logscreen']['prioritycriteria'][$prioritycriteria] = true;                   
+            }            
+        }         
+
+        ############################################################
+        #                                                          #
+        #         SAVE CUSTOM SEARCH CRITERIA SINGLE VALUES        #
+        #                                                          #
+        ############################################################
+        // page
+        if(isset($_POST['csv2post_pluginpages_logsearch']) && $_POST['csv2post_pluginpages_logsearch'] != 'notselected'){
+            $csv2post_adm_set['log']['logscreen']['page'] = $_POST['csv2post_pluginpages_logsearch'];
+        }   
+        // action
+        if(isset($_POST['csv2pos_logactions_logsearch']) && $_POST['csv2pos_logactions_logsearch'] != 'notselected'){
+            $csv2post_adm_set['log']['logscreen']['action'] = $_POST['csv2pos_logactions_logsearch'];
+        }   
+        // screen
+        if(isset($_POST['csv2post_pluginscreens_logsearch']) && $_POST['csv2post_pluginscreens_logsearch'] != 'notselected'){
+            $csv2post_adm_set['log']['logscreen']['screen'] = $_POST['csv2post_pluginscreens_logsearch'];
+        }  
+        // line
+        if(isset($_POST['csv2post_logcriteria_phpline'])){
+            $csv2post_adm_set['log']['logscreen']['line'] = $_POST['csv2post_logcriteria_phpline'];
+        }  
+        // file
+        if(isset($_POST['csv2post_logcriteria_phpfile'])){
+            $csv2post_adm_set['log']['logscreen']['file'] = $_POST['csv2post_logcriteria_phpfile'];
+        }          
+        // function
+        if(isset($_POST['csv2post_logcriteria_phpfunction'])){
+            $csv2post_adm_set['log']['logscreen']['function'] = $_POST['csv2post_logcriteria_phpfunction'];
+        }
+        // panel name
+        if(isset($_POST['csv2post_logcriteria_panelname'])){
+            $csv2post_adm_set['log']['logscreen']['panelname'] = $_POST['csv2post_logcriteria_panelname'];
+        }
+        // IP address
+        if(isset($_POST['csv2post_logcriteria_ipaddress'])){
+            $csv2post_adm_set['log']['logscreen']['ipaddress'] = $_POST['csv2post_logcriteria_ipaddress'];
+        }
+        // user id
+        if(isset($_POST['csv2post_logcriteria_userid'])){
+            $csv2post_adm_set['log']['logscreen']['userid'] = $_POST['csv2post_logcriteria_userid'];
+        }
+
+        csv2post_update_option_adminsettings($csv2post_adm_set);
+        
+        csv2post_n_postresult('success','Log Search Settings Saved','Your selections have an instant effect.
+        Please browse the Log screen for the results of your new search.');    
+    
         return false;// must go inside $_POST validation, not at end of function         
     }else{
         // return true for the form validation system, tells it to continue checking other functions for validation form submissions

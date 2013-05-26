@@ -46,6 +46,11 @@ function csv2post_WP_SQL_select($table_name,$limit = 10,$columns = '*',$where = 
     LIMIT '. $limit,ARRAY_A );
 }
 
+function csv2post_WP_SQL_log_queryactions(){
+    global $wpdb;    
+    return $wpdb->get_results( 'SELECT DISTINCT action FROM csv2post_log',ARRAY_A );    
+}
+
 /**
 * Gets posts with the giving meta value
 */

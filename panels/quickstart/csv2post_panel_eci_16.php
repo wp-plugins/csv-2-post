@@ -25,8 +25,9 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
         csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
         ?>
 
-            <p>CSV 2 POST fully supports <?php echo get_current_theme();?> by allowing custom fields to be created. This panel trys to offer
-            even more support where possible.</p>
+            <p>CSV 2 POST fully supports <?php echo get_current_theme();?> by allowing custom fields to be created but
+            we're trying to go a step further and so is Wordpress. As of WP 3.6 a new Post Formats ability exists, this
+            panel makes use of it if your theme supports it, not all will.</p>
 
             <h4>Post Formats</h4>
             <?php 

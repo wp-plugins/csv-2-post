@@ -208,16 +208,16 @@ function csv2post_panel_header( $panel_array, $boxintro_div = true ){
         <div class="inside">
 
             <?php // row of panel support buttons
-            if($boxintro_div && $csv2post_guitheme == 'jquery'){
+            if($csv2post_guitheme == 'jquery'){
                 if(!isset($csv2post_adm_set['interface']['panels']['supportbuttons']['status']) || $csv2post_adm_set['interface']['panels']['supportbuttons']['status'] == 'display'){?>
 
                 <?php
                 // two column accordion 
-                if($csv2post_guitheme == 'jquery'){            
+                if($boxintro_div && $csv2post_guitheme == 'jquery'){      
                     echo '<div id="Top_A_right">';
                 }
                 ?>
-
+                       
                 <?php csv2post_panel_support_buttons($panel_array);?>
 
                 <?php 
@@ -226,19 +226,18 @@ function csv2post_panel_header( $panel_array, $boxintro_div = true ){
                     echo '</div>';
                 }?>
                     
-                    <?php 
+                <?php 
                 }
             }?>
             
             <?php
-                // display persistent notices for the current panel
-                csv2post_persistentnotice_output('panel',$panel_array['panel_id']);
-            
-                // two column accordion 
-                if($csv2post_guitheme == 'jquery'){
-                    echo '<div id="Top_A_left">';
-                }
-
+            // display persistent notices for the current panel
+            csv2post_persistentnotice_output('panel',$panel_array['panel_id']);
+        
+            // two column accordion 
+            if($csv2post_guitheme == 'jquery'){
+                echo '<div id="Top_A_left">';
+            }
 }
 
 /**
@@ -455,42 +454,39 @@ function csv2post_JQUERY_buttonset($id){?>
 }
 
 /**
-* Checks all critical template system files and returns
-* @uses csv2post_jquery_status_list_portletcsv2posts(), for this function the script is placed at the top of the tab file 
+ * Calls wtgtp_jquery_opendialog (with close button)
+ * 
+ * Intended use is to display information, tutorial video etc
+ *
+ * @param array
+ * 
+ * @deprecated 16th February 2013 use csv2post_display_accordianpanel_buttons()
+ */
+function csv2post_panel_support_buttons($panel_array){
+    csv2post_display_accordianpanel_buttons($panel_array);  
+}
+
+/**
+* Displays the status of the content folder with buttons to delete or create the folder
 * 
-* @todo HIGHPRIORITY, apply a table with a small indicator showing files status, keep it simple
+* @param mixed $logtype
 */
-function csv2post_templatefiles_statuslist(){
-    global $csv2post_templatesystem_files;
+function csv2post_contentfolder_display_status(){
+    
+    $contentfolder_exists = csv2post_contentfolder_exist();
+    
+    if($contentfolder_exists){
 
-    foreach( $csv2post_templatesystem_files as $key => $fileitem ){
-        
-        $path = '';
-        $viewedpath = '';          
-        $path .= WTG_C2P_DIR . $fileitem['path'] . $fileitem['name'];
-        $viewedpath .= WTG_C2P_FOLDERNAME . $fileitem['path'] . $fileitem['name'];
-                
-        $pointer = ' ';
-         
-        if($fileitem['extension'] != 'folder'){        
-            $path .= '.' . $fileitem['extension'];
-            $viewedpath .= '.' . $fileitem['extension'];            
-            $pointer = '.'; 
-        }
+        echo csv2post_notice('Content folder exists'.
+        csv2post_formstart_standard('csv2post_deletecontentfolder_form','none','post','').'
+            <button class="button" name="csv2post_contentfolder_delete">Delete</button>                        
+        </form>', 'success', 'Small', false,'','return');
 
-        if(!file_exists($path)){
-            
-            echo '<h4>Found</h4>';
-            echo $fileitem['name'].$pointer.$fileitem['extension'];
-            echo $viewedpath; 
-            
-        }else{
-
-            echo '<h4>Missing</h4>';
-            echo $fileitem['name'].$pointer.$fileitem['extension'];
-            echo $viewedpath; 
-
-        }  
+    }elseif(!$contentfolder_exists){
+        echo csv2post_notice('Content folder does not exist please create it'.
+        csv2post_formstart_standard('csv2post_createcontentfolder_form','none','post','').'
+            <button class="button" name="csv2post_contentfolder_create">Create</button>        
+        </form>', 'error', 'Small', false,'','return');
     }
 }
 
@@ -525,9 +521,7 @@ function csv2post_header_page($pagetitle,$layout){
         <?php      
         // display persistent notices for all pages
         csv2post_persistentnotice_output('global');
-        
-        // decide if user is probably activating for the first time and display message accordingly
-        csv2post_first_activation_check();?>
+        ?>
     
         <div id="icon-options-general" class="icon32"><br /></div>
         <h2><?php echo $pagetitle;?></h2>
@@ -588,7 +582,7 @@ function csv2post_display_accordianpanel_buttons($panel_array){
     if($video){
         csv2post_jquery_opendialog_accordianpanel_button('_video',$panel_number,$panel_title,$panel_help,$panel_icon,$panel_name,$panel_url);
     }?>  
-                               
+                          
     <!-- info div -->
     <?php if(isset($panel_help) && is_string($panel_help) && $panel_help != false){?> 
     <div id="csv2post_accordianpanelbutton_<?php echo $panel_number;?>_info" title="<?php echo $panel_title;?>">
@@ -895,5 +889,122 @@ function csv2post_formsubmitbutton_jquery($form_name){?>
     <p class="submit">
         <input type="submit" name="<?php echo WTG_C2P_ABB;?><?php echo $form_name;?>_submit" value="Submit" />
     </p><?php
-}                         
+} 
+
+/**
+* List of notification boxes displaying folders created by CSV 2 POST.
+*/
+function csv2post_list_folders(){
+    global $csv2post_dataimportjobs_array,$csv2post_jobtable_array;
+
+    $contentfolder_exists = csv2post_contentfolder_exist();
+    
+    if($contentfolder_exists){?>
+        <script language="JavaScript">
+        function csv2post_deletefolders_checkboxtoggle(source) {
+          checkboxes = document.getElementsByName('csv2post_deletefolders_array[]');
+          for(var i in checkboxes)
+            checkboxes[i].checked = source.checked;
+        }
+        </script>
+        <input type="checkbox" onClick="csv2post_deletefolders_checkboxtoggle(this)" /> Select All Folders<br/>
+        <?php echo csv2post_notice('<input type="checkbox" name="csv2post_deletefolders_array[]" value="wpcsvimportercontent" /> 1. wpcsvimportercontent','success','Tiny','','','return');                    
+    }
+}
+
+/**
+* List of notification boxes displaying core plugin tables
+*/
+function csv2post_list_plugintables(){
+    global $csv2post_tables_array;?>
+
+    <script language="JavaScript">
+    function csv2post_deletecoretables_checkboxtoggle(source) {
+      checkboxes = document.getElementsByName('csv2post_deletecoretables_array[]');
+      for(var i in checkboxes)
+        checkboxes[i].checked = source.checked;
+    }
+    </script>
+
+    <input type="checkbox" onClick="csv2post_deletecoretables_checkboxtoggle(this)" /> Select All Tables<br/>
+
+    <?php 
+    $count = 0;
+    foreach($csv2post_tables_array['tables'] as $key => $table){
+        if(csv2post_WP_SQL_does_table_exist($table['name'])){
+            ++$count;
+            echo csv2post_notice('<input type="checkbox" name="csv2post_deletecoretables_array[]" value="'.$table['name'].'" /> ' . $count . '. ' . $table['name'],
+            'success','Tiny','','','return');               
+        }
+    }
+    
+    if($count == 0){echo '<p>There are no core tables installed right now</p>';}
+}    
+
+/**
+* Tool Tip
+* 2. the javascript for this is added to the footer
+*/
+function c2p_tt($label ='?',$title = 'Please visit www.csv2post.com for help'){
+    echo '<span class="givemesometips" title="'.$title.'">'.$label.'</span>';
+}     
+
+/**
+* Displays a table of csv2post_option records with ability to view their value or delete them
+
+* @todo LOWPRIORITY, allow output of specific types of options then make use of this on the Un-Install screen
+* @param boolean $form true adds checkbox object to each option record (currently used on uninstall panel) 
+*/
+function csv2post_list_optionrecordtrace($form = false,$size = 'Small',$optiontype = 'all'){
+    
+    // first get all records that begin with csv2post_
+    $csv2postrecords_result = csv2post_WP_SQL_options_beginning_with('csv2post_');
+    $counter = 1;?>
+        
+        <script language="JavaScript">
+        function csv2post_deleteoptions_checkboxtoggle(source) {
+          checkboxes = document.getElementsByName('csv2post_deleteoptions_array[]');
+          for(var i in checkboxes)
+            checkboxes[i].checked = source.checked;
+        }
+        </script>
+
+        <input type="checkbox" onClick="csv2post_deleteoptions_checkboxtoggle(this)" /> Select All Options<br/>
+    
+    <?php       
+    foreach($csv2postrecords_result as $key => $option ){
+        
+        if($form){
+            $form = '<input type="checkbox" name="csv2post_deleteoptions_array[]" value="'.$option.'" />';
+        }
+        
+        echo csv2post_notice($form . ' ' . $counter . '. ' . $option,'success',$size,'','','return');
+        
+        ++$counter;
+    }
+} 
+
+function csv2post_GUI_plugin_screens_menuoptions($current){
+    global $csv2post_mpt_arr;
+    foreach($csv2post_mpt_arr['menu'] as $page_slug => $page_array){ 
+        foreach($csv2post_mpt_arr['menu'][$page_slug]['tabs'] as $whichvalue => $screen_array){
+            $selected = '';
+            if($screen_array['slug'] == $current){
+                $selected = 'selected="selected"';    
+            }             
+            echo '<option value="'.$screen_array['slug'].'" '.$selected.'>'.$screen_array['label'].'</option>'; 
+        }
+    }    
+}
+
+function csv2post_GUI_plugin_page_menuoptions($current){
+    global $csv2post_mpt_arr;
+    foreach($csv2post_mpt_arr['menu'] as $page_slug => $page_array){ 
+        $selected = '';
+        if($page_slug == $current){
+            $selected = 'selected="selected"';    
+        } 
+        echo '<option value="'.$page_slug.'" '.$selected.'>'.$csv2post_mpt_arr['menu'][$page_slug]['title'].'</option>';
+    }    
+}           
 ?>

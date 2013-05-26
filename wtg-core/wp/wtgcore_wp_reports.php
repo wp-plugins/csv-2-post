@@ -556,10 +556,10 @@ function csv2post_log($atts){
         'userid' => false,# user id if any    
         'noticemessage' => false,# when using log to create a notice OR if logging a notice already displayed      
         'comment' => false,# dev comment to help with troubleshooting
-        'type' => false,# general(default)|error(leads to being reported to us)|flag(get admins attention)|schedule(used by schedule system to perform an action much like cron) 
+        'type' => false,# general|error|trace 
         'category' => false,#  schedule|posts|data|project|forms|useractions|automation 
-        'action' => false,# if type error action is what was being done i.e. form submission | if type is schedule action is what is to be done i.e. createposts,importdata
-        'priority' => false# if type is general/error priority is high critical the log is | if type is schedule the priority puts the request for action into order                         
+        'action' => false,# createposts|importdata|uploadfile|deleteuser|edituser  can add many custom but remember to update log screen
+        'priority' => false# low|normal|high (use high for errors or things that should be investigated, use low for logs created mid procedure for tracing progress)                        
     ), $atts ) );
     
     // start query
@@ -598,98 +598,6 @@ function csv2post_log($atts){
     $query_values .= ')';
     $query .= $query_columns .' VALUES '. $query_values;  
     $wpdb->query( $query );     
-}
-
-/**
-* Display log entries for specific log types
-* 
-* @link http://www.csv2post.com/hacking/log-table
-* 
-* @todo MEDIUMPRIORITY, use jQuery UI and Ajax table to display results
-* 
-* @param string $type general|error
-* @param integer $display_rows number of rows to display in table
-* @param array $display_columns an array holding the column names from csv2post_log table to be displayed
-*/
-function csv2post_log_display_bytype($type = 'all',$display_rows = 100,$display_columns = 'all'){
-    $rows = csv2post_WP_SQL_querylog_bytype($type,$display_rows);
-    
-    if(!$rows){
-        csv2post_n_incontent('No log entries have been made for this.','info','Small','No Log Entries');    
-        return;
-    }
-    
-    // reverse the order of the array
-    $logrows = array_reverse($rows);
-    
-    $rowCount = 0;
-    
-    csv2post_GUI_tablestart();
-    
-    foreach($logrows as $id => $row){
-        
-        // if first row do header
-        if($rowCount == 0){
-            
-            echo '<tr>';
-            
-            foreach($row as $column => $value){
-
-                // if display_columns is default "all" or specific columns passed we only add those
-                if($display_columns == 'all' || !is_array($display_columns)){
-                    
-                    echo '<td><strong>'.$column.'</strong></td>'; 
-
-                }else{
-                
-                    // only add values in columns passed either by
-                    if(in_array($column,$display_columns)){
-
-                        echo '<td><strong>'.$column.'</strong></td>'; 
-
-                    }   
-                }
-            }
-            
-            echo '</tr>';
-            
-        }else{
-            
-            echo '<tr>';
-            
-            foreach($row as $column => $value){
-
-                // if display_columns is default "all" or specific columns passed we only add those
-                if($display_columns == 'all' || !is_array($display_columns)){
-                    
-                    if($value == NULL){
-                        echo '<td></td>';
-                    }else{
-                        echo '<td>'.$value.'</td>'; 
-                    }
-                    
-                }else{
-                
-                    // only add values in columns passed either by
-                    if(in_array($column,$display_columns)){
-                        
-                        if($value == NULL){
-                            echo '<td></td>';
-                        }else{
-                            echo '<td>'.$value.'</td>'; 
-                        }   
-        
-                    }   
-                }
-            }
-            
-            echo '</tr>';
-        }
-        
-        ++$rowCount;   
-    }
-    
-    echo '</table>'; 
 }
 
 /**

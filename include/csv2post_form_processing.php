@@ -150,9 +150,6 @@ if($cont){
 
 // Install
 if($cont){
-    // Contact Form Submission Post Validation
-    $cont = csv2post_form_contactformsubmission();
-    
     // Create a data rule for replacing specific values after import 
     $cont = csv2post_form_create_datarule_replacevalue();      
     $cont = csv2post_form_uninstallplugin_partial(); 

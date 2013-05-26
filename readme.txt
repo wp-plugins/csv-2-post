@@ -6,7 +6,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: CSV 2 POST, CSV2POST, Data Engine, CSV 2 POST Data Engine, wordpress data import,wordpress data importer,auto blogging,auto blogger,autoblog,mass create posts,mass post creation,csv file importer,csv file data import,post injection,import spreadsheet,excel file import,excel import,www.csv2post.com,CSV2POST,wordpresscsv import,wordpress import plugin,wordpress data import tool,wordpress data import plugin,wordpress post creation plugin
 Requires at least: 3.5.0
 Tested up to: 3.6.0
-Stable tag: 6.9.7
+Stable tag: 6.9.8
 
 CSV 2 POST Data Engine
 
@@ -33,7 +33,7 @@ Have you considered some text spinning, URL cloaking and scheduling to create a 
 CSV 2 POST premium is on stand by if your needs are far above average...
     
     
-= About Our Plugin =
+= About Our 'Less BS' Plugin =
 CSV 2 POST is the ultimate CSV importer, a true web tool for auto-blogging and managing imported data.
 We have created an electronic quill, not a pen, not a pencil...a quill. Everything added to this plugin is at the request of users 
 who know best including professionals developing true money 
@@ -113,9 +113,25 @@ first plugin was created in 2009 and was halted pending re-development.
 6. You can use up to 3 columns of data to create 3 levels of categories.
 
 == Changelog ==
+= 6.9.8 =
+* From The Developers
+    * Released 27th May 2013
+* Fixes     
+    * Fix related to extension loading procedure
+* Feature Changes
+    * New Log screen (general history logging)
+    * New Flags screen (basically an alert system but also acts an administration task list) 
+    * Log/History panels and pages removed, all log entries will now be displayed on a single screen
+    * Open Template For Editing: this panel has been removed, we are focusing on using C2P Content custom post type for editing templates
+    
 = 6.9.7 =
-		* Missing file added
-		
+* From The Developers
+    * Released 13th May 2013
+* Fixes     
+    * Missing file added csv2post_seoplugins_array.php 
+* Feature Changes
+    * None
+            
 = 6.9.6 =
 * From The Developers
     * Released 10th May 2013

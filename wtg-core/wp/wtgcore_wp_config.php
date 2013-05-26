@@ -28,26 +28,26 @@ function csv2post_css_core($side = 'admin',$csv2post_css_side_override = false){
 function csv2post_process(){
     // establish if form processing is permitted to continue
     $permission_granted = false;
-
+                  
     // form submission
-    if(isset($_POST['csv2post_post_processing_required']) && $_POST['csv2post_post_processing_required'] == true){
+    if(isset($_POST['csv2post_post_processing_required']) && $_POST['csv2post_post_processing_required'] == true){  
         if(isset($_POST['csv2post_admin_referer'])){  
             // a few forms have the csv2post_admin_referer where the default hidden values are not in use
-            check_admin_referer( $_POST['csv2post_admin_referer'] );        
-        }else{                             
+            check_admin_referer( $_POST['csv2post_admin_referer'] );         
+        }else{                                       
             // 99% of forms will use this method
             check_admin_referer( $_POST['csv2post_hidden_panel_name'] );
         } 
                              
         csv2post_log_adminform(__FUNCTION__,1,'Form Submitted','form submission about to be processed','general','low',$_GET);       
     }
- 
+                        
     // url submission
-    if(isset($_GET['csv2postprocsub']) && isset($_GET['action'])){        
+    if(isset($_GET['csv2postprocsub']) && isset($_GET['action'])){           
         check_admin_referer( $_GET['action'] );  
         csv2post_log_urlaction(__FUNCTION__,1,'URL Action Submitted','url action submission about to be processed','general','low',$_GET);       
     }     
-
+            
     // arriving here means check_admin_referer() security is positive       
     global $csv2post_debug_mode,$cont,$csv2post_is_free;
                                   
@@ -88,12 +88,14 @@ function csv2post_process(){
     # we will need to loop through all extensions, including all of their form processing files
     # this allows multiple extensions to intercept the same submission which could be very good for integration
     
-    // include extension processing file, allowing us to keep post processing all together    
-    if(WTG_C2P_EXTENSIONS != 'disable'){        
-        if(csv2post_extension_activation_status('df1')){          
-            require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/formprocessing.php');
-        }
-    }      
+    // include extension processing file, allowing us to keep post processing all together 
+    if(!$csv2post_is_free){   
+        if(WTG_C2P_EXTENSIONS != 'disable'){        
+            if(csv2post_extension_activation_status('df1')){          
+                require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/formprocessing.php');
+            }
+        }      
+    }
 }                     
 
 /**
@@ -335,26 +337,6 @@ function csv2post_check_requirements($display){
                 of php than you are using. Most features will work fine but some important ones will not.',
                 'warning','Large',$csv2post_plugintitle . ' Requires PHP '.WTG_C2P_PHPVERSIONMINIMUM);
             }
-        }
-    }
-    
-    // soap extension and SoapClient class required for Priority Level Support
-    global $csv2post_is_domainregistered,$csv2post_plugintitle;
-    if($csv2post_is_domainregistered){
-        $extensioninstalled_result = csv2post_is_extensionloaded('soap');
-        if(!$extensioninstalled_result){
-            $requirement_missing = true;
-            if($display == true){
-                csv2post_notice('Your server does not have the soap extension loaded. This is required for '.$csv2post_plugintitle.' premium edition and the premium services offered by WebTechGlobal.','error','Extra','Soap Extension Required');
-            }
-        }else{
-            // now confirm SoapClient class exists
-            if (!class_exists('SoapClient')) {
-                $requirement_missing = true;
-                if($display == true){
-                    csv2post_notice('SoapClient class does not exist and is required by '.$csv2post_plugintitle.' for the premium edition and premium web services.','error','Extra','SoapClient Class Required');            
-                }
-            }            
         }
     }
     

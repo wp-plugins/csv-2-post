@@ -1,11 +1,13 @@
 <?php
-
+// free pages
 function csv2post_page_toppage(){require_once( WTG_C2P_DIR.'pages/pagemain/csv2post_main.php' );}
-function csv2post_page_data(){require_once( WTG_C2P_DIR.'pages/data/csv2post_main_data.php' );}
-function csv2post_page_projects(){require_once( WTG_C2P_DIR.'pages/projects/csv2post_main_projects.php' );}                
-function csv2post_page_creation(){require_once( WTG_C2P_DIR.'pages/creation/csv2post_main_creation.php' );}
-function csv2post_page_install(){require_once( WTG_C2P_DIR.'pages/install/csv2post_main_install.php' );}
-function csv2post_page_more(){require_once( WTG_C2P_DIR.'pages/more/csv2post_main_more.php' );}
+
+// paid pages
+function csv2post_page_data(){require_once( WTG_C2P_PAID_PATH.'pages/data/csv2post_main_data.php' );}
+function csv2post_page_projects(){require_once( WTG_C2P_PAID_PATH.'pages/projects/csv2post_main_projects.php' );}                
+function csv2post_page_creation(){require_once( WTG_C2P_PAID_PATH.'pages/creation/csv2post_main_creation.php' );}
+function csv2post_page_install(){require_once( WTG_C2P_PAID_PATH.'pages/install/csv2post_main_install.php' );}
+function csv2post_page_more(){require_once( WTG_C2P_PAID_PATH.'pages/more/csv2post_main_more.php' );}
 
 /**
 * Wordpress navigation menu
@@ -232,16 +234,14 @@ function csv2post_menu_should_tab_be_displayed($page,$tab){
         return false;    
     }    
                 
-    // if package is free and screen is free OR if package is not free and screen is not free = return false
-    if($csv2post_is_free && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'] == 'free'  
-    || !$csv2post_is_free && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'] == 'paid'){   
+    // if package is free and screen is free return true
+    if($csv2post_is_free && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'] == 'free'){   
         return true;
     }
-
-    // if package is not free and screen is free = return true
-    if(!$csv2post_is_free && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'] == 'free'){   
-        return true;
-    }   
+    
+    if($csv2post_is_free && $csv2post_mpt_arr['menu'][$page]['tabs'][$tab]['package'] == 'paid'){   
+        return false;
+    }  
                  
     return true;      
 }

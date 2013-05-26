@@ -55,7 +55,7 @@ function csv2post_ajax_createdataimportjobcsvfiles_validatefield() {
     // TODO:HIGHPRIORITY, to avoid the user getting confused, warn them about duplicate job names (not used as an ID though so we will allow duplicate, that is the users choice)
     ////$importjobname_validate_result = csv2post_validate_dataimportjob_name(); 
     
-    echo csv2post_notice(urldecode( $_POST[ 'csv2post_jobname' ] ) .' is a good data import job name, please continue' ,'success','Large','Job Name Is Suitable','','return');
+    echo csv2post_notice(urldecode( $_POST[ 'csv2post_jobname' ] ) .' is a good data import job name, please continue' ,'success','Small','Job Name Is Suitable','','return');
     
     die();
 }
@@ -66,7 +66,7 @@ add_action( 'wp_ajax_action_createdataimportjobcsvfiles_validatefield', 'csv2pos
 */
 function csv2post_ajax_createdataimportjobcsvfiles_saveform() {
     check_ajax_referer( "csv2post_referer_createdataimportjobcsvfiles" );// createdataimportjobcsvfiles is panel name
-    echo csv2post_notice('The POST Value Processed By Ajax Is: ' . urldecode( $_POST[ 'colour' ] ) . ' END OF VALUE','success','Large','Testing','','return');
+    echo csv2post_notice('The POST Value Processed By Ajax Is: ' . urldecode( $_POST[ 'colour' ] ) . ' END OF VALUE','success','Small','Testing','','return');
     die();
 }
 add_action( 'wp_ajax_action_createdataimportjobcsvfiles_saveform', 'csv2post_ajax_createdataimportjobcsvfiles_saveform' );

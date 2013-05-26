@@ -7,7 +7,25 @@
 # The values in this array can be used to create a summary
 # of changes to be made during the plugin update process 
 $csv2post_upgrade_array = array();
-
+######################
+#   Version 6.9.7    # 
+######################
+$v = '6.9.7';
+$csv2post_upgrade_array[$v]['warning'] = 'Please backup your Wordpress files and database before updating.';
+// update 0 
+$csv2post_upgrade_array[$v]['changes'][0]['function'] = 'csv2post_INSTALL_tabmenu_settings';// the method we will process the update: function
+$csv2post_upgrade_array[$v]['changes'][0]['title'] = 'Plugin Menu Settings';// short name to refer to what is being upgraded
+$csv2post_upgrade_array[$v]['changes'][0]['description'] = 'There have been changes in the plugins menu settings array and it must be reset in the Worpdress options table for you to see the plugins screens properly.';    
+$csv2post_upgrade_array[$v]['changes'][0]['type'] = 'optionrecord';// optionrecord, replacefile, addfile, deletefile, modifyfile, creatable, altertable, deletetable, editrecord, addrecord, deleterecord
+$csv2post_upgrade_array[$v]['changes'][0]['name'] = 'csv2post_tabmenu';// specific name of file or the key for option record
+$csv2post_upgrade_array[$v]['changes'][0]['loc'] = 'wp_options';// file path or database table name
+$csv2post_upgrade_array[$v]['changes'][0]['backup'] = false;// does the existing record,file or table need backed up?
+$csv2post_upgrade_array[$v]['changes'][0]['element'] = 'record';// file,record,table    
+$csv2post_upgrade_array[$v]['changes'][0]['method'] = 'function';// the method we will process the update: function
+$csv2post_upgrade_array[$v]['changes'][0]['package'] = 'free';// free,paid - use free to display and apply for all installations else hide a change from free users by using paid
+######################
+#   Version 6.9.6    # 
+######################
 $v = '6.9.6';
 $csv2post_upgrade_array[$v]['warning'] = 'Please backup your Wordpress files and database before updating.';
 // update 0 

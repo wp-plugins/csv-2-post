@@ -32,7 +32,7 @@ if($csv2post_is_free){
     ','info','Small','Is your project finished?');
 }
 ?>
-
+ 
 <?php   
 ++$panel_number;// increase panel counter so this panel has unique ID
 $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
@@ -60,17 +60,19 @@ $panel_array['panel_help'] = 'This tool allows you to delete existing records, f
         csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
         ?> 
 
-        <h4>Data Import Job Tables</h4>
-        <?php csv2post_list_jobtables(); ?>
+        <h4><?php c2p_tt('Data Import Job Tables','You can delete tables created while creating Data Import Jobs. Please ensure tables you are deleting are ones that are no longer in use');?></h4>
+        <?php csv2post_list_jobtables();?>
         
-        <h4>CSV Files</h4>
-        <?php csv2post_list_csvfiles(); ?>
+        <h4><?php c2p_tt('Core Plugin Tables','Delete the tables that the plugin adds to your database on installation. The plugin requires these tables to work 100% so do not delete without considering what feature it may disable');?></h4>
+        <?php csv2post_list_plugintables();?>
+                
+        <h4><?php c2p_tt('CSV Files','Delete CSV files you have uploaded');?></h4>
+        <?php csv2post_list_csvfiles();?>
                
-        <h4>Folders</h4>
-        <?php csv2post_list_folders(); ?>
+        <h4><?php c2p_tt('Folders','Delete folders created by the plugin and are required for the plugin to work properly');?></h4>
+        <?php csv2post_list_folders();?>
                                                 
-        <?php ### TODO:LOWPRIORITY, display option records in groups and adapt csv2post_list_optionrecordtrace() for it?> 
-        <h4>Option Records</h4>
+        <h4><?php c2p_tt('Option Records','Delete all option records created by the plugin. This includes core option records and any created by projects');?></h4>
         <?php csv2post_list_optionrecordtrace(true,'Tiny'); ?>                    
                                       
          <?php 
@@ -141,9 +143,9 @@ $jsform_set['noticebox_content'] = 'This action will delete all currently instal
         
         echo '<br /><br />';
         
-        echo '<h2>Tables Not Currently Installed</h2>';
-        
-        echo '<h2>Tables Already Installed</h2>';
+        echo '<h2>Tables Not Installed</h2>';
+
+        csv2post_GUI_tablestart();
         
         echo '
         <thead>
@@ -160,8 +162,6 @@ $jsform_set['noticebox_content'] = 'This action will delete all currently instal
                 <th>Required</th>
             </tr>
         </tfoot>';
-        
-        echo '<tbody>';
           
         foreach($csv2post_tables_array['tables'] as $key => $table){
             if(!csv2post_WP_SQL_does_table_exist($table['name'])){         
@@ -182,11 +182,6 @@ $jsform_set['noticebox_content'] = 'This action will delete all currently instal
     <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
 
 <?php csv2post_panel_footer();?>
-
-<?php 
-global $csv2post_logcats_array;
-csv2post_log_display_bytype('install',100,$csv2post_logcats_array['categories']['install']['columns']);
-?>
 
 <?php      
 ++$panel_number;// increase panel counter so this panel has unique ID
@@ -226,6 +221,10 @@ $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a
 $panel_array['panel_help'] = __('This show the status of what are actually called php directives. These are a type of setting that can be configured in the php.ini file used by your server. Your hosting will configure this to suit the service they are providing and the values may effect this plugin.'); ?>
 <?php csv2post_panel_header( $panel_array );?>
 
+    <?php 
+    global $csv2post_php_version_tested,$csv2post_php_version_minimum,$csv2post_is_free_override,$csv2post_demo_mode,$csv2post_is_free;
+    ?>
+
     <h2>Package Values</h2>
     <ul>
         <li><strong>Plugin Version:</strong> <?php echo $csv2post_currentversion;?></li>
@@ -244,6 +243,10 @@ $panel_array['panel_help'] = __('This show the status of what are actually calle
         <li><strong>WTG_C2P_EXTENSIONS:</strong> <?php echo WTG_C2P_EXTENSIONS;?></li>
     </ul> 
     
+    <?php 
+    global $csv2post_debug_mode,$csv2post_is_dev,$csv2post_plugintitle,$csv2post_pluginname,$csv2post_homeslug,$csv2post_isbeingactivated,$csv2post_is_event,$csv2post_installation_required,$csv2post_was_installed,$csv2post_is_emailauthorised,$csv2post_log_maindir;
+    ?>
+        
     <h2>Variables</h2>   
     <ul>    
         <li><strong>Debug Mode:</strong> <?php echo $csv2post_debug_mode;?></li>                                                             
@@ -252,20 +255,18 @@ $panel_array['panel_help'] = __('This show the status of what are actually calle
         <li><strong>Plugin Name:</strong> <?php echo $csv2post_pluginname;?></li>                                                             
         <li><strong>Home Slug:</strong> <?php echo $csv2post_homeslug;?></li>
         <li><strong>Being Activated:</strong> <?php echo $csv2post_isbeingactivated;?></li>
-        <li><strong>Disable API:</strong> <?php echo $csv2post_disableapicalls;?></li>
         <li><strong>Is Event:</strong> <?php echo $csv2post_is_event;?></li>
         <li><strong>Installation Drive:</strong> <?php echo $csv2post_installation_required;?></li>
-        <li><strong>API Service Status:</strong> <?php echo $csv2post_apiservicestatus;?></li>
-        <li><strong>Web Service Available:</strong> <?php echo $csv2post_is_webserviceavailable;?></li>
-        <li><strong>Is Subscribed:</strong> <?php echo $csv2post_is_subscribed;?></li>
         <li><strong>Is Installed:</strong> <?php echo $csv2post_is_installed;?></li>
         <li><strong>Was Installed:</strong> <?php echo $csv2post_was_installed;?></li>
-        <li><strong>Domain Registered:</strong> <?php echo $csv2post_is_domainregistered;?></li>
         <li><strong>Email Authorised:</strong> <?php echo $csv2post_is_emailauthorised;?></li>
-        <li><strong>Log Main Dir:</strong> <?php echo $csv2post_log_maindir;?></li>
-        <li><strong>Call Code:</strong> <?php echo $csv2post_callcode;?></li>                                                        
+        <li><strong>Log Main Dir:</strong> <?php echo $csv2post_log_maindir;?></li>                                                       
     </ul>    
       
+    <?php 
+    global $csv2post_currentproject,$csv2post_extension_loaded,$csv2post_guitheme,$csv2post_currentjob_code,$csv2post_currentproject_code;
+    ?>
+    
     <h2>Users Configuration</h2>
     <ul>
         <li><strong>Current Project:</strong> <?php echo $csv2post_currentproject;?></li>
@@ -287,24 +288,6 @@ $panel_array['panel_help'] = __('This show the status of what are actually calle
         <li><strong>WTG_C2P_IMAGEFOLDER_URL</strong> <?php echo WTG_C2P_IMAGEFOLDER_URL;?></li>
     <ul>  
 
-<?php csv2post_panel_footer();?> 
-
-<?php
-++$panel_number;// increase panel counter so this panel has unique ID
-$panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
-$panel_array['panel_name'] = 'pluginfunctiontests';// slug to act as a name and part of the panel ID 
-$panel_array['panel_title'] = __('Plugin Function Tests');// user seen panel header text 
-$panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_help'] = __('Remove'); ?>
-<?php csv2post_panel_header( $panel_array );?>
-    <ul>
-        <li><strong>Blog Charset:</strong> <?php echo get_option('blog_charset'); ?></li>
-        <li><strong>Database Charset:</strong> <?php echo DB_CHARSET; ?></li>
-        <li><strong>Encoding Clean String:</strong> <?php echo csv2post_encoding_clean_string('???'); ?></li>
-        <li><strong>UTF-8 Encode:</strong> <?php echo utf8_encode('beta testing only ???'); ?></li>        
-        <li><strong>UTF-8 Encode (special characters only):</strong> <?php echo utf8_encode('???'); ?></li>
-        <li><strong>UTF-8 Decode (special characters only):</strong> <?php echo utf8_decode('???'); ?></li>
-    </ul>        
 <?php csv2post_panel_footer();?> 
 
 <?php

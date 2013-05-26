@@ -1,4 +1,9 @@
 <?php
+####################################################################################
+#                                                                                  #
+#         MISC FUNCTIONS AND FUNCTIONS USED FOR BOTH PUBLIC AND ADMIN SIDE         #
+#                                                                                  #
+####################################################################################
 /**
 * Imports data from CSV file. This is the basic version of this function that does not perform data updating.
 * 
@@ -140,8 +145,7 @@ function csv2post_data_import_from_csvfile_basic( $csvfile_name, $table_name, $t
 * @param mixed $csv2post_script_side_override, makes use of admin lines in front-end of blog 
 */
 function csv2post_script_plugin($side = 'admin',$csv2post_script_side_override = false){
-    global $csv2post_mpt_arr;### TODO: LOWPRIORITY, is this variable used in this function/files included in function?
-    ### TODO:PACKAGE, if plugin package requires custom script, include a parent script file here which establishes which script to queue
+    ### if plugin package requires custom script, include a parent script file here which establishes which script to queue
 }
 
 /**
@@ -151,7 +155,7 @@ function csv2post_script_plugin($side = 'admin',$csv2post_script_side_override =
 * @param mixed $csv2post_css_side_override, makes use of admin lines in front-end of blog
 */
 function csv2post_css_plugin($side = 'admin',$csv2post_css_side_override = false){        
-    ### TODO:PACKAGE, if plugin requires custom CSS include parent CSS file here
+    ### if plugin requires custom CSS include parent CSS file here
 }
 
 /**
@@ -170,8 +174,6 @@ function csv2post_plugin_conflict_prevention(){
     // then allow installation but warn user
     $conflict_found = false;
 
-    # ARRAY OF PLUGINS WHICH WE LOOP THROUGH
-    
     // Wordpress HTTPS  EXAMPLE
     /*
     $plugin_profiles[1]['switch'] = 1;//used to use or not use this profile, 0 is no and 1 is use
@@ -242,35 +244,6 @@ function csv2post_plugin_conflict_prevention(){
     }
 
     return $conflict_found;
-}
-
-/**
-* Updates empty premade record in data job table using CSV file row.
-* Reports errors to server log.
-* 
-* @returns boolean, true if an update was done with success else returns false
-* 
-* @param mixed $record
-* @param mixed $csvfile_name
-* @param mixed $fields
-* @param mixed $jobcode
-* @param mixed $record_id
-* @param mixed $headers_array
-*/
-function csv2post_WP_SQL_update_record_dataimportjob( $record, $csvfile_name, $fields, $jobcode,$record_id, $headers_array,$filegrouping ){
-    global $csv2post_plugintitle;
-    // using new record id - update the record
-    $updaterecord_result = csv2post_WP_SQL_update_record( $record, $csvfile_name, $fields, $jobcode,$record_id, $headers_array, $filegrouping );
-    // increase $inserted counter if the update was a success, the full process counts as a new inserted record            
-    if($updaterecord_result === false){
-        csv2post_error_log($csv2post_plugintitle . ': csv2post_WP_SQL_update_record() returned FALSE for JOB:'.$jobcode.' FILE:'.$csvfile_name.'. Please investigate.');                
-        return false;
-    }elseif($updaterecord_result === 1){ 
-        return true;  
-    }elseif($updaterecord_result === 0){
-        csv2post_error_log($csv2post_plugintitle . ': csv2post_WP_SQL_update_record() returned 0 for JOB:'.$jobcode.' FILE:'.$csvfile_name.'. Please investigate.');
-        return false;
-    }  
 } 
 
 /**
@@ -755,7 +728,8 @@ function csv2post_is_csvfile_in_use($csv_file_name,$output = true){
         // get the jobs own option record
         $jobrecord = csv2post_get_dataimportjob($jobid);
         if(!$jobrecord && $output == true){
-            csv2post_notice('Failed to locate the option table record for data import job named '.$job['name'].'. Is it possible the record was deleted manually?','error','Tiny','','','echo');
+            csv2post_notice('Failed to locate the option table record for data import job named '.$job['name'].'. 
+            Is it possible the record was deleted manually?','error','Tiny','','','echo');
         }else{
 
             foreach($jobrecord['files'] as $key => $csvfile_name){
