@@ -7,13 +7,16 @@ if($side == 'public'){
 
     function csv2post_ADDACTION_admin_init_registered_scripts() {
         global $csv2post_currentversion;
+        $wp_version = csv2post_get_wp_version();
         
         $version = 'latest';// wordpress - stable - (nothing in between yet) - latest:gets from google
                 
         // this version approach is a quick fix, I plan to make full transition to 1.9.1 once WP 3.6 has been released
-        if( csv2post_get_wp_version() < '3.6' ){
+        if( $wp_version < '3.6' ){
             wp_deregister_script( 'jquery' );
             wp_register_script( 'jquery','http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js');                
+        }elseif( $wp_version >= '3.6' ){
+            wp_register_script( 'jquery191','http://code.jquery.com/jquery-1.9.1.js');
         }else{
             wp_register_script( 'jquery191','http://code.jquery.com/jquery-1.9.1.js');
         }
@@ -27,19 +30,8 @@ if($side == 'public'){
         #                        SCRIPTS NOT PACKAGED WITH WORDPRESS                        #
         #                                                                                   #
         #####################################################################################
-        // multi-select (lists, not the same as multiselect menus)
-        if($version == 'original'){
-            wp_register_script('jquery-multi-select',WTG_C2P_URL.'wtg-core/wp/script/multi-select-basic/jquery.multi-select.js',array('jquery'));
-        }elseif($version == 'latest'){ 
-            wp_register_script('jquery-multi-select','https://raw.github.com/lou/multi-select/master/js/jquery.multi-select.js',array('jquery'));
-        }    
-
-        // multi-select (lists, not the same as multiselect menus)
-        if($version == 'original'){
-            wp_register_script('jquery-cookie',WTG_C2P_URL.'wtg-core/wp/script/jquery.cookie.js',array('jquery'));
-        }elseif($version == 'latest'){ 
-            wp_register_script('jquery-cookie','https://raw.github.com/carhartl/jquery-cookie/master/jquery.cookie.js',array('jquery'));
-        }    
+        wp_register_script('jquery-multi-select',WTG_C2P_URL.'wtg-core/wp/script/multi-select-basic/jquery.multi-select.js',array('jquery'));
+        wp_register_script('jquery-cookie',WTG_C2P_URL.'wtg-core/wp/script/jquery.cookie.js',array('jquery'));
     }
        
     /**
@@ -72,11 +64,7 @@ if($side == 'public'){
             #                        SCRIPTS NOT PACKAGED WITH WORDPRESS                        #
             #                                                                                   #
             #####################################################################################
-                    
-            // multi-select (side by side selectable style lists, not the same as multiselect menus)
             wp_enqueue_script('jquery-multi-select');
-            
-            // multi-select (lists, not the same as multiselect menus)
             wp_enqueue_script('jquery-cookie');  
          }
     }

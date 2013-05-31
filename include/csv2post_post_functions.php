@@ -163,15 +163,8 @@ function csv2post_create_posts_basic($project_code,$request_method){
         // parse default post content
         $content = csv2post_parse_columnreplacement_basic($record_array,$content_template);
 
-        // parse excerpt template
-        if(isset($project_array['default_excerpttemplate_id'])){
-            $excerpt_template = csv2post_get_template_design($project_array['default_excerpttemplate_id']);
-            if($excerpt_template){
-                $my_post = csv2post_parse_columnreplacement_basic($record_array,$excerpt_template);
-            }             
-        }
-        
-        $my_post = csv2post_POST_excerpt_basic($my_post,$record_array,$excerpt_template,$project_array);
+        // parse excerpt template        
+        $my_post = csv2post_POST_excerpt_basic($my_post,$record_array,$project_array);
                                
         // set tags
         if(isset($project_array['tags']['default']['table']) && isset($project_array['tags']['default']['column'])){
@@ -218,7 +211,7 @@ function csv2post_create_posts_basic($project_code,$request_method){
         }else{
                  
             if(isset($project_array['postformat']['default'])){
-                wp_set_post_terms($post_ID, 'post-format-'.$project_array['postformat']['default'], 'post_format');    
+                wp_set_post_terms($my_post['ID'], 'post-format-'.$project_array['postformat']['default'], 'post_format');    
             }
         
             ++$new_posts;
@@ -307,22 +300,6 @@ function csv2post_post_add_metadata_basic_seo($project_array,$project_code,$reco
     if( isset($project_array['seo']['basic']['keywords_key']) && isset($project_array['seo']['basic']['keywords_table']) && isset($project_array['seo']['basic']['keywords_column']) ){        
         add_post_meta($post_ID,$project_array['seo']['basic']['keywords_key'],$record_array[$project_array['seo']['basic']['keywords_column']],true);
     }     
-}
-
-/**
-* Replaces column strings within giving value. Does not take project table into consideration.
-* Is only to be used within _basic functions
-* 
-* @param mixed $record_array
-* @param mixed $value
-* @return mixed
-*/
-function csv2post_parse_columnreplacement_basic($record_array,$value){
-    // loop through record array values
-    foreach( $record_array as $column => $data ){
-        $subject = str_replace('#'. $column, $data, $value); 
-    } 
-    return $subject;
 }
 
 /**
@@ -657,8 +634,8 @@ function csv2post_categorysetup_basicscript_normalcategories($r,$project_array){
    return $appliedcat_array;      
 } 
 
-function csv2post_POST_excerpt_basic($my_post,$record_array,$excerpt_template,$project_array){
-    if(isset($project_array['default_excerpttemplate_id'])){  
+function csv2post_POST_excerpt_basic($my_post,$record_array,$project_array){
+    if(isset($project_array['default_excerpttemplate_id']) ){  
         $excerpt_template = csv2post_get_template_design($project_array['default_excerpttemplate_id']);
         if($excerpt_template){
             $my_post['post_excerpt'] = csv2post_parse_columnreplacement_basic($record_array,$excerpt_template);
@@ -666,5 +643,21 @@ function csv2post_POST_excerpt_basic($my_post,$record_array,$excerpt_template,$p
         }                 
     }  
     return $my_post;
-}  
+}   
+
+/**
+* Replaces column strings within giving value. Does not take project table into consideration.
+* Is only to be used within _basic functions
+* 
+* @param mixed $record_array
+* @param mixed $value
+* @return mixed
+*/
+function csv2post_parse_columnreplacement_basic($record_array,$subject){
+    // loop through record array values
+    foreach( $record_array as $column => $data ){
+        $subject = str_replace('#'. $column, $data, $subject); 
+    } 
+    return $subject;
+}     
 ?>

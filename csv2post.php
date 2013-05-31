@@ -1,7 +1,7 @@
 <?php         
 /*
 Plugin Name: CSV 2 POST
-Version: 6.9.8
+Version: 6.9.9
 Plugin URI: http://www.csv2post.com
 Description: CSV 2 POST Data Engine for Wordpress is the professional choice for data import, auto-blogging, text spinning and more
 Author: Zara Walsh
@@ -28,7 +28,7 @@ services not just software. License and agreement is seperate.
 */         
                             
 // package variables (frequently changed)
-$csv2post_currentversion = '6.9.8';
+$csv2post_currentversion = '6.9.9';
 $csv2post_php_version_tested = '5.4.12';// current version the plugin is being developed on
 $csv2post_php_version_minimum = '5.3.0';// minimum version required for plugin to operate
 $csv2post_is_free_override = false;// change to true for free edition setup when fulledition folder present 

@@ -2116,19 +2116,6 @@ function csv2post_form_createcontentfolder(){
         return true;
     }    
 }  
- 
-/**
-* Reset Quick Start session array 
-*/
-function csv2post_form_reseteci(){
-    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecireset'){
-        csv2post_INSTALL_ecisession();        
-        csv2post_notice_postresult('success','Quick Start Reset','You can now start with Step One of the Quick Start system.');        
-        return false;
-    }else{
-        return true;
-    }     
-}  
                   
 /**
 * Save sub-page by permalinks
@@ -2577,33 +2564,6 @@ function csv2post_form_save_easyconfigurationquestions(){
     }       
 }    
 
-/**
-* Data panel one settings
-* 
-*/
-function csv2post_form_save_settings_datapanelone(){
-         if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'panelone'){
-        
-        global $csv2post_adm_set;
-
-        $csv2post_adm_set['encoding']['type'] = $_POST['csv2post_radiogroup_encoding'];
-        $csv2post_adm_set['admintriggers']['newcsvfiles']['status'] = $_POST['csv2post_radiogroup_detectnewcsvfiles'];
-        $csv2post_adm_set['admintriggers']['newcsvfiles']['display'] = $_POST['csv2post_radiogroup_detectnewcsvfiles_display'];
-        $csv2post_adm_set['postfilter']['status'] = $_POST['csv2post_radiogroup_postfilter'];          
-        $csv2post_adm_set['postfilter']['tokenrespin']['status'] = $_POST['csv2post_radiogroup_spinnertokenrespin'];        
- 
-        csv2post_update_option_adminsettings($csv2post_adm_set);
-
-        csv2post_n_postresult('success','Data Related Settings Saved','We
-        recommend that you monitor the plugin for a short time and ensure
-        your new settings are as expected.');
-        
-        return false;
-    }else{
-        return true;
-    } 
-}
-
 function csv2post_form_save_postslugdata(){
     if(isset($_POST[WTG_C2P_ABB.'hidden_pageid']) && $_POST[WTG_C2P_ABB.'hidden_pageid'] == 'projects' && isset($_POST[WTG_C2P_ABB.'hidden_panel_name']) && $_POST[WTG_C2P_ABB.'hidden_panel_name'] == 'postslug'){
         global $csv2post_currentproject_code,$csv2post_project_array;
@@ -2734,8 +2694,33 @@ function csv2post_form_undo_posts(){
     }else{
         return true;
     }       
-}   
+}  
 
+/**
+* Data panel one settings
+*/
+function csv2post_form_save_settings_datapanelone(){
+         if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'panelone'){
+        
+        global $csv2post_adm_set;
+
+        $csv2post_adm_set['encoding']['type'] = $_POST['csv2post_radiogroup_encoding'];
+        $csv2post_adm_set['admintriggers']['newcsvfiles']['status'] = $_POST['csv2post_radiogroup_detectnewcsvfiles'];
+        $csv2post_adm_set['admintriggers']['newcsvfiles']['display'] = $_POST['csv2post_radiogroup_detectnewcsvfiles_display'];
+        $csv2post_adm_set['postfilter']['status'] = $_POST['csv2post_radiogroup_postfilter'];          
+        $csv2post_adm_set['postfilter']['tokenrespin']['status'] = $_POST['csv2post_radiogroup_spinnertokenrespin'];        
+ 
+        csv2post_update_option_adminsettings($csv2post_adm_set);
+
+        csv2post_n_postresult('success','Data Related Settings Saved','We
+        recommend that you monitor the plugin for a short time and ensure
+        your new settings are as expected.');
+        
+        return false;
+    }else{
+        return true;
+    } 
+} 
 
 /**
 * Updates current projects default template
@@ -2793,5 +2778,21 @@ function csv2post_form_change_default_excerpttemplate(){
     }else{
         return true;
     }    
-}      
+} 
+
+/**
+* Reset Quick Start session array 
+*/
+function csv2post_form_reseteci(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecireset'){
+        
+        
+        
+        csv2post_INSTALL_ecisession();        
+        csv2post_notice_postresult('success','Quick Start Reset','You can now start with Step One of the Quick Start system.');        
+        return false;
+    }else{
+        return true;
+    }     
+}       
 ?>

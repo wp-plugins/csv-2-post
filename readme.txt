@@ -6,7 +6,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: CSV 2 POST, CSV2POST, Data Engine, CSV 2 POST Data Engine, wordpress data import,wordpress data importer,auto blogging,auto blogger,autoblog,mass create posts,mass post creation,csv file importer,csv file data import,post injection,import spreadsheet,excel file import,excel import,www.csv2post.com,CSV2POST,wordpresscsv import,wordpress import plugin,wordpress data import tool,wordpress data import plugin,wordpress post creation plugin
 Requires at least: 3.5.0
 Tested up to: 3.6.0
-Stable tag: 6.9.8
+Stable tag: 6.9.9
 
 CSV 2 POST Data Engine
 
@@ -33,7 +33,7 @@ Have you considered some text spinning, URL cloaking and scheduling to create a 
 CSV 2 POST premium is on stand by if your needs are far above average...
     
     
-= About Our 'Less BS' Plugin =
+= About Our Plugin =
 CSV 2 POST is the ultimate CSV importer, a true web tool for auto-blogging and managing imported data.
 We have created an electronic quill, not a pen, not a pencil...a quill. Everything added to this plugin is at the request of users 
 who know best including professionals developing true money 
@@ -70,6 +70,30 @@ Initial upload and activation as guided by Wordpress.org standard plugin install
 
 == Frequently Asked Questions ==
 
+= Are custom fields supported? =
+Yes
+
+= Are the new Wordpress 3.6 Post Formats supported? =
+Yes
+
+= Can I create custom post types, not just post or page? =
+Yes
+
+= Can I create categories? =
+Yes
+
+= Is there a limit to the number of posts I can create? =
+No
+
+= Does the plugin have free support? =
+Yes
+
+= Is the plugin compatible with ShopperPress? =
+Yes
+
+= Is the plugin compatible with ClassiPress? =
+Yes
+
 = Does this plugin work with SEO by Yoast plugin? =
 Yes it does, actually in a technical way all SEO plugins work with CSV 2 POST however
 the most popular get some extra support to make it easier for users. That includes All In One SEO 
@@ -85,23 +109,10 @@ handles the more complex requests. However sometimes we can add a new feature to
 edition quickly so please push for the free option first.
 
 = Will development continue for this plugin? =
-Our To Do list for CSV 2 POST is already extensive. Ideas, requests and
-requirements for new web technology will keep us busy until 2014. This is why the plugins
-interface has so many screens and offers the ability to hide features not wanted. 
-
-= Why are the features on so many different plugin screens? =
-Long term plans for the development of CSV 2 POST Data Engine will add an endless list
-of new features. Not only do all the form fields and buttons need to be tidy but
-every feature and ability has to be offered without assumption. Meaning users
-must be able to configure them or opt out of using them or use defaults. Users have that
-choice and flexability which is not offered in all plugins. The entire plugin offers a 
-sandbox approach, especially for those who know a little PHP and can customise it even
-further. The sandbox approach assumes nothing and is expressed on an interface that does
-not push users through a linear step by step process.
+Yes. We hope to be adding new features until 2015 and updating it for compatability with Wordpress for many years.
 
 = When was CSV 2 POST Beta released? =
-This plugins re-development begun at the end of 2011 and the Beta was released June 2012. However the
-first plugin was created in 2009 and was halted pending re-development.
+The plugin was released 2009 and re-developed from scratch in 2012. 
 
 == Screenshots ==
 
@@ -113,6 +124,22 @@ first plugin was created in 2009 and was halted pending re-development.
 6. You can use up to 3 columns of data to create 3 levels of categories.
 
 == Changelog ==
+= 6.9.9 =
+* From The Developers
+    * Released 31st May 2013
+* Fixes     
+    * Post Formats: fixed a bug in new Post Format function call (a new feature pending for Wordpress 3.6)
+    * Updating jquery.multi-select.js may fix faulty tab menu experienced by some users
+    * Switched from raw.github script loading to local jquery.multi-select.js file, strict mimi types causes issue using raw
+    * Tokens are now replaced properly, some users were reporting the shorter token made easier for free edition not being replaced
+* Feature Changes
+    * None
+* Technical Notes
+    * Added more security to function csv2post_save_meta_boxes_flags()
+    * Added more security to function csv2post_save_meta_boxes_contenttemplates()    
+    * Updated jquery.multi-select.js
+    * Updated jquery.cookie.js
+    
 = 6.9.8 =
 * From The Developers
     * Released 27th May 2013
