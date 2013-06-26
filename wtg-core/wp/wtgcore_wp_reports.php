@@ -2,7 +2,7 @@
 /**
 * Creates a new notification with a long list of style options available.
 * Can return the message for echo or add it to an array, which can also be stored for persistent messages.
-* Requires visitor to be logged in and on an admin page, dont need to do prevalidation before calling function
+* Requires visitor to be logged in and on an admin page
 *     
 * Dont include a title attribute if you want to use defaults and stick to a standard format
 *  
@@ -18,11 +18,13 @@
 * 2. return - returns the html for doing as we want, usually we use echo to display notification in specific place
 * 3. public - returns the html for use on front-end, bypasses is_admin() which exists as a safety measure to prevent admin information being displayed on front-end in error
 
-* @deprecated, use csv2post_n()
+* @deprecated, use csv2post_n() which offers more options for security i.e. displaying to none administrators
 */
 function csv2post_notice($message,$type = 'success',$size = 'Extra',$title = false, $helpurl = 'www.csv2post.com/support', $output_type = 'echo',$persistent = false,$clickable = false,$user_type = false){
 
-    if(is_admin() || $output_type == 'public'){
+    if(current_user_can( 'manage_options' ) || $output_type == 'public'){
+        
+        //if(is_admin() || $output_type == 'public'){ old method, 
         
         // change unexpected values into expected values (for flexability and to help avoid fault)
         if($type == 'accepted'){$type == 'success';}
@@ -349,7 +351,7 @@ function csv2post_notice_postresult($type,$title,$message,$helpurl = false,$user
 * @param mixed $user
 */
 function csv2post_n_postresult($type,$title,$message,$helpurl = false,$user = 'admin'){
-    csv2post_notice($message,$type,'Large',$title, $helpurl, 'echo');    
+    csv2post_notice($message,$type,'Large',$title, $helpurl, 'echo');   
 }
      
 /**

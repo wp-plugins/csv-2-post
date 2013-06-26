@@ -1,3 +1,15 @@
+<h4>Plugins Links</h4>
+<ul>
+    <li><a class="button" href="http://www.csv2post.com" title="CSV 2 POST Website" target="_blank">Plugins Website</a></li>
+    <li><a class="button" href="http://forum.webtechglobal.co.uk/viewforum.php?f=8" title="CSV 2 POST Forum" target="_blank">Plugins Forum</a></li>
+    <li><a class="button" href="http://www.csv2post.com/tutorials" title="CSV 2 POST main website" target="_blank">Tutorial List</a></li>
+    <li><a class="button" href="http://www.csvtopost.com" title="CSV 2 POST Demo Portal" target="_blank">CSV 2 POST Demo Portal</a></li>
+    <li><a class="button" href="http://www.csv2post.com/wp-content/plugins/wp-affiliate-platform/affiliates/register.php" title="CSV 2 POST Affiliate Register" target="_blank">Affiliate Registration</a></li>
+    <li><a class="button" href="http://www.csv2post.com/wp-content/plugins/wp-affiliate-platform/affiliates/login.php" title="CSV 2 POST Affiliate Login" target="_blank">Affiliate Login</a></li>
+    <li><a class="button" href="http://www.csv2post.com/prices/" title="CSV 2 POST premium edition price list" target="_blank">Premium Prices</a></li>
+    <li><a class="button" href="http://www.twitter.com/CSV2POST/" title="CSV 2 POST Twitter Profile" target="_blank">Plugin Twitter Profile</a></li>
+</ul>
+
 <h4>3rd Party Integrated Software</h4>
 <ul>
     <li><a class="button" href="http://www.tipsandtricks-hq.com?ap_id=WebTechGlobal" title="WP e-Member Plugin" target="_blank">WP e-Member Plugin</a></li>
@@ -15,15 +27,9 @@
     <li><a class="button" href="http://www.csv2post.com/tutorials/how-to-cloak-url-in-wordpress-using-csv-2-post/" title="Tutorial: Cloaking URL" target="_blank">Cloaking URL's</a></li>
 </ul>
 
-<h4>Our Links</h4>
+<h4>Authors Links</h4>
 <ul>
-    <li><a class="button" href="http://www.csv2post.com/tutorials" title="CSV 2 POST main website" target="_blank">Tutorial List</a></li>
-    <li><a class="button" href="http://www.csvtopost.com" title="CSV 2 POST Demo Portal" target="_blank">CSV 2 POST Demo Portal</a></li>
-    <li><a class="button" href="http://www.csv2post.com/wp-content/plugins/wp-affiliate-platform/affiliates/register.php" title="CSV 2 POST Affiliate Register" target="_blank">Affiliate Registration</a></li>
-    <li><a class="button" href="http://www.csv2post.com/wp-content/plugins/wp-affiliate-platform/affiliates/login.php" title="CSV 2 POST Affiliate Login" target="_blank">Affiliate Login</a></li>
     <li><a class="button" href="http://www.webtechglobal.co.uk" title="Plugin authors own website" target="_blank">Authors Website "WebTechGlobal"</a></li>
-    <li><a class="button" href="http://www.csv2post.com/prices/" title="CSV 2 POST premium edition price list" target="_blank">Premium Prices</a></li>
-    <li><a class="button" href="http://www.twitter.com/CSV2POST/" title="CSV 2 POST Twitter Profile" target="_blank">Plugin Twitter Profile</a></li>
     <li><a class="button" href="http://www.linkedin.com/company/webtechglobal-ltd" title="Visit WebTechGlobal LinkedIn Profile" target="_blank">LinkedIn</a></li>
 </ul>
                 

@@ -1,4 +1,4 @@
-<?php
+<?php   
 /**
  * Add hidden form fields, to help with processing and debugging
  * Adds the _form_processing_required value, required to call the form validation file
@@ -189,19 +189,6 @@ function csv2post_panel_header( $panel_array, $boxintro_div = true ){
     }?>
 
     <!-- two column accordion, we use this to position the support buttons to the right -->
-    <style type='text/css'>
-    #Top_A_Left 
-    {
-       width:90%;
-    }
-
-    #Top_A_Right
-    {  clear:both;
-       width:auto;
-       float:right;
-    }
-    </style>
-
     <div id="titles" class="postbox <?php echo $panel_state;?>">
         <div class="handlediv" title="Click to toggle"><br /></div>
         <h3 class="hndle"><span><?php echo $panel_array['panel_title'];?></span></h3>
@@ -214,7 +201,7 @@ function csv2post_panel_header( $panel_array, $boxintro_div = true ){
                 <?php
                 // two column accordion 
                 if($boxintro_div && $csv2post_guitheme == 'jquery'){      
-                    echo '<div id="Top_A_right">';
+                    echo '<div class="csv2post_panelcolumn_Top_A_Right">';
                 }
                 ?>
                        
@@ -236,7 +223,7 @@ function csv2post_panel_header( $panel_array, $boxintro_div = true ){
         
             // two column accordion 
             if($csv2post_guitheme == 'jquery'){
-                echo '<div id="Top_A_left">';
+                echo '<div class="csv2post_panelcolumn_Top_A_Left">';
             }
 }
 
@@ -500,7 +487,7 @@ function csv2post_header_page($pagetitle,$layout){
     
     csv2post_jquery_button();?> 
 
-    <!-- Checkbox Hide Show Content Script -->
+    <!-- Checkbox Hide Show Content Script TODO:I do not think this script is in use, remove it from all plugins -->
     <script language="javascript">
     function toggle(divId) {
         var divArray = document.getElementsByTagName("div");
@@ -518,7 +505,10 @@ function csv2post_header_page($pagetitle,$layout){
 
     <div class="wrap">
 
-        <?php      
+        <?php  
+        // run diagnostics
+        csv2post_diagnostics_constant_adminside();# TODO:lowpriority,move diagnostic call to schedule so user can switch it off easily and we can run diagnostic when nothing else is happening
+            
         // display persistent notices for all pages
         csv2post_persistentnotice_output('global');
         ?>
@@ -526,9 +516,8 @@ function csv2post_header_page($pagetitle,$layout){
         <div id="icon-options-general" class="icon32"><br /></div>
         <h2><?php echo $pagetitle;?></h2>
         
-        <?php csv2post_GUI_currentproject();# displays current data job and post project ?>
-
-        <?php 
+        <?php csv2post_GUI_currentproject();# displays current data job and post project 
+         
         // run specific admin triggered automation tasks, this way an output can be created for admin to see
         csv2post_admin_triggered_automation();  
 
@@ -539,9 +528,8 @@ function csv2post_header_page($pagetitle,$layout){
         csv2post_notice_output();
         
         // display persistent notices for current page
-        csv2post_persistentnotice_output('page',$_GET['page']);?>
-        
-        <?php     
+        csv2post_persistentnotice_output('page',$_GET['page']);
+             
         // process global security and any other types of checks here such such check systems requirements, also checks installation status
         $csv2post_requirements_missing = csv2post_check_requirements(true);?>
 
@@ -598,17 +586,15 @@ function csv2post_display_accordianpanel_buttons($panel_array){
     <?php if($b != 0){?>
         <div class="csv2post_boxintro_div"> 
             <!-- help button -->
-            <div float="right" class="jquerybutton">
-                
-                <?php if(isset($panel_help) && is_string($panel_help) && $panel_help != false){?>
-                <button id="csv2post_opener<?php echo $panel_number;?>_info">Info</button> 
-                <?php }?>
-                
-                <?php if($video){?>
-                <button id="csv2post_opener<?php echo $panel_number;?>_video">Video</button> 
-                <?php }?>
-                
-            </div>
+ 
+            <?php if(isset($panel_help) && is_string($panel_help) && $panel_help != false){?>
+            <a href="#" id="csv2post_opener<?php echo $panel_number;?>_info" class="button">Info</a>
+            <?php }?>
+            
+            <?php if($video){?>
+            <a href="#" id="csv2post_opener<?php echo $panel_number;?>_video" class="button">Video</a>
+            <?php }?>
+
         </div><?php
     }  
 }
@@ -944,9 +930,12 @@ function csv2post_list_plugintables(){
 /**
 * Tool Tip
 * 2. the javascript for this is added to the footer
+* 
+* @todo the tool tips script conflicts with the Add Media button, do not use it until we find a fix or another TT script
 */
 function c2p_tt($label ='?',$title = 'Please visit www.csv2post.com for help'){
-    echo '<span class="givemesometips" title="'.$title.'">'.$label.'</span>';
+    echo $label;
+    //echo '<span class="csv2postgivemesometips" title="'.$title.'">'.$label.'</span>';
 }     
 
 /**

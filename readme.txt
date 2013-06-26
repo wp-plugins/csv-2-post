@@ -1,12 +1,12 @@
 === Plugin Name ===
-Contributors: WebTechGlobal,Zara Walsh,Ryan Bayne
+Contributors: WebTechGlobal
 Donate link: http://www.csv2post.com
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: CSV 2 POST, CSV2POST, Data Engine, CSV 2 POST Data Engine, wordpress data import,wordpress data importer,auto blogging,auto blogger,autoblog,mass create posts,mass post creation,csv file importer,csv file data import,post injection,import spreadsheet,excel file import,excel import,www.csv2post.com,CSV2POST,wordpresscsv import,wordpress import plugin,wordpress data import tool,wordpress data import plugin,wordpress post creation plugin
 Requires at least: 3.5.0
 Tested up to: 3.6.0
-Stable tag: 6.9.9
+Stable tag: 7.0.0
 
 CSV 2 POST Data Engine
 
@@ -62,11 +62,13 @@ the plugin core will be shared with other plugins which will push CSV 2 POST fur
 
 Initial upload and activation as guided by Wordpress.org standard plugin installation.
 
-1. Upload the `csv-2-post` folder to the `/wp-content/plugins/` directory
+1. Delete existing `csv-2-post` folder in `/wp-content/plugins/` (or delete plugin on Wordpress Plugins screen)
+1. Upload the `csv-2-post` folder to the `/wp-content/plugins/` directory (or upload using Wordpress Plugins screen)
 1. Activate the CSV 2 POST plugin through the 'Plugins' menu in WordPress
 1. Configure the plugin by going to the Settings screen
 1. Always backup your database before mass creating posts
 1. Always backup your database before updating the plugin
+1. You may upload CSV files using FTP to the /wp-content/wpcsvimportercontent/ folder to use them with CSV post
 
 == Frequently Asked Questions ==
 
@@ -124,6 +126,19 @@ The plugin was released 2009 and re-developed from scratch in 2012.
 6. You can use up to 3 columns of data to create 3 levels of categories.
 
 == Changelog ==
+= 7.0.0 =
+* From The Developers
+    * Released 26th June 2013
+    * If installing via FTP please delete the existing plugin first, enjoy :) 
+* Fixes     
+    * None
+* Feature Changes
+    * Support buttons made smaller by using Wordpress styles instead of jQuery UI theme styles
+    * New diagnostic system started, the old one was a group of splintered functions, wtgcore_wp_diagostics.php created for the new approach
+    * csv2post_notice() now checks if user is adminstrator straight away, this is a security measure
+* Technical Notes
+    * None
+    
 = 6.9.9 =
 * From The Developers
     * Released 31st May 2013

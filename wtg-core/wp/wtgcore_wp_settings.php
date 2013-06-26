@@ -213,7 +213,6 @@ function csv2post_update_option_adminsettings($csv2post_adm_set){
 * 2. We remove everything after the first hyphen
 */
 function csv2post_get_wp_version(){
-    $longversion = get_bloginfo('version');
-    return strstr( $longversion , '-', true );
+    return strstr( get_bloginfo('version') , '-', true );
 }
 ?>

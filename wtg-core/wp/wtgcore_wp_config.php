@@ -102,7 +102,7 @@ function csv2post_process(){
 * When request will display maximum php errors including Wordpress errors 
 */
 function csv2post_debugmode(){
-    global $csv2post_debug_mode;
+    global $csv2post_debug_mode; 
     if($csv2post_debug_mode){
         global $wpdb;
         ini_set('display_errors',1);

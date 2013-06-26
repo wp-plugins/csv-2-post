@@ -328,20 +328,23 @@ function csv2post_WP_SQL_get_tables(){
 /**
 * Returns an array holding the column names for the giving table
 * 
-* @param mixed $t
 * @param mixed $return_array false returns mysql result and true returns an array of the result
 * @param mixed $columns_only for use when returning array only and true will return only column names not other information mysql returns in the query
 * @return array or mysql result or false on failure
 */
-function csv2post_WP_SQL_get_tablecolumns($t,$return_array = false,$columns_only = false){
+function csv2post_WP_SQL_get_tablecolumns($table_name,$return_array = false,$columns_only = false){
     global $wpdb;
-    $mysql_query_result = mysql_query("SHOW COLUMNS FROM `".$t."`");
+    $mysql_query_result = mysql_query("SHOW COLUMNS FROM `".$table_name."`");
+
     if(!$mysql_query_result){return false;}
     
+    // if array not required, return mysql_query result
     if(!$return_array){return $mysql_query_result;}
     
+    // an array is required - what data is required in the array...    
     if($return_array == true && $columns_only == false){
         
+        // return an array holding ALL information about the tables columns
         $newarray = array();
         while ($column = mysql_fetch_row($mysql_query_result)) {
             $newarray[] = $column;    
@@ -350,6 +353,7 @@ function csv2post_WP_SQL_get_tablecolumns($t,$return_array = false,$columns_only
                 
     }elseif($return_array == true && $columns_only == true){
         
+        // return an array of column names only
         $newarray = array();
         $column_counter = 0;
         while ($column = mysql_fetch_row($mysql_query_result)) {

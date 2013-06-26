@@ -34,6 +34,16 @@ Email: info@csv2post.com
     font-size: 16px;
 }
 
+.csv2post_panelcolumn_Top_A_Left {
+    width:90%;
+}
+
+.csv2post_panelcolumn_Top_A_Right{  
+    clear:both;
+    width:auto;
+    float:right;
+}
+
 /*
 * Form Styling Start
 */

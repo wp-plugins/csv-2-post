@@ -30,7 +30,7 @@ if($side == 'public'){
         #                        SCRIPTS NOT PACKAGED WITH WORDPRESS                        #
         #                                                                                   #
         #####################################################################################
-        wp_register_script('jquery-multi-select',WTG_C2P_URL.'wtg-core/wp/script/multi-select-basic/jquery.multi-select.js',array('jquery'));
+        wp_register_script('jquery-multi-select',WTG_C2P_URL.'wtg-core/wp/script/jquery.multi-select.js',array('jquery'));
         wp_register_script('jquery-cookie',WTG_C2P_URL.'wtg-core/wp/script/jquery.cookie.js',array('jquery'));
     }
        
@@ -44,7 +44,7 @@ if($side == 'public'){
          // $csv2post_js_switch and similiar variables set in main file
          $csv2post_js_switch = true;
          if($csv2post_js_switch == true){
-
+      
             if( csv2post_get_wp_version() < '3.6' ){
                 wp_enqueue_script('jquery');    
             }else{

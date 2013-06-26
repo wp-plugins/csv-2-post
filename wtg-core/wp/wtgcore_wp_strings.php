@@ -289,14 +289,27 @@ function csv2post_create_adminurl($page,$values = ''){
 /**
 * Returns the plugins standard date (MySQL Date Time Formatted) with common format used in Wordpress.
 * Optional $time parameter, if false will return the current time().
+* 1. Passing a date string is optional
+* 2. Using $convert_string will convert to mysql (replace slashes with hyphens)
+* 3. Can pass a string such as 23/05/2014 and get a mysql ready date string returned
 * 
 * @param integer $timeaddition, number of seconds to add to the current time to create a future date and time
 * @param integer $time optional parameter, by default causes current time() to be used
 * @todo adapt this to return various date formats to suit interface
 */
-function csv2post_date($timeaddition = 0,$time = false){
+function csv2post_date($timeaddition = 0,$time = false,$datestring = false,$convert_string = false){  
+    
+    // if date string passed we convert that and return it
+    if($datestring != false && is_string($datestring) && $convert_string != false){
+        $mysqlready = str_replace('/', '-', $datestring);
+        $datetotime = strtotime($mysqlready);
+        $fulldate = date('Y-m-d H:i:s', $datetotime + $timeaddition);
+        return $fulldate;
+    }
+    
+    // arriving here means no string, we work with the current time() or passed $time to create a date
     $thetime = time();
-    if($time != false){$thetime = $time;}
+    if($time != false){$thetime = $time;}  
     return date('Y-m-d H:i:s',$thetime + $timeaddition);    
 } 
 

@@ -110,6 +110,10 @@ function csv2post_encoding_clean_permalinks($title){
 }
 
 function csv2post_remove_last_comma($s){
-    return substr_replace($s, '', -1);     
+    return csv2post_remove_last_character($s);     
+}
+
+function csv2post_remove_last_character($s){
+    return substr_replace($s, '', -1);    
 }
 ?>

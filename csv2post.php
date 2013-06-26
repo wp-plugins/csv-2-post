@@ -1,10 +1,10 @@
 <?php         
 /*
 Plugin Name: CSV 2 POST
-Version: 6.9.9
+Version: 7.0.0
 Plugin URI: http://www.csv2post.com
-Description: CSV 2 POST Data Engine for Wordpress is the professional choice for data import, auto-blogging, text spinning and more
-Author: Zara Walsh
+Description: CSV 2 POST Data Engine plugin and services from WebTechGlobal for Wordpress blogs. This is the advanced choice for data import and instantly blogging large amounts of posts.
+Author: WebTechGlobal
 Author URI: http://www.csv2post.com
 
 CSV 2 POST GPL v3 (free edition license, ignore for any other edition not downloaded from Wordpress.org)
@@ -28,7 +28,7 @@ services not just software. License and agreement is seperate.
 */         
                             
 // package variables (frequently changed)
-$csv2post_currentversion = '6.9.9';
+$csv2post_currentversion = '7.0.0';
 $csv2post_php_version_tested = '5.4.12';// current version the plugin is being developed on
 $csv2post_php_version_minimum = '5.3.0';// minimum version required for plugin to operate
 $csv2post_is_free_override = false;// change to true for free edition setup when fulledition folder present 
@@ -39,21 +39,21 @@ $csv2post_beta_mode = false;// must be set to true prior to installation to ensu
 $csv2post_is_dev = false;// false|true  - true will display more information i.e. array dumps using var_dump() 
 
 // activate debug by url or based on the domain - you can change this to your own test domains                   
-if($csv2post_demo_mode != true){# we ensure no error output on demos    
-    if(isset($_GET['csv2postdebug']) || ABSPATH == '/home/sites/csvtopost.com/public_html/wordpress36beta1/' ){
+if($csv2post_demo_mode != true){# we ensure no error output on demos   
+    $testingserver = strstr(ABSPATH,'testing/wordpress');
+    if(isset($_GET['csv2postdebug']) || $testingserver ){
         $csv2post_debug_mode = true; 
         $csv2post_beta_mode = true;
         $csv2post_is_dev = true;      
     }                
 }
-    
+         
 // error output should never be on during AJAX requests               
 if(defined('DOING_AJAX') && DOING_AJAX){
     $csv2post_debug_mode = false;    
 }
-         
+           
 // other variables required on installation or loading
-### TODO:HIGHPRIORITY, some these should be constants 
 $csv2post_plugintitle = 'CSV 2 POST';// requires so that extensions can re-brand the plugin
 $csv2post_pluginname = 'csv2post';// should not be used to make up paths
 $csv2post_homeslug = $csv2post_pluginname;// @todo page slug for plugin main page used in building menus
@@ -72,9 +72,7 @@ $csv2post_extension_loaded = false;
 #                                                                                        #
 #                                     DEFINE CONSTANTS                                   #
 #                                                                                        #
-##########################################################################################
-### TODO:LOWPRIORITY, add forward slash to the end of WTG_C2P_CONTENTFOLDER_DIR, we want all constants to hold a slash at the end as standard
-### TODO:LOWPRIORITY, change WTG_C2P_DIR to WTG_C2P_PATH                
+##########################################################################################             
 if(!defined("WTG_C2P_ABB")){define("WTG_C2P_ABB","csv2post_");}
 if(!defined("WTG_C2P_NAME")){define("WTG_C2P_NAME",'CSV 2 POST');} 
 if(!defined("WTG_C2P_URL")){define("WTG_C2P_URL", plugin_dir_url(__FILE__) );}//http://localhost/wordpress-testing/wtgplugintemplate/wp-content/plugins/wtgplugintemplate/
@@ -179,7 +177,7 @@ if(!$csv2post_is_free){
           
 // we require the main admin settings array for continuing the loading of the plugin                                                                       
 $csv2post_adm_set = csv2post_get_option_adminsettings();# installs admin settings record if not yet installed, this will happen on plugin being activated
-                      
+                  
 // error display variables, variable that displays maximum errors is set in main file 
 if($csv2post_demo_mode != true){csv2post_debugmode();}  
                                  
@@ -292,7 +290,6 @@ if(is_admin()){
     add_action( 'add_meta_boxes', 'csv2post_add_meta_boxes_flags' );
     add_action( 'save_post', 'csv2post_save_meta_boxes_flags',10,2 );
     
-    //$csv2post_activationcode = csv2post_get_activationcode(); ### TODO:MEDIUMPRIORITY, part of activation code system 
     $csv2post_is_installed = csv2post_is_installed();// boolean - if false either plugin has never been installed or installation has been tampered with 
 }   
              
@@ -301,7 +298,7 @@ if(is_admin()){
 #             PUBLIC SIDE HOOKS i.e. post updating and other events           #
 #                                                                             #
 ###############################################################################
-if(!$csv2post_is_free){# if you hack this, you will need to write the required functions
+if(!$csv2post_is_free){
     add_action('init', 'csv2post_event_check');// part of schedule system in paid edition, run auto post and data updating events if any are due
     add_action('init','csv2post_cloak_forward');
         

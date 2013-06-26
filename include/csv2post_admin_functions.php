@@ -663,8 +663,8 @@ function csv2post_WP_CATEGORIES_manuallevels_basic($next_level){
         // does category name with this parent exist ?
         if ( $id = category_exists($category[$col_name], $category_parent_id) ){
             $new_cat_id = $id;       
-        }else{
-            $new_cat_id = wp_insert_category( array('cat_name' => $category[$col_name], 'category_parent' => $category_parent_id) );     
+        }else{    
+            $new_cat_id = wp_insert_category( array('cat_name' => $category[$col_name], 'category_parent' => $category_parent_id) );      
             ++$total_categories_created;        
         }
         

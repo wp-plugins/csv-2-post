@@ -207,17 +207,8 @@ function csv2post_plugin_conflict_prevention(){
     $plugin_profiles[0]['slug'] = 'tweet-my-post/tweet-my-post.php';
     $plugin_profiles[0]['author'] = 'ksg91';
     $plugin_profiles[0]['title_active'] = 'Tweet My Post Conflict';
-    $plugin_profiles[0]['message_active'] = __('On 16th August 2012 a critical and persistent conflict was found 
-    between Tweet My Post 
-    and '.$csv2post_plugintitle.'. It breaks the plugins dialog boxes (jQuery UI Dialogue) while the plugin is active,
-    you may not be able to install '.$csv2post_plugintitle.' due to this. After some searching we found many others to be having
-    JavaScript related conflicts with this plugin, which the author responded too. Please ensure you have the latest
-    version installed.
-    The closest cause I found in terms of code was line 40 where a .js file (jquery-latest) is registered. This
-    file is not used in '.$csv2post_plugintitle.' so at this time we are not sure why the conflict happens. Please let us know
-    if your urgently need this conflict fixed. We will investigate but due to the type of plugin, it is not urgent.
-    Auto-tweeting is not recommended during auto blogging due to the risk of spamming Twitter. If you know the plugin
-    well you can avoid spamming however and so let us know if this conflict is a problem for you.');
+    $plugin_profiles[0]['message_active'] = __('Please deactivate Twitter plugins before performing mass post creation. 
+    This will avoid spamming Twitter and causing more processing while creating posts.');
     $plugin_profiles[0]['title_inactive'] = 'title inactive';
     $plugin_profiles[0]['message_inactive'] = __('message inactive');
     $plugin_profiles[0]['type'] = 'info';//passed to the message function to apply styling and set type of notice displayed

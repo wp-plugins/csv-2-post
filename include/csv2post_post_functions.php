@@ -659,5 +659,21 @@ function csv2post_parse_columnreplacement_basic($record_array,$subject){
         $subject = str_replace('#'. $column, $data, $subject); 
     } 
     return $subject;
-}     
+}    
+
+/**
+* Returns the default hierarchical taxonomy name, used in creating categories to automatically apply categoryes to correct taxonomy 
+*/
+function csv2post_get_default_hierarchicaltaxonomy(){
+    global $csv2post_project_array,$csv2post_currentproject_code;
+    $taxonomy_type = 'category';
+    $posttype = csv2post_get_project_defaultposttype($csv2post_currentproject_code);
+    $taxonomies = get_object_taxonomies($posttype, 'objects');
+    foreach($taxonomies as $tax_name => $tax_array){
+        if($tax_array->hierarchical){
+            $taxonomy_type = $tax_name;
+        }
+    }                
+}
+            
 ?>
