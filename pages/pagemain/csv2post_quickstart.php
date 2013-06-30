@@ -156,7 +156,7 @@ if($csv2post_ecisession_array['nextstep'] >= 10){
 #        9. CUSTOM FIELDS          #
 #                                  #
 ####################################
-if($csv2post_ecisession_array['nextstep'] >= 9){
+if($csv2post_ecisession_array['nextstep'] >= 8){
     if($csv2post_is_free){
         require(WTG_C2P_PANELFOLDER_PATH . 'quickstart/csv2post_panel_eci_9.php');
     }else{
@@ -164,6 +164,7 @@ if($csv2post_ecisession_array['nextstep'] >= 9){
     }    
 }
 
+/*  
 ####################################
 #                                  #
 #          8. POST DATES           #
@@ -176,6 +177,7 @@ if($csv2post_ecisession_array['nextstep'] >= 8){
         require(WTG_C2P_DIR . 'fulledition/panels/quickstart/csv2post_panel_eci_8.php');
     }    
 }
+*/
 
 ####################################
 #                                  #

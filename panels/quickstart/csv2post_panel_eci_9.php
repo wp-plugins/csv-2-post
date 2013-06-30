@@ -2,7 +2,7 @@
 ++$panel_number;// increase panel counter so this panel has unique ID
 $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'ecifreecustomfields';// slug to act as a name and part of the panel ID 
-$panel_array['panel_title'] = __('Step 9: Custom Fields');// user seen panel header text 
+$panel_array['panel_title'] = __('Step 8: Custom Fields');// user seen panel header text 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['dialogdisplay'] = 'no';
 // <form> values, seperate from panel value
@@ -13,7 +13,7 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
 <?php csv2post_panel_header( $panel_array );?>
     
     <?php 
-    if($csv2post_ecisession_array['nextstep'] > 9){
+    if($csv2post_ecisession_array['nextstep'] > 8){
 
         csv2post_n_incontent('This step is complete and your custom field entries were saved.','success','Small','Step Complete');
 
@@ -36,7 +36,7 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
             foreach($job_headers_array as $key => $header){
                 echo '<tr><td width="200"><strong>' . $header['original'] . '</strong></td><td><input type="text" name="csv2post_ecifree_cf_'.$key.'" size="30"></td></tr>';
             }
-            ?>
+        ?>
         </table>
         
         <?php 

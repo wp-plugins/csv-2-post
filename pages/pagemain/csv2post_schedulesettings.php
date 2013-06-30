@@ -209,7 +209,7 @@ $jsform_set['noticebox_content'] = 'You are about to change the permitted event 
     });
     </script>                
     <div id="csv2post_focus_eventtype_postcreation">
-        <?php         
+        <?php   
         $default = true;
         foreach($csv2post_schedule_array['eventtypes'] as $eventtype => $eventtype_array){
                       

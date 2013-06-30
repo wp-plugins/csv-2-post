@@ -16,28 +16,7 @@ function csv2post_install_core(){
     #                                               #
     #################################################    
     csv2post_INSTALL_table_log();
-        
-    #################################################
-    #                                               #
-    #       INSTALL SCHEDULE ARRAY NOTICE ARRAY     #
-    #                                               #
-    #################################################
-    if(!$csv2post_is_free){
-        require(WTG_C2P_DIR.'include/variables/csv2post_schedule_array.php');
-        if(!csv2post_option('csv2post_schedule','add',serialize($csv2post_schedule_array)) ){
-             
-            // should never happen - _uninstall() used at the beginning of _install_core()
-            csv2post_notice('Schedule settings are already installed, no changes were made to those settings.','warning','Tiny',false,'','echo');
-            csv2post_n('Schedule Settings Already Installed','Schedule settings are already installed, no changes were made to those settings.','warning','Tiny');
-            $overall_install_result = false;          
-       
-        }else{
-            csv2post_notice('Installed the schedule settings','success','Tiny',false,'','echo');
-            csv2post_n('Schedule Settings Already Installed','Schedule settings are already installed, no changes were made to those settings.','warning','Tiny');
-        }
-    }
-    csv2post_n('Schedule Settings Already Installed','Schedule settings are already installed, no changes were made to those settings.','warning','Tiny');
-    
+ 
     #################################################
     #                                               #
     #         INSTALL PERSISTENT NOTICE ARRAY       #

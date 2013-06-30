@@ -12,7 +12,7 @@ function csv2post_form_ECI_free_step18_createposts(){
         $csv2post_ecisession_array = csv2post_WP_SETTINGS_get_eciarray();
 
         // update the ECI session array
-//$csv2post_ecisession_array['nextstep'] = 19;
+        //$csv2post_ecisession_array['nextstep'] = 19;
         csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array); 
                 
         // free edition processes all records at once, $_POST['csv2post_postsamount'] will not be set   
@@ -117,6 +117,7 @@ function csv2post_form_ECI_free_step13_tags(){
     if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreetags' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
 
         $csv2post_ecisession_array = csv2post_WP_SETTINGS_get_eciarray();
+        $file = $csv2post_ecisession_array['filenamenoext'];
                 
         if($_POST['csv2post_eci_freetags_methods'] == 'no'){
             // nothing needs to be done
@@ -126,14 +127,14 @@ function csv2post_form_ECI_free_step13_tags(){
             global $csv2post_project_array,$csv2post_currentproject_code;
             
             $csv2post_project_array['tags']['default']['table'] = 'csv2post_' . $csv2post_ecisession_array['dijcode'];
-            $csv2post_project_array['tags']['default']['column'] = $_POST['csv2post_eci_freetags_methods'];                       
+            $csv2post_project_array['tags']['default']['column'] = $_POST['csv2post_csvfileheader_eci_freetags_' . $file];                       
             $csv2post_project_array['tags']['method'] = 'premade'; 
             
             csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);                
             
             csv2post_notice_postresult('success','Tags Configured','Your tags data will be added to your posts providing your posts.');    
-        }
-
+        }            
+            
         $csv2post_ecisession_array['nextstep'] = 15;
         
         // update the ECI session array
@@ -149,7 +150,8 @@ function csv2post_form_ECI_free_step12_images(){
     if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeimages' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
 
         $csv2post_ecisession_array = csv2post_WP_SETTINGS_get_eciarray();
-      
+        $file = $csv2post_ecisession_array['filenamenoext'];
+        
         if($_POST['csv2post_eci_freefeaturedimages_methods'] == 'no'){
             // nothing needs to be done
             csv2post_notice_postresult('success','No Featured Images Wanted','You opted to not use featured images in your posts.');    
@@ -158,7 +160,7 @@ function csv2post_form_ECI_free_step12_images(){
             global $csv2post_project_array,$csv2post_currentproject_code;
 
             $csv2post_project_array['images']['featuredimage']['table'] = 'csv2post_' . $csv2post_ecisession_array['dijcode'];            
-            $csv2post_project_array['images']['featuredimage']['column'] = $_POST['csv2post_csvfileheader_eci_freefeaturedimages_WTGTestB'];
+            $csv2post_project_array['images']['featuredimage']['column'] = $_POST['csv2post_csvfileheader_eci_freefeaturedimages_' . $file];
             
             csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);                
             

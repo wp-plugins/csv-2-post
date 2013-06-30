@@ -1,7 +1,7 @@
 <?php         
 /*
 Plugin Name: CSV 2 POST
-Version: 7.0.0
+Version: 7.0.1
 Plugin URI: http://www.csv2post.com
 Description: CSV 2 POST Data Engine plugin and services from WebTechGlobal for Wordpress blogs. This is the advanced choice for data import and instantly blogging large amounts of posts.
 Author: WebTechGlobal
@@ -28,7 +28,7 @@ services not just software. License and agreement is seperate.
 */         
                             
 // package variables (frequently changed)
-$csv2post_currentversion = '7.0.0';
+$csv2post_currentversion = '7.0.1';
 $csv2post_php_version_tested = '5.4.12';// current version the plugin is being developed on
 $csv2post_php_version_minimum = '5.3.0';// minimum version required for plugin to operate
 $csv2post_is_free_override = false;// change to true for free edition setup when fulledition folder present 
@@ -162,6 +162,7 @@ require_once(WTG_C2P_DIR.'wtg-core/wp/wparrays/wtgcore_wp_tables_array.php');
 ##########################################################################################
 $paid_exclusions_array = array('csv2post_paid_formsubmit.php');
 if(!$csv2post_is_free){ 
+
     foreach (scandir( WTG_C2P_PAID_PATH ) as $fulledition_filename) {     
         if (!in_array($fulledition_filename,$paid_exclusions_array) && $fulledition_filename != '.' && $fulledition_filename != '..' && is_file( WTG_C2P_PAID_PATH . $fulledition_filename)) { 
             if($fulledition_filename != 'license.html' && $fulledition_filename != 'index.php'){
@@ -200,9 +201,9 @@ $csv2post_projectslist_array = csv2post_get_projectslist();
 $csv2post_textspin_array = csv2post_get_option_textspin_array();
                            
 // get all other admin variables    
-$csv2post_was_installed = csv2post_was_installed();// boolean - indicates if a trace of previous installation found       
-$csv2post_schedule_array = csv2post_get_option_schedule_array();// holds permitted hours and limits
-         
+$csv2post_was_installed = csv2post_was_installed();       
+$csv2post_schedule_array = csv2post_get_option_schedule_array();
+
 // admin only values (these are arrays that contain data that should never be displayed on public side, load them admin side only reduces a fault causing display of the information)
 if(is_admin()){
     $csv2post_persistent_array = csv2post_get_option_persistentnotifications_array();// holds interface notices/messages, some temporary, some are persistent 

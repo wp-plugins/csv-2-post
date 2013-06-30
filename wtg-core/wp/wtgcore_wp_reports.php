@@ -78,7 +78,7 @@ function csv2post_n($title,$mes,$style,$size,$atts = array()){
         'audience' => 'admin',// admin or user (use to display a different message to visitors than to staff)
         'user_mes' => 'No user message giving',// only used when audience is set to user, user_mes replaces $mes
         'side' => 'private',// private,public (use to apply themes styles if customised, do not use for security)      
-        'clickable' => false,// boolean
+        'clickable' => false,// boolean  
     ), $atts ) );
      
     // do not allow a notice box if $output not stated as public and current visitor is not logged in
@@ -140,7 +140,7 @@ function csv2post_persistentnotice_output($placement_type,$placement_specific = 
     }   
 
     foreach($csv2post_notice_array['notifications'] as $key => $n){
-        if(isset($n['persistent']) && $n['persistent'] == true){
+        if(isset($n['persistent']) && $n['persistent'] == true){   
             if($placement_type == $n['placement_type'] && $placement_specific == $n['placement_specific'] && $pageid == $n['pageid']){
                 echo csv2post_persistentnotice_display($n['type'],$n['helpurl'],$n['size'],$n['title'],$n['message'],true,$n['id']);
             }
@@ -335,7 +335,7 @@ function csv2post_notice_display($type,$helpurl,$size,$title,$message,$clickable
 * 
 * @deprecated use csv2post_n_postresult as of 13th February 2013
 */
-function csv2post_notice_postresult($type,$title,$message,$helpurl = false,$user = 'admin'){
+function csv2post_notice_postresult($type,$title,$message,$helpurl = false,$user = 'admin'){ 
     csv2post_notice($message,$type,'Large',$title, $helpurl, 'echo');    
 }
                         

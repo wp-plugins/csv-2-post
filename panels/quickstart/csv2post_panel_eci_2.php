@@ -71,9 +71,9 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
 
                 <div id="csv2post_newjob_separator_radios_<?php echo $filename_array[0];?>">
                     <input type="radio" id="csv2post_separator_comma_<?php echo $filename_array[0];?>" name="csv2post_newjob_separators<?php echo $filename_array[0];?>" value="," checked /><label for="csv2post_separator_comma_<?php echo $filename_array[0];?>">Comma ,</label>
-                    <br>
+                    <?php csv2post_GUI_br();?>
                     <input type="radio" id="csv2post_separator_semicolon_<?php echo $filename_array[0];?>" name="csv2post_newjob_separators<?php echo $filename_array[0];?>" value=";" /><label for="csv2post_separator_semicolon_<?php echo $filename_array[0];?>">Semi-colon ;</label>
-                    <br>
+                    <?php csv2post_GUI_br();?>
                     <input type="radio" id="csv2post_separator_tab_<?php echo $filename_array[0];?>" name="csv2post_newjob_separators<?php echo $filename_array[0];?>" value="|" /><label for="csv2post_separator_tab_<?php echo $filename_array[0];?>">Pipe/Tab |</label>                
                 </div>
 
@@ -87,7 +87,7 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
 
                 <div id="csv2post_newjob_quote_radios_<?php echo $filename_array[0];?>">
                     <input type="radio" id="csv2post_quote_double_<?php echo $filename_array[0];?>" name="csv2post_newjob_quote<?php echo $filename_array[0];?>" value="doublequote" checked /><label for="csv2post_quote_double_<?php echo $filename_array[0];?>">Double Quote "</label>
-                    <br>
+                    <?php csv2post_GUI_br();?>
                     <input type="radio" id="csv2post_quote_single_<?php echo $filename_array[0];?>" name="csv2post_newjob_quote<?php echo $filename_array[0];?>" value="singlequote" /><label for="csv2post_quote_single_<?php echo $filename_array[0];?>">Single Quote '</label>                
                 </div>                        
             

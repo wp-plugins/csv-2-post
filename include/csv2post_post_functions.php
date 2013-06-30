@@ -65,8 +65,7 @@ function csv2post_create_postdraft_basic( $my_post,$r,$project_code,$content ){
     $my_post['post_content'] = $content; 
     $my_post['ID'] = wp_insert_post( $my_post );
     if( !$my_post['ID'] ){
-        return false;
-        ### TODO:MEDIUMPRIORITY, log this    
+        return false;  
     }
     
     // add custom fields

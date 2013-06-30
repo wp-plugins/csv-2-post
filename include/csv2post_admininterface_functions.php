@@ -2202,7 +2202,7 @@ function csv2post_menu_csvfile_headers($id,$jobcode,$f){
 
         foreach($job_array[$f]['headers'] as $key => $c){
 
-            $menu .= '<option value="'.$c['original'].'">'.$c['original'].'</option>';
+            $menu .= '<option value="'.$c['sql'].'">'.$c['original'].'</option>';
         }
 
     $menu .= '</select>';   

@@ -178,18 +178,23 @@ function csv2post_get_array_nextkey($array){
 * Array [limits] holds the maximum post creation numbers 
 */
 function csv2post_get_option_schedule_array(){
-    $csv2post_schedule_array = get_option( 'csv2post_schedule');
-    return maybe_unserialize($csv2post_schedule_array);    
-}
+    global $csv2post_adm_set;     
+    if(isset($csv2post_adm_set['schedule'])){
+        return $csv2post_adm_set['schedule'];
+    }else{
+        return false;
+    }   
+}             
 
 /**
 * Updates the schedule array from wordpress option table.
 * Array [times] holds permitted days and hours.
 * Array [limits] holds the maximum post creation numbers 
 */
-function csv2post_update_option_schedule_array($schedule_array){
-    $schedule_array_serialized = maybe_serialize($schedule_array);
-    return update_option('csv2post_schedule',$schedule_array_serialized);    
+function csv2post_update_option_schedule_array($schedule_array){ 
+    global $csv2post_adm_set;
+    $csv2post_adm_set['schedule'] = $schedule_array;
+    return csv2post_update_option_adminsettings($csv2post_adm_set);   
 }
 
 /**

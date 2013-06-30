@@ -2,7 +2,7 @@
 ++$panel_number;// increase panel counter so this panel has unique ID
 $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'ecifreecreateposts';// slug to act as a name and part of the panel ID 
-$panel_array['panel_title'] = __('Step 18: Create Posts/Pages');// user seen panel header text 
+$panel_array['panel_title'] = __('Step 17: Create Posts/Pages');// user seen panel header text 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['form_button'] = 'Create Posts'; 
 $panel_array['dialogdisplay'] = 'no';
