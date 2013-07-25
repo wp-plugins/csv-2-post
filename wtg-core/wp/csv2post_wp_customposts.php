@@ -329,15 +329,6 @@ function csv2post_save_meta_boxes_flags( $post_id, $post ) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
         return $post_id;
     }
- 
-    // check permissions
-    if ( (key_exists('post_type', $post)) && ('page' == $post['post_type']) ) {
-        if (!current_user_can('edit_page', $post_id)) {
-            return $post_id;
-        }
-    } elseif (!current_user_can('edit_post', $post_id)) {
-        return $post_id;
-    }        
 
     /* Get the post type object. */
     $post_type = get_post_type_object( $post->post_type );
@@ -461,15 +452,6 @@ function csv2post_save_meta_boxes_contenttemplates( $post_id, $post ) {
 
     // check autosave
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
-        return $post_id;
-    }
- 
-    // check permissions
-    if ( (key_exists('post_type', $post)) && ('page' == $post['post_type']) ) {
-        if (!current_user_can('edit_page', $post_id)) {
-            return $post_id;
-        }
-    } elseif (!current_user_can('edit_post', $post_id)) {
         return $post_id;
     }
             

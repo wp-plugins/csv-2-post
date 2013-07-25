@@ -24,7 +24,7 @@ function csv2post_STRINGS_strtotime($date_string,$format = 'UK'){
         return strtotime($date_string);    
     }elseif($format == 'UK'){
         $date_explode = explode("/", $date_string);
-        return mktime(0,0,0,$date_explode[1],$date_explode[0],$date_explode[2]);     
+        return mktime(0,0,0,$date_explode[1],$date_explode[0],$date_explode[2]);  
     }else{
         return strtotime($date_string);    
     }    

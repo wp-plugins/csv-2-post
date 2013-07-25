@@ -507,7 +507,7 @@ function csv2post_header_page($pagetitle,$layout){
 
         <?php  
         // run diagnostics
-        csv2post_diagnostics_constant_adminside();# TODO:lowpriority,move diagnostic call to schedule so user can switch it off easily and we can run diagnostic when nothing else is happening
+        csv2post_diagnostics_constant_adminside();
             
         // display persistent notices for all pages
         csv2post_persistentnotice_output('global');

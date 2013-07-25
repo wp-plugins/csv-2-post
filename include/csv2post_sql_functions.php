@@ -515,33 +515,6 @@ function csv2post_SQL_get_posts_oudated($project_modified,$project_code,$limit =
     LIMIT 1";       
     return $wpdb->get_results($q, OBJECT);
 }
-
-/**
-* Gets all categories data for all categories column based on the
-* current projects category settings.
-* 1. Returns every row - must take matching cat names with different parents into consideration
-* 
-* OUTPUT TYPE
-* One of three pre-defined constants. Defaults to OBJECT.
-* OBJECT - result will be output as an object.
-* ARRAY_A - result will be output as an associative array.
-* ARRAY_N - result will be output as a numerically indexed array.
-* 
-* @param mixed $table_name
-* @return array
-*/
-function csv2post_SQL_categoriesdata_onelevel_advanced($table_name,$column_name){
-    global $wpdb,$csv2post_project_array;
-
-    // ensure user has not manually deleted table 
-    $table_exist = csv2post_WP_SQL_does_table_exist($table_name);
-    if(!$table_exist){
-        return false;### TODO:LOWPRIORITY, log this
-    }
-
-    return $wpdb->get_results( 'SELECT '.$column_name.',csv2post_catid,csv2post_id 
-    FROM '.$table_name,ARRAY_A);     
-}
  
 /**
 * Update csv2post_catid column.
@@ -577,5 +550,36 @@ function csv2post_WP_SQL_select_catidcolumn($table_name){
     global $wpdb;  
     return $wpdb->get_results( 'SELECT csv2post_catid,csv2post_id 
     FROM '.$table_name,ARRAY_A);      
+}
+
+/**
+* Gets all categories data for all categories column based on the
+* current projects category settings.
+* 1. Returns every row - must take matching cat names with different parents into consideration
+* 
+* OUTPUT TYPE
+* One of three pre-defined constants. Defaults to OBJECT.
+* OBJECT - result will be output as an object.
+* ARRAY_A - result will be output as an associative array.
+* ARRAY_N - result will be output as a numerically indexed array.
+* 
+* @param mixed $table_name
+* @return array
+*/
+function csv2post_SQL_categoriesdata_onelevel_advanced($table_name,$column_name){
+    global $wpdb,$csv2post_project_array;
+
+    // ensure user has not manually deleted table 
+    $table_exist = csv2post_WP_SQL_does_table_exist($table_name);
+    if(!$table_exist){
+        return false;
+    }
+
+    return $wpdb->get_results('
+        
+        SELECT '.$column_name.',csv2post_catid,csv2post_id 
+        FROM '.$table_name
+        
+    ,ARRAY_A);     
 }
 ?>

@@ -442,7 +442,7 @@ function csv2post_form_ECI_free_step2_confirmformat(){
                                        
         // if user did not enter field count
         if(!isset($_POST['csv2post_csvfile_fieldcount_' . $file]) || $_POST['csv2post_csvfile_fieldcount_' . $file] == ''){
-            csv2post_notice_postresult('error','Column/Field Number Required','You did not enter a value for the number of columns your CSV file has.');
+            csv2post_notice_postresult('error','Column/Field Number Required','Please enter the number of columns your CSV file has.');
             return;
         }
                 
@@ -470,7 +470,7 @@ function csv2post_form_ECI_free_step2_confirmformat(){
         // create an array for the job, to be stored in an option record of its own
         $jobarray = csv2post_create_jobarray($file,$code);
         $jobarray['jobname'] = $file;
-
+        
         // free edition does not allow multiple files                
         $jobarray['filegrouping'] = 'single';
                          
@@ -598,6 +598,14 @@ function csv2post_form_ECI_free_step1_uploadcsvfile(){
         
         $upload = $_FILES['file'];
         
+        // temporary block on files with hyphens or spaces until profile system ready
+        if(strstr($upload['name'],' ') || strstr($upload['name'],'-')){
+            $cleanedname = str_replace(array(' ','-'),'',$upload['name']);
+            csv2post_notice('Please rename '.$upload['name'].' to '.$cleanedname.'. This is a temporary requirement while we work on a profile
+            system that will give files a unique ID which is then used in our code rather than filenames.','error','Small','No Hyphens or Spaces Please','','echo');
+            return false;
+        }
+                
         // ensure user uploaded a .csv file
         if(!strstr($upload['name'],'.csv')){
             csv2post_notice('Sorry but '.$csv2post_plugintitle.' only accepts CSV 
@@ -831,6 +839,14 @@ function csv2post_form_upload_csv_file(){
         
         $upload = $_FILES['file'];  
 
+        // temporary block on files with hyphens or spaces until profile system ready
+        if(strstr($upload['name'],' ') || strstr($upload['name'],'-')){
+            $cleanedname = str_replace(array(' ','-'),'',$upload['name']);
+            csv2post_notice('Please rename '.$upload['name'].' to '.$cleanedname.'. This is a temporary requirement while we work on a profile
+            system that will give files a unique ID which is then used in our code rather than filenames.','error','Small','No Hyphens or Spaces Please','','echo');
+            return false;
+        }
+        
         if(!strstr($upload['name'],'.csv')){
             csv2post_notice('Sorry but '.$csv2post_plugintitle.' only accepts CSV files with .csv extension right now.','error','Large','File Extension Not Allowed','','echo');
             return false;
@@ -1902,20 +1918,24 @@ function csv2post_form_createdataimportjob(){
                 // if user did not enter field count
                 if(!isset($_POST['csv2post_csvfile_fieldcount_' . $filename]) || $_POST['csv2post_csvfile_fieldcount_' . $filename] == ''){
                     csv2post_notice('You did not enter your CSV file column/field number. '.$csv2post_plugintitle.' will attempt to 
-                    count them but if you experience problems please enter the number manually.','warning','Large','Column Count Not Entered','','echo');    
+                    count them but if you experience problems please enter the number manually.','warning','Large','Column Count Not Entered','','echo');  
+                    return false;  
                 }
                 
                 // if user did not select separator
                 if(!isset($_POST['csv2post_newjob_separators' . $filename])){
                     csv2post_notice('You never selected a separator. The plugin will attempt to guess it but if you
                     experience problems you should select it manually.','warning','Large','No Separator Selected','','echo');
+                    return false;
                 }
                 
                 // if user did not select quote
                 if(!isset($_POST['csv2post_newjob_quote' . $filename])){
                     csv2post_notice('You never selected an Enclosure Character. The plugin will attempt to guess it but if you
                     experience problems please select it manually.','warning','Large','No Enclosure Character Selected','','echo');
-                }            
+                    return false; 
+                }        
+                   
             }      
         }
 

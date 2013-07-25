@@ -1,9 +1,7 @@
 <?php 
 if($csv2post_is_free){
-    csv2post_n_incontent('We hope you got the job done, saved a lot of time and created your
-    blog without a lot of cost. It is our aim to help you do just that but we also need 
-    your support. Please be kind enough to consider a donation so that we can
-    continue providing hours of free support every week and add more features to the free edition.
+    csv2post_n_incontent('We hope you got the job done. Was the time saved worth giving us a much needed donation? We do need help keeping these projects
+    going...
     <br><br>
 
     <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
@@ -23,11 +21,6 @@ if($csv2post_is_free){
         <li>Apply the new Post Format</li>
         <li>Add featured images to your posts</li>
     </ul>
-    
-    <p>We feel anything less is just a demo for a premium plugin. But too much power in
-    a plugin that deals with data, demands a lot more free support requests.
-    Help us to extend this list plus continue providing adequate
-    support by donating a small amount per project, thank you.</p>
     
     ','info','Small','Is your project finished?');
 }

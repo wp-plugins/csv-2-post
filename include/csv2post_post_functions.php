@@ -672,7 +672,8 @@ function csv2post_get_default_hierarchicaltaxonomy(){
         if($tax_array->hierarchical){
             $taxonomy_type = $tax_name;
         }
-    }                
-}
-            
+    }  
+    
+    return $taxonomy_type;              
+}          
 ?>

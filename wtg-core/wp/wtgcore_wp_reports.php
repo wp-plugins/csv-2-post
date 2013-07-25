@@ -714,4 +714,24 @@ function csv2post_log_install($action,$message,$userid = 'NA'){
     $atts['type'] = 'install';    
     csv2post_log($atts);    
 }
+
+/**
+* Cleanup log table - currently keeps 2 days of logs
+*/
+function csv2post_log_cleanup(){     
+    if(csv2post_database_table_exist('csv2post_log')){
+        global $wpdb;
+        
+        $twodays_time = strtotime('2 days ago midnight');
+
+        $twodays = date("Y-m-d H:i:s",$twodays_time);
+        
+        $wpdb->query( 
+            "
+                DELETE FROM csv2post_log
+                WHERE timestamp < '".$twodays."'
+            "
+        );
+    }
+}
 ?>

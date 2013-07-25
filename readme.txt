@@ -6,7 +6,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: CSV 2 POST, CSV2POST, Data Engine, CSV 2 POST Data Engine, wordpress data import,wordpress data importer,auto blogging,auto blogger,autoblog,mass create posts,mass post creation,csv file importer,csv file data import,post injection,import spreadsheet,excel file import,excel import,www.csv2post.com,CSV2POST,wordpresscsv import,wordpress import plugin,wordpress data import tool,wordpress data import plugin,wordpress post creation plugin
 Requires at least: 3.5.0
 Tested up to: 3.6.0
-Stable tag: 7.0.1
+Stable tag: 7.0.2
 
 CSV 2 POST Data Engine
 
@@ -34,18 +34,11 @@ CSV 2 POST premium is on stand by if your needs are far above average...
     
     
 = About Our Plugin =
-CSV 2 POST is the ultimate CSV importer, a true web tool for auto-blogging and managing imported data.
-We have created an electronic quill, not a pen, not a pencil...a quill. Everything added to this plugin is at the request of users 
-who know best including professionals developing true money 
-making websites or simply hosting large amounts of information as part of their service. Well known companies have even made use of CSV 2 POST 
-to help with administration. It is a fact that CSV 2 POST is in use by Ryanair Ltd staff every day for a very specific admin task. So
-you need to ask yourself why, right?!
-
-The reason why is that they come to us because we cut out the BS. You won't see any of these 'Build sites in 15 minutes' sales pitches on our website and
-our free edition does not fail to provide basic functionality such as Featured Images. Two or three years down the road we want users
-of the free edition to tell us how their site is a booming success and it started with our plugin. The premium plugin
-and services will do that without a doubt but our goal is to ensure our free edition is an impressive addition to the Wordpress.org
-plugin site.
+CSV importer plugin for Wordpress. CSV 2 POST Data Engine has been designed for businesses and developers working with a lot 
+of data. Our WP plugin is a web tool for auto-blogging and managing imported data professionally. CSV 2 POST offers abilities
+no other plugin offers and has offered some features for the first time before any other plugin did. This includes importing
+two or more CSV files in one project and using data from each file to build posts. The plugin is provided by WebTechGlobal
+who continue to develop and support it. So by installing CSV 2 POST today and contacting us we gaurantee you'll make progress. 
 
 = Support =
 The plugin is supported by a dedicated website at [www.csv2post.com](http://www.csv2post.com/). Most online support content is free. We
@@ -126,6 +119,20 @@ The plugin was released 2009 and re-developed from scratch in 2012.
 6. You can use up to 3 columns of data to create 3 levels of categories.
 
 == Changelog ==
+= 7.0.2 =
+* From The Developers
+    * Released 25th July 2013
+* Fixes     
+    * If post type is not saved it triggered a problem in category creation function because it could not establish the hierarchical taxonomy that was meant to be applied
+    * Plugin query to confirm if a table exists or not was failing due to incorrect quotes in query
+* Feature Changes
+    * No longer creates data import job even when user fails to enter required values
+    * Post adoption improved
+    * Log table is now limited to storing 2 days of log entries only
+    * Now prevents .csv files with spaces or hyphens in name, this is temporary while we put a system in place for managing data sources
+* Technical Notes
+    * csv2post_database_table_exist() improved
+    
 = 7.0.1 =
 * From The Developers
     * Released 30th June 2013 

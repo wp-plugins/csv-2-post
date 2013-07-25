@@ -404,10 +404,10 @@ function csv2post_WP_SQL_formatter($sql_query){
  */
 function csv2post_database_table_exist( $table_name ){
     global $wpdb;
-    if( $wpdb->get_var("SHOW TABLES LIKE `".$table_name."`") != $table_name) {
-            return false;
+    if( $wpdb->get_var("SHOW TABLES LIKE '".$table_name."'") != $table_name) {     
+        return false;
     }else{
-            return true;
+        return true;
     }
 }
 

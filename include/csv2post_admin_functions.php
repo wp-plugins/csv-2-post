@@ -483,26 +483,6 @@ function csv2post_is_csv2post_postprojecttable($table_name){
 }       
 
 /**
-* Admin Triggered Automation
-* This calls various functions to peform data import job or post creation project tasks. Events will 
-* be execute.
-* 1.Changes during this operation or new information since the user last logged in will also be displayed.
-* 2. Setting values do not need to exist, if they do not exist they are on by default, this is to reduce the need for configuration in order to get the plugins full ability in motion
-* 
-* @todo LOWPRIORITY, add more Admin Triggered Automation on the General Settings screen
-* 1. 
-*/
-function csv2post_admin_triggered_automation(){
-    global $csv2post_adm_set,$csv2post_file_profiles;
-    
-    // new csv file check - cycle through all CSV files in-use by Data Import Jobs
-    // this will also create a profile in $csv2post_file_profiles if one does not exist for file
-    if(!isset($csv2post_adm_set['admintriggers']['newcsvfiles']['status']) || isset($csv2post_adm_set['admintriggers']['newcsvfiles']['status']) && $csv2post_adm_set['admintriggers']['newcsvfiles']['status'] == 1){
-        csv2post_admin_triggered_newcsvfilescheck();            
-    } 
-} 
-
-/**
 * Checks if any of the CSV files in use have been overwritten with a newer copy and takes action to trigger updates.
 * Check the $csv2post_adm_set['admintriggers']['newcsvfiles']['status'] before calling function.
 * 1. This is the first admin trigger function
@@ -718,7 +698,6 @@ function csv2post_WP_CATEGORIES_description( $lev,$rec_ID){
         ) );    
 
         if(!$v){
-            ### TODO:MEDIUMPRIORITY, log and flag
             return $d;
         }elseif(is_string($v)){
             return $v;            
@@ -729,15 +708,15 @@ function csv2post_WP_CATEGORIES_description( $lev,$rec_ID){
         // get the main table, if required we can upgrade this to work better with multiple tables
         $pro_table = csv2post_get_project_maintable($csv2post_currentproject_code);
         
-        // query entire record
-        $rec = csv2post_WP_SQL_select($pro_table,1,'*','WHERE csv2post_id = "'.$rec_ID.'"');# returns ARRAY_A
+        $rec = $wpdb->get_row( 'SELECT * 
+        FROM '. $pro_table .' 
+        WHERE csv2post_id = "'.$rec_ID.'"',ARRAY_A);
+        
         if(!$rec){
-            ### TODO:MEDIUMPRIORITY, log this
             return $d;
         }else{
-            $d = csv2post_get_template_design($csv2post_project_array['categories']['level'.$actual_level]["description"]); 
-            $d = csv2post_parse_columnreplacement_advanced($rec,$csv2post_project_array,$d);   
-            ### TODO: HIGHPRIORITY, process text spinning              
+            $d = csv2post_get_template_design($csv2post_project_array['categories']['level'.$lev]["description"]); 
+            $d = csv2post_parse_columnreplacement_advanced($rec,$csv2post_project_array,$d);                 
         }
     }
 
@@ -772,4 +751,24 @@ function csv2post_automation_warning(){
         posts manually in large numbers.','warning','Small','Risk of Increased Processing');
     }               
 }
+
+/**
+* Admin Triggered Automation
+* This calls various functions to peform data import job or post creation project tasks. Events will 
+* be execute.
+* 1.Changes during this operation or new information since the user last logged in will also be displayed.
+* 2. Setting values do not need to exist, if they do not exist they are on by default, this is to reduce the need for configuration in order to get the plugins full ability in motion
+*/
+function csv2post_admin_triggered_automation(){
+    global $csv2post_adm_set,$csv2post_file_profiles;
+    
+    // new csv file check - cycle through all CSV files in-use by Data Import Jobs
+    // this will also create a profile in $csv2post_file_profiles if one does not exist for file
+    if(!isset($csv2post_adm_set['admintriggers']['newcsvfiles']['status']) || isset($csv2post_adm_set['admintriggers']['newcsvfiles']['status']) && $csv2post_adm_set['admintriggers']['newcsvfiles']['status'] == 1){
+        csv2post_admin_triggered_newcsvfilescheck();            
+    } 
+    
+    // clear out log table (48 hour log)
+    csv2post_log_cleanup();
+} 
 ?>
