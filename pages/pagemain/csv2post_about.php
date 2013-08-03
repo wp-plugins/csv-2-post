@@ -1,10 +1,10 @@
 <h4>Plugins Links</h4>
 <ul>
-    <li><a class="button" href="http://www.csv2post.com" title="CSV 2 POST Website" target="_blank">Plugins Website</a></li>
-    <li><a class="button" href="http://forum.webtechglobal.co.uk/viewforum.php?f=8" title="CSV 2 POST Forum" target="_blank">Plugins Forum</a></li>
+    <li><a class="button" href="http://www.csv2post.com" title="CSV 2 POST Website" target="_blank">Website</a></li>
+    <li><a class="button" href="http://forum.webtechglobal.co.uk/viewforum.php?f=8" title="CSV 2 POST Forum" target="_blank">Forum</a></li>
     <li><a class="button" href="http://www.csv2post.com/support/videos/" title="CSV 2 POST Forum" target="_blank">Videos</a></li>
-    <li><a class="button" href="http://www.csv2post.com/tutorials" title="CSV 2 POST main website" target="_blank">Tutorial List</a></li>
-    <li><a class="button" href="http://www.csvtopost.com" title="CSV 2 POST Demo Portal" target="_blank">CSV 2 POST Demo Portal</a></li>
+    <li><a class="button" href="http://www.csv2post.com/tutorials" title="CSV 2 POST main website" target="_blank">Tutorials</a></li>
+    <li><a class="button" href="http://www.csv2post.com/support/faq/" title="CSV 2 POST FAQ" target="_blank">F.A.Q.</a></li>
     <li><a class="button" href="http://www.csv2post.com/wp-content/plugins/wp-affiliate-platform/affiliates/register.php" title="CSV 2 POST Affiliate Register" target="_blank">Affiliate Registration</a></li>
     <li><a class="button" href="http://www.csv2post.com/wp-content/plugins/wp-affiliate-platform/affiliates/login.php" title="CSV 2 POST Affiliate Login" target="_blank">Affiliate Login</a></li>
     <li><a class="button" href="http://www.csv2post.com/prices/" title="CSV 2 POST premium edition price list" target="_blank">Premium Prices</a></li>

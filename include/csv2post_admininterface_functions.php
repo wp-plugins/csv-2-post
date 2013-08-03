@@ -778,20 +778,10 @@ function csv2post_display_contenttemplate_menuoptions(){
 * ### TODO, this should be selectables not a menu like in csv2post_menu_csvfiles
 */
 function csv2post_selectables_csvfiles($range = 'all',$id = 'noid'){?>
-
     <select multiple='multiple' id="csv2post_selectcsvfiles_<?php echo $id;?>" name="csv2post_csvfilearray_<?php echo $id;?>[]" >
         <option value="notselected">Select A CSV File</option>
         <?php csv2post_option_items_csvfiles('all');?>
-    </select>
-     
-    <script type="text/javascript">
-        $(function(){
-            $('#csv2post_selectcsvfiles_<?php echo $id;?>').multiSelect({
-              selectableHeader : '<h3>Projects Available</h3>',
-              selectedHeader : '<h3>Delete These</h3>'                
-            });
-        });
-    </script><?php    
+    </select><?php    
 }
 
 /**

@@ -13,6 +13,7 @@ $csv2post_seoplugins_array[0]['folder'] = 'all-in-one-seo-pack';
 $csv2post_seoplugins_array[0]['file'] = 'all_in_one_seo_pack.php';
 $csv2post_seoplugins_array[0]['seotitle'] = '_aioseop_title';
 $csv2post_seoplugins_array[0]['seodescription'] = '_aioseop_description';
+$csv2post_seoplugins_array[0]['seokeywords'] = '_aioseop_keywords';
 $csv2post_seoplugins_array[0]['pluginsite'] = 'http://semperplugins.com?ap_id=WebTechGlobal';
 // Yoast
 $csv2post_seoplugins_array[1]['name'] = 'SEO By Yoast';

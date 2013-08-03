@@ -213,10 +213,10 @@ function csv2post_domain_online($domain){
 * Returns a value for Tab Number, if $_GET[WTG_##_ABB . 'tabnumber'] not set returns 0 
 */
 function csv2post_get_tabnumber(){                      
-    if(!isset($_GET['csv2posttabnumber'])){
+    if(!isset($_GET['csv2posttab'])){
         return 0;
     }else{
-        return $_GET['csv2posttabnumber'];                   
+        return $_GET['csv2posttab'];                   
     }                                                      
 }  
 
@@ -331,10 +331,9 @@ function csv2post_check_requirements($display){
             $requirement_missing = true;
             if($display == true){
                 global $csv2post_plugintitle;
-                # TODO:LOWPRIORITY, change this to a persistent notice once system in place to track notices already displayed
-                csv2post_notice('The plugin detected an older php version than the minimum requirement which 
-                is '.WTG_C2P_PHPVERSIONMINIMUM.'. Wordpress itself also operates better with a later version 
-                of php than you are using. Most features will work fine but some important ones will not.',
+                csv2post_notice('The plugin detected an older PHP version than the minimum requirement which 
+                is '.WTG_C2P_PHPVERSIONMINIMUM.'. You can requests an upgrade for free from your hosting, use .htaccess to switch
+                between PHP versions per WP installation or sometimes hosting allows customers to switch using their control panel.',
                 'warning','Large',$csv2post_plugintitle . ' Requires PHP '.WTG_C2P_PHPVERSIONMINIMUM);
             }
         }

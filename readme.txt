@@ -6,7 +6,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: CSV 2 POST, CSV2POST, Data Engine, CSV 2 POST Data Engine, wordpress data import,wordpress data importer,auto blogging,auto blogger,autoblog,mass create posts,mass post creation,csv file importer,csv file data import,post injection,import spreadsheet,excel file import,excel import,www.csv2post.com,CSV2POST,wordpresscsv import,wordpress import plugin,wordpress data import tool,wordpress data import plugin,wordpress post creation plugin
 Requires at least: 3.5.0
 Tested up to: 3.6.0
-Stable tag: 7.0.2
+Stable tag: 7.0.3
 
 CSV 2 POST Data Engine
 
@@ -118,7 +118,21 @@ The plugin was released 2009 and re-developed from scratch in 2012.
 5. This screenshot shows "Basic Custom Field Rules", paid edition has advanced features but most users require the basic form which allows you to create post meta with any data.
 6. You can use up to 3 columns of data to create 3 levels of categories.
 
-== Changelog ==
+== Changelog ==           
+= 7.0.3 =
+* From The Developers
+    * Released 3rd August 2013
+* Fixes     
+    * Tab navigation (our jQuery UI broke in WP 3.6 however we were already planning on removing jQuery anyway)
+* Feature Changes
+    * Diagnostic checks will no longer be run during form submissions or other processing trigger by CSV 2 POST
+    * Author menu replaced with a text field for entering a user ID
+    * News screen removed as it only displayed RSS feeds from Google Feedburner which Google no longer supports
+    * Menu array is now loaded from file, by default it was installed and loaded from options table
+    * jQuery UI styling removed, related files deleted and styling options also removed
+* Technical Notes
+    * csv2post_diagnostics_constant_adminside() works but argument to check $_POST has been extended to use !$_POST should $_POST be set but array contain nothing
+    
 = 7.0.2 =
 * From The Developers
     * Released 25th July 2013

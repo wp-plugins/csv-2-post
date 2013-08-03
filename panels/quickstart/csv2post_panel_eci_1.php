@@ -38,16 +38,9 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
             <div class="jquerybutton">
                 <input class="button-primary" type="submit" value="Upload CSV File" name="eci_csvupload_submit" />
             </div>
-              
-            <?php
-            // add the javascript that will handle our form action, prevent submission and display dialog box
-            csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-            ?>
-            
+
         </form>
-           
-        <?php csv2post_jquery_form_promptdiv($jsform_set);?>
-        
+
   <?php 
   }?>
   

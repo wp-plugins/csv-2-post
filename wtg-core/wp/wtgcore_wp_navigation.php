@@ -87,126 +87,34 @@ function csv2post_admin_menu(){
  * @param string $thepagekey this is the screen being visited
  */
 function csv2post_createmenu($thepagekey){           
-    $csv2post_guitheme = csv2post_get_theme();
-    if($csv2post_guitheme == 'wordpresscss'){  
-        csv2post_navigation_css($thepagekey);
-    }elseif($csv2post_guitheme == 'jquery'){
-        csv2post_navigation_jquery($thepagekey);    
-    }elseif($csv2post_guitheme == 'nonav'){
-        echo '<div id="csv2post_maintabs">';
-    }
-} 
-
-/**
-* Secondary navigation builder - CSS only
-* @todo MEDIUMPRIORITY, move the css in function to a .css file, double check no duplicate styles throughout plugin, also replace the paths to the overlay image
-* @param mixed $thepagekey
-*/
-function csv2post_navigation_css($thepagekey){    
-    global $csv2post_is_activated,$csv2post_is_installed,$csv2post_mpt_arr;?>   
-            
-    <div id="csv2post_maintabs">
-        
-        <?php
-        $pageslug = $csv2post_mpt_arr['menu'][$thepagekey]['slug'];
-
-        // begin building menu - controlled by jQuery
-        echo '<div id="csv2post_cssmenu">
-        <ul>';
-              
-            // loop through tabs - held in menu pages tabs array
-            foreach($csv2post_mpt_arr['menu'][$thepagekey]['tabs'] as $tab => $values){
-
-                $tabslug = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['slug'];
-                $tablabel = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['label'];   
-                
-                if(csv2post_menu_should_tab_be_displayed($thepagekey,$tab)){
-                    
-                    $active = '';
-                    if(isset($_GET['csv2posttabnumber']) && $_GET['csv2posttabnumber'] == $tab){
-                        $active = 'class="active"';
-                    }
-                    // default menu build approach
-                    echo '<li '.$active.'><a href="'.csv2post_create_adminurl($pageslug,'').'&csv2posttabnumber='.$tab.'&csv2postpagename='.$thepagekey.'">' . $tablabel . '</a></li>';                                
-                
-                } 
-            }// for each
-            
-        echo '</ul></div>';
-}
-
-function csv2post_navigation_jquery($thepagekey){    
-    global $csv2post_is_activated,$csv2post_is_installed,$csv2post_mpt_arr,$csv2post_projectslist_array;?>
-
-    <script>
-    $(function() {
-         $( "#csv2post_maintabs" ).tabs({
-            cookie: {
-                // store cookie for a day, without, it would be a session cookie
-                expires: 1
-            },
-            select: function(event, ui){
-              window.location = ui.tab.href;
-            }
-        });       
-    });
-    </script>
-
-    <div id="csv2post_maintabs">
-
-        <?php 
-        ##########################################################
-        #                                                        #
-        #          ADD HEADERS FIRST not currently in use        #
-        #                                                        #
-        ##########################################################
-        if($csv2post_mpt_arr['menu'][$thepagekey]['headers'] == true){
-
-            foreach($csv2post_mpt_arr['menu'][$thepagekey]['tabs'] as $tab => $values){
-
-                $pageslug = $csv2post_mpt_arr['menu'][$thepagekey]['slug'];
-                $tabslug = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['slug'];
-                $tablabel = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['label'];   
-
-                if( csv2post_menu_should_tab_be_displayed($thepagekey,$tab) ){
-          
-                }
-            }
-        }?>       
+    global $csv2post_guitheme,$csv2post_mpt_arr,$csv2post_currentproject_code;
     
-    <?php         
-    // begin building menu - controlled by jQuery
-    $menu = '';
-    $menu .= '<ul>'; 
-         
-    // loop through tabs - held in menu pages tabs array 
+    echo '<h2 class="nav-tab-wrapper">';
+        
     foreach($csv2post_mpt_arr['menu'][$thepagekey]['tabs'] as $tab=>$values){
-                    
-        $pageslug = $csv2post_mpt_arr['menu'][$thepagekey]['slug'];
+
         $tabslug = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['slug'];
-        $tablabel = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['label'];   
-                                           
-        if( csv2post_menu_should_tab_be_displayed($thepagekey,$tab) ){
+        $tablabel = $csv2post_mpt_arr['menu'][$thepagekey]['tabs'][$tab]['label'];  
+
+        if(csv2post_menu_should_tab_be_displayed($thepagekey,$tab)){
         
-            // change label for first time users on
-            if($thepagekey == 'projects' && !isset($csv2post_projectslist_array) || $thepagekey == 'projects' && !is_array($csv2post_projectslist_array)){
-                $tablabel = 'Please create your first Post Creation Project...';
-            }   
-                            
-            // default menu build approach
-            $menu .= '<li><a href="#tabs-'.$tab.'">' . $tablabel . '</a></li>';                                
-        } 
-      
-        // discontinue loop if no projects exist so that only the first screen is displayed
-        if($thepagekey == 'projects' && !isset($csv2post_projectslist_array) || $thepagekey == 'projects' && !is_array($csv2post_projectslist_array)){
-            break;
-        }    
-                            
-    }// for each
+            if(!isset($_GET['csv2posttab']) && $tab == 0){
+                $activeclass = 'class="nav-tab nav-tab-active"';
+            }else{
+                $activeclass = 'class="nav-tab"';
+            }
+            
+            if(isset($_GET['csv2posttab']) && $_GET['csv2posttab'] == $tab){
+                $activeclass = 'class="nav-tab nav-tab-active"';
+            }
+            
+            echo '<a href="'.csv2post_create_adminurl($csv2post_mpt_arr['menu'][$thepagekey]['slug']).'&csv2posttab='.$tab.'" '.$activeclass.'>' . $tablabel . '</a>';       
+
+        }
+    }      
     
-    $menu .= '</ul>'; 
-    echo $menu;
-}       
+    echo '</h2>';
+} 
 
 /**
 * Used to determine if a screen is meant to be displayed or not, based on package and settings 

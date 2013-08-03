@@ -21,8 +21,8 @@ if(!isset($csv2post_file_profiles) || !is_array($csv2post_file_profiles)){
         $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);               
         $jsform_set['dialogbox_title'] = 'Beta';
         $jsform_set['noticebox_content'] = 'Beta';
-        // TODO:MEDIUMPRIORITY,add option for default value for null data or option for custom field not to be added at all
         ?>
+        
         <?php csv2post_panel_header( $panel_array );?>
 
             <?php // begin form and add hidden values
@@ -37,15 +37,6 @@ if(!isset($csv2post_file_profiles) || !is_array($csv2post_file_profiles)){
             <?php echo csv2post_date(0,$profile['profileupdated']);?> 
             
             <br />
-            
-            <?php
-            // add the javascript that will handle our form action, prevent submission and display dialog box
-            //csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-
-            // add end of form - dialog box does not need to be within the <form>
-            //csv2post_formend_standard('Submit',$jsform_set['form_id']);?>
-
-            <?php //csv2post_jquery_form_promptdiv($jsform_set);?>
 
         <?php csv2post_panel_footer();
         

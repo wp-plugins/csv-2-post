@@ -7,7 +7,7 @@ function csv2post_diagnostics_constant_adminside(){
         
         // we won't run diagnostics during any POST processing
         // we won't run diagnostics during any GET processing
-        if(isset($_POST) || isset($_GET['csv2postprocsub'])){
+        if((!isset($_POST) || !$_POST) && !isset($_GET['csv2postprocsub'])){
 
             ###########################################################################################
             #                              PEFORM EXTENSION DIAGNOSTICS                               #

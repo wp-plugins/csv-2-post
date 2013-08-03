@@ -2,7 +2,10 @@
 global $csv2post_guitheme,$csv2post_adm_set,$csv2post_currentversion,$csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$wtgtp_pluginforum,$wtgtp_pluginblog,$csv2post_options_array,$csv2post_is_free,$csv2post_projectslist_array,$csv2post_schedule_array;
 // global boolean
 global $csv2post_beta_mode,$csv2post_is_installed,$csv2post_extension_loaded,$csv2post_demo_mode;
-                        
+  
+$pageid = 'main';// used to access variable.php configuration
+$pagefolder = 'pagemain'; 
+                     
 $installing_software_name = WTG_C2P_NAME;
 $installing_software_name_plus = '';
 $installing_message = 'Thank you for choosing CSV 2 POST, we look forward to working with you and reading your feedback.';
@@ -148,12 +151,9 @@ if(!$csv2post_is_installed && !isset($_POST['csv2post_plugin_install_now'])){# w
 // the plugin update process is complete above and that decides if we should show the main screens
 if($display_main_screens){
 
-    $pageid = 'main';// used to access variable.php configuration
-    $pagefolder = 'pagemain';
-
     // main page header
-    $a = 'Premium Edition';
-    if($csv2post_is_free){$a = 'Free Edition';}elseif($csv2post_demo_mode){$a = 'Demo';}
+    $a = 'Premium';
+    if($csv2post_is_free){$a = 'By WebTechGlobal';}elseif($csv2post_demo_mode){$a = 'Demo';}
     csv2post_header_page($csv2post_mpt_arr['menu'][$pageid]['title'].' '.$a,0);
                 
     // create tab menu for the giving page
@@ -165,61 +165,19 @@ if($display_main_screens){
     // set tab number variable, a common use is in form hidden values
     $csv2post_tab_number = csv2post_get_tabnumber();
 
-    if($csv2post_guitheme == 'wordpresscss' ){
-
-        csv2post_GUI_wordpresscss_screen_include($pageid,$panel_number,$csv2post_tab_number);
-
-    }elseif($csv2post_guitheme == 'jquery'){
-        
-        // loop through tabs - held in menu pages tabs array
-        foreach($csv2post_mpt_arr['menu'][$pageid]['tabs'] as $tab => $values){
-            
-            // chekc if tab is to be displayed, if not, we do not add the div for it    
-            if(csv2post_menu_should_tab_be_displayed($pageid,$tab)){
-                
-                // build form action value, will be appended            
-                $csv2post_form_action = '';
-     
-                echo '<div id="tabs-'.$tab.'">';
-                
-                // check users permissions for this screen
-                if(current_user_can( csv2post_WP_SETTINGS_get_tab_capability($pageid,$tab) )){
-                    // display persistent notices for the current screen
-                    csv2post_persistentnotice_output('screen',$tab,$pageid);
-                    // create screen content                
-                    include($csv2post_mpt_arr['menu'][$pageid]['tabs'][$tab]['path']);    
-                }else{
-                    csv2post_n_incontent('Your Wordpress user account does not have permission to access this screen.','info','Small','No Permission: ');    
-                }
-                
-                echo '</div>';
-            }
-        } 
-        
-    }elseif($csv2post_guitheme == 'nonav'){# results in all accordions listed on one screen
-        
-        ### TODO:CRITICAL, complete no navigation view 
-        
-        // loop through tabs - held in menu pages tabs array
-        foreach($csv2post_mpt_arr['menu'][$pageid]['tabs'] as $tab=>$values){
-            
-            // chekc if tab is to be displayed, if not, we do not add the div for it    
-            if( csv2post_menu_should_tab_be_displayed($pageid,$tab) ){
-                
-                $csv2post_form_action = csv2post_link_toadmin($_GET['page'],'#tabs-' . $tab);            
-
-                include(WTG_C2P_DIR.'pages/'.$pagefolder.'/csv2post_tab'.$tab.'_page'.$pageid.'.php');
-            
-            }
-        }    
-        
-    }?>
-
-                    </div><!-- end of tabs - all content must be displayed before this div -->   
-                </div><!-- end of post boxes -->
+    // display persistent notices for the current screen
+    csv2post_persistentnotice_output('screen',$csv2post_tab_number,$pageid);  
+    
+    if(isset($_GET['csv2posttab'])){$csv2posttab = $_GET['csv2posttab'];}else{$csv2posttab = 0;}
+    $csv2post_form_action = get_admin_url() . 'admin.php?page=' . $_GET['page'] . '&csv2posttab='.$csv2posttab;
+                  
+    // create screen content 
+    include($csv2post_mpt_arr['menu'][$pageid]['tabs'][$csv2post_tab_number]['path']);?>
+ 
+                </div><!-- end of tabs - all content must be displayed before this div -->   
             </div><!-- end of post boxes -->
         </div><!-- end of post boxes -->
-    </div><!-- end of wrap - started in header -->
+    </div><!-- end of post boxes -->
 
     <script type="text/javascript">
         // <![CDATA[

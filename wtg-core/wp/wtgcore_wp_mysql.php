@@ -306,6 +306,9 @@ function csv2post_WP_SQL_does_post_exist_byid($id){
 
 /**
  * Checks if a database table name exists or not
+ * 1. One issue with this function is that Wordpress treats the lack of tables existence as an error
+ * 2. Another approach is using csv2post_WP_SQL_get_tables() and checking the array for the table, this is error free
+ * 
  * @global array $wpdb
  * @param string $table_name
  * @return boolean, true if table found, else if table does not exist
@@ -313,6 +316,19 @@ function csv2post_WP_SQL_does_post_exist_byid($id){
 function csv2post_WP_SQL_does_table_exist( $table_name ){
     global $wpdb;                                      
     if( $wpdb->query("SHOW TABLES LIKE '".$table_name."'") ){return true;}else{return false;}
+}
+
+/**
+ * Checks if a database table exist
+ * @param string $table_name (possible database table name)
+ */
+function csv2post_database_table_exist( $table_name ){
+    global $wpdb;
+    if( $wpdb->get_var("SHOW TABLES LIKE '".$table_name."'") != $table_name) {     
+        return false;
+    }else{
+        return true;
+    }
 }
 
 /**
@@ -394,21 +410,6 @@ function csv2post_WP_SQL_is_categorywithparent( $category_term,$parent_id ){
 */
 function csv2post_WP_SQL_formatter($sql_query){
     return $sql_query;    
-}
-
-/**
- * Checks if a database table exist
- * @param string $table_name (possible database table name)
- *
- * @todo SHOW TABLES can cause problems, invistagate another approach such as querying the table, ignoring the error if it does not exist
- */
-function csv2post_database_table_exist( $table_name ){
-    global $wpdb;
-    if( $wpdb->get_var("SHOW TABLES LIKE '".$table_name."'") != $table_name) {     
-        return false;
-    }else{
-        return true;
-    }
 }
 
 /**

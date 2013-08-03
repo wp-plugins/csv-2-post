@@ -234,9 +234,7 @@ function csv2post_form_save_scheduletimes_global(){
 */
 function csv2post_form_plugin_update(){
     if(isset( $_POST['csv2post_plugin_update_now'] ) && $_POST['csv2post_plugin_update_now'] == 'a43bt7695c34'){
-
-        // re-install tab menu
-        csv2post_INSTALL_tabmenu_settings();    
+   
         // re-install admin settings
         csv2post_INSTALL_admin_settings();
 

@@ -1,38 +1,5 @@
 <?php
 /**
-* Determines if dialog should be displayed or not for the giving panel when user submits form
-* 
-* @todo currently only works with global setting and not individual panel configuration 
-*/
-function csv2post_WP_SETTINGS_form_submit_dialog($panel_array){
-    
-    global $csv2post_guitheme,$csv2post_adm_set;
-
-    if($csv2post_guitheme != 'jquery'){
-        return false;
-    }
-    
-    // coded ['dialoguedisplay'] over-rides users settings to hide all dialog to ensure critical actions are always giving attention
-    // i.e. Re-Install Database Tables panel
-    if(isset($panel_array['dialogdisplay'])){ 
-        if($panel_array['dialogdisplay'] == 'yes'){ 
-            return true;
-        }
-        
-        // changing to boolean 4th March 2013    
-        if($panel_array['dialogdisplay'] == true){ 
-            return true;
-        }          
-    }
-   
-    if(isset($csv2post_adm_set['interface']['forms']['dialog']['status']) && $csv2post_adm_set['interface']['forms']['dialog']['status'] == 'display' || !isset($csv2post_adm_set['interface']['forms']['dialog']['status'])){
-        return true;
-    } 
-    
-    return false;       
-}
-
-/**
 * Decides a tab screens required capability in order for dashboard visitor to view it
 * 
 * @param mixed $page_name the array key for pages

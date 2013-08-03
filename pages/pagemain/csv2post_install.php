@@ -67,14 +67,6 @@ $panel_array['panel_help'] = 'This tool allows you to delete existing records, f
                                                 
         <h4><?php c2p_tt('Option Records','Delete all option records created by the plugin. This includes core option records and any created by projects');?></h4>
         <?php csv2post_list_optionrecordtrace(true,'Tiny'); ?>                    
-                                      
-         <?php 
-        // add js for dialog on form submission and the dialog <div> itself
-        if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
-            csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-            csv2post_jquery_form_promptdiv($jsform_set);
-        }
-        ?>
             
         <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
         
@@ -163,12 +155,6 @@ $jsform_set['noticebox_content'] = 'This action will delete all currently instal
         }
                                
         echo '</tbody></table>';               
-    }
-    
-    // add js for dialog on form submission and the dialog <div> itself
-    if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
-        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-        csv2post_jquery_form_promptdiv($jsform_set);
     }
     ?>
         

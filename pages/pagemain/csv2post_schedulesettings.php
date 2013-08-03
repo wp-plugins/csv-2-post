@@ -20,48 +20,27 @@ $jsform_set['noticebox_content'] = 'You are about to change the schedule times, 
     ?> 
 
     <h4><?php c2p_tt('Allowed Days','These settings can be used to make your auto-blogging more natural by decided which days auto-blogging does and does not happen on');?></h4>   
-     
-    <script>
-    $(function() {
-        $( "#csv2post_dripfeed_days_format" ).buttonset();
-    });
-    </script>
-    
-    <style>
-    #csv2post_dripfeed_days_format { margin-top: 2em; }
-    </style>
-
-    <div id="csv2post_dripfeed_days_format">    
-        <?php 
-        $days_array = array('monday','tuesday','wednesday','thursday','friday','saturday','sunday');
-        $days_counter = 1;
-        foreach($days_array as $key => $day){
-            
-            // set checked status
-            if(isset($csv2post_schedule_array['days'][$day])){
-                $day_checked = 'checked';
-            }else{
-                $day_checked = '';            
-            }
-                 
-            echo '<input type="checkbox" name="csv2post_scheduleday_list[]" id="daycheck'.$days_counter.'" value="'.$day.'" '.$day_checked.' />
-            <label for="daycheck'.$days_counter.'">'.ucfirst($day).'</label>'.csv2post_GUI_br();    
-            ++$days_counter;
+  
+    <?php 
+    $days_array = array('monday','tuesday','wednesday','thursday','friday','saturday','sunday');
+    $days_counter = 1;
+    foreach($days_array as $key => $day){
+        
+        // set checked status
+        if(isset($csv2post_schedule_array['days'][$day])){
+            $day_checked = 'checked';
+        }else{
+            $day_checked = '';            
         }
-        ?>
-    </div>
-    
-    <h4><?php c2p_tt('Allowed Hours','Most people do not blog 24 hours a day, use these settings to make your blog appear more natural and avoid posting constantly while your sleeping');?></h4>    
-    <script>
-    $(function() {
-        $( "#csv2post_dripfeed_hours_format" ).buttonset();
-    });
-    </script>
-    <style>
-    #csv2post_dripfeed_hours_format { margin-top: 2em; }
-    </style>
+             
+        echo '<input type="checkbox" name="csv2post_scheduleday_list[]" id="daycheck'.$days_counter.'" value="'.$day.'" '.$day_checked.' />
+        <label for="daycheck'.$days_counter.'"> '.ucfirst($day).'</label>'.csv2post_GUI_br();    
+        ++$days_counter;
+    }
+    ?>
 
-    <div id="csv2post_dripfeed_hours_format">    
+    <h4><?php c2p_tt('Allowed Hours','Most people do not blog 24 hours a day, use these settings to make your blog appear more natural and avoid posting constantly while your sleeping');?></h4>    
+   
     <?php
     // loop 24 times and create a checkbox for each hour
     for($i=0;$i<24;$i++){
@@ -74,19 +53,10 @@ $jsform_set['noticebox_content'] = 'You are about to change the schedule times, 
         }
         
         echo '<input type="checkbox" name="csv2post_schedulehour_list[]" id="hourcheck'.$i.'"  value="'.$i.'" '.$hour_checked.' />
-        <label for="hourcheck'.$i.'">'.$i.'</label>'.csv2post_GUI_nbsp().csv2post_GUI_nbsp();    
+        <label for="hourcheck'.$i.'">'.$i.'</label>'.csv2post_GUI_br();    
     }
     ?>                                                                                     
-    </div>  
-                       
-     <?php 
-    // add js for dialog on form submission and the dialog <div> itself
-    if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
-        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-        csv2post_jquery_form_promptdiv($jsform_set);
-    }
-    ?>
-        
+
     <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
 
 <?php csv2post_panel_footer();?> 
@@ -166,15 +136,7 @@ $jsform_set['noticebox_content'] = 'These are global settings and will take effe
         <input type="radio" id="csv2post_radio6_dripfeedrate_maximumpersession" name="session" value="200" <?php if(isset($csv2post_schedule_array['limits']['session']) && $csv2post_schedule_array['limits']['session'] == 200){echo 'checked';} ?> /><label for="csv2post_radio6_dripfeedrate_maximumpersession"> 200 </label><?php csv2post_GUI_nbsp();?>                                                                                                                        
         <input type="radio" id="csv2post_radio7_dripfeedrate_maximumpersession" name="session" value="300" <?php if(isset($csv2post_schedule_array['limits']['session']) && $csv2post_schedule_array['limits']['session'] == 300){echo 'checked';} ?> /><label for="csv2post_radio7_dripfeedrate_maximumpersession"> 300 </label><?php csv2post_GUI_nbsp();?>    
     </div>
-    
-     <?php 
-    // add js for dialog on form submission and the dialog <div> itself
-    if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
-        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-        csv2post_jquery_form_promptdiv($jsform_set);
-    }
-    ?>
-        
+
     <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
 
 <?php csv2post_panel_footer();?> 
@@ -286,14 +248,6 @@ $jsform_set['noticebox_content'] = 'You are about to change the permitted event 
         <input type="radio" id="csv2post_radio2_eventtypeactivation_dataupdate" name="csv2post_eventtype_dataupdate" value="0" <?php if(isset($csv2post_schedule_array['eventtypes']['dataupdate']['switch']) && $csv2post_schedule_array['eventtypes']['dataupdate']['switch'] == 0 || !isset($csv2post_schedule_array['eventtypes']['dataupdate']['switch'])){echo 'checked';} ?> />
         <label for="csv2post_radio2_eventtypeactivation_dataupdate"> Disabled</label>    
     </div> 
-
-    <?php 
-    // add js for dialog on form submission and the dialog <div> itself
-    if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
-        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-        csv2post_jquery_form_promptdiv($jsform_set);
-    }
-    ?>
         
     <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
 

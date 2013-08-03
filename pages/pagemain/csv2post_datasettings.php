@@ -193,14 +193,6 @@ $jsform_set['noticebox_content'] = 'It is recommended you monitor the plugin for
         <!-- Option End -->      
         
     </table>
-    
-    <?php 
-    // add js for dialog on form submission and the dialog <div> itself
-    if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
-        csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-        csv2post_jquery_form_promptdiv($jsform_set);
-    }
-    ?>
         
     <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
    

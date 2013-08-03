@@ -7,8 +7,9 @@ function csv2post_WP_adminpage_script() {?>
     <!--
     
     this is causing a conflict with Wordpress Add Media button on WYSIWYG editor - 10th June 2013
+    it is for the tips function currently  csv2post_tt()
     
-    <script type="text/javascript">
+    < s c r i p t type="text/javascript">
     jQuery(document).ready( function() {
         jQuery('.csv2postgivemesometips').tTips();
     });

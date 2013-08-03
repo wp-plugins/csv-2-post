@@ -34,32 +34,6 @@ function csv2post_hidden_form_values($tabnumber,$pageid,$panel_name,$panel_title
 }
 
 /**
- * Builds form middle with jquery dialog, flexible options allow a single action with or without many form objects
- * @link http://www.webtechglobal.co.uk/blog/wordpress/wtg-plugin-template/wtg-pt-jquery-dialogue-form
- * @param array $jqueryform_settings (configuration see: )
- * @param array $formobjects_array (list of form object ID for looping through and adding to dialog)
- * 
- * @todo this function requires the form
- */
-function csv2post_jqueryform_singleaction_middle($jsform_set,$formobjects_array){
-  if(isset($jsform_set['dialogbox_title']) && isset($jsform_set['noticebox_content'])){     
-        extract( shortcode_atts( array(
-        'has_options' => false,
-        'pageid' => 0,
-        'panel_number' => 0,
-        'panel_name' => 'nopanelname',
-        'panel_title' => 'No Panel Name',    
-        'tab_number' => 'error no tab number passed to csv2post_jqueryform_singleaction_middle()',
-        'form_id' => 'csv2post_form_id_default',
-        'form_name' => 'csv2post_form_name_default',
-        ), $jsform_set ) );
-
-        // add the javascript
-        csv2post_jquery_opendialog_confirmformaction($jsform_set,$formobjects_array);
-    }
-}
-
-/**
 * Builds text link, also validates it to ensure it still exists else reports it as broken
 * 
 * The idea of this function is to ensure links used throughout the plugins interface
@@ -193,51 +167,16 @@ function csv2post_panel_header( $panel_array, $boxintro_div = true ){
         <div class="handlediv" title="Click to toggle"><br /></div>
         <h3 class="hndle"><span><?php echo $panel_array['panel_title'];?></span></h3>
         <div class="inside">
-
-            <?php // row of panel support buttons
-            if($csv2post_guitheme == 'jquery'){
-                if(!isset($csv2post_adm_set['interface']['panels']['supportbuttons']['status']) || $csv2post_adm_set['interface']['panels']['supportbuttons']['status'] == 'display'){?>
-
-                <?php
-                // two column accordion 
-                if($boxintro_div && $csv2post_guitheme == 'jquery'){      
-                    echo '<div class="csv2post_panelcolumn_Top_A_Right">';
-                }
-                ?>
-                       
-                <?php csv2post_panel_support_buttons($panel_array);?>
-
-                <?php 
-                // two column accordion
-                if($csv2post_guitheme == 'jquery'){        
-                    echo '</div>';
-                }?>
-                    
-                <?php 
-                }
-            }?>
             
             <?php
             // display persistent notices for the current panel
             csv2post_persistentnotice_output('panel',$panel_array['panel_id']);
-        
-            // two column accordion 
-            if($csv2post_guitheme == 'jquery'){
-                echo '<div class="csv2post_panelcolumn_Top_A_Left">';
-            }
 }
 
 /**
 * Adds closing divs for panels 
 */
-function csv2post_panel_footer(){
-    global $csv2post_guitheme;
-    
-    // two column accordion
-    if($csv2post_guitheme == 'jquery'){
-        echo '</div>';
-    }
-     
+function csv2post_panel_footer(){     
     echo '</div></div>';
 }
 
@@ -518,7 +457,7 @@ function csv2post_header_page($pagetitle,$layout){
         
         <?php csv2post_GUI_currentproject();# displays current data job and post project 
          
-        // run specific admin triggered automation tasks, this way an output can be created for admin to see
+        // run specific admin triggered automation tasks (not including diagnostics)
         csv2post_admin_triggered_automation();  
 
         // check existing plugins and give advice or warnings
@@ -600,8 +539,7 @@ function csv2post_display_accordianpanel_buttons($panel_array){
 }
 
 function csv2post_GUI_br(){
-    global $csv2post_guitheme;
-    if($csv2post_guitheme != 'jquery'){echo '<br />';}
+    echo '<br />';
 }
 
 function csv2post_GUI_nbsp(){
@@ -614,11 +552,10 @@ function csv2post_GUI_nbsp(){
  */
 function csv2post_footer(){?>
  
-                    </div><!-- end of tabs - all content must be displayed before this div -->   
-                </div><!-- end of post boxes -->
+                </div><!-- end of tabs - all content must be displayed before this div -->   
             </div><!-- end of post boxes -->
         </div><!-- end of post boxes -->
-    </div><!-- end of wrap - started in header -->
+    </div><!-- end of post boxes -->
 
     <script type="text/javascript">
         // <![CDATA[
@@ -640,10 +577,10 @@ function csv2post_footer(){?>
 function csv2post_get_option_tabmenu(){
     global $csv2post_adm_set;# this is coming from the loaded array file
     // if load method not set and global is an array return the global
-    if(isset($csv2post_adm_set['tabmenu']['loadmethod']) && $csv2post_adm_set['tabmenu']['loadmethod'] == 'file'){
-
+    if(!isset($csv2post_adm_set['tabmenu']['loadmethod']) || $csv2post_adm_set['tabmenu']['loadmethod'] == 'file'){
+          
         require_once(WTG_C2P_DIR.'pages/csv2post_variables_tabmenu_array.php');
-        return $csv2post_adm_set;
+        return $csv2post_mpt_arr;
                       
     }else{
 
@@ -707,14 +644,6 @@ function csv2post_helpbutton($used,$intro,$title,$content){
     // keep count of number of help buttons used on page
     ++$used;
     return $used;
-}
-
-/**
- * Displays RSS feed from Google Feedburner
- * @param unknown_type $feed_slug
- */
-function csv2post_feedburner_widget($feed_slug) {
-    echo '<script src="http://feeds.feedburner.com/'.$feed_slug.'?format=sigpro" type="text/javascript" ></script><noscript><p>Subscribe to RSS headline updates from: <a href="http://feeds.feedburner.com/'.$feed_slug.'"></a><br/>Powered by FeedBurner</p> </noscript>';
 }
 
 /**

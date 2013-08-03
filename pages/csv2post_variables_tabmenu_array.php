@@ -32,16 +32,6 @@ $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['display'] = true;// user can ch
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['path'] = $freepath.'pagemain/csv2post_quickstart.php';   // old csv2post_tab'.$sub.'_main
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['permissions']['defaultcapability'] = 'import';// optional, if not set, scripts will default to 'activate_plugins'
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['permissions']['customcapability'] = 'import';// example only, does not need to be set for every tab, will be set when user changes the required capability
-++$sub;#2 
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['active'] = true;
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['slug'] = 'news';
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['label'] = 'News';  
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['allowhide'] = false;
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['package'] = 'free';
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['path'] = $freepath.'pagemain/csv2post_news.php';
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['permissions']['defaultcapability'] = 'update_core';
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['permissions']['customcapability'] = 'update_core'; 
 ++$sub;#3 
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['active'] = false;
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['slug'] = 'updatepaidcore';
@@ -103,7 +93,7 @@ $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['path'] = $freepath.'pagemain/cs
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['permissions']['defaultcapability'] = 'activate_plugins';
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['permissions']['customcapability'] = 'activate_plugins';
 ++$sub;#9
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['active'] = false;
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['slug'] = 'fileprofiles';
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['label'] = 'File Profiles';
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
@@ -113,7 +103,7 @@ $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['path'] = $freepath.'pagemain/cs
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['permissions']['defaultcapability'] = 'activate_plugins';
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['permissions']['customcapability'] = 'activate_plugins'; 
 ++$sub;#10
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['active'] = false;
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['slug'] = 'labels';
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['label'] = 'Labels (Beta)';
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['allowhide'] = true;
@@ -131,7 +121,7 @@ $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['display'] = true;// user can ch
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['path'] = $freepath.'pagemain/csv2post_install.php';
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['permissions']['defaultcapability'] = 'activate_plugins';
 ++$sub;#12
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['active'] = false;
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['slug'] = 'dev';
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['label'] = 'Dev';# developer information
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['allowhide'] = true;
@@ -140,7 +130,7 @@ $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['display'] = true;// user can ch
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['path'] = $paidpath.'main/csv2post_dev.php';
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['permissions']['defaultcapability'] = 'activate_plugins';
 ++$sub;#13
-$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['active'] = true;
+$csv2post_mpt_arr['menu']['main']['tabs'][$sub]['active'] = false;
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['slug'] = 'extensions';
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['label'] = 'Extensions';# developer information
 $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['allowhide'] = true;

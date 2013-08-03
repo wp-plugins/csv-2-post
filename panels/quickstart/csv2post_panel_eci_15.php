@@ -23,33 +23,22 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
         csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
         csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);
         ?>
-
-            <select name="csv2post_ecifreedefaultauthor_select" >
-                
-                <?php
-                // apply selected to default option when no value has been saved already
-                $selected = '';
-                $current = ''; 
-                if(!isset($csv2post_project_array['authors']['defaultauthor'])){
-                    $selected = 'selected="selected"';
-                }else{
-                    $current = $csv2post_project_array['authors']['defaultauthor'];
-                }?>
-    
-                <?php csv2post_display_users_options($current);?>
-                                                                                                                                     
-            </select>  
-                          
-            <br />
-                    
-        <?php 
-        // add js for dialog on form submission and the dialog <div> itself
-        if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
-            csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-            csv2post_jquery_form_promptdiv($jsform_set);
-        } 
-        ?>
             
+        <?php         
+        global $csv2post_project_array;
+        
+        $currentuserid = get_current_user_id();
+        
+        echo '<p>Your own user ID is ' . $currentuserid .' and it will be used as the default if no other ID is entered.</p>';
+         
+        if(isset($csv2post_project_array['authors']['defaultauthor']) && is_numeric($csv2post_project_array['authors']['defaultauthor'])){
+            $currentuserid = $csv2post_project_array['authors']['defaultauthor'];
+        }
+        ?>
+        <label for="csv2post_ecifreedefaultauthor_select">Author ID:</label> <input type="text" name="csv2post_ecifreedefaultauthor_select" value="<?php echo $currentuserid;?>">
+
+        <br />            
+
         <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>            
      
     <?php 

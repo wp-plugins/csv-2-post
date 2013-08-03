@@ -87,15 +87,7 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
         <input type="hidden" name="csv2post_contentname" value="<?php echo $templatename;?>">
         
         <P>Your new Content Template will be named "<strong><?php echo $templatename;?></strong>", you may edit it at anytime by visiting 'Content Template'.</p>
- 
-        <?php 
-        // add js for dialog on form submission and the dialog <div> itself
-        if(csv2post_WP_SETTINGS_form_submit_dialog($panel_array)){
-            csv2post_jqueryform_singleaction_middle($jsform_set,$csv2post_options_array);
-            csv2post_jquery_form_promptdiv($jsform_set);
-        } 
-        ?>
-            
+
         <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>            
      
     <?php 
