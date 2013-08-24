@@ -27,6 +27,9 @@ if($cont){
                              
     // Delete CSV file
     $cont = csv2post_form_delete_csvfile();
+    
+    // edit during import settings 
+    $cont = csv2post_form_editduringimport();
 }
                      
 // Project Screen Form Submissions (project creation and configuration)

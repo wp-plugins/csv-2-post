@@ -17,7 +17,7 @@ function csv2post_data_import_from_csvfile_basic( $csvfile_name, $table_name, $t
     
     global $wpdb,$csv2post_adm_set;
 
-    $file_path = WTG_C2P_CONTENTFOLDER_DIR .'/'. $csvfile_name;  
+    $file_path = WTG_C2P_CONTENTFOLDER_DIR . $csvfile_name;  
 
     // get files modification time
     $csvfile_modtime = filemtime($file_path);
@@ -410,7 +410,7 @@ function csv2post_get_default_titletemplate_id( $csv2post_currentproject_code ){
 * @param mixed $project_code
 * @return mixed, false on fail or no option record exists
 * 
-* @link http://www.csv2post.com/hacking/project-array-csv2post_project_array
+* @link http://www.webtechglobal.co.uk/hacking/project-array-csv2post_project_array
 */
 function csv2post_get_project_array($project_code){
     $getproject_array = get_option( 'csv2post_' . $project_code );
@@ -657,7 +657,7 @@ function csv2post_add_dataimportjob_to_list($code,$jobname){
 */
 function csv2post_establish_csvfile_fieldnumber($csvfile_name,$separator){
      // get the header row
-    if (($handle = fopen(WTG_C2P_CONTENTFOLDER_DIR . '/' . $csvfile_name, "r")) !== FALSE) {
+    if (($handle = fopen(WTG_C2P_CONTENTFOLDER_DIR . $csvfile_name, "r")) !== FALSE) {
 
         // one row at a time we will count each possible Separator
         while (($header_row_string = fgets($handle, 4096)) !== false) {

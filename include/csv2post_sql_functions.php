@@ -202,7 +202,9 @@ function csv2post_WP_SQL_row_id_check($table_name,$id){
  */
 function csv2post_WP_SQL_update_record( $row, $csvfile_name, $column_total, $jobcode, $record_id, $header_array, $filegrouping){        
     global $csv2post_is_free;
-   
+    
+    $jobarray = csv2post_get_dataimportjob($jobcode);
+    
     // establish csv file id - if free edition there is no file id
     if($csv2post_is_free || $filegrouping == 'single'){
         $file_id = '';    
@@ -224,7 +226,7 @@ function csv2post_WP_SQL_update_record( $row, $csvfile_name, $column_total, $job
         if($csv2post_is_free){
             $row[$col] = csv2post_data_prep_fromcsvfile($row[$col]);
         }else{
-            $row[$col] = csv2post_data_prep_fromcsvfile_advanced($row[$col],$header['sql']);
+            $row[$col] = csv2post_data_prep_fromcsvfile_advanced($jobarray,$row[$col],$header['sql']);
         }
         
         $set .= ',';
@@ -273,7 +275,7 @@ function csv2post_WP_SQL_create_dataimportjob_table($jobcode,$job_file_group,$ma
     * csv2post_catid       - categord id i.e. 23,24,25. Added Feb 2013
     * 
     * Update Webpage
-    * http://www.csv2post.com/hacking/post-creation-project-database-tables
+    * http://www.webtechglobal.co.uk/hacking/post-creation-project-database-tables
     * 
     * Update Functions
     * csv2post_is_csv2post_postprojecttable()
@@ -321,7 +323,7 @@ function csv2post_WP_SQL_create_dataimportjob_table($jobcode,$job_file_group,$ma
                     csv2post_notice('An incorrect separator, Enclosure Character or the number of columns has been
                     entered for your file. A blank/empty header was found. Please ensure the correct values are
                     submitted and that your CSV file does not actually have a column with no text in the header/title.',
-                    'error','Large','Blank Header Detected','http://www.csv2post.com/notifications/database-query-failure-on-creating-data-import-job','echo','');
+                    'error','Large','Blank Header Detected','http://www.webtechglobal.co.uk/notifications/database-query-failure-on-creating-data-import-job','echo','');
                     return false;    
                 }
                 
@@ -365,7 +367,7 @@ function csv2post_WP_SQL_create_dataimportjob_table($jobcode,$job_file_group,$ma
         columns for your CSV file being wrong. 50% of the time this is caused by an extra separator (comma)
         in the header row which causes a blank column and MySQL cannot accept a blank header in the column. Here is your query, feel
         free to send it to us along with your CSV file for advice:<br /><br />' . csv2post_WP_SQL_formatter($table),
-        'error','Small','Possible Incorrect Separator or Enclosure Character','http://www.csv2post.com/notifications/database-query-failure-on-creating-data-import-job','echo','');
+        'error','Small','Possible Incorrect Separator or Enclosure Character','http://www.webtechglobal.co.uk/notifications/database-query-failure-on-creating-data-import-job','echo','');
         return false;
     }        
 }

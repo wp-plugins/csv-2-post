@@ -434,7 +434,7 @@ function csv2post_meta_box_contenttemplates_testposts( $object, $box ) { ?>
         <br />
         <input class="widefat" type="text" name="csv2post_contenttemplate_testposts" id="test-posts" value="<?php echo esc_attr( get_post_meta( $object->ID, '_csv2post_testposts', true ) ); ?>" size="30" />
         <br>
-        <a href="http://www.csv2post.com/feature-guides/content-template-test-posts-meta-box" title="Feature guide on Content Template Test Posts">Read feature guide</a>
+        <a href="http://www.webtechglobal.co.uk/feature-guides/content-template-test-posts-meta-box" title="Feature guide on Content Template Test Posts">Read feature guide</a>
     </p><?php 
 }
 

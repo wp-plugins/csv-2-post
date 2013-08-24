@@ -413,10 +413,10 @@ function csv2post_form_ECI_free_step3_importdate(){
 
         // display result    
         csv2post_notice( '<h4>Data Import Result<h4>'.$intromes.'
-        '.csv2post_notice( 'New Records: '.$dataimportjob_array["stats"]["lastevent"]['inserted'],'success','Small',false,'www.csv2post.com/notifications/new-records-count','return').'
-        '.csv2post_notice( 'Void Records: '.$dataimportjob_array["stats"]["lastevent"]['void'],'info','Small',false,'www.csv2post.com/notifications/void-records-counter','return').'
-        '.csv2post_notice( 'Dropped Rows: '.$dataimportjob_array["stats"]["lastevent"]['dropped'],'warning','Small',false,'www.csv2post.com/notifications/dropped-rows-counter','return').'
-        '.csv2post_notice( 'Rows Processed: '.$dataimportjob_array["stats"]["lastevent"]['processed'],'info','Small',false,'www.csv2post.com/notifications/rows-processed-counter','return').'         
+        '.csv2post_notice( 'New Records: '.$dataimportjob_array["stats"]["lastevent"]['inserted'],'success','Small',false,'www.webtechglobal.co.uk/notifications/new-records-count','return').'
+        '.csv2post_notice( 'Void Records: '.$dataimportjob_array["stats"]["lastevent"]['void'],'info','Small',false,'www.webtechglobal.co.uk/notifications/void-records-counter','return').'
+        '.csv2post_notice( 'Dropped Rows: '.$dataimportjob_array["stats"]["lastevent"]['dropped'],'warning','Small',false,'www.webtechglobal.co.uk/notifications/dropped-rows-counter','return').'
+        '.csv2post_notice( 'Rows Processed: '.$dataimportjob_array["stats"]["lastevent"]['processed'],'info','Small',false,'www.webtechglobal.co.uk/notifications/rows-processed-counter','return').'         
         ',$overall_result,'Extra','','','echo'); 
 
         $csv2post_ecisession_array['nextstep'] = 4;
@@ -635,7 +635,7 @@ function csv2post_form_ECI_free_step1_uploadcsvfile(){
         $csv2post_qs_array['filename'] = $upload['name'];
 
         // check if filename already exists in destination - we will let the user know they wrote over an existing file
-        $target_file_path =  WTG_C2P_CONTENTFOLDER_DIR . '/' . $upload['name'];
+        $target_file_path =  WTG_C2P_CONTENTFOLDER_DIR . $upload['name'];
         $target_file_path_exists = file_exists( $target_file_path );
         if($target_file_path_exists){
             
@@ -866,7 +866,7 @@ function csv2post_form_upload_csv_file(){
         }
 
         // check if filename already exists in destination - we will let the user know they wrote over an existing file
-        $target_file_path =  WTG_C2P_CONTENTFOLDER_DIR . '/' . $upload['name'];
+        $target_file_path =  WTG_C2P_CONTENTFOLDER_DIR . $upload['name'];
         $target_file_path_exists = file_exists( $target_file_path );
         if($target_file_path_exists){
             // get existing files datestamp - we use it to ensure the new file is newer/changed and trigger data update
@@ -977,7 +977,7 @@ function csv2post_form_delete_csvfile(){
             if($file_is_in_use){
                 csv2post_notice('The file named ' . $csv_file_name .' is in use. Please delete any data import job or project using the file before attempting to delete it.','warning','Small','File In Use','','echo');
             }else{
-                unlink(WTG_C2P_CONTENTFOLDER_DIR . '/' . $csv_file_name); 
+                unlink(WTG_C2P_CONTENTFOLDER_DIR . $csv_file_name); 
                 csv2post_notice( $csv_file_name .' Deleted','success','Small','','','echo');
             }
         }
@@ -1182,11 +1182,11 @@ function csv2post_form_importdata(){
         
         // display result    
         csv2post_notice( '<h4>Data Import Result<h4>'.$intromes.'
-        '.csv2post_notice( 'New Records: '.$dataimportjob_array["stats"]["lastevent"]['inserted'],'success','Small',false,'www.csv2post.com/notifications/new-records-count','return').'
-        '.csv2post_notice( 'Void Records: '.$dataimportjob_array["stats"]["lastevent"]['void'],'info','Small',false,'www.csv2post.com/notifications/void-records-counter','return').'
-        '.csv2post_notice( 'Dropped Rows: '.$dataimportjob_array["stats"]["lastevent"]['dropped'],'warning','Small',false,'www.csv2post.com/notifications/dropped-rows-counter','return').'
-        '.csv2post_notice( 'Rows Processed: '.$dataimportjob_array["stats"]["lastevent"]['processed'],'info','Small',false,'www.csv2post.com/notifications/rows-processed-counter','return').'     
-        '.csv2post_notice( 'Job Progress: '.$dataimportjob_array["stats"]["allevents"]['progress'],'info','Small',false,'www.csv2post.com/notifications/job-progress-counter','return').'    
+        '.csv2post_notice( 'New Records: '.$dataimportjob_array["stats"]["lastevent"]['inserted'],'success','Small',false,'www.webtechglobal.co.uk/notifications/new-records-count','return').'
+        '.csv2post_notice( 'Void Records: '.$dataimportjob_array["stats"]["lastevent"]['void'],'info','Small',false,'www.webtechglobal.co.uk/notifications/void-records-counter','return').'
+        '.csv2post_notice( 'Dropped Rows: '.$dataimportjob_array["stats"]["lastevent"]['dropped'],'warning','Small',false,'www.webtechglobal.co.uk/notifications/dropped-rows-counter','return').'
+        '.csv2post_notice( 'Rows Processed: '.$dataimportjob_array["stats"]["lastevent"]['processed'],'info','Small',false,'www.webtechglobal.co.uk/notifications/rows-processed-counter','return').'     
+        '.csv2post_notice( 'Job Progress: '.$dataimportjob_array["stats"]["allevents"]['progress'],'info','Small',false,'www.webtechglobal.co.uk/notifications/job-progress-counter','return').'    
         ',$overall_result,'Extra','','','echo'); 
 
         return false;
@@ -1866,13 +1866,38 @@ function csv2post_form_delete_post_creation_projects(){
     }else{
         return true;
     }    
-}    
+}  
+
+/**
+* Processes request to delete multiple data import jobs selected on Start tab 
+*/
+function csv2post_form_setcurrent_dataimportjob(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'data' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'setcurrentjob'){
+        if(!isset($_POST['csv2post_jobcode'])){
+            csv2post_notice('You did not select a data import job, no changes have been made.','info','Small');   
+        }else{
+            global $csv2post_currentjob_code;
+            
+            if($csv2post_currentjob_code == $_POST['csv2post_jobcode']){
+                csv2post_notice_postresult('info','Job Already Active','The data import job you selected is already the current active one and ready to be worked with.');    
+            }else{
+                csv2post_update_option_currentjob_code($_POST['csv2post_jobcode']);
+                csv2post_notice_postresult('success','Set Current Job','Your current job has been changed to the one you selected and is ready to work with.');
+                wp_redirect( get_bloginfo('url') . '/wp-admin/admin.php?page=csv2post_yourdata' ); 
+                exit;             
+            }
+        }
+        return false;
+    }else{
+        return true;
+    }     
+}   
 
 /**
 * Processes request to delete multiple data import jobs selected on Start tab 
 */
 function csv2post_form_delete_dataimportjobs(){
-    if(isset( $_POST[WTG_C2P_ABB.'hidden_pageid'] ) && $_POST[WTG_C2P_ABB.'hidden_pageid'] == 'data' && isset($_POST[WTG_C2P_ABB.'hidden_panel_name']) && $_POST[WTG_C2P_ABB.'hidden_panel_name'] == 'deletedataimportjob'){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'data' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'deletedataimportjob'){
         if(!isset($_POST['csv2post_jobcode_array'])){
             csv2post_notice('You did not select any data import jobs for deletion, no changes have been made.','info','Small');    
         }else{
@@ -2571,7 +2596,7 @@ function csv2post_form_save_easyconfigurationquestions(){
         if($csv2post_adm_set['ecq'][122] == 'yes'){/* TODO:HIGHPRIORITY, this is a system and all systems need to be 90% comlete asap, then activate it here */}
         // 123 - Register domain as user
         if($csv2post_adm_set['ecq'][123] == 'yes'){/* TODO:MEDIUMPRIORITY, return answer using User Experience Program when it is complete, also setup a way for user to manually submit domain with URL GET at our end, users should have incentives to do so once credits system in place as a service */}
-        // 124 - Support account using wordpressplugin@csv2post.com
+        // 124 - Support account
         if($csv2post_adm_set['ecq'][124] == 'yes'){/* TODO:MEDIUMPRIORITY, create support account and pass details to us using SOAP once web services complete */}
 
         csv2post_update_option_adminsettings($csv2post_adm_set);
@@ -2807,14 +2832,37 @@ function csv2post_form_change_default_excerpttemplate(){
 */
 function csv2post_form_reseteci(){
     if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecireset'){
-        
-        
-        
         csv2post_INSTALL_ecisession();        
         csv2post_notice_postresult('success','Quick Start Reset','You can now start with Step One of the Quick Start system.');        
         return false;
     }else{
         return true;
     }     
-}       
+}  
+
+function csv2post_form_editduringimport(){
+    if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'data' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'basicchangesduringimport'){
+
+        global $csv2post_adm_set,$csv2post_job_array,$csv2post_currentjob_code;      
+
+        // save per column options
+        foreach($csv2post_job_array[ $csv2post_job_array['files'][1] ]['headers'] as $key => $header){
+            if(isset($_POST['csv2post_edit_your_data_'.$header['sql']]) && $_POST['csv2post_edit_your_data_'.$header['sql']] != 'notselected'){
+                $csv2post_job_array[ $csv2post_job_array['files'][1] ]['editdatepercolumn'][$header['sql']] = $_POST['csv2post_edit_your_data_'.$header['sql']];    
+            }else{
+                unset($csv2post_job_array[ $csv2post_job_array['files'][1] ]['editdatepercolumn'][$header['sql']]);
+            }
+        }    
+
+        // update job array
+        csv2post_update_dataimportjob($csv2post_job_array,$csv2post_currentjob_code);
+        
+        csv2post_notice_postresult('success','Basic Changes Options Saved','Your settings will cause values in your data set to be changed before being
+        entered to the database. Please make sure the changes are as expected and suitable for your planned use.');
+        
+        return false;
+    }else{
+        return true;
+    }     
+}  
 ?>

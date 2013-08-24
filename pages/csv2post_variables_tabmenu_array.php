@@ -155,7 +155,7 @@ $csv2post_mpt_arr['menu']['main']['tabs'][$sub]['permissions']['defaultcapabilit
 ######################################################
 $csv2post_mpt_arr['menu']['data']['active'] = true;
 $csv2post_mpt_arr['menu']['data']['slug'] =  "csv2post_yourdata";
-$csv2post_mpt_arr['menu']['data']['menu'] = "1. Your Data";
+$csv2post_mpt_arr['menu']['data']['menu'] = "1. Data Import";
 $csv2post_mpt_arr['menu']['data']['name'] = "yourdata";
 $csv2post_mpt_arr['menu']['data']['title'] = 'Data Import';
 $csv2post_mpt_arr['menu']['data']['icon'] = 'options-general';
@@ -166,22 +166,22 @@ $csv2post_mpt_arr['menu']['data']['permissions']['defaultcapability'] = 'update_
 $csv2post_mpt_arr['menu']['data']['package'] = 'paid';// free|paid (using free) 
 $sub = 0;#1
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['active'] = true;
-$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['slug'] = 'datastart';
-$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['label'] = 'Start';
+$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['slug'] = 'datasources';
+$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['label'] = 'Data Sources';
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['allowhide'] = false;// is tab screen allowed to be hidden (boolean)
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['package'] = 'paid';
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
-$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['path'] = $paidpath.'data/csv2post_datastart.php';
-$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['permissions']['defaultcapability'] = 'import';  
+$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['path'] = $paidpath.'data/csv2post_datasources.php';
+$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['permissions']['defaultcapability'] = 'import'; 
 ++$sub;#2
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['active'] = true;
-$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['slug'] = 'basicimporter';
-$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['label'] = 'Basic Importer';
+$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['slug'] = 'managejobs';
+$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['label'] = 'Manage Jobs';
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['allowhide'] = true;
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['package'] = 'paid';
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
-$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['path'] = $paidpath.'data/csv2post_basicimporter.php';
-$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['permissions']['defaultcapability'] = 'import'; 
+$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['path'] = $paidpath.'data/csv2post_managejobs.php';
+$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['permissions']['defaultcapability'] = 'import';  
 ++$sub;#3
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['active'] = true;
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['slug'] = 'exporttools';
@@ -201,7 +201,7 @@ $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['display'] = true;// user can ch
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['path'] = $paidpath.'data/csv2post_createdtables.php';
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['permissions']['defaultcapability'] = 'activate_plugins';
 ++$sub;#5
-$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['active'] = false;
+$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['active'] = true;
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['slug'] = 'datarules';
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['label'] = 'Data Rules';
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['allowhide'] = true;
@@ -230,7 +230,7 @@ $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['permissions']['defaultcapabilit
 ++$sub;#9
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['active'] = true;
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['slug'] = 'premiumimporter';
-$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['label'] = 'Premium Importer';
+$csv2post_mpt_arr['menu']['data']['tabs'][$sub]['label'] = 'Manual Import';
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['allowhide'] = true;
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['package'] = 'paid';
 $csv2post_mpt_arr['menu']['data']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
@@ -406,7 +406,7 @@ $csv2post_mpt_arr['menu']['projects']['tabs'][$sub]['path'] = $paidpath.'project
 ######################################################
 $csv2post_mpt_arr['menu']['creation']['active'] = true;
 $csv2post_mpt_arr['menu']['creation']['slug'] =  WTG_C2P_ABB . "yourcreation";
-$csv2post_mpt_arr['menu']['creation']['menu'] = "3. Your Creation";
+$csv2post_mpt_arr['menu']['creation']['menu'] = "3. Your Creations";
 $csv2post_mpt_arr['menu']['creation']['name'] = "yourcreation";
 $csv2post_mpt_arr['menu']['creation']['title'] = 'Your Creation';
 $csv2post_mpt_arr['menu']['creation']['icon'] = 'options-general';

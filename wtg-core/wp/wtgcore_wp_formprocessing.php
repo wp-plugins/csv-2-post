@@ -14,7 +14,7 @@ function csv2post_form_installpackage(){
         if(!current_user_can('activate_plugins')){
             csv2post_notice(__('You do not have the required permissions to activate CSV 2 POST.
             The Wordpress role required is activate_plugins, usually granted to Administrators. Please
-            contact your Web Master or contact info@csv2post.com if you feel this is a fault.'), 'warning', 'Large', false);
+            contact your Web Master or contact info@webtechglobal.co.uk if you feel this is a fault.'), 'warning', 'Large', false);
         }else{                  
             csv2post_install_core();
             csv2post_install_plugin();    
@@ -78,7 +78,7 @@ function csv2post_form_uninstallplugin_partial(){
                     if($file_is_in_use){        
                         csv2post_notice('The file named ' . $csv_file_name .' is in use, cannot delete.','error','Tiny','File In Use','','echo');
                     }else{                         
-                        unlink(WTG_C2P_CONTENTFOLDER_DIR . '/' . $csv_file_name); 
+                        unlink(WTG_C2P_CONTENTFOLDER_DIR . $csv_file_name); 
                         csv2post_notice( $csv_file_name .' Deleted','success','Tiny','','','echo');
                     }
                                             

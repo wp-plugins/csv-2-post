@@ -571,7 +571,7 @@ function csv2post_admin_triggered_newcsvfilescheck(){
 * @returns the result of is_file() which is boolean
 */
 function csv2post_files_does_csvfile_exist($csvfile_name){
-    return is_file(WTG_C2P_CONTENTFOLDER_DIR . '/' . $csvfile_name);     
+    return is_file(WTG_C2P_CONTENTFOLDER_DIR . $csvfile_name);     
 }
 
 /**
@@ -581,7 +581,7 @@ function csv2post_files_does_csvfile_exist($csvfile_name){
 * @return bool
 */
 function csv2post_files_get_csvfile_filemtime($csvfile_name){
-    return filemtime(WTG_C2P_CONTENTFOLDER_DIR . '/' . $csvfile_name);     
+    return filemtime(WTG_C2P_CONTENTFOLDER_DIR . $csvfile_name);     
 } 
 
 /**

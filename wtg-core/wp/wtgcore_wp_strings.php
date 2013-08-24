@@ -80,7 +80,7 @@ function csv2post_commas($originalstring){
 */
 function csv2post_get_files_age($time){
                
-    //echo date("F d Y H:i:s.", filemtime(WTG_C2P_CONTENTFOLDER_DIR .'/'. $filename));
+    //echo date("F d Y H:i:s.", filemtime(WTG_C2P_CONTENTFOLDER_DIR . $filename));
     
     return '1 Day, 1 Hour, 1 Min, 1 Sec';   
 }
@@ -320,5 +320,5 @@ function csv2post_date($timeaddition = 0,$time = false,$datestring = false,$conv
 function csv2post_contactscreen_url(){
     //return get_admin_url(null,'admin.php?page=csv2post_more&csv2post_tab=tab10_more');   OLD TAB METHOD     
     return get_admin_url(null,'admin.php?page=csv2post_more#tabs-9');// new jquery tabs method
-}  
+} 
 ?>

@@ -16,7 +16,7 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
     if($csv2post_ecisession_array['nextstep'] > 11){
 
         csv2post_n_incontent('Post updating, custom field updating and doing it in an intelligent
-        way is something we offer in our premium services at www.csv2post.com. Our updating functionality
+        way is something we offer in our premium services at www.webtechglobal.co.uk. Our updating functionality
         allows automation, scheduling and we can exclude specific content from bring updated. The nature of such
         features demands high support and requires backing of a premium level of support which we are ready to
         provide you.','success','Small','Premium Step');
@@ -30,7 +30,7 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
         ?>
   
         <?php  csv2post_n_incontent('Post updating, custom field updating and doing it in an intelligent
-        way is something we offer in our premium services at www.csv2post.com. Our updating functionality
+        way is something we offer in our premium services at www.webtechglobal.co.uk. Our updating functionality
         allows automation, scheduling and we can exclude specific content from bring updated. The nature of such
         features demands high support and requires backing of a premium level of support which we are ready to
         provide you.','info','Small','Premium Step'); ?> 

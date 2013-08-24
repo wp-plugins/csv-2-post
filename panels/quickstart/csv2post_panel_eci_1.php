@@ -4,7 +4,7 @@ $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_
 $panel_array['panel_name'] = 'ecifreeuploadcsvfile';// slug to act as a name and part of the panel ID 
 $panel_array['panel_title'] = __('Step 1: Upload CSV File');// user seen panel header text 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
-$panel_array['panel_url'] = 'http://www.csv2post.com/feature-guides/csv-file-uploader';
+$panel_array['panel_url'] = 'http://www.webtechglobal.co.uk/feature-guides/csv-file-uploader';
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            

@@ -148,7 +148,7 @@ $panel_array['panel_name'] = 'eventtypes';// slug to act as a name and part of t
 $panel_array['panel_title'] = __('Event Types *global panel*');// user seen panel header text 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_help'] = __('Event types are the names giving to different things CSV 2 POST can do during automated processing. You should only activate event types you actually want to use. The more you activate, the less priority each event type has i.e. if you activate 10 different event types, each event type will be run 10 or more minutes apart as there is a 60 second cooldown between all events of any type. You can override the schedules process of cycling through multiple different event types and force it to focus on one selected event type using the Focus settings.');
-$panel_array['panel_url'] = 'http://www.csv2post.com/hacking/event-types';
+$panel_array['panel_url'] = 'http://www.webtechglobal.co.uk/hacking/event-types';
 $panel_array['video'] = 'http://www.youtube.com/embed/VViRp6Ggw94';
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();

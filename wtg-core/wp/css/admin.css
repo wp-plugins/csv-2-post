@@ -1,8 +1,8 @@
 /* CSS Document for CSV 2 POST
 Created: 9th October 2011
-Author: Zara Walsh, WebTechGlobal, Ryan Bayne
-Site: www.csv2post.com
-Email: info@csv2post.com
+Author: Ryan Bayne
+Site: www.webtechglobal.co.uk
+Email: info@webtechglobal.co.uk
 */
 
 #csv2post_cssmenu ul {margin: 0; padding: 7px 6px 0; background: #7d7d7d url(../../images/menus/overlay.png) repeat-x 0 -110px; line-height: 100%; border-radius: 1em; font: normal 12px Arial, Helvetica, sans-serif; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; -webkit-box-shadow: 0 1px 3px rgba(0,0,0, .4); -moz-box-shadow: 0 1px 3px rgba(0,0,0, .4);}

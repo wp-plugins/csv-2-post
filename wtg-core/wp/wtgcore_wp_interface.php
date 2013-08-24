@@ -13,23 +13,11 @@ function csv2post_hidden_form_values($tabnumber,$pageid,$panel_name,$panel_title
 
     wp_nonce_field($panel_name); 
     
-    // multiple steps - use this to state a step - argument within form validation will process accordingly
     echo '<input type="hidden" id="csv2post_hidden_tabnumber" name="csv2post_hidden_tabnumber" value="'.$tabnumber.'">';
-
-    // multiple steps - use this to state a step - argument within form validation will process accordingly
     echo '<input type="hidden" id="csv2post_hidden_step" name="csv2post_hidden_step" value="'.$step.'">';
-
-    // Main Page ID - mainly used to aid troubleshooting
     echo '<input type="hidden" id="csv2post_hidden_pageid" name="csv2post_hidden_pageid" value="'.$pageid.'">';
-
-    // Panel Name (slug) - mainly used to aid troubleshooting
     echo '<input type="hidden" id="csv2post_hidden_panel_name" name="csv2post_hidden_panel_name" value="'.$panel_name.'">';
-
-    // Panel Title - used to in output and to aid troubleshooting
     echo '<input type="hidden" id="csv2post_hidden_panel_title" name="csv2post_hidden_panel_title" value="'.$panel_title.'">';
-
-    // Panel Number On Tab File - mainly used to aid troubleshooting
-    // also used to pass tab number when being included in support button row
     echo '<input type="hidden" id="csv2post_hidden_panels" name="csv2post_hidden_panels" value="'.$panel_number.'">';
 }
 
@@ -426,22 +414,6 @@ function csv2post_header_page($pagetitle,$layout){
     
     csv2post_jquery_button();?> 
 
-    <!-- Checkbox Hide Show Content Script TODO:I do not think this script is in use, remove it from all plugins -->
-    <script language="javascript">
-    function toggle(divId) {
-        var divArray = document.getElementsByTagName("div");
-        for(i = 0; i < divArray.length; i++){
-            if(divArray[i].className == divId){
-                if(divArray[i].style.display != 'none'){
-                    divArray[i].style.display = 'none';
-                }else{
-                    divArray[i].style.display = '';
-                }
-            }
-        }
-    }
-    </script>
-
     <div class="wrap">
 
         <?php  
@@ -495,7 +467,7 @@ function csv2post_display_accordianpanel_buttons($panel_array){
     'panel_id' => 'invalidpanelid',    
     'panel_help' => false,// default of false hides the Info button
     'panel_icon' => 'invalid-image-or-image-not-yet-created-notice.png',
-    'panel_url' => 'http://www.csv2post.com/support',
+    'panel_url' => 'http://www.webtechglobal.co.uk/support',
     'video' => false,// example: http://www.youtube.com/embed/lYL0YE8Ps8w 
     'help_button' => 'Info'// TODO:LOWPRIORITY, remove this val  
     ), $panel_array ) );
@@ -862,7 +834,7 @@ function csv2post_list_plugintables(){
 * 
 * @todo the tool tips script conflicts with the Add Media button, do not use it until we find a fix or another TT script
 */
-function c2p_tt($label ='?',$title = 'Please visit www.csv2post.com for help'){
+function c2p_tt($label ='?',$title = 'Please visit www.webtechglobal.co.uk for help'){
     echo $label;
     //echo '<span class="csv2postgivemesometips" title="'.$title.'">'.$label.'</span>';
 }     

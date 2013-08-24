@@ -14,7 +14,7 @@ function csv2post_WP_SECURITY_exit_forbidden_request($file = 'Unknown'){
 
 /**
 * Checks if DOING_AJAX is set, indicating header is loaded for ajax request only
-* @link http://www.csv2post.com/troubleshooting-tips/no-scheduled-events-during-ajax-requests
+* @link http://www.webtechglobal.co.uk/troubleshooting-tips/no-scheduled-events-during-ajax-requests
 * @return boolean true if Ajax request ongoing else false        
 */
 function csv2post_DOING_AJAX(){

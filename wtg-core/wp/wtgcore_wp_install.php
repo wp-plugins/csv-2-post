@@ -53,7 +53,7 @@ function csv2post_install_core(){
 
 /**
 * Creates csv2post_log
-* @link http://www.csv2post.com/hacking/log-table
+* @link http://www.webtechglobal.co.uk/hacking/log-table
 */
 function csv2post_INSTALL_table_log(){
     $table_name = 'csv2post_log';
@@ -66,7 +66,7 @@ function csv2post_INSTALL_table_log(){
         // table name 
         $create = 'CREATE TABLE `'.$table_name.'` (';
 
-        // columns - please update http://www.csv2post.com/hacking/log-table   
+        // columns - please update http://www.webtechglobal.co.uk/hacking/log-table   
         $create .= '`rowid` int(11) NOT NULL AUTO_INCREMENT,
         `outcome` tinyint(1) NOT NULL DEFAULT 1,
         `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

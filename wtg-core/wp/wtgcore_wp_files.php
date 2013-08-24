@@ -81,7 +81,7 @@ function csv2post_cleanfilename( $filename ){
  * @param array $pro
  */
 function csv2post_count_csvfilerows($csvfile_name){    
-    return count(file(WTG_C2P_CONTENTFOLDER_DIR . '/' . $csvfile_name)) - 1;
+    return count(file(WTG_C2P_CONTENTFOLDER_DIR . $csvfile_name)) - 1;
 }
 
 /**
@@ -96,7 +96,7 @@ function csv2post_establish_csvfile_separator_fgetmethod($csv_filename, $output 
     
     $probable_separator = ','; 
     
-    if (($handle = fopen(WTG_C2P_CONTENTFOLDER_DIR . '/' . $csv_filename, "r")) !== FALSE) {
+    if (($handle = fopen(WTG_C2P_CONTENTFOLDER_DIR . $csv_filename, "r")) !== FALSE) {
         
         $probable_separator = ',';
         
@@ -175,7 +175,7 @@ function csv2post_get_file_headers_formatted($csv_filename,$fileid,$separator = 
     $header_array = array();
     
     // read and loop through the first row in the csv file  
-    $handle = fopen(WTG_C2P_CONTENTFOLDER_DIR .'/'. $csv_filename, "r");
+    $handle = fopen(WTG_C2P_CONTENTFOLDER_DIR . $csv_filename, "r");
     while (($row = fgetcsv($handle, 10000, $separator,$quote)) !== FALSE) {
    
         for ( $i = 0; $i < $fields; $i++ ){

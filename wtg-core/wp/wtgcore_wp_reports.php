@@ -20,7 +20,7 @@
 
 * @deprecated, use csv2post_n() which offers more options for security i.e. displaying to none administrators
 */
-function csv2post_notice($message,$type = 'success',$size = 'Extra',$title = false, $helpurl = 'www.csv2post.com/support', $output_type = 'echo',$persistent = false,$clickable = false,$user_type = false){
+function csv2post_notice($message,$type = 'success',$size = 'Extra',$title = false, $helpurl = 'www.webtechglobal.co.uk/support', $output_type = 'echo',$persistent = false,$clickable = false,$user_type = false){
 
     if(current_user_can( 'manage_options' ) || $output_type == 'public'){
         
@@ -32,7 +32,7 @@ function csv2post_notice($message,$type = 'success',$size = 'Extra',$title = fal
         if($type == 'next'){$type == 'step';}
         
         // prevent div being clickable if help url giving (we need to more than one link in the message)
-        if($helpurl != false && $helpurl != '' && $helpurl != 'http://www.csv2post.com/support'){$clickable = false;}
+        if($helpurl != false && $helpurl != '' && $helpurl != 'http://www.webtechglobal.co.uk/support'){$clickable = false;}
                                  
         if($output_type == 'return' || $output_type == 'public'){   
             return csv2post_notice_display($type,$helpurl,$size,$title,$message,$clickable,$persistent);
@@ -524,7 +524,7 @@ function csv2post_get_option_persistentnotifications_array(){
 * @todo create option to add entries to server error log file
 * @todo create a function for each 'type'
 * 
-* @link http://www.csv2post.com/hacking/log-table
+* @link http://www.webtechglobal.co.uk/hacking/log-table
 */
 function csv2post_log($atts){     
     global $csv2post_adm_set,$wpdb,$csv2post_currentversion;

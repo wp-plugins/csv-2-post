@@ -1,5 +1,4 @@
 <?php
-
 /**
 * Outputs details of the current project, used under the title 
 */
@@ -15,8 +14,8 @@ function csv2post_GUI_currentproject(){
         }
         
         $currentproject_notice = '
-        <strong>Data Import Job:</strong> '. $jobname .'<br />
-        <strong>Post Creation Project:</strong> ' . csv2post_get_current_project_name();
+        <strong>Current Import Job:</strong> '. $jobname .'<br />
+        <strong>Current Posts Project:</strong> ' . csv2post_get_current_project_name();
         
         if($csv2post_demo_mode){
             $currentproject_notice .= '<p>Demo Mode: demo mode is not a true reflection of how the plugin works due to security restrictions and 
@@ -137,7 +136,7 @@ function csv2post_available_csv_file_list(){
                     // ensure file extension is csv
                     if( isset( $fileChunks[1] ) && $fileChunks[1] == 'csv'){
                         
-                        $file_path = WTG_C2P_CONTENTFOLDER_DIR . '/' . $filename;
+                        $file_path = WTG_C2P_CONTENTFOLDER_DIR . $filename;
                         $thefilesize = filesize($file_path);
                         $filesize_total = $thefilesize;
 
@@ -147,7 +146,7 @@ function csv2post_available_csv_file_list(){
                         <tr>
                             <td>'.$filename.'</td>
                             <td>'.$sep_fget.'</td>                                                       
-                            <td>'.count(file(WTG_C2P_CONTENTFOLDER_DIR . '/' .$filename)).'</td>
+                            <td>'.count(file(WTG_C2P_CONTENTFOLDER_DIR . $filename)).'</td>
                             <td>'.csv2post_format_file_size($thefilesize).'</td>                                                                                    
                         </tr>';                    
                         
@@ -268,10 +267,10 @@ function csv2post_csv_files_status_list(){
                         
                         $status = '';
                         
-                        $file_path = WTG_C2P_CONTENTFOLDER_DIR . '/' . $filename;
+                        $file_path = WTG_C2P_CONTENTFOLDER_DIR . $filename;
 
                         ### TODO:LOWPRIORITY, display status for when a CSV file is older than the last one used
-                        //$filemtime = filemtime(WTG_C2P_CONTENTFOLDER_DIR . '/' .$filename);
+                        //$filemtime = filemtime(WTG_C2P_CONTENTFOLDER_DIR . $filename);
                         
                         // if csv file parse methods do not determine the same separator we will display a message
                         $sep_fget = csv2post_establish_csvfile_separator_fgetmethod($filename,false );                           
@@ -280,7 +279,7 @@ function csv2post_csv_files_status_list(){
                         if(phpversion() < '5.3'){
                             $fileage = '';### TODO:MEDIUMPRIORITY,add a PHP 5.2 function for determing file age
                         }else{
-                            $filemtime = filemtime(WTG_C2P_CONTENTFOLDER_DIR . '/' .$filename);
+                            $filemtime = filemtime(WTG_C2P_CONTENTFOLDER_DIR . $filename);
                             $fileage =  csv2post_ago( date_create(date(WTG_C2P_DATEFORMAT,$filemtime)),true,true,true,true,true,false);
                         }
                                                            
@@ -2017,11 +2016,11 @@ function csv2post_used_csv_file_list(){
                                 // ensure file extension is csv
                                 if( isset( $fileChunks[1] ) && $fileChunks[1] == 'csv'){
                                     
-                                    $file_path = WTG_C2P_CONTENTFOLDER_DIR . '/' . $csvfile_name;
+                                    $file_path = WTG_C2P_CONTENTFOLDER_DIR .  $csvfile_name;
                                     $thefilesize = filesize($file_path);
                                     $filesize_total = $thefilesize;
                                     
-                                    $filemtime = filemtime(WTG_C2P_CONTENTFOLDER_DIR . '/' .$csvfile_name);
+                                    $filemtime = filemtime(WTG_C2P_CONTENTFOLDER_DIR . $csvfile_name);
                                     
                                     if(phpversion() < '5.3'){
                                         $fileage = '';### TODO:MEDIUMPRIORITY,add a PHP 5.2 function for determing file age
@@ -2034,7 +2033,7 @@ function csv2post_used_csv_file_list(){
                                     <tr>                               
                                         <td>'.$job['name'].'</td>                                
                                         <td>'.$csvfile_name.'</td>                            
-                                        <td>'.count(file(WTG_C2P_CONTENTFOLDER_DIR . '/' .$csvfile_name)).'</td>
+                                        <td>'.count(file(WTG_C2P_CONTENTFOLDER_DIR . $csvfile_name)).'</td>
                                         <td>'.csv2post_format_file_size($thefilesize).'</td>
                                         <td>'.csv2post_WP_SQL_count_records_forfile('csv2post_'.$jobid,$csvfile_name,$key).'</td>                                                       
                                         <td>'.$fileage.'</td>                            
@@ -2136,7 +2135,7 @@ function csv2post_csv_files_list(){
                     // ensure file extension is csv
                     if( isset( $fileChunks[1] ) && $fileChunks[1] == 'csv'){
                         
-                        $file_path = WTG_C2P_CONTENTFOLDER_DIR . '/' . $filename;
+                        $file_path = WTG_C2P_CONTENTFOLDER_DIR . $filename;
                         $thefilesize = filesize($file_path);
                         $filesize_total = $thefilesize;
 
@@ -2160,7 +2159,7 @@ function csv2post_csv_files_list(){
                         echo '</td>
                             <td>'.$filename.'</td>
                             <td>'.$sep_fget.'</td>                                                        
-                            <td>'.count(file(WTG_C2P_CONTENTFOLDER_DIR . '/' .$filename)).'</td>
+                            <td>'.count(file(WTG_C2P_CONTENTFOLDER_DIR . $filename)).'</td>
                             <td>'.csv2post_format_file_size($thefilesize).'</td>                                                                                    
                         </tr>';                    
                         

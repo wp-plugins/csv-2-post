@@ -1,11 +1,11 @@
 <?php         
 /*
 Plugin Name: CSV 2 POST
-Version: 7.0.3
-Plugin URI: http://www.csv2post.com
+Version: 7.0.4
+Plugin URI: http://www.webtechglobal.co.uk
 Description: CSV 2 POST Data Engine plugin and services from WebTechGlobal for Wordpress blogs. This is the advanced choice for data import and instantly blogging large amounts of posts.
 Author: WebTechGlobal
-Author URI: http://www.csv2post.com
+Author URI: http://www.webtechglobal.co.uk
 
 CSV 2 POST GPL v3 (free edition license, ignore for any other edition not downloaded from Wordpress.org)
 
@@ -28,7 +28,7 @@ services not just software. License and agreement is seperate.
 */         
                             
 // package variables (frequently changed)
-$csv2post_currentversion = '7.0.3';
+$csv2post_currentversion = '7.0.4';
 $csv2post_php_version_tested = '5.4.12';// current version the plugin is being developed on
 $csv2post_php_version_minimum = '5.3.0';// minimum version required for plugin to operate
 $csv2post_is_free_override = false;// change to true for free edition setup when fulledition folder present 
@@ -40,7 +40,7 @@ $csv2post_is_dev = false;// false|true  - true will display more information i.e
 
 // activate debug by url or based on the domain - you can change this to your own test domains                   
 if($csv2post_demo_mode != true){# we ensure no error output on demos   
-    $testingserver = strstr(ABSPATH,'testing/wordpress');
+    $testingserver = strstr(ABSPATH,'testing/wordpress/csv2post');
     if(isset($_GET['csv2postdebug']) || $testingserver ){
         $csv2post_debug_mode = true; 
         $csv2post_beta_mode = true;
@@ -67,12 +67,7 @@ $csv2post_log_maindir = 'unknown';
 $csv2post_currentproject = 'No Project Set';
 $csv2post_notice_array = array();// set notice array for storing new notices in (not persistent notices)
 $csv2post_extension_loaded = false;
-                                   
-##########################################################################################
-#                                                                                        #
-#                                     DEFINE CONSTANTS                                   #
-#                                                                                        #
-##########################################################################################             
+            
 if(!defined("WTG_C2P_ABB")){define("WTG_C2P_ABB","csv2post_");}
 if(!defined("WTG_C2P_NAME")){define("WTG_C2P_NAME",'CSV 2 POST');} 
 if(!defined("WTG_C2P_URL")){define("WTG_C2P_URL", plugin_dir_url(__FILE__) );}//http://localhost/wordpress-testing/wtgplugintemplate/wp-content/plugins/wtgplugintemplate/
@@ -86,7 +81,7 @@ if(!defined("WTG_C2P_CORE_PATH")){define("WTG_C2P_CORE_PATH",WP_PLUGIN_DIR.'/'.W
 if(!defined("WTG_C2P_WPCORE_PATH")){define("WTG_C2P_WPCORE_PATH",WP_PLUGIN_DIR.'/'.WTG_C2P_FOLDERNAME.'/wtg-core/wp/');}
 if(!defined("WTG_C2P_PAID_PATH")){define("WTG_C2P_PAID_PATH",WP_PLUGIN_DIR.'/'.WTG_C2P_FOLDERNAME.'/fulledition/');}
 if(!defined("WTG_C2P_PANELFOLDER_PATH")){define("WTG_C2P_PANELFOLDER_PATH",WP_PLUGIN_DIR.'/'.WTG_C2P_FOLDERNAME.'/panels/');}// directory path to storage folder inside the wp_content folder                            
-if(!defined("WTG_C2P_CONTENTFOLDER_DIR")){define("WTG_C2P_CONTENTFOLDER_DIR",WP_CONTENT_DIR.'/'.'wpcsvimportercontent');}// directory path to storage folder inside the wp_content folder  
+if(!defined("WTG_C2P_CONTENTFOLDER_DIR")){define("WTG_C2P_CONTENTFOLDER_DIR",WP_CONTENT_DIR.'/wpcsvimportercontent/');}// directory path to storage folder inside the wp_content folder  
 if(!defined("WTG_C2P_IMAGEFOLDER_URL")){define("WTG_C2P_IMAGEFOLDER_URL",WP_PLUGIN_URL.'/'.WTG_C2P_FOLDERNAME.'/images/');} 
 if(!defined("WTG_C2P_DATEFORMAT")){define("WTG_C2P_DATEFORMAT",'Y-m-d H:i:s');}
 if(!defined("WTG_C2P_ID")){define("WTG_C2P_ID","27");}// used by SOAP web services, this ID allows specific web services to be made available for this plugin. Change the ID and things will simply go very wrong
@@ -110,9 +105,7 @@ if(file_exists(WTG_C2P_DIR . 'fulledition') && $csv2post_is_free_override == fal
 }  
               
 ##########################################################################################
-#                                                                                        #
 #                          INCLUDE WEBTECHGLOBAL PHP CORE                                #
-#                    php functions package applicable to all CMS                         #
 ##########################################################################################
 ### TODO:LOWPRIORITY, whats better, scandir() approach or RecursiveDirectoryIterator() ? 
 foreach (scandir( WTG_C2P_DIR . 'wtg-core/php/' ) as $wtgcore_filename) {   
@@ -124,9 +117,7 @@ foreach (scandir( WTG_C2P_DIR . 'wtg-core/php/' ) as $wtgcore_filename) {
 } 
                         
 ##########################################################################################
-#                                                                                        #
 #                           INCLUDE WEBTECHGLOBAL WORDPRESS CORE                         #
-#       our own functions suitable only for Wordpress for use in any plugin or theme     #
 ########################################################################################## 
 $core_exclusions_array = array('wtgcore_wp_formsubmit.php');
 foreach (scandir( WTG_C2P_DIR . 'wtg-core/wp/' ) as $wtgcore_filename) {   
@@ -138,9 +129,7 @@ foreach (scandir( WTG_C2P_DIR . 'wtg-core/wp/' ) as $wtgcore_filename) {
 }  
              
 ##########################################################################################
-#                                                                                        #
-#                       INCLUDE FREE EDITION FUNCTIONS AND ARRAYS                        #
-#                     functions and arrays applicable to all editions                    #
+#                       INCLUDE ALL EDITION FUNCTIONS AND ARRAYS                         #
 ##########################################################################################
 require_once(WTG_C2P_DIR.'include/csv2post_core_functions.php');### move functions from this file to either wtgcore or admin functions.php then delete it 
 require_once(WTG_C2P_DIR.'include/csv2post_admininterface_functions.php');
@@ -156,9 +145,7 @@ require_once(WTG_C2P_DIR.'include/variables/csv2post_wordpressoptionrecords_arra
 require_once(WTG_C2P_DIR.'wtg-core/wp/wparrays/wtgcore_wp_tables_array.php');
                                
 ##########################################################################################
-#                                                                                        #
 #                                  INCLUDE PAID EDITION                                  #
-#            this is the premium/paid package, usually for developers or business        #
 ##########################################################################################
 $paid_exclusions_array = array('csv2post_paid_formsubmit.php');
 if(!$csv2post_is_free){ 
@@ -183,9 +170,7 @@ $csv2post_adm_set = csv2post_get_option_adminsettings();# installs admin setting
 if($csv2post_demo_mode != true){csv2post_debugmode();}  
                                  
 ##########################################################################################
-#                                                                                        #
 #          LOAD OPTION RECORD VALUES - MUST BE AFTER THE ARRAY FILES ARE LOADED          #
-#                                                                                        #
 ########################################################################################## 
 // get data import jobs related variables
 $csv2post_currentjob_code = csv2post_get_option_currentjobcode();
@@ -211,9 +196,7 @@ if(is_admin()){
 }   
               
 ##########################################################################################
-#                                                                                        #
 #                                    LOAD EXTENSIONS                                     #
-#      Free users can adapt this to load their own custom extension or other files       #
 ##########################################################################################
 if(!$csv2post_is_free){
     if(WTG_C2P_EXTENSIONS != 'disable' && file_exists(WP_CONTENT_DIR . '/csv2postextensions')){ 
@@ -269,10 +252,7 @@ if(!$csv2post_is_free){
 }
                 
 ####################################################################################################
-####                                                                                            ####
 ####           ADMIN THAT MUST COME FIRST AND IS NOT APPLICABLE TO JUST CSV 2 POST PAGES        ####
-####                        i.e. custom post types, dashboard widgets                           ####
-####                                                                                            ####
 ####################################################################################################  
 if(is_admin()){ 
 
@@ -295,9 +275,7 @@ if(is_admin()){
 }   
              
 ###############################################################################
-#                                                                             #
 #             PUBLIC SIDE HOOKS i.e. post updating and other events           #
-#                                                                             #
 ###############################################################################
 if(!$csv2post_is_free){
     add_action('init', 'csv2post_event_check');// part of schedule system in paid edition, run auto post and data updating events if any are due
@@ -320,9 +298,7 @@ if(!$csv2post_is_free){
 }
                     
 ####################################################
-####                                            ####
 ####               Add Shortcodes               ####
-#### We will only add shortcodes when rules set ####
 ####################################################
 if(!$csv2post_is_free){
     // add less advanced shortcodes, those that use values in shortcode itself
@@ -335,18 +311,12 @@ if(!$csv2post_is_free){
 }
            
 #############################################################################################################
-####                                                                                                        #
 ####                         ADMIN THAT COMES LAST AND ALWAYS APPLYS                                        #
-####   i.e. most of our jQuery UI is for our own interface, no need to load the scripts on other pages      #
-####                                                                                                        #
 #############################################################################################################
 add_action('admin_menu','csv2post_admin_menu');// main navigation 
   
 #############################################################################################################
-####                                                                                                        #
 ####            ADMIN THAT COMES LAST AND APPLYS TO CSV 2 POST PLUGIN PAGES ONLY                            #
-####   i.e. most of our jQuery UI is for our own interface, no need to load the scripts on other pages      #
-####                                                                                                        #
 ############################################################################################################# 
 if(is_admin() && isset($_GET['page']) && csv2post_is_plugin_page($_GET['page'])){
 
@@ -364,17 +334,11 @@ if(is_admin() && isset($_GET['page']) && csv2post_is_plugin_page($_GET['page']))
          
     add_action('init','csv2post_export_singlesqltable_as_csvfile');// export CSV file request by $_POST
 
-    // print scripts to page          
-    if(isset($csv2post_guitheme) && $csv2post_guitheme == 'jquery' || $csv2post_guitheme == false){  
-        add_action( 'admin_enqueue_scripts', 'csv2post_print_admin_scripts' );
-    }
+    add_action( 'admin_enqueue_scripts', 'csv2post_print_admin_scripts' );
 
-    // process form submission - moved to here 11th January 2013
-    // this includes files that call every processing function one after the other, a simple approach until we add something faster
-    add_action('admin_init','csv2post_process');
-    
-    // add admin page scripts to footer
-    add_action('admin_footer', 'csv2post_WP_adminpage_script');
+    add_action('admin_init','csv2post_process');// process form submission - moved to here 11th January 2013
+
+    add_action('admin_footer', 'csv2post_WP_adminpage_script');// add admin page scripts to footer
     
 }elseif(!is_admin()){// default to public side script and css      
     csv2post_script_core('public');          
