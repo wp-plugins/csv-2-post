@@ -1,4 +1,12 @@
 <?php
+/** 
+ * Free edition file (applies to paid also) for CSV 2 POST plugin by WebTechGlobal.co.uk
+ *
+ * @package CSV 2 POST
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 /**
  * Returns post status based on giving criteria
  * makes final decisision on status based on generated post publish date

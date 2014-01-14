@@ -1,5 +1,13 @@
 <?php 
-global $csv2post_guitheme,$csv2post_adm_set,$csv2post_currentversion,$csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$wtgtp_pluginforum,$wtgtp_pluginblog,$csv2post_options_array,$csv2post_is_free,$csv2post_projectslist_array,$csv2post_schedule_array;
+/** 
+ * Free edition file (applies to paid also) for CSV 2 POST plugin by WebTechGlobal.co.uk
+ *
+ * @package CSV 2 POST
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
+global $csv2post_adm_set,$csv2post_currentversion,$csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$wtgtp_pluginforum,$wtgtp_pluginblog,$csv2post_options_array,$csv2post_is_free,$csv2post_projectslist_array,$csv2post_schedule_array;
 // global boolean
 global $csv2post_beta_mode,$csv2post_is_installed,$csv2post_extension_loaded,$csv2post_demo_mode;
   
@@ -52,7 +60,7 @@ if(!$csv2post_is_installed && !isset($_POST['csv2post_plugin_install_now'])){# w
         <?php wp_nonce_field('installform');?> 
         <!-- nonce -->
         
-        <input type="hidden" name="csv2post_post_processing_required" value="true">
+        <input type="hidden" name="csv2post_post_requested" value="true">
         <input type="hidden" name="csv2post_plugin_install_now" value="z3sx4bhik970">
         <input type="hidden" name="csv2post_hidden_pageid" value="main">
         <input type="hidden" name="csv2post_hidden_panel_name" value="installationscreen">
@@ -74,11 +82,7 @@ if(!$csv2post_is_installed && !isset($_POST['csv2post_plugin_install_now'])){# w
     // hide the main screens until update complete
     $display_main_screens = false;
     
-    csv2post_n_incontent('You have updated the plugins core
-    files but changes may be required to values in database or in files outside of the plugin folder. 
-    All required changes will be laid out below. Please scroll down and confirm that you accept the changes
-    to be made in your blog by clicking the "Update CSV 2 POST Installation" button.',
-    'warning','Large','CSV 2 POST Plugin Update Required');
+    csv2post_n_incontent('New core files have been detected. Please begin the update procedure.','warning','Large','CSV 2 POST Plugin Update Required');
 
     // include the upgrade array
     require_once(WTG_C2P_DIR.'include/variables/csv2post_variables_update_array.php');
@@ -113,9 +117,7 @@ if(!$csv2post_is_installed && !isset($_POST['csv2post_plugin_install_now'])){# w
     }
 
     if($total_changes_to_be_made == 0){
-        $notice_box_message = 'No key changes are required for this update but you must still click "Update CSV 2 POST Installation"
-        and the plugin will store the latest version in your blogs database. This is how we track the versions and once
-        the new version number is added to your database you will no longer see this page.';
+        $notice_box_message = 'No critical changes will be made to your blog during this update, please continue by clicking on the Update button below...';
     }
 
     csv2post_n_incontent($notice_box_message,'info','Extra','Required Changes');
@@ -129,7 +131,7 @@ if(!$csv2post_is_installed && !isset($_POST['csv2post_plugin_install_now'])){# w
         <?php wp_nonce_field('updateform');?> 
         <!-- nonce -->
             
-        <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">
+        <input type="hidden" id="csv2post_post_requested" name="csv2post_post_requested" value="true">
         <input type="hidden" id="csv2post_plugin_update_now" name="csv2post_plugin_update_now" value="a43bt7695c34">
         <input type="hidden" name="csv2post_hidden_pageid" value="<?php echo $pageid;?>">
         <input type="hidden" name="csv2post_hidden_panel_name" value="pluginupdatescreen">

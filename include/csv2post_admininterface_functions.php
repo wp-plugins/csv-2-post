@@ -1,4 +1,12 @@
 <?php
+/** 
+ * Free edition file (applies to paid also) for CSV 2 POST plugin by WebTechGlobal.co.uk
+ *
+ * @package CSV 2 POST
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 /**
 * Outputs details of the current project, used under the title 
 */
@@ -2300,7 +2308,7 @@ function csv2post_GUI_project_columnsandtables($project_code,$current_table = 'N
         // hide operation columns
         $exclude = array('csv2post_id','csv2post_postid','csv2post_postcontent','csv2post_inuse'
         ,'csv2post_importer','csv2post_updated','csv2post_changed','csv2post_applied','csv2post_catid'
-        ,'csv2post_filemoddate','csv2post_filedone');
+        ,'csv2post_filemoddate','csv2post_filedone','csv2post_imported');
 
         // category splitter special columns
         if(!isset($csv2post_project_array['categories']['splitter']['table']) 

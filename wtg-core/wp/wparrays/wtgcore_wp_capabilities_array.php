@@ -1,4 +1,12 @@
 <?php
+/** 
+ * WebTechGlobal standard PHP and CMS function library
+ *
+ * @package WTG Core Functions Library
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 $csv2post_ARRAY_capabilities = array(
 'activate_plugins',                   
 'create_users',                  

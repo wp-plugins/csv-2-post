@@ -1,4 +1,12 @@
 <?php
+/** 
+ * Free edition file (applies to paid also) for CSV 2 POST plugin by WebTechGlobal.co.uk
+ *
+ * @package CSV 2 POST
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 // 0. Select CSV File
 $csv2post_eci_array['steps'][0]['name'] = 'Select CSV File';
 $csv2post_eci_array['steps'][0]['complete'] = false;

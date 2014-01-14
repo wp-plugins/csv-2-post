@@ -1,4 +1,12 @@
 <?php
+/** 
+ * WebTechGlobal standard PHP and CMS function library
+ *
+ * @package WTG Core Functions Library
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 /**
 * WebTechGlobal array info function.
 * Returns array for updating another array. This is a standard set of values used to maintain 
@@ -94,13 +102,7 @@ function csv2post_option_array_update( $option_key, $option_value, $line = __LIN
 
     $option_value['arrayhistory'] = $change;
 
-    $option_update_result = update_option($option_key,$option_value);
-
-    if($option_update_result){
-            // log result
-    }else{
-            // log result
-    }
+    update_option($option_key,$option_value);
 
     return $change;
 }

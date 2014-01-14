@@ -1,4 +1,12 @@
 <?php
+/** 
+ * WebTechGlobal standard PHP and CMS function library
+ *
+ * @package WTG Core Functions Library
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 /*   Column Array Example Returned From "mysql_query("SHOW COLUMNS FROM..."
         
           array(6) {
@@ -193,4 +201,10 @@ $csv2post_tables_array['tables']['csv2post_log']['columns']['priority']['null'] 
 $csv2post_tables_array['tables']['csv2post_log']['columns']['priority']['key'] = '';
 $csv2post_tables_array['tables']['csv2post_log']['columns']['priority']['default'] = 'NULL';
 $csv2post_tables_array['tables']['csv2post_log']['columns']['priority']['extra'] = '';
+// csv2post_log - thetrigger
+$csv2post_tables_array['tables']['csv2post_log']['columns']['thetrigger']['type'] = 'varchar(45)';
+$csv2post_tables_array['tables']['csv2post_log']['columns']['thetrigger']['null'] = '';
+$csv2post_tables_array['tables']['csv2post_log']['columns']['thetrigger']['key'] = '';
+$csv2post_tables_array['tables']['csv2post_log']['columns']['thetrigger']['default'] = 'NULL';
+$csv2post_tables_array['tables']['csv2post_log']['columns']['thetrigger']['extra'] = '';
 ?>

@@ -1,7 +1,13 @@
 <?php
-// if post type not set as ad_listing
-###TODO:MEDIUMPRIORITY,make a persistent notification in its current position
-###TODO:MEDIUMPRIORITY, add form button so user can change post type to ad_listing  
+/** 
+ * Free edition file (applies to paid also) for CSV 2 POST plugin by WebTechGlobal.co.uk
+ *
+ * @package CSV 2 POST
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
+// if post type not set as ad_listing 
 if(!isset($csv2post_project_array['defaultposttype']) || isset($csv2post_project_array['defaultposttype']) && $csv2post_project_array['defaultposttype'] != 'ad_listing'){
     
     // set post type

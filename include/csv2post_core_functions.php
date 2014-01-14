@@ -1,9 +1,208 @@
 <?php
-####################################################################################
-#                                                                                  #
-#         MISC FUNCTIONS AND FUNCTIONS USED FOR BOTH PUBLIC AND ADMIN SIDE         #
-#                                                                                  #
-####################################################################################
+/** 
+ * Core functions for CSV 2 POST plugin 
+ * 
+ * @package CSV 2 POST
+ * 
+ * @since 0.0.1
+ * 
+ * @copyright (c) 2009-2013 webtechglobal.co.uk
+ *
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+
+class CSV2POST {
+    protected
+        $filters = array(),
+        $actions = array(),    
+        // Format: array( event | function in this class(in an array if optional arguments are needed) | loading circumstances)
+        $plugin_actions = array(
+            //array('widgets_init',             'My_Widget',                                  'all'),    
+        ),
+                                 
+        $plugin_filters = array(
+            /*
+                Examples - last value are the sections the filter apply to
+                    array('plugin_row_meta',                     array('examplefunction1', 10, 2),         'all'),
+                    array('page_link',                             array('examplefunction2', 10, 2),             'downloads'),
+                    array('admin_footer_text',                     'examplefunction3',                         'monetization'),
+                    
+            */
+        );
+         
+    private
+        $doneInit = false;   
+        
+    public function __construct() 
+    {
+
+    } 
+    
+    public function wp_init() 
+    {
+        if($this->has_inited()) {
+            return false;
+        }
+        $this->doneInit = true;
+                
+        $this->add_actions();
+        $this->add_filters();
+        unset($this->plugin_actions, $this->plugin_filters);
+    }
+    
+    /**
+     * if WP e-Customers already initialised returns true
+     * @return bool true if already inited
+     */
+    public function has_inited() 
+    {
+        return $this->doneInit;
+    }
+                        
+    protected function add_actions() 
+    {          
+        foreach($this->plugin_actions as $actionArray) {        
+            list($action, $details, $whenToLoad) = $actionArray;
+                                   
+            if(!$this->filteraction_should_beloaded($whenToLoad)) {      
+                continue;
+            }
+                 
+            switch(count($details)) {         
+                case 3:
+                    add_action($action, array($this, $details[0]), $details[1], $details[2]);     
+                break;
+                case 2:
+                    add_action($action, array($this, $details[0]), $details[1]);   
+                break;
+                case 1:
+                default:
+                    add_action($action, array($this, $details));
+            }
+        }    
+    }
+    
+    protected function add_filters() 
+    {
+        foreach($this->plugin_filters as $filterArray) {
+            list($filter, $details, $whenToLoad) = $filterArray;
+                           
+            if(!$this->filteraction_should_beloaded($whenToLoad)) {
+                continue;
+            }
+            
+            switch(count($details)) {
+                case 3:
+                    add_filter($filter, array($this, $details[0]), $details[1], $details[2]);
+                break;
+                case 2:
+                    add_filter($filter, array($this, $details[0]), $details[1]);
+                break;
+                case 1:
+                default:
+                    add_filter($filter, array($this, $details));
+            }
+        }    
+    }    
+    
+    /**
+    * Should the giving action or filter be loaded?
+    * 1. we can add security and check settings per case
+    * 2. each case is a section and we use this approach to load action or filter for specific section
+    * 3. In early development all sections are loaded, this function is prep for a modular plugin
+    * 4. addons will require core functions like this to be updated rather than me writing dynamic functions for any possible addons
+    *  
+    * @param mixed $whenToLoad
+    */
+    private function filteraction_should_beloaded($whenToLoad) 
+    {
+        global $csv2post_sections_array;
+                                
+        if($whenToLoad != 'all' && !in_array($whenToLoad,$csv2post_sections_array) ) {
+            return false;
+        }
+                      
+        switch($whenToLoad) {
+            case 'all':    
+                return true;
+            break;
+            case 'specificpageexample1':
+                return true;    
+            break;
+            case 'specificuserexample1':
+                return true;
+            break;
+        }
+
+        return true;
+    }     
+}
+
+/**
+* displays update status (we can improve this widget to offer a button for manual update)
+*/
+class CSV2POST_Widget_UpdatePost extends WP_Widget {
+
+    public function __construct() 
+    {
+        parent::__construct(
+                'csv2postwidgetupdatepost', // Base ID
+                __('CSV 2 POST Update Post', 'text_domain'), // Name
+                array( 'description' => __( 'A Widget right here', 'text_domain' ), ) // Args
+            );
+    }
+
+    public function widget( $args, $instance ) 
+    {
+        global $current_user;
+        
+        // process returns reasons 
+        if(!isset($GLOBALS['post']->ID)){return;}
+        if(!isset($current_user->ID)){return;}
+        if(!user_can($current_user->ID,'activate_plugins')){return false;}     
+              
+        $title = apply_filters( 'widget_title', $instance['title'] );
+        echo $args['before_widget'];
+        
+        if ( ! empty( $title ) )
+            echo $args['before_title'] . $title . $args['after_title'];
+        
+        $is_post_outdated = csv2post_is_post_outdated($GLOBALS['post']->ID);
+        if($is_post_outdated)
+        {
+            echo '<p>No updates are required for the current post.</p>';    
+        }
+        else
+        {
+            echo '<p>The current post can be updated.</p>';    
+        }
+        
+        echo $args['after_widget'];
+    }
+}
+
+// php 5.3
+/*
+add_action( 'widgets_init', function(){
+    register_widget( 'CSV2POST_Widget_UpdatePost' );
+});
+  */
+  
+// php 5.2
+add_action('widgets_init',
+     create_function('', 'return register_widget("CSV2POST_Widget_UpdatePost");')
+);
+
+/** 
+ * Free edition file (applies to paid also) for CSV 2 POST plugin by WebTechGlobal.co.uk
+ *
+ * @package CSV 2 POST
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 /**
 * Imports data from CSV file. This is the basic version of this function that does not perform data updating.
 * 

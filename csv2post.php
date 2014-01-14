@@ -1,7 +1,7 @@
 <?php         
 /*
 Plugin Name: CSV 2 POST
-Version: 7.0.4
+Version: 7.0.5
 Plugin URI: http://www.webtechglobal.co.uk
 Description: CSV 2 POST Data Engine plugin and services from WebTechGlobal for Wordpress blogs. This is the advanced choice for data import and instantly blogging large amounts of posts.
 Author: WebTechGlobal
@@ -28,7 +28,7 @@ services not just software. License and agreement is seperate.
 */         
                             
 // package variables (frequently changed)
-$csv2post_currentversion = '7.0.4';
+$csv2post_currentversion = '7.0.5';
 $csv2post_php_version_tested = '5.4.12';// current version the plugin is being developed on
 $csv2post_php_version_minimum = '5.3.0';// minimum version required for plugin to operate
 $csv2post_is_free_override = false;// change to true for free edition setup when fulledition folder present 
@@ -76,7 +76,7 @@ if(!defined("WTG_C2P_FOLDERNAME")){define("WTG_C2P_FOLDERNAME",'csv-2-post');}//
 if(!defined("WTG_C2P_BASENAME")){define("WTG_C2P_BASENAME", plugin_basename( __FILE__ ) );}// wtgplugintemplate/wtgtemplateplugin.php
 if(!defined("WTG_C2P_PHPVERSIONTESTED")){define("WTG_C2P_PHPVERSIONTESTED",$csv2post_php_version_tested);}// The latest version of php the plugin has been tested on and certified to be working 
 if(!defined("WTG_C2P_PHPVERSIONMINIMUM")){define("WTG_C2P_PHPVERSIONMINIMUM",$csv2post_php_version_minimum);}// The minimum php version that will allow the plugin to work     
-if(!defined("WTG_C2P_CHMOD")){define("WTG_C2P_CHMOD",'0755');}###TODO:CRITICALPRIORITY,should this not be 0700? // File permission default CHMOD for any folders or files created by plugin  
+if(!defined("WTG_C2P_CHMOD")){define("WTG_C2P_CHMOD",'0755');}// File permission default CHMOD for any folders or files created by plugin  
 if(!defined("WTG_C2P_CORE_PATH")){define("WTG_C2P_CORE_PATH",WP_PLUGIN_DIR.'/'.WTG_C2P_FOLDERNAME.'/wtg-core/');}
 if(!defined("WTG_C2P_WPCORE_PATH")){define("WTG_C2P_WPCORE_PATH",WP_PLUGIN_DIR.'/'.WTG_C2P_FOLDERNAME.'/wtg-core/wp/');}
 if(!defined("WTG_C2P_PAID_PATH")){define("WTG_C2P_PAID_PATH",WP_PLUGIN_DIR.'/'.WTG_C2P_FOLDERNAME.'/fulledition/');}
@@ -107,7 +107,6 @@ if(file_exists(WTG_C2P_DIR . 'fulledition') && $csv2post_is_free_override == fal
 ##########################################################################################
 #                          INCLUDE WEBTECHGLOBAL PHP CORE                                #
 ##########################################################################################
-### TODO:LOWPRIORITY, whats better, scandir() approach or RecursiveDirectoryIterator() ? 
 foreach (scandir( WTG_C2P_DIR . 'wtg-core/php/' ) as $wtgcore_filename) {   
     if ($wtgcore_filename != '.' && $wtgcore_filename != '..' && is_file(WTG_C2P_DIR . 'wtg-core/php/' . $wtgcore_filename)) { 
         if($wtgcore_filename != 'license.html' && $wtgcore_filename != 'index.php'){
@@ -140,6 +139,7 @@ require_once(WTG_C2P_DIR.'include/csv2post_admin_functions.php');
 require_once(WTG_C2P_DIR.'include/csv2post_sql_functions.php');
 require_once(WTG_C2P_DIR.'include/csv2post_post_functions.php');// post creation,update related functions              
 require_once(WTG_C2P_DIR.'include/csv2post_formsubmit_functions.php');
+require_once(WTG_C2P_DIR.'include/csv2post_public_functions.php');
 require_once(WTG_C2P_DIR.'include/variables/csv2post_seoplugins_array.php');
 require_once(WTG_C2P_DIR.'include/variables/csv2post_wordpressoptionrecords_array.php'); 
 require_once(WTG_C2P_DIR.'wtg-core/wp/wparrays/wtgcore_wp_tables_array.php');
@@ -161,14 +161,16 @@ if(!$csv2post_is_free){
     if(is_admin()){require_once(WTG_C2P_DIR.'fulledition/admin/csv2post_paid_adminforms.php');}    
 } 
 
-// fgetcsv transition   csv2post_p e a r csv_include();
-          
 // we require the main admin settings array for continuing the loading of the plugin                                                                       
 $csv2post_adm_set = csv2post_get_option_adminsettings();# installs admin settings record if not yet installed, this will happen on plugin being activated
                   
 // error display variables, variable that displays maximum errors is set in main file 
 if($csv2post_demo_mode != true){csv2post_debugmode();}  
-                                 
+        
+// CSV 2 POST is making a transition to classes
+$CSV2POST = new CSV2POST();
+$CSV2POST->wp_init();
+                     
 ##########################################################################################
 #          LOAD OPTION RECORD VALUES - MUST BE AFTER THE ARRAY FILES ARE LOADED          #
 ########################################################################################## 
@@ -194,70 +196,12 @@ if(is_admin()){
     $csv2post_persistent_array = csv2post_get_option_persistentnotifications_array();// holds interface notices/messages, some temporary, some are persistent 
     $csv2post_mpt_arr = csv2post_get_option_tabmenu();
 }   
-              
-##########################################################################################
-#                                    LOAD EXTENSIONS                                     #
-##########################################################################################
-if(!$csv2post_is_free){
-    if(WTG_C2P_EXTENSIONS != 'disable' && file_exists(WP_CONTENT_DIR . '/csv2postextensions')){ 
-        
-        /*
-                this system is 95% complete. Where "df1" is used we need to use variables
-                and load multiple extensions within a loop, for now a single extension can be loaded
-        */
-        
-        // if the extension is to be loaded, we will double check the files exist and install if required
-        if(csv2post_extension_activation_status('df1') == 3 
-        || isset($_GET['csv2postprocsub']) && isset($_GET['action']) && isset($_GET['extension']) && $_GET['extension'] == 'df1'){    
-            
-            // ensure extension files actually exist
-            if(file_exists(WP_CONTENT_DIR . '/csv2postextensions/df1')){
-                
-                $name = 'df1';
-
-                // set a variable to tell CSV 2 POST scripts to consider an active extension
-                $csv2post_extension_loaded = true;
-                // include functions
-                require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/extension.php');
-                require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/functions.php');  
-                require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/functions/interface.php');
-                require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/functions/shortcodes.php');
-                require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/functions/sql.php');
-                require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/functions/post.php');
-                require_once(WP_CONTENT_DIR . '/csv2postextensions/df1/functions/installation.php');
-                
-                // include configuration (this makes changes required for the Wordpress installation)
-                include_once(WP_CONTENT_DIR . '/csv2postextensions/df1/configuration.php');   
-
-                $installedversion = get_option($name . '_version');
-
-                $extension_version = ${"csv2post_extension_" . $name ."_version"};
-                
-                // do a version check on the installation compared to the files - disable extension until update performed by user
-                if(!isset($_GET['action']) || $_GET['action'] != 'extensionupdate'){# avoid repeating this message during the update processing
-                    $update_required = csv2post_extension_updaterequired('df1',$extension_version);
-                    if($update_required){
-                        // disable extension
-                        update_option('ext_activated_DF1','no');
-                        // notify user
-                        csv2post_n('DF1 Extension Update Required','An extension installed and active has new files. The database
-                        tables and option records that make the extensions installation must be updated. Please go to the Extension
-                        screen and perform an update on the DF1 Extension if you wish to continue using the extension. The extension
-                        will stay disabled until this is done.','warning','Large');                   
-                    }
-                }                
-            }
-        }
-    }
-}
                 
 ####################################################################################################
 ####           ADMIN THAT MUST COME FIRST AND IS NOT APPLICABLE TO JUST CSV 2 POST PAGES        ####
 ####################################################################################################  
 if(is_admin()){ 
-
-    $csv2post_guitheme = csv2post_get_theme();
-                       
+        
     register_activation_hook( __FILE__ ,'csv2post_register_activation_hook');
     
     // content template custom post type
@@ -275,7 +219,7 @@ if(is_admin()){
 }   
              
 ###############################################################################
-#             PUBLIC SIDE HOOKS i.e. post updating and other events           #
+#         PUBLIC AND ADMIN SIDE HOOKS i.e. post updating and other events     #
 ###############################################################################
 if(!$csv2post_is_free){
     add_action('init', 'csv2post_event_check');// part of schedule system in paid edition, run auto post and data updating events if any are due
@@ -284,17 +228,8 @@ if(!$csv2post_is_free){
     // Post Parsing (runs functions that alter content, title etc
     if(!isset($csv2post_adm_set['postfilter']['status'])
     || $csv2post_adm_set['postfilter']['status'] == true){
-        
-        /**
-        * This will run by default for now (21st January 2013)
-        * For the sake of performance, we need to only run it when required. So all procedures
-        * included, when activated by user, must also activate the post parser by setting status to true
-        * ### TODO:HIGHPRIORITY, have post parsing off by default and active when user actives post updating or spinner token re-spin
-        * If any other parsing procedures required they will also need to activate post parsing
-        * ### TODO:MEDIUMPRIORITY, create a setting to toggle post parsing, over-riding many other procedures but giving user more control over the plugins activity using a single setting
-        */
         add_action('the_posts', 'csv2post_post_filter' );
-    }    
+    }       
 }
                     
 ####################################################
@@ -324,7 +259,7 @@ if(is_admin() && isset($_GET['page']) && csv2post_is_plugin_page($_GET['page']))
     add_action( 'admin_init', 'csv2post_ADDACTION_admin_init_registered_scripts' );
 
     // Comprehensive Google Map by Alexander Zagniotov causes a conflict. Removing the action which calls function causing conflict which breaks CSV 2 POST jQuery UI
-    remove_action( 'admin_init', 'cgmp_google_map_admin_add_script' );# TODO:HIGHPRIORITY, retest as this may no longer be needed
+    remove_action( 'admin_init', 'cgmp_google_map_admin_add_script' );
     
     // script and css admin side          
     csv2post_script_core('admin');           

@@ -1,4 +1,12 @@
 <?php
+/** 
+ * WebTechGlobal standard PHP and CMS function library
+ *
+ * @package WTG Core Functions Library
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 /**
 * Function not in use yet and not complete COMMENT IT FULLY
 * 
@@ -6,8 +14,18 @@
 */
 function csv2post_csvfile_download_export_databasettable($table_name){
  
-    global $wpdb;
+    global $wpdb,$current_user;
 
+    if(!$current_user->ID)
+    {
+        wp_die('You must be logged in to perform that action!');   
+    }
+    
+    if(!current_user_can('update_plugins'))
+    {
+        wp_die('You do not have the required Wordpress capability to perform that action!');
+    }
+    
     $result = $wpdb->get_results( "SELECT * FROM ".$table_name."" );
     
     $requestedTable = mysql_query(
@@ -206,7 +224,7 @@ function csv2post_get_file_separator($csv_filename){
 * @return string, should be a single character
 */
 function csv2post_get_file_quote($csv_filename,$method = 'nolongerinuse'){
-        return '"';### TODO:MEDIUMPRIORITY, add a function that does not use PEAR CSV to determine quote     
+        return '"';   
 }
 
 /**

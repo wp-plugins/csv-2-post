@@ -1,4 +1,12 @@
 <?php
+/** 
+ * WebTechGlobal standard PHP and CMS function library
+ *
+ * @package WTG Core Functions Library
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 // free pages
 function csv2post_page_toppage(){require_once( WTG_C2P_DIR.'pages/pagemain/csv2post_main.php' );}
 
@@ -87,7 +95,7 @@ function csv2post_admin_menu(){
  * @param string $thepagekey this is the screen being visited
  */
 function csv2post_createmenu($thepagekey){           
-    global $csv2post_guitheme,$csv2post_mpt_arr,$csv2post_currentproject_code;
+    global $csv2post_mpt_arr,$csv2post_currentproject_code;
     
     echo '<h2 class="nav-tab-wrapper">';
         
@@ -177,4 +185,26 @@ function csv2post_page_show_hide($package_allowed = 0){
     }
     return true;
 } 
+
+/**
+* Creates url to an admin page, not nonced see csv2post_link_nonced()
+*  
+* @param mixed $page, registered page slug i.e. csv2post_install which results in wp-admin/admin.php?page=csv2post_install   
+* @param mixed $values, pass a string beginning with & followed by url values
+*/
+function csv2post_url_toadmin($page,$values = ''){
+    return get_admin_url() . 'admin.php?page=' . $page . $values;
+} 
+
+/**
+* Builds a nonced admin link styled as button by Wordpress
+*
+* @package CSV 2 POST
+* @since 7.0.4
+*
+* @return string html a href link nonced by Wordpress  
+*/
+function csv2post_link_nonced($page,$action,$title = 'CSV 2 POST admin link',$text = 'Click Here',$values = ''){
+    return '<a href="'. wp_nonce_url( admin_url() . 'admin.php?page=' .$page . $values, $action ) . '" title="'.$title.'" class="button">'.$text.'</a>';
+}
 ?>

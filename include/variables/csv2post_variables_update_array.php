@@ -1,9 +1,12 @@
 <?php
-##############################################################
-#                                                            #
-#                      PLUGINS UPDATE ARRAY                  #
-#                                                            #
-##############################################################
+/** 
+ * Free edition file (applies to paid also) for CSV 2 POST plugin by WebTechGlobal.co.uk
+ *
+ * @package CSV 2 POST
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 # The values in this array can be used to create a summary
 # of changes to be made during the plugin update process 
 $csv2post_upgrade_array = array();

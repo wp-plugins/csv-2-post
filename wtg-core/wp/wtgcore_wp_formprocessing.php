@@ -1,9 +1,11 @@
 <?php
-###########################################################
-#                                                         #
-#      FORM SUBMISSION PROCESSING FUNCTIONS FOR CORE      #
-#                                                         #
-###########################################################
+/** 
+ * WebTechGlobal standard PHP and CMS function library
+ *
+ * @package WTG Core Functions Library
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
  
 /**
 * Install Plugin - initial post submission validation  
@@ -33,7 +35,7 @@ function csv2post_form_installpackage(){
 */
 function csv2post_form_uninstallplugin_partial(){
     if(isset($_POST['csv2post_hidden_pageid']) && $_POST['csv2post_hidden_pageid'] == 'main' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'partialuninstall'){  
-        global $csv2post_plugintitle;
+        global $csv2post_plugintitle,$csv2post_dataimportjobs_array;
            
         if(current_user_can('delete_plugins')){
                      
@@ -45,7 +47,7 @@ function csv2post_form_uninstallplugin_partial(){
                     $code = str_replace('csv2post_','',$table_name);
                         
                     // if table still in use
-                    if(isset($csv2post_dataimportjobs_array[$code])){
+                if(isset($csv2post_dataimportjobs_array[$code])){
                            
                         csv2post_notice('Table '.$table_name.' is still used by Data Import Job named '.$csv2post_dataimportjobs_array[$code]['name'].'.','error','Tiny','Cannot Delete Table','','echo');
                         return false;
@@ -243,9 +245,7 @@ function csv2post_form_plugin_update(){
         update_option('csv2post_installedversion',$csv2post_currentversion);        
         update_option('csv2post_installeddate',time()); 
 
-        csv2post_notice_postresult('success','Plugin Update Complete','Please have a browse over all of the
-        plugins screens, ensure key settings are as you need them and where applicable check the front-end of 
-        your blog to ensure nothing has gone wrong.');
+        csv2post_notice_postresult('success','Plugin Update Complete','Please ensure the plugin is running normal even if no critical changes were suggested.');
 
         return false;
     }else{
@@ -301,6 +301,14 @@ function csv2post_form_save_settings_interface(){
     }                 
 }   
 
+/**
+* Saves log screen criteria
+* 
+* 1. no arrays, store multiple values as comma separated string, this is to equal the $_GET method so we can handle all values in the same way: explode()
+*
+* @package CSV 2 POST
+* @since 7.0.4 
+*/
 function csv2post_form_savelogcriteria(){
     if(isset($_POST['csv2post_hidden_pageid']) && $_POST['csv2post_hidden_pageid'] == 'main' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'logsearchoptions'){
         global $csv2post_adm_set;
@@ -328,31 +336,30 @@ function csv2post_form_savelogcriteria(){
         #                                                          #
         ############################################################              
         // outcome criteria
-        if(isset($_POST['csv2post_log_outcome'])){    
-            foreach($_POST['csv2post_log_outcome'] as $outcomecriteria){
-                $csv2post_adm_set['log']['logscreen']['outcomecriteria'][$outcomecriteria] = true;                   
-            }            
+        if(isset($_POST['csv2post_log_outcome'])){ 
+            $s = '';   
+            foreach($_POST['csv2post_log_outcome'] as $key => $outcomecriteria){
+                 $s .= $outcomecriteria . ',';                   
+            }       
+            $csv2post_adm_set['log']['logscreen']['outcomecriteria'] = csv2post_remove_last_comma($s);     
         } 
         
         // type criteria
         if(isset($_POST['csv2post_log_type'])){
-            foreach($_POST['csv2post_log_type'] as $typecriteria){
-                $csv2post_adm_set['log']['logscreen']['typecriteria'][$typecriteria] = true;                   
-            }            
+            $s = ''; 
+            foreach($_POST['csv2post_log_type'] as $key => $typecriteria){
+                $s .= $typecriteria . ',';                    
+            } 
+            $csv2post_adm_set['log']['logscreen']['typecriteria'] = csv2post_remove_last_comma($s);           
         }         
 
-        // category criteria
-        if(isset($_POST['csv2post_log_category'])){
-            foreach($_POST['csv2post_log_category'] as $categorycriteria){
-                $csv2post_adm_set['log']['logscreen']['categorycriteria'][$categorycriteria] = true;                   
-            }            
-        }         
-   
         // priority criteria
         if(isset($_POST['csv2post_log_priority'])){
-            foreach($_POST['csv2post_log_priority'] as $prioritycriteria){
-                $csv2post_adm_set['log']['logscreen']['prioritycriteria'][$prioritycriteria] = true;                   
-            }            
+            $s = ''; 
+            foreach($_POST['csv2post_log_priority'] as $key => $prioritycriteria){
+                $s .= $prioritycriteria . ',';                   
+            }   
+            $csv2post_adm_set['log']['logscreen']['prioritycriteria'] = csv2post_remove_last_comma($s);         
         }         
 
         ############################################################
@@ -362,39 +369,39 @@ function csv2post_form_savelogcriteria(){
         ############################################################
         // page
         if(isset($_POST['csv2post_pluginpages_logsearch']) && $_POST['csv2post_pluginpages_logsearch'] != 'notselected'){
-            $csv2post_adm_set['log']['logscreen']['page'] = $_POST['csv2post_pluginpages_logsearch'];
+            $csv2post_adm_set['log']['logscreen']['pagecriteria'] = $_POST['csv2post_pluginpages_logsearch'];
         }   
         // action
         if(isset($_POST['csv2pos_logactions_logsearch']) && $_POST['csv2pos_logactions_logsearch'] != 'notselected'){
-            $csv2post_adm_set['log']['logscreen']['action'] = $_POST['csv2pos_logactions_logsearch'];
+            $csv2post_adm_set['log']['logscreen']['actioncriteria'] = $_POST['csv2pos_logactions_logsearch'];
         }   
         // screen
         if(isset($_POST['csv2post_pluginscreens_logsearch']) && $_POST['csv2post_pluginscreens_logsearch'] != 'notselected'){
-            $csv2post_adm_set['log']['logscreen']['screen'] = $_POST['csv2post_pluginscreens_logsearch'];
+            $csv2post_adm_set['log']['logscreen']['screencriteria'] = $_POST['csv2post_pluginscreens_logsearch'];
         }  
         // line
         if(isset($_POST['csv2post_logcriteria_phpline'])){
-            $csv2post_adm_set['log']['logscreen']['line'] = $_POST['csv2post_logcriteria_phpline'];
+            $csv2post_adm_set['log']['logscreen']['linecriteria'] = $_POST['csv2post_logcriteria_phpline'];
         }  
         // file
         if(isset($_POST['csv2post_logcriteria_phpfile'])){
-            $csv2post_adm_set['log']['logscreen']['file'] = $_POST['csv2post_logcriteria_phpfile'];
+            $csv2post_adm_set['log']['logscreen']['filecriteria'] = $_POST['csv2post_logcriteria_phpfile'];
         }          
         // function
         if(isset($_POST['csv2post_logcriteria_phpfunction'])){
-            $csv2post_adm_set['log']['logscreen']['function'] = $_POST['csv2post_logcriteria_phpfunction'];
+            $csv2post_adm_set['log']['logscreen']['functioncriteria'] = $_POST['csv2post_logcriteria_phpfunction'];
         }
         // panel name
         if(isset($_POST['csv2post_logcriteria_panelname'])){
-            $csv2post_adm_set['log']['logscreen']['panelname'] = $_POST['csv2post_logcriteria_panelname'];
+            $csv2post_adm_set['log']['logscreen']['panelnamecriteria'] = $_POST['csv2post_logcriteria_panelname'];
         }
         // IP address
         if(isset($_POST['csv2post_logcriteria_ipaddress'])){
-            $csv2post_adm_set['log']['logscreen']['ipaddress'] = $_POST['csv2post_logcriteria_ipaddress'];
+            $csv2post_adm_set['log']['logscreen']['ipaddresscriteria'] = $_POST['csv2post_logcriteria_ipaddress'];
         }
         // user id
         if(isset($_POST['csv2post_logcriteria_userid'])){
-            $csv2post_adm_set['log']['logscreen']['userid'] = $_POST['csv2post_logcriteria_userid'];
+            $csv2post_adm_set['log']['logscreen']['useridcriteria'] = $_POST['csv2post_logcriteria_userid'];
         }
 
         csv2post_update_option_adminsettings($csv2post_adm_set);

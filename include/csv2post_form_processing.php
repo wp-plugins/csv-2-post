@@ -1,9 +1,11 @@
 <?php 
-###############################################################
-#                                                             #
-#     CALLS FORM PROCESSING FUNCTIONS IN PLUGIN PACKAGE       #
-#                                                             #
-###############################################################
+/** 
+ * Free edition file (applies to paid also) for CSV 2 POST plugin by WebTechGlobal.co.uk
+ *
+ * @package CSV 2 POST
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
 
 global $csv2post_notice_result;
        
@@ -161,30 +163,13 @@ if($cont){
 
 // Main and Settings     
 if($cont){
-    // Save easy configuration questions
     $cont = csv2post_form_save_easyconfigurationquestions();
-
-    // Save global allowed days and hours
     $cont = csv2post_form_save_scheduletimes_global();
-    
-    // Save drip feed limits
     $cont = csv2post_form_save_schedulelimits(); 
-    
-    // Reset Quick Start Session
     $cont = csv2post_form_reseteci();   
-    
-    // Save operation settings
     $cont = csv2post_form_save_settings_operation();
-
-    // Save Data Panel One settings
     $cont = csv2post_form_save_settings_datapanelone();
-        
-    // Save interface settings
     $cont = csv2post_form_save_settings_interface();    
-}    
-    
-// Other
-if($cont){
     $cont = csv2post_form_createcontentfolder();
     $cont = csv2post_form_deletecontentfolder(); 
     $cont = csv2post_form_delete_persistentnotice();   

@@ -1,9 +1,12 @@
 <?php                                  
-#################################################
-#                                               #
-#      Quick Start - FREE FUNCTIONS             #
-#                                               #
-#################################################
+/** 
+ * Free edition file (applies to paid also) for CSV 2 POST plugin by WebTechGlobal.co.uk
+ *
+ * @package CSV 2 POST
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 function csv2post_form_ECI_free_step18_createposts(){
     if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreecreateposts' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
 
@@ -391,7 +394,7 @@ function csv2post_form_ECI_free_step4_contenttemplate(){
 function csv2post_form_ECI_free_step3_importdate(){
     if(isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'ecifreeimportdata' && isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'main'){
 
-        global $csv2post_is_free;
+        global $csv2post_is_free,$csv2post_currentproject_code,$csv2post_project_array;;
         
         $csv2post_ecisession_array = csv2post_WP_SETTINGS_get_eciarray();
         
@@ -420,6 +423,22 @@ function csv2post_form_ECI_free_step3_importdate(){
         ',$overall_result,'Extra','','','echo'); 
 
         $csv2post_ecisession_array['nextstep'] = 4;
+        
+        // store date settings - added 25th August 2013 on request
+        // extract table name and column name from the string which holds both of them
+        $table_name = csv2post_explode_tablecolumn_returnnode(',',0,$_POST['csv2post_datecolumn_select_columnandtable']);
+        $column_name = csv2post_explode_tablecolumn_returnnode(',',1,$_POST['csv2post_datecolumn_select_columnandtable']);            
+        
+        // the selected table-column values have not already been set        
+        $csv2post_project_array['dates']['date_column']['table_name'] = $table_name;            
+        $csv2post_project_array['dates']['date_column']['column_name'] = $column_name;
+        $csv2post_project_array['dates']['currentmethod'] = 'data';
+        
+        // expected date format - added 30th March 2013
+        $csv2post_project_array['dates']['date_column']['format'] = $_POST['csv2post_datecolumn_format'];
+
+        // update project option         
+        csv2post_update_option_postcreationproject($csv2post_currentproject_code,$csv2post_project_array);
         
         // update the ECI session array
         csv2post_option('csv2post_ecisession','update',$csv2post_ecisession_array);

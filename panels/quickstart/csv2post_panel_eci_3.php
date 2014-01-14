@@ -1,4 +1,12 @@
 <?php
+/** 
+ * Free edition file (applies to paid also) for CSV 2 POST plugin by WebTechGlobal.co.uk
+ *
+ * @package CSV 2 POST
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 ++$panel_number;// increase panel counter so this panel has unique ID
 $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'ecifreeimportdata';// slug to act as a name and part of the panel ID 
@@ -19,6 +27,50 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
 
     }else{?>
 
+
+        <p>Submission will import your data from your CSV file named to a new database table. CSV 2 POST works with the data from there and you can create posts more effeciently.</p>
+        
+        <h4>Import Dates</h4>
+        <label for="csv2post_datecolumn_select_columnandtable_formid">Select Column: </label>
+        <select name="csv2post_datecolumn_select_columnandtable" id="csv2post_datecolumn_select_columnandtable_formid" >
+            
+            <?php
+            $table = ''; 
+            if(isset($csv2post_project_array['dates']['date_column']['table_name'])){
+                $table = $csv2post_project_array['dates']['date_column']['table_name'];    
+            }
+            
+            $column = ''; 
+            if(isset($csv2post_project_array['dates']['date_column']['column_name'])){
+                $column = $csv2post_project_array['dates']['date_column']['column_name'];    
+            }        
+            ?>
+            
+            <?php csv2post_GUI_project_columnsandtables($csv2post_ecisession_array['dijcode'],$table,$column);?>                                                                                                                     
+        </select>
+      
+        <br>
+      
+        <label for="csv2post_datecolumn_format_objectid">Select Date Format: </label>
+        <select name="csv2post_datecolumn_format" id="csv2post_datecolumn_format_objectid" >
+            
+            <?php
+            $format = ''; 
+            if(isset($csv2post_project_array['dates']['date_column']['format'])){
+                $format = $csv2post_project_array['dates']['date_column']['format'];    
+            }     
+            ?>
+            
+            <option value="unsure">Unsure</option>
+            <option value="noformat">Do Not Format (use date data as it is)</option>        
+            <option value="uk">UK (will be formatted to MySQL standard)</option>
+            <option value="us">US (will be formatted to MySQL standard)</option>
+            <option value="mysql">MySQL (will still be formatted to be sure)</option>
+            <option value="custom">Custom/Other (contact us)</option> 
+                                                                                                                               
+        </select>
+                    
+    
         <?php 
         // begin form and add hidden values
         csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
@@ -26,9 +78,6 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
         
         global $csv2post_currentjob_code;?> 
 
-        <p>Submission will import your data from CSV file named <strong><?php echo $csv2post_ecisession_array['filename'];?></strong> 
-        to your new database table named <strong><?php echo 'csv2post_'.$csv2post_currentjob_code; ?></strong>. CSV 2 POST works with the data
-        from there and you can create posts more effeciently.</p>
             
         <?php csv2post_formend_standard('Import Data',$jsform_set['form_id']);?>            
      

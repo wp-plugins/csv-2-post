@@ -6,7 +6,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: importer,datafeed,datafeeds,csvimport,autoblog,autoblogging,autoblogger,data,dataengine,csv2post
 Requires at least: 3.5.0
 Tested up to: 3.6.0
-Stable tag: 7.0.4
+Stable tag: 7.0.5
 
 CSV 2 POST Data Engine
 
@@ -116,6 +116,38 @@ Yes. We hope to be adding new features until 2015 and updating it for compatabil
 6. You can use up to 3 columns of data to create 3 levels of categories.
 
 == Changelog == 
+= 7.0.5 =
+* From The Developers
+    * Released 14th January 2014
+    * The WebTechGlobal forum is now ready for use and free for all to use
+* Fixes     
+    * PHP 5.2 related error fixed by adding older code to csv2post_core_functions.php line 185, please update to PHP 5.3 or later folks
+    * Error on publishing new Flag has been fixed
+    * Type criteria for log search was not being applied to query
+    * Possible fix: someone reported an error that indicated "error_log" to blame, removed use of error_log()
+* Feature Changes
+    * wpautop() functionality now possible using setting on Content screen in Projects
+    * Shortened installation notices.
+    * Dates import option added to 3rd step and submission process for 3rd step updated to store selection (free and paid edition)
+    * Log screen now has default columns set to display (previously one column was being displayed on installation)
+    * Log screen now accepts search by URL (stored criteria is ignored and not affected)
+    * Timestamp is no longer an optional criteria or displayed column on Log screen (we need it to be in all queries for easily ordering results)
+    * Log screen results are now in descending order
+    * Trigger column in log table now has a more important part to play with the trigger telling us what caused an event to happen
+    * Extension ability removed, decided to continue adding everything to the core plugin. Another WTG CSV import solution will offer an extension approach in 2014.
+* Technical Notes
+    * Styles for CSS only menu removed from admin.css
+    * Doc headers added to all .php files
+    * csv2post_news.php removed
+    * csv2post_settings_functions.php removed
+    * csv2post_public_functions.php removed
+    * csv2post_POST_slug() always returns a formatted slug, if user has not set slug data, the title is used
+    * csv2post_log_schedule() $trigger changed to $category so we can break down scheduled log entries using this function a little more
+    * csv2post_log_schedule() parameters improved: comment and trigger added, category renamed to scheduledeventaction
+    * csv2post_notice_output() requires user to be administrator (new notice class will eventually replace this function)
+* Known Issues
+    * None
+     
 = 7.0.4 =
 * From The Developers
     * Released 24th August 2013

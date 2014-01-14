@@ -1,9 +1,12 @@
 <?php
-############################################################
-#                                                          #
-#      FORMS FOR USE IN WORDPRESS, WORDPRESS STYLING       #
-#                                                          #
-############################################################ 
+/** 
+ * WebTechGlobal standard PHP and CMS function library
+ *
+ * @package WTG Core Functions Library
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+  
 /**
 * Builds menu for selecting screen permission.
 * 

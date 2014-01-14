@@ -1,9 +1,11 @@
 <?php
-######################################################
-#                                                    #
-#     Wordpress MySQL Functions For All Plugins      #
-#           if function contains $wpdb               #
-######################################################
+/** 
+ * WebTechGlobal standard PHP and CMS function library
+ *
+ * @package WTG Core Functions Library
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
 
 /**
 * Control Wordpress option functions using this single function.
@@ -98,7 +100,7 @@ function csv2post_WP_SQL_get_post_ID_by_postname($name){
 * Returns all the columns in giving database table that hold data of the giving data type.
 * The type will be determined with PHP not based on MySQL column data types. 
 * 1. Table must have one or more records
-* 2. 1 record will be queried  ### TODO:LOWPRIORITY, increase this and do a loop then pick the average type per column
+* 2. 1 record will be queried  
 * 3. Each columns values will be tested by PHP to determine data type
 * 4. Array returned with column names that match the giving type
 * 5. If $dt is false, all columns will be returned with their type however that is not the main purpose of this function
@@ -106,10 +108,7 @@ function csv2post_WP_SQL_get_post_ID_by_postname($name){
 * 
 * @param string $tableName table name
 * @param string $dataType data type URL|IMG|NUMERIC|STRING|ARRAY
-* 
 * @returns false if no record could be found
-* 
-* @todo LOWPRIORITY, I'm not adding checks for anything other than URL right now as I'm using this function on URL cloaking panel. Add checks for other values types.
 */
 function csv2post_WP_SQL_return_cols_with_data_type($tableName,$dataType = false){
     global $wpdb;
@@ -314,7 +313,8 @@ function csv2post_WP_SQL_does_post_exist_byid($id){
  * @return boolean, true if table found, else if table does not exist
  */
 function csv2post_WP_SQL_does_table_exist( $table_name ){
-    global $wpdb;                                      
+    global $wpdb; 
+    if(!$table_name){ return false; }                                     
     if( $wpdb->query("SHOW TABLES LIKE '".$table_name."'") ){return true;}else{return false;}
 }
 

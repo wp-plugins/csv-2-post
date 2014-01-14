@@ -1,4 +1,12 @@
 <?php
+/** 
+ * WebTechGlobal standard PHP and CMS function library
+ *
+ * @package WTG Core Functions Library
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 /**
 * Builds string of comma delimited table colum names
 */
@@ -277,13 +285,13 @@ function csv2post_currenturl() {
 }  
 
 /**
-* Wrapper, uses csv2post_link_toadmin to create local admin url
+* Wrapper, uses csv2post_url_toadmin to create local admin url
 * 
 * @param mixed $page
 * @param mixed $values 
 */
 function csv2post_create_adminurl($page,$values = ''){
-    return csv2post_link_toadmin($page,$values);    
+    return csv2post_url_toadmin($page,$values);    
 }
 
 /**

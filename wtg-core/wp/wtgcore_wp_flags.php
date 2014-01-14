@@ -1,4 +1,12 @@
 <?php
+/** 
+ * WebTechGlobal standard PHP and CMS function library
+ *
+ * @package WTG Core Functions Library
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 /**
 * Flag something
 * 1. type: file|data|user|error
@@ -6,10 +14,7 @@
 * @todo to be complete, create custom post type flag
 */
 function csv2post_flag($atts){
-    return true;
-    if(!csv2post_WP_SQL_does_table_exist('csv2post_flags')){
-        return false;    
-    }        
+    return false;      
 }
 
 /**

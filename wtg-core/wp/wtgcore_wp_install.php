@@ -1,4 +1,12 @@
 <?php
+/** 
+ * WebTechGlobal standard PHP and CMS function library
+ *
+ * @package WTG Core Functions Library
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 /**
  * Installs the main elements for all packages
  */
@@ -92,7 +100,8 @@ function csv2post_INSTALL_table_log(){
         `type` varchar(45) DEFAULT NULL,
         `category` varchar(45) DEFAULT NULL,
         `action` varchar(45) DEFAULT NULL,
-        `priority` varchar(45) DEFAULT NULL,        
+        `priority` varchar(45) DEFAULT NULL,
+        `thetrigger` varchar(45) DEFAULT NULL,        
         PRIMARY KEY (`rowid`),
         UNIQUE KEY `rowid` (`rowid`)';
 
@@ -126,7 +135,6 @@ function csv2post_INSTALL_reinstall_databasetables(){
            
             if(csv2post_WP_SQL_does_table_exist($table['name'])){         
                 $wpdb->query( 'DROP TABLE '. $table['name'] );
-                ### TODO:LOWPRIORITY, we can check DROP outcome and change outcome to false with details
                 $result_array['droppedtables'][] = $table['name'];
             }                                                             
         }
@@ -191,7 +199,6 @@ function csv2post_is_installed(){
     global $csv2post_options_array;
        
     if(!isset($csv2post_options_array) || !is_array($csv2post_options_array)){
-        ### TODO:HIGHPRIORITY, log this event
         return false;
     }
              

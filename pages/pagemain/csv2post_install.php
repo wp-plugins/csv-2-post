@@ -1,4 +1,12 @@
 <?php 
+/** 
+ * Free edition file (applies to paid also) for CSV 2 POST plugin by WebTechGlobal.co.uk
+ *
+ * @package CSV 2 POST
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 if($csv2post_is_free){
     csv2post_n_incontent('We hope you got the job done. Was the time saved worth giving us a much needed donation? We do need help keeping these projects
     going...
@@ -243,14 +251,13 @@ $panel_array['panel_help'] = __('This show the status of what are actually calle
     </ul>    
       
     <?php 
-    global $csv2post_currentproject,$csv2post_extension_loaded,$csv2post_guitheme,$csv2post_currentjob_code,$csv2post_currentproject_code;
+    global $csv2post_currentproject,$csv2post_extension_loaded,$csv2post_currentjob_code,$csv2post_currentproject_code;
     ?>
     
     <h2>Users Configuration</h2>
     <ul>
         <li><strong>Current Project:</strong> <?php echo $csv2post_currentproject;?></li>
         <li><strong>Extension Loaded:</strong> <?php echo $csv2post_extension_loaded;?></li>
-        <li><strong>GUI Theme:</strong> <?php echo $csv2post_guitheme;?></li>
         <li><strong>Current Job Code:</strong> <?php echo $csv2post_currentjob_code;?></li>
         <li><strong>Current Project Code:</strong> <?php echo $csv2post_currentproject_code;?></li>
     </ul>  
@@ -296,7 +303,7 @@ server and required for CSV 2 POST to operate properly this will be made clear.'
         <li><strong>date('e'):</strong> <?php echo date('e');?> (timezone identifier)</li>
         <li><strong>date('G'):</strong> <?php echo date('G');?> (24-hour format)</li>
         <li><strong>get_admin_url():</strong> <?php echo get_admin_url();?></li>
-        <li><strong>csv2post_link_toadmin():</strong> <?php echo csv2post_link_toadmin('examplepage');?></li>                   
+        <li><strong>csv2post_url_toadmin():</strong> <?php echo csv2post_url_toadmin('examplepage');?></li>                   
     </ul>
 
 <?php csv2post_panel_footer();?> 

@@ -1,9 +1,12 @@
 <?php
-######################################################################
-#                                                                    #
-#              WORDPRESS CORE CONFIG FILE (loading file)             #
-#                                                                    #
-######################################################################  
+/** 
+ * WebTechGlobal standard PHP and CMS function library
+ *
+ * @package WTG Core Functions Library
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 /**
 * Loads scripts for plugin not core
 * 
@@ -25,39 +28,37 @@ function csv2post_css_core($side = 'admin',$csv2post_css_side_override = false){
     include_once(WTG_C2P_DIR . 'wtg-core/wp/css/csv2post_css_parent.php');
 }
 
-function csv2post_process(){
-    // establish if form processing is permitted to continue
-    $permission_granted = false;
-                  
+function csv2post_process(){   
+ 
+    if(!isset($_POST['csv2post_post_requested']) && !isset($_GET['csv2postprocsub']))
+    {                     
+        return;
+    }  
+                            
     // form submission
-    if(isset($_POST['csv2post_post_processing_required']) && $_POST['csv2post_post_processing_required'] == true){  
-        if(isset($_POST['csv2post_admin_referer'])){  
+    if(isset($_POST['csv2post_post_requested']) && $_POST['csv2post_post_requested'] == true){       
+        if(isset($_POST['csv2post_admin_referer'])){       
             // a few forms have the csv2post_admin_referer where the default hidden values are not in use
             check_admin_referer( $_POST['csv2post_admin_referer'] );         
-        }else{                                       
+        }else{                                    
             // 99% of forms will use this method
             check_admin_referer( $_POST['csv2post_hidden_panel_name'] );
         } 
                              
         csv2post_log_adminform(__FUNCTION__,1,'Form Submitted','form submission about to be processed','general','low',$_GET);       
     }
-                        
+                   
     // url submission
     if(isset($_GET['csv2postprocsub']) && isset($_GET['action'])){           
         check_admin_referer( $_GET['action'] );  
         csv2post_log_urlaction(__FUNCTION__,1,'URL Action Submitted','url action submission about to be processed','general','low',$_GET);       
     }     
-            
+                                  
     // arriving here means check_admin_referer() security is positive       
     global $csv2post_debug_mode,$cont,$csv2post_is_free;
-                                  
-    // if $csv2post_debug_mode set to true or 1 on CSV2POST.php we dump $_POST
-    if($csv2post_debug_mode){
-        echo '<h1>$_POST</h1>';
-        csv2post_var_dump($_POST);           
-        echo '<h1>$_GET</h1>';
-        csv2post_var_dump($_GET);    
-    }
+                                                                
+    csv2post_var_dump($_POST,'<h1>$_POST</h1>');           
+    csv2post_var_dump($_GET,'<h1>$_POST</h1>');
 
     // set a variable used to skip further processing
     // we can use this to allow more than one part of the
@@ -311,7 +312,7 @@ function csv2post_is_WP_Error($wpval,$returnv = false){
 * @param string $m, the message to be recorded
 */
 function csv2post_error_log($m){ 
-   error_log($m);
+   //error_log($m);
 }
 
 /**

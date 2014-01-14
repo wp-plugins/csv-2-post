@@ -1,16 +1,24 @@
 <?php
+/** 
+ * Free edition file (applies to paid also) for CSV 2 POST plugin by WebTechGlobal.co.uk
+ *
+ * @package CSV 2 POST
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+?>
+
+<?php 
 ++$panel_number;// increase panel counter so this panel has unique ID
 $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'scheduletimes';// slug to act as a name and part of the panel ID 
 $panel_array['panel_title'] = __('Schedule Times *global panel*');// user seen panel header text 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_help'] = __('The schedule system automates more than just post creation but the popular requirement is to auto-blog posts and pages. These settings/times are global and effect all projects with drip feeding applied above.');
-$panel_array['video'] = 'http://www.youtube.com/embed/ngx6tVNCIck';
+$panel_array['panel_state'] = 'closed';
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);   
-$jsform_set['dialogbox_title'] = 'Saving Schedule Times';
-$jsform_set['noticebox_content'] = 'You are about to change the schedule times, do you want to continue?';
 ?>
 <?php csv2post_panel_header( $panel_array );?>
 
@@ -68,12 +76,10 @@ $panel_array['panel_name'] = 'schedulelimits';// slug to act as a name and part 
 $panel_array['panel_title'] = __('Schedule Limits *global panel*');// user seen panel header text 
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_help'] = __('These controls tell the plugin how many posts to create during a drip feed session. It is a quick and easy approach to applying the rate of post creation. The plugin strictly avoids going over limits, this is considered higher priority than reaching the limit. The plugin will only begin a drip feed session when someone visits the blog; Wordpress loading triggers the schedule to be checked. The plugin will avoid doing this too often so that users do not get a negative experience. A cooldown between drip feed sessions also helps to avoid triggering server problems and using up too much bandwidth within a very short time which can also cause hosting to raise concerns.');
-$panel_array['video'] = 'http://www.youtube.com/embed/PR99KwLB4b4';
+$panel_array['panel_state'] = 'closed';
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialogbox_title'] = 'Save Drip Feeding Limits';
-$jsform_set['noticebox_content'] = 'These are global settings and will take effect on all projects straight away. Do you wish to continue?';
 ?>
 <?php csv2post_panel_header( $panel_array );?>
 
@@ -149,12 +155,10 @@ $panel_array['panel_title'] = __('Event Types *global panel*');// user seen pane
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_help'] = __('Event types are the names giving to different things CSV 2 POST can do during automated processing. You should only activate event types you actually want to use. The more you activate, the less priority each event type has i.e. if you activate 10 different event types, each event type will be run 10 or more minutes apart as there is a 60 second cooldown between all events of any type. You can override the schedules process of cycling through multiple different event types and force it to focus on one selected event type using the Focus settings.');
 $panel_array['panel_url'] = 'http://www.webtechglobal.co.uk/hacking/event-types';
-$panel_array['video'] = 'http://www.youtube.com/embed/VViRp6Ggw94';
+$panel_array['panel_state'] = 'closed';
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);            
-$jsform_set['dialogbox_title'] = 'Save Event Types';
-$jsform_set['noticebox_content'] = 'You are about to change the permitted event types to be run as part of the automated schedule system, do you want to continue?';
 ?>
 <?php csv2post_panel_header( $panel_array );?>
 

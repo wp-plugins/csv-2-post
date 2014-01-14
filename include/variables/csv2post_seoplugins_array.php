@@ -1,11 +1,14 @@
 <?php
-###################################################################
-#                                                                 #
-#             ARRAY OF SEO PLUGINS WITH EXTRA SUPPORT             #
-#    some forms are filled out for the user based on seo plugin   #
-#                                                                 #
-###################################################################
-// array of all known SEO plugins that have extra support
+/** 
+ * Free edition file (applies to paid also) for CSV 2 POST plugin by WebTechGlobal.co.uk
+ * 
+ * array of all known SEO plugins that have extra support
+ *
+ * @package CSV 2 POST
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 $csv2post_seoplugins_array = array();
 // All In One SEO
 $csv2post_seoplugins_array[0]['name'] = 'All In One SEO Pack';

@@ -1,4 +1,12 @@
 <?php
+/** 
+ * Free edition file (applies to paid also) for CSV 2 POST plugin by WebTechGlobal.co.uk
+ *
+ * @package CSV 2 POST
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 ++$panel_number;// increase panel counter so this panel has unique ID
 $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'ecifreeuploadcsvfile';// slug to act as a name and part of the panel ID 
@@ -28,7 +36,7 @@ $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnum
             <!-- nonce -->
                     
             <input type="file" name="file" size="70" /><br /><br />
-            <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">
+            <input type="hidden" id="csv2post_post_requested" name="csv2post_post_requested" value="true">
             <input type="hidden" id="csv2post_post_eciuploadcsvfile" name="csv2post_post_eciuploadcsvfile" value="true">
             <input type="hidden" name="csv2post_hidden_pageid" value="<?php echo $pageid;?>">
             <input type="hidden" name="csv2post_hidden_panel_name" value="<?php echo $panel_array['panel_name'];?>">

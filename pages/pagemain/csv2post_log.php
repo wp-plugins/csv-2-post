@@ -1,15 +1,46 @@
 <?php
+/** 
+ * Free edition file (applies to paid also) for CSV 2 POST plugin by WebTechGlobal.co.uk
+ * 
+ * This file is used in all WebTechGlobal plugins. Changes should apply to all. Use a different file/screen for plugin specific requirements.
+ *
+ * @package CSV 2 POST
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ * 
+ * 1. URL search ability
+ * 2. Stores last search
+ */
+ 
+global $wpdb;
+
+$search_headers_array = csv2post_logscreen_defaultarray();
+$search_headers_array = csv2post_logscreen_setcriteria($search_headers_array);
+$search_headers_array = csv2post_logscreen_setcolumns($search_headers_array);
+$query_results = csv2post_logscreen_query($search_headers_array);
+
+if(!$csv2post_is_free){
+    echo '<br>';
+
+    echo csv2post_link_nonced('csv2post','logsearchpostcreation','Search log for post creation related log entries','Scheduled Post Creation','&csv2posttab=12&csv2postlogsearch=normal&categorycriteria=postcreation');
+
+    echo csv2post_link_nonced('csv2post','logsearchpostcreationstrict','Search log for entries where posts were created','Scheduled Post Creation (strict)','&csv2posttab=12&csv2postlogsearch=normal&categorycriteria=postcreation&prioritycriteria=medium');
+
+    echo csv2post_link_nonced('csv2post','logsearchpostcreationstrict','Search log for entries where posts were updated','Scheduled Post Update','&csv2posttab=12&csv2postlogsearch=normal&categorycriteria=postupdate&prioritycriteria=medium');
+
+    echo '<br><br>';
+}
+
 ++$panel_number;// increase panel counter so this panel has unique ID
 $panel_array = csv2post_WP_SETTINGS_panel_array($pageid,$panel_number,$csv2post_tab_number);
 $panel_array['panel_name'] = 'logsearchoptions';// slug to act as a name and part of the panel ID 
-$panel_array['panel_title'] = __('Log Search Options');// user seen panel header text  
+$panel_array['panel_title'] = __('Stored Search Criteria');// user seen panel header text  
 $panel_array['panel_id'] = $panel_array['panel_name'].$panel_number;// creates a unique id, may change from version to version but within a version it should be unique
 $panel_array['panel_state'] = 'closed';
 // Form Settings - create the array that is passed to jQuery form functions
 $jsform_set_override = array();
 $jsform_set = csv2post_jqueryform_commonarrayvalues($pageid,$panel_array['tabnumber'],$panel_array['panel_number'],$panel_array['panel_name'],$panel_array['panel_title'],$jsform_set_override);               
-$jsform_set['dialogbox_title'] = 'Perform Advanced Data Search';
-$jsform_set['noticebox_content'] = 'Please be aware that the number of records you have in your data will determine how long the search will take. Would you like to continue?';?>
+?>
 <?php csv2post_panel_header( $panel_array );?> 
 
     <?php 
@@ -17,7 +48,9 @@ $jsform_set['noticebox_content'] = 'Please be aware that the number of records y
     csv2post_formstart_standard($jsform_set['form_name'],$jsform_set['form_id'],'post','csv2post_form',$csv2post_form_action);
     csv2post_hidden_form_values($csv2post_tab_number,$pageid,$panel_array['panel_name'],$panel_array['panel_title'],$panel_array['panel_number']);?>
 
-    <h1>Search Criteria</h1>
+    <p>This panel and these options are not affected by URL searches. These options belong to your custom search criteria which this screen defaults to
+    when loading.</p>
+    
     <h4>Outcomes</h4>
     <label for="csv2post_log_outcomes_success"><input type="checkbox" name="csv2post_log_outcome[]" id="csv2post_log_outcomes_success" value="1" <?php if(isset($csv2post_adm_set['log']['logscreen']['outcomecriteria']['1'])){echo 'checked';} ?>> Success</label>
     <br> 
@@ -30,21 +63,6 @@ $jsform_set['noticebox_content'] = 'Please be aware that the number of records y
     <br>
     <label for="csv2post_log_type_trace"><input type="checkbox" name="csv2post_log_type[]" id="csv2post_log_type_trace" value="flag" <?php if(isset($csv2post_adm_set['log']['logscreen']['typecriteria']['flag'])){echo 'checked';} ?>> Trace</label>
 
-    <h4>Category</h4>
-    <label for="csv2post_log_category_schedule"><input type="checkbox" name="csv2post_log_category[]" id="csv2post_log_category_schedule" value="schedule" <?php if(isset($csv2post_adm_set['log']['logscreen']['categorycriteria']['schedule'])){echo 'checked';} ?>> Schedule Related</label>
-    <br>
-    <label for="csv2post_log_category_posts"><input type="checkbox" name="csv2post_log_category[]" id="csv2post_log_category_posts" value="posts" <?php if(isset($csv2post_adm_set['log']['logscreen']['categorycriteria']['posts'])){echo 'checked';} ?>> Post Create/Update</label>
-    <br>
-    <label for="csv2post_log_category_data"><input type="checkbox" name="csv2post_log_category[]" id="csv2post_log_category_data" value="data" <?php if(isset($csv2post_adm_set['log']['logscreen']['categorycriteria']['data'])){echo 'checked';} ?>> Data</label>
-    <br>
-    <label for="csv2post_log_category_project"><input type="checkbox" name="csv2post_log_category[]" id="csv2post_log_category_project" value="project" <?php if(isset($csv2post_adm_set['log']['logscreen']['categorycriteria']['project'])){echo 'checked';} ?>> Project Changes</label>
-    <br>
-    <label for="csv2post_log_category_forms"><input type="checkbox" name="csv2post_log_category[]" id="csv2post_log_category_forms" value="forms" <?php if(isset($csv2post_adm_set['log']['logscreen']['categorycriteria']['forms'])){echo 'checked';} ?>> Form Submissions</label>
-    <br>
-    <label for="csv2post_log_category_useractions"><input type="checkbox" name="csv2post_log_category[]" id="csv2post_log_category_useractions" value="useractions" <?php if(isset($csv2post_adm_set['log']['logscreen']['categorycriteria']['useractions'])){echo 'checked';} ?>> User Actions</label>
-    <br>
-    <label for="csv2post_log_category_automation"><input type="checkbox" name="csv2post_log_category[]" id="csv2post_log_category_automation" value="automation" <?php if(isset($csv2post_adm_set['log']['logscreen']['categorycriteria']['automation'])){echo 'checked';} ?>> Automation</label>
-          
     <h4>Priority</h4>
     <label for="csv2post_log_priority_low"><input type="checkbox" name="csv2post_log_priority[]" id="csv2post_log_priority_low" value="low" <?php if(isset($csv2post_adm_set['log']['logscreen']['prioritycriteria']['low'])){echo 'checked';} ?>> Low</label>
     <br>
@@ -115,10 +133,8 @@ $jsform_set['noticebox_content'] = 'Please be aware that the number of records y
     <h4>User ID</h4>
     <input type="text" name="csv2post_logcriteria_userid" value="<?php if(isset($csv2post_adm_set['log']['logscreen']['userid'])){echo $csv2post_adm_set['log']['logscreen']['userid'];} ?>">    
   
-<h4>Display Fields</h4>                                                                                                                                        
+    <h4>Display Fields</h4>                                                                                                                                        
     <label for="csv2post_logfields_outcome"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_outcome" value="outcome" <?php if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['outcome'])){echo 'checked';} ?>> Outcome</label>
-    <br>
-    <label for="csv2post_logfields_timestamp"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_timestamp" value="timestamp" <?php if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['timestamp'])){echo 'checked';} ?>> Timestamp</label>
     <br>
     <label for="csv2post_logfields_line"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_line" value="line" <?php if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['line'])){echo 'checked';} ?>> Line</label>
     <br>
@@ -161,374 +177,123 @@ $jsform_set['noticebox_content'] = 'Please be aware that the number of records y
     <label for="csv2post_logfields_action"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_action" value="action" <?php if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['action'])){echo 'checked';} ?>> Action</label>
     <br>
     <label for="csv2post_logfields_priority"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_priority" value="priority" <?php if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['priority'])){echo 'checked';} ?>> Priority</label> 
-        
+    <br>
+    <label for="csv2post_logfields_thetrigger"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_thetrigger" value="thetrigger" <?php if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['thetrigger'])){echo 'checked';} ?>> Trigger</label> 
+                
     <?php csv2post_formend_standard($panel_array['form_button'],$jsform_set['form_id']);?>
 
 <?php csv2post_panel_footer();?>
 
-<?php
-global $wpdb;
-
-// array of table headers
-$th_array = array(
-    'rowid',
-    'outcome',
-    'timestamp',
-    'line',
-    'file',
-    'function',
-    'sqlresult',
-    'sqlquery',
-    'sqlerror',
-    'wordpresserror',
-    'screenshoturl',
-    'userscomment',
-    'page',
-    'version',
-    'panelname',
-    'tabscreenid',
-    'tabscreenname',
-    'dump',
-    'ipaddress',
-    'userid',
-    'comment',
-    'type',
-    'category',
-    'action',
-    'priority');  
+<?php       
+if(!$query_results || empty($query_results)){
+    echo '<strong>There are no log entries matches your current search criteria.</strong>';
+    
+}else{
+    
+    csv2post_GUI_tablestart();
+    echo ' 
+    <thead>
+        <tr>';
         
-        
-$type = 'all';
-$limit = '50';
-$where = '';
+            echo '<th>rowid</th>'; 
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['outcome']) || isset($_GET['outcomecriteria'])){ echo '<th>outcome</th>'; }
+            echo '<th>timestamp</th>';
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['category']) || isset($_GET['categorycriteria'])){ echo '<th>category</th>';}
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['action'])){ echo '<th>action</th>';}        
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['line'])){ echo '<th>line</th>'; }  
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['file'])){ echo '<th>file</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['function'])){ echo '<th>function</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['sqlresult'])){ echo '<th>sqlresult</th>'; }  
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['sqlquery'])){ echo '<th>sqlquery</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['sqlerror'])){ echo '<th>sqlerror</th>'; }  
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['wordpresserror'])){ echo '<th>wordpresserror</th>'; }  
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['screenshoturl'])){ echo '<th>screenshoturl</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['userscomment'])){ echo '<th>userscomment</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['page'])){ echo '<th>page</th>'; }  
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['version'])){ echo '<th>version</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['panelname'])){ echo '<th>panelname</th>'; }  
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['tabscreenid'])){ echo '<th>tabscreenid</th>'; }  
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['tabscreenname'])){ echo '<th>tabscreenname</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['dump'])){ echo '<th>dump</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['ipaddress'])){ echo '<th>ipaddress</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['userid'])){ echo '<th>userid</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['comment'])){ echo '<th>comment</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['type']) || isset($_GET['typecriteria'])){ echo '<th>type</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['priority'])){ echo '<th>priority</th>';}                                    
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['thetrigger'])){ echo '<th>thetrigger</th>';}
+            
+        echo '</tr>
+    </thead>'; 
 
-// select
-$select = 'rowid';# start with a column so comma can be added with each additional column
-if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns'])){
-    foreach($csv2post_adm_set['log']['logscreen']['displayedcolumns'] as $column => $ignorethis){
-        if($column != 'rowid'){$select .= ',' . $column;};
-    }    
+    echo '
+    <tfoot>
+        <tr>';
+        
+            echo '<th>rowid</th>';
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['outcome'])){ echo '<th>outcome</th>'; }
+            echo '<th>timestamp</th>';
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['category']) || isset($_GET['categorycriteria'])){ echo '<th>category</th>';}
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['action'])){ echo '<th>action</th>';}        
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['line'])){ echo '<th>line</th>'; }  
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['file'])){ echo '<th>file</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['function'])){ echo '<th>function</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['sqlresult'])){ echo '<th>sqlresult</th>'; }  
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['sqlquery'])){ echo '<th>sqlquery</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['sqlerror'])){ echo '<th>sqlerror</th>'; }  
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['wordpresserror'])){ echo '<th>wordpresserror</th>'; }  
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['screenshoturl'])){ echo '<th>screenshoturl</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['userscomment'])){ echo '<th>userscomment</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['page'])){ echo '<th>page</th>'; }  
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['version'])){ echo '<th>version</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['panelname'])){ echo '<th>panelname</th>'; }  
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['tabscreenid'])){ echo '<th>tabscreenid</th>'; }  
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['tabscreenname'])){ echo '<th>tabscreenname</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['dump'])){ echo '<th>dump</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['ipaddress'])){ echo '<th>ipaddress</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['userid'])){ echo '<th>userid</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['comment'])){ echo '<th>comment</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['type'])){ echo '<th>type</th>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['priority'])){ echo '<th>priority</th>';}                                                      
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['thetrigger'])){ echo '<th>thetrigger</th>';}
+            
+        echo '</tr>
+    </tfoot>
+    <tbody>';
+
+    foreach($query_results as $key => $row){
+
+        echo '<tr>';
+        
+            echo '<td>'.$row['rowid'].'</td>';
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['outcome'])){ echo '<td>'.$row['outcome'].'</td>'; }
+            echo '<td>'.$row['timestamp'].'</td>';
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['category']) || isset($_GET['categorycriteria'])){ echo '<td>'.$row['category'].'</td>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['action'])){ echo '<td>'.$row['action'].'</td>'; }        
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['line'])){ echo '<td>'.$row['line'].'</td>'; }  
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['file'])){ echo '<td>'.$row['file'].'</td>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['function'])){ echo '<td>'.$row['function'].'</td>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['sqlresult'])){ echo '<td>'.$row['sqlresult'].'</td>'; }  
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['sqlquery'])){ echo '<td>'.$row['sqlquery'].'</td>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['sqlerror'])){ echo '<td>'.$row['sqlerror'].'</td>'; }  
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['wordpresserror'])){ echo '<td>'.$row['wordpresserror'].'</td>'; }  
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['screenshoturl'])){ echo '<td>'.$row['screenshoturl'].'</td>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['userscomment'])){ echo '<td>'.$row['userscomment'].'</td>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['page'])){ echo '<td>'.$row['page'].'</td>'; }  
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['version'])){ echo '<td>'.$row['version'].'</td>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['panelname'])){ echo '<td>'.$row['panelname'].'</td>'; }    
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['tabscreenname'])){ echo '<td>'.$row['tabscreenname'].'</td>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['dump'])){ echo '<td>'.$row['dump'].'</td>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['ipaddress'])){ echo '<td>'.$row['ipaddress'].'</td>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['userid'])){ echo '<td>'.$row['userid'].'</td>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['comment'])){ echo '<td>'.$row['comment'].'</td>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['type'])  || isset($_GET['typecriteria'])){ echo '<td>'.$row['type'].'</td>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['priority'])){ echo '<td>'.$row['priority'].'</td>'; }
+            if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['thetrigger'])){ echo '<td>'.$row['thetrigger'].'</td>'; }
+            
+        echo '</tr>';
+          
+    }
+
+    echo '</tbody></table>';
 }
-if($select == ''){$select = '*';}
-
-// where
-$where = ' 
-rowid IS NOT NULL ';
-
-    // add outcomes
-    if(isset($csv2post_adm_set['log']['logscreen']['outcomecriteria'])){
-        
-        $where .= '
-        AND ';
-        
-        // count number of values, one indicates AND and more than one requires OR
-        $total = count($csv2post_adm_set['log']['logscreen']['outcomecriteria']);
-        
-        if($total > 1){
-            $where .= '(';
-        }
-        
-        $addedcolumn_count = 0;
-        
-        foreach($csv2post_adm_set['log']['logscreen']['outcomecriteria'] as $outcome => $booleanvalue){
-            
-            if($addedcolumn_count > 0){
-                if($total == 1){
-                    $where .= ' 
-                    AND';
-                }else{
-                    $where .= ' 
-                    OR';
-                }             
-            }
-
-            $where .= ' outcome = "'.$outcome.'"';
-            
-            ++$addedcolumn_count;
-        }
-        
-        if($total > 1){
-            $where .= ')';
-        }
-    }
-
-    // add type (s)
-    if(isset($csv2post_adm_set['log']['logscreen']['typecriteria'])){
-        
-        $where .= '
-        AND ';
-        
-        // count number of values, one indicates AND and more than one requires OR
-        $total = count($csv2post_adm_set['log']['logscreen']['typecriteria']);
-
-        if($total > 1){
-            $where .= '(';
-        }
-        
-        $addedcolumn_count = 0;
-        
-        foreach($csv2post_adm_set['log']['logscreen']['typecriteria'] as $type => $booleanvalue){
-            
-            if($addedcolumn_count > 0){
-                if($total == 1){
-                    $where .= ' 
-                    AND';
-                }else{
-                    $where .= ' 
-                    OR';
-                }             
-            }
-
-            $where .= ' outcome = "'.$type.'"';
-            
-            ++$addedcolumn_count;
-        }
-        
-        if($total > 1){
-            $where .= ')';
-        }
-    }
-    
-    // add category
-    if(isset($csv2post_adm_set['log']['logscreen']['categorycriteria'])){
-        
-        $where .= '
-        AND ';
-        
-        // count number of values, one indicates AND and more than one requires OR
-        $total = count($csv2post_adm_set['log']['logscreen']['categorycriteria']);
-
-        if($total > 1){
-            $where .= '(';
-        }
-        
-        $addedcolumn_count = 0;
-        
-        foreach($csv2post_adm_set['log']['logscreen']['categorycriteria'] as $category => $booleanvalue){
-            
-            if($addedcolumn_count > 0){
-                if($total == 1){
-                    $where .= ' 
-                    AND';
-                }else{
-                    $where .= ' 
-                    OR';
-                }             
-            }
-
-            $where .= ' outcome = "'.$category.'"';
-            
-            ++$addedcolumn_count;
-        }
-        
-        if($total > 1){
-            $where .= ')';
-        }
-    }
-
-    // add category
-    if(isset($csv2post_adm_set['log']['logscreen']['categorycriteria'])){
-        
-        $where .= '
-        AND ';
-        
-        // count number of values, one indicates AND and more than one requires OR
-        $total = count($csv2post_adm_set['log']['logscreen']['categorycriteria']);
-
-        if($total > 1){
-            $where .= '(';
-        }
-        
-        $addedcolumn_count = 0;
-        
-        foreach($csv2post_adm_set['log']['logscreen']['categorycriteria'] as $category => $booleanvalue){
-            
-            if($addedcolumn_count > 0){
-                if($total == 1){
-                    $where .= ' 
-                    AND';
-                }else{
-                    $where .= ' 
-                    OR';
-                }             
-            }
-
-            $where .= ' outcome = "'.$category.'"';
-            
-            ++$addedcolumn_count;
-        }
-        
-        if($total > 1){
-            $where .= ')';
-        }
-    }
-    
-    // page
-    if(isset($csv2post_adm_set['log']['logscreen']['page']) && $csv2post_adm_set['log']['logscreen']['page'] != ''){
-        $where .= '
-        AND page = "'.$csv2post_adm_set['log']['logscreen']['page'].'"';
-    }   
-    
-    // action
-    if(isset($csv2post_adm_set['log']['logscreen']['action']) && $csv2post_adm_set['log']['logscreen']['action'] != ''){
-        $where .= '
-        AND action = "'.$csv2post_adm_set['log']['logscreen']['action'].'"';
-    }    
-   
-    // screen
-    if(isset($csv2post_adm_set['log']['logscreen']['screen']) && $csv2post_adm_set['log']['logscreen']['screen'] != ''){
-        $where .= '
-        AND tabscreenname = "'.$csv2post_adm_set['log']['logscreen']['screen'].'"';
-    }
-    
-    // line
-    if(isset($csv2post_adm_set['log']['logscreen']['line']) && $csv2post_adm_set['log']['logscreen']['line'] != ''){
-        $where .= '
-        AND line = "'.$csv2post_adm_set['log']['logscreen']['line'].'"';
-    }    
-    
-    // file
-    if(isset($csv2post_adm_set['log']['logscreen']['file']) && $csv2post_adm_set['log']['logscreen']['file'] != ''){
-        $where .= '
-        AND file = "'.$csv2post_adm_set['log']['logscreen']['file'].'"';
-    }
-    
-    // function
-    if(isset($csv2post_adm_set['log']['logscreen']['function']) && $csv2post_adm_set['log']['logscreen']['function'] != ''){
-        $where .= '
-        AND function = "'.$csv2post_adm_set['log']['logscreen']['function'].'"';
-    }     
-    
-    // panelname
-    if(isset($csv2post_adm_set['log']['logscreen']['panelname']) && $csv2post_adm_set['log']['logscreen']['panelname'] != ''){
-        $where .= '
-        AND panelname = "'.$csv2post_adm_set['log']['logscreen']['panelname'].'"';
-    }     
-     
-    // IP address
-    if(isset($csv2post_adm_set['log']['logscreen']['ipaddress']) && $csv2post_adm_set['log']['logscreen']['ipaddress'] != ''){
-        $where .= '
-        AND ipaddress = "'.$csv2post_adm_set['log']['logscreen']['ipaddress'].'"';
-    }      
-         
-    // userid
-    if(isset($csv2post_adm_set['log']['logscreen']['userid']) && $csv2post_adm_set['log']['logscreen']['userid'] != ''){
-        $where .= '
-        AND userid = "'.$csv2post_adm_set['log']['logscreen']['userid'].'"';
-    } 
-
-// limit
-$limit = ' 
-LIMIT ' . $limit;
-
-$query = "SELECT ".$select." 
-FROM csv2post_log 
-WHERE ".$where."
-".$limit."";
-
-// get_results
-$logrows = $wpdb->get_results($query,ARRAY_A);
-     
-csv2post_GUI_tablestart();
-echo ' 
-<thead>
-    <tr>';
-    
-        echo '<th>rowid</th>'; 
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['outcome'])){ echo '<th>outcome</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['timestamp'])){ echo '<th>timestamp</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['line'])){ echo '<th>line</th>'; }  
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['file'])){ echo '<th>file</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['function'])){ echo '<th>function</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['sqlresult'])){ echo '<th>sqlresult</th>'; }  
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['sqlquery'])){ echo '<th>sqlquery</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['sqlerror'])){ echo '<th>sqlerror</th>'; }  
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['wordpresserror'])){ echo '<th>wordpresserror</th>'; }  
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['screenshoturl'])){ echo '<th>screenshoturl</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['userscomment'])){ echo '<th>userscomment</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['page'])){ echo '<th>page</th>'; }  
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['version'])){ echo '<th>version</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['panelname'])){ echo '<th>panelname</th>'; }  
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['tabscreenid'])){ echo '<th>tabscreenid</th>'; }  
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['tabscreenname'])){ echo '<th>tabscreenname</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['dump'])){ echo '<th>dump</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['ipaddress'])){ echo '<th>ipaddress</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['userid'])){ echo '<th>userid</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['comment'])){ echo '<th>comment</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['type'])){ echo '<th>type</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['category'])){ echo '<th>category</th>';}
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['action'])){ echo '<th>action</th>';}
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['priority'])){ echo '<th>priority</th>';}                                    
-    
-    echo '</tr>
-</thead>'; 
-
-echo '
-<tfoot>
-    <tr>';
-    
-        echo '<th>rowid</th>';
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['outcome'])){ echo '<th>outcome</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['timestamp'])){ echo '<th>timestamp</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['line'])){ echo '<th>line</th>'; }  
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['file'])){ echo '<th>file</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['function'])){ echo '<th>function</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['sqlresult'])){ echo '<th>sqlresult</th>'; }  
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['sqlquery'])){ echo '<th>sqlquery</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['sqlerror'])){ echo '<th>sqlerror</th>'; }  
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['wordpresserror'])){ echo '<th>wordpresserror</th>'; }  
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['screenshoturl'])){ echo '<th>screenshoturl</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['userscomment'])){ echo '<th>userscomment</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['page'])){ echo '<th>page</th>'; }  
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['version'])){ echo '<th>version</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['panelname'])){ echo '<th>panelname</th>'; }  
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['tabscreenid'])){ echo '<th>tabscreenid</th>'; }  
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['tabscreenname'])){ echo '<th>tabscreenname</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['dump'])){ echo '<th>dump</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['ipaddress'])){ echo '<th>ipaddress</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['userid'])){ echo '<th>userid</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['comment'])){ echo '<th>comment</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['type'])){ echo '<th>type</th>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['category'])){ echo '<th>category</th>';}
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['action'])){ echo '<th>action</th>';}
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['priority'])){ echo '<th>priority</th>';}                                                      
-    
-    echo '</tr>
-</tfoot>
-<tbody>';
-
-foreach($logrows as $key => $row){
-
-    echo '<tr>';
-    
-        echo '<td>'.$row['rowid'].'</td>';
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['outcome'])){ echo '<td>'.$row['outcome'].'</td>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['timestamp'])){ echo '<td>'.$row['timestamp'].'</td>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['line'])){ echo '<td>'.$row['line'].'</td>'; }  
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['file'])){ echo '<td>'.$row['file'].'</td>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['function'])){ echo '<td>'.$row['function'].'</td>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['sqlresult'])){ echo '<td>'.$row['sqlresult'].'</td>'; }  
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['sqlquery'])){ echo '<td>'.$row['sqlquery'].'</td>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['sqlerror'])){ echo '<td>'.$row['sqlerror'].'</td>'; }  
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['wordpresserror'])){ echo '<td>'.$row['wordpresserror'].'</td>'; }  
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['screenshoturl'])){ echo '<td>'.$row['screenshoturl'].'</td>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['userscomment'])){ echo '<td>'.$row['userscomment'].'</td>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['page'])){ echo '<td>'.$row['page'].'</td>'; }  
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['version'])){ echo '<td>'.$row['version'].'</td>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['panelname'])){ echo '<td>'.$row['panelname'].'</td>'; }    
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['tabscreenname'])){ echo '<td>'.$row['tabscreenname'].'</td>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['dump'])){ echo '<td>'.$row['dump'].'</td>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['ipaddress'])){ echo '<td>'.$row['ipaddress'].'</td>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['userid'])){ echo '<td>'.$row['userid'].'</td>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['comment'])){ echo '<td>'.$row['comment'].'</td>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['type'])){ echo '<td>'.$row['type'].'</td>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['category'])){ echo '<td>'.$row['category'].'</td>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['action'])){ echo '<td>'.$row['action'].'</td>'; }
-        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns']['priority'])){ echo '<td>'.$row['priority'].'</td>'; }
-    
-    echo '</tr>';
-      
-}
-
-echo '</tbody></table>';
 ?>

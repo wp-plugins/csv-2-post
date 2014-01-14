@@ -1,4 +1,12 @@
 <?php
+/** 
+ * Free edition file (applies to paid also) for CSV 2 POST plugin by WebTechGlobal.co.uk
+ *
+ * @package CSV 2 POST
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 $csv2post_contenttemplates_array = array();
 $csv2post_contenttemplates_array[0]['name'] = 'Text and Image';
 $csv2post_contenttemplates_array[0]['html'] = 'x-DESCRIPTION-x<a href="x-LINK-X"><img class="alignleft size-thumbnail wp-image-12" title="" src="x-IMAGE-x" alt="" width="150" height="150" /></a>';

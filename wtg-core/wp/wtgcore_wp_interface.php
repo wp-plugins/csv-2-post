@@ -1,4 +1,185 @@
-<?php   
+<?php 
+/**
+* On-screen message system: currently uses an array as a temporary approach until we create a table
+* 
+* @version 0.0.1
+*/
+class CSV2POST_Notice {
+    
+    public function get_notice_array(){
+        $a = get_option('csv2post_notifications');
+       
+        $csv2post_notice_array = maybe_unserialize($a);
+        if(!is_array($csv2post_notice_array)){
+            return array();    
+        }
+        
+        // delete some expired admin notices
+        if(isset($csv2post_notice_array['admin']))
+        {
+            foreach($csv2post_notice_array['admin'] as $key => $notice){
+                
+                if(isset($notice['created']))
+                {
+                    $projected = $notice['created'] + 60;
+                    
+                    if($projected < time())
+                    {
+                        unset($csv2post_notice_array['admin'][$key]);    
+                    }                                               
+                }
+                else
+                {       
+                    unset($csv2post_notice_array['admin'][$key]);
+                }
+            }
+        }
+       
+        // delete some expired user notices
+        if(isset($csv2post_notice_array['users'])){
+ 
+            foreach($csv2post_notice_array['users'] as $owner_id => $owners_notices){
+                
+                foreach($owners_notices as $key => $notice)
+                {
+                    if(isset($notice['created']))
+                    {
+                        $projected = $notice['created'] + 60;
+                        
+                        if($projected < time())
+                        {
+                            unset($csv2post_notice_array['users'][$key]);    
+                        }                                               
+                    }
+                    else
+                    {
+                        unset($csv2post_notice_array['users'][$key]);
+                    }
+                }
+            }   
+        }     
+           
+        // any notices unset due to expiry will be reflected in update during display procedure        
+        return $csv2post_notice_array;    
+    }
+    
+    public function update_notice_array(){
+        global $csv2post_notice_array;      
+        return update_option('csv2post_notifications',maybe_serialize($csv2post_notice_array));    
+    }     
+    
+    /**
+    * use to create an in-content notice i.e. the notice is built and echoed straight away it is not
+    * stored within an array for output at a later point in the plugin or Wordpress loading 
+    */
+    public function basic_html($type,$size,$title = false,$message = 'no message has been set'){
+        $output = '<div class="'.$type.$size.'">';
+        if($size != 'Tiny' && $title !== false){$output .= '<h4>'.$title.'</h4>';}
+        $output .= '<p>' . ucfirst($message) . '</p>';    
+        $output .= '</div>';
+        echo $output;        
+    }
+    
+    /**
+    * A notice is meant to be instant and for the current user only
+    * a) use create_prompt() to get an action from the current user based on conditions i.e. configuration issue
+    * b) use create_message() to create a notice for another user for when they login 
+    * 
+    * @param mixed $message
+    * @param mixed $type
+    * @param mixed $size
+    * @param mixed $title
+    * @param mixed $sensitive
+    */
+    public function create_notice($message,$type = 'info',$size = 'Small',$title = false,$sensitive = false)
+    {
+        global $csv2post_notice_array,$current_user;
+                                     
+        if(!isset($current_user->ID) || !is_numeric($current_user->ID)){echo 'RETURNED';return false;}
+                                                 
+        $key = time() . rand(10000,99999);
+
+        if($sensitive === false)
+        {   
+            $csv2post_notice_array['notices'][$current_user->ID][$key]['sensitive'] = false;
+            $csv2post_notice_array['notices'][$current_user->ID][$key]['message'] = $message;
+            $csv2post_notice_array['notices'][$current_user->ID][$key]['type'] = $type;
+            $csv2post_notice_array['notices'][$current_user->ID][$key]['size'] = $size;
+            $csv2post_notice_array['notices'][$current_user->ID][$key]['title'] = $title; 
+            $csv2post_notice_array['notices'][$current_user->ID][$key]['created'] = time();
+        }                   
+        elseif($sensitive === true)
+        {
+            $csv2post_notice_array['users'][$current_user->ID][$key]['sensitive'] = false;
+            
+            # to be complete, this procedure will store the notice in user meta with the $key being used in meta_key
+            # even when we start using a database table to store all notices, we will do this to avoid that table
+            # holding sensitive data. Instead we will try to group subscriber/customer data where some already exists. 
+                                    
+        }
+                   
+        return CSV2POST_Notice::update_notice_array($csv2post_notice_array);
+    }
+    
+    /**
+    * prompt are sticky by default, requiring a users action 
+    */
+    public function create_prompt()
+    {
+        ## $csv2post_notice_array['prompts'][$owner][$key]['message'] = $message;    
+    }
+    
+    /**
+    * use to create a notice for a specific user, not usually the current user
+    * a) admin actions can cause a message to be created so subscribers are notified the moment they login
+    * b) client actions within their account i.e. invoice request, can create a message for the lead developer of clients project 
+    */
+    public function create_message()
+    {
+        ## $csv2post_notice_array['messages'][$owner][$key]['message'] = $message;    
+    }
+    
+    public function display_all()
+    {
+        CSV2POST_Notice::display_users_notices();    
+    }
+
+    public function display_users_notices()
+    {
+        global $csv2post_notice_array,$current_user;
+        
+        $csv2post_notice_array = CSV2POST_Notice::get_notice_array();
+        
+        if(!isset($csv2post_notice_array['notices'][$current_user->ID])){return;}
+ 
+        foreach($csv2post_notice_array['notices'][$current_user->ID] as $key => $owners_notices){
+
+            if(isset($owners_notices['sensitive']) && $owners_notices['sensitive'] === true)
+            {
+                # to be complete - this will be used for sensitive information 
+                # this method will retrieve data from user meta, storage procedure to be complete    
+            }   
+            else
+            {
+                CSV2POST_Notice::basic_html($owners_notices['type'],$owners_notices['size'],$owners_notices['title'],$owners_notices['message']);    
+            }   
+
+            // users notices have been displayed, unset to prevent second display
+            unset($csv2post_notice_array['notices'][$current_user->ID]);
+        }
+                                       
+        CSV2POST_Notice::update_notice_array($csv2post_notice_array);            
+    }
+}
+
+/** 
+ * WebTechGlobal standard PHP and CMS function library
+ *
+ * @package WTG Core Functions Library
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+   
 /**
  * Add hidden form fields, to help with processing and debugging
  * Adds the _form_processing_required value, required to call the form validation file
@@ -135,7 +316,7 @@ function csv2post_jqueryform_commonarrayvalues($pageid,$csv2post_tab_number,$pan
 * @param array $panel_array
 */
 function csv2post_panel_header( $panel_array, $boxintro_div = true ){
-    global $csv2post_adm_set,$csv2post_guitheme;
+    global $csv2post_adm_set;
                          
     // establish global panel state for all panels in plugin, done prior 
     $panel_state = ''; 
@@ -190,7 +371,7 @@ function csv2post_jquery_form_promptdiv($jsform_set){
 * @param mixed $csv2post_tab_number
 */     
 function csv2post_GUI_wordpresscss_screen_include($pageid,$panel_number,$csv2post_tab_number){
-    global $csv2post_textspin_array,$csv2post_jobtable_array,$csv2post_job_array,$csv2post_dataimportjobs_array,$csv2post_project_array,$csv2post_currentproject_code,$csv2post_is_dev,$csv2post_guitheme,$csv2post_extension_loaded,$csv2post_adm_set,$csv2post_is_installed,$csv2post_currentversion,$csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$wtgtp_pluginforum,$wtgtp_pluginblog,$csv2post_options_array,$csv2post_is_free,$csv2post_projectslist_array,$csv2post_schedule_array;
+    global $csv2post_textspin_array,$csv2post_jobtable_array,$csv2post_job_array,$csv2post_dataimportjobs_array,$csv2post_project_array,$csv2post_currentproject_code,$csv2post_is_dev,$csv2post_extension_loaded,$csv2post_adm_set,$csv2post_is_installed,$csv2post_currentversion,$csv2post_file_profiles,$csv2post_mpt_arr,$wpdb,$wtgtp_pluginforum,$wtgtp_pluginblog,$csv2post_options_array,$csv2post_is_free,$csv2post_projectslist_array,$csv2post_schedule_array;
     $csv2post_form_action = '';         
     include($csv2post_mpt_arr['menu'][$pageid]['tabs'][$csv2post_tab_number]['path']);        
 }
@@ -282,17 +463,7 @@ function csv2post_menu_tablecolumns($table_name,$id = ''){?>
     <select name="csv2post_table_columns_<?php echo $table_name;?><?php echo $id;?>" id="csv2post_table_columns_<?php echo $table_name;?><?php echo $id;?>_id" >
         <?php csv2post_options_tablecolumns($table_name);?>                                                                                                                     
     </select><?php    
-}
-
-/**
-* Creates url to an admin page
-*  
-* @param mixed $page, registered page slug i.e. csv2post_install which results in wp-admin/admin.php?page=csv2post_install   
-* @param mixed $values, pass a string beginning with & followed by url values
-*/
-function csv2post_link_toadmin($page,$values = ''){
-    return get_admin_url() . 'admin.php?page=' . $page . $values;
-}              
+}             
 
 /**
  * jQuery script for styling button with roll over effect
@@ -316,8 +487,7 @@ function csv2post_jquery_button(){?>
  * @param string $buttonid
  */
 function csv2post_formend_standard($buttontitle = 'Submit',$buttonid = 'notrequired'){
-    global $csv2post_guitheme;
-        
+
         if($buttonid == 'notrequired'){
             $buttonid = 'csv2post_notrequired'.rand(1000,1000000);# added during debug
         }else{
@@ -352,7 +522,7 @@ function csv2post_formstart_standard($name,$id = 'none', $method = 'post',$class
         $class = '';         
     }
     echo '<form '.$class.' '.$enctype.' id="'.$id.'" method="'.$method.'" name="'.$name.'" action="'.$action.'">
-    <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">';
+    <input type="hidden" id="csv2post_post_requested" name="csv2post_post_requested" value="true">';
 }
 
 /**
@@ -436,7 +606,8 @@ function csv2post_header_page($pagetitle,$layout){
         csv2post_plugin_conflict_prevention();
                  
         // display form submission result notices
-        csv2post_notice_output();
+        csv2post_notice_output();# OLD METHOD BEING PHASED OUT
+        CSV2POST_Notice::display_all();
         
         // display persistent notices for current page
         csv2post_persistentnotice_output('page',$_GET['page']);
@@ -515,8 +686,7 @@ function csv2post_GUI_br(){
 }
 
 function csv2post_GUI_nbsp(){
-    global $csv2post_guitheme;
-    if($csv2post_guitheme != 'jquery'){echo '&nbsp;';}
+    echo '&nbsp;';
 }
 
 /**

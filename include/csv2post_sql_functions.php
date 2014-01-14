@@ -1,9 +1,12 @@
 <?php 
-################################################################
-#                                                              #
-#             SQL CSV 2 POST CORE FUNCTIONS ONLY               #
-#             if the function contains "csv2post"              #                                             #
-################################################################
+/** 
+ * Free edition file (applies to paid also) for CSV 2 POST plugin by WebTechGlobal.co.uk
+ *
+ * @package CSV 2 POST
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 /**
 * Creates a new record in giving table, ready for updating with CSV file data. 
 */
@@ -19,25 +22,14 @@ function csv2post_WP_SQL_insert_new_record( $table_name,$csvfile_modtime ){
 */
 function csv2post_WP_SQL_get_posts_record($main_table,$post_id,$project_array = false){
 
-    global $wpdb,$csv2post_is_free;
+    global $csv2post_debug_mode,$wpdb,$csv2post_is_free;
+    
+    // ensure user has not manually deleted table 
+    $table_exist = csv2post_WP_SQL_does_table_exist($main_table);
 
-    $query = 'SELECT * FROM ' . $main_table . ' WHERE csv2post_postid = ' . $post_id;
-    
-    /*  TODO:MEDIUMPRIORITY, still to add multiple table support
-    $tables_added_count = 0;
-    foreach($project_tables as $key => $table_name){
-        
-        if($tables_added_count != 0){
-            $query .= ',';    
-        }
-        
-        $query .= $table_name;    
-                                
-        ++$tables_added_count;    
-    }
-    
-    
-      */
+    if(!$table_exist){return false;}      var_dump($main_table);
+                      csv2post_var_dump($main_table);
+    $query = 'SELECT * FROM ' . $main_table . ' WHERE 22=22 AND csv2post_postid = ' . $post_id;
 
     $query .= ' LIMIT 1';  
     
@@ -72,6 +64,7 @@ function csv2post_WP_SQL_count_posts_type($template_type){
 function csv2post_WP_SQL_records_last_update($project_code,$post_id){
     // establish main project table
     $main_table = csv2post_get_project_maintable($project_code);
+    
     // ensure user has not manually deleted table 
     $table_exist = csv2post_WP_SQL_does_table_exist($main_table);
     if(!$table_exist){return false;}
@@ -134,7 +127,6 @@ function csv2post_WP_SQL_unusedrecords_singletable_subpagelevels($table_name,$le
     // ensure user has not manually deleted table 
     $table_exist = csv2post_WP_SQL_does_table_exist($table_name);
     if(!$table_exist){
-        ### TODO:HIGHPRIORITY, log this
         return false;
     }                          
 
@@ -454,7 +446,6 @@ function csv2post_WP_SQL_reset_project_table($table_name,$reset_posts){
 function csv2post_SQL_drop_dataimportjob_table($table_name){
     global $wpdb,$csv2post_jobtable_array,$csv2post_dataimportjobs_array;
     
-    ### TODO:LOWPRIORITY, put statement in here to handle failed DROP TABLE should user attempt to drop none existing tables
     $wpdb->query( 'DROP TABLE '. $table_name );
     
     // remove table from $csv2post_jobtable_array

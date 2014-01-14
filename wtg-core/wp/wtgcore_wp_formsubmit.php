@@ -1,9 +1,12 @@
 <?php   
-###########################################################
-#                                                         #
-#   CALLS REQUIRED FUNCTION TO PROCESS FORM SUBMISSION    #
-#                                                         #
-###########################################################
+/** 
+ * WebTechGlobal standard PHP and CMS function library
+ *
+ * @package WTG Core Functions Library
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 $cont = true;
 
 if($cont){

@@ -1,5 +1,12 @@
 <?php
-# RENAME THIS FILE TO csv2post_strings
+/** 
+ * WebTechGlobal standard PHP and CMS function library
+ *
+ * @package WTG Core Functions Library
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 /**
 * Compares giving possible/expected prepend (needle) characters to haystack string and determines if the
 * needle exists at the beginning of the haystack.

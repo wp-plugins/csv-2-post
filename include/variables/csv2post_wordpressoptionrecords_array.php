@@ -1,14 +1,11 @@
 <?php 
-##############################################################################################
-####                                                                                      ####
-####                          WORDPRESS OPTIONS RECORD ARRAY                              ####
-####                                                                                      ####
-##############################################################################################
-
-# TODO:HIGHPRIORITY, add all option records to the array and modify them on following rules
-# 1. New value for value source i.e URL to file holding array
-# 2. Value to indicate if option should be added on installation or not
-# 3. Make use of the ['public'] value on the re-install screen but also change ['public'] 
+/** 
+ * Free edition file (applies to paid also) for CSV 2 POST plugin by WebTechGlobal.co.uk
+ *
+ * @package CSV 2 POST
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
 
 $total_option_records = 0;// used to count total options and assign count to label
 $csv2post_options_array = array();

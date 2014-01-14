@@ -1,13 +1,19 @@
 <?php 
+/** 
+ * WebTechGlobal standard PHP and CMS function library
+ *
+ * @package WTG Core Functions Library
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 /**
 * Used in admin page headers to constantly check the plugins status while administrator logged in 
 */
 function csv2post_diagnostics_constant_adminside(){
     if(is_admin() && current_user_can( 'manage_options' )){
-        
-        // we won't run diagnostics during any POST processing
-        // we won't run diagnostics during any GET processing
-        if((!isset($_POST) || !$_POST) && !isset($_GET['csv2postprocsub'])){
+
+        if(!csv2post_is_processing()){
 
             ###########################################################################################
             #                              PEFORM EXTENSION DIAGNOSTICS                               #
@@ -130,5 +136,30 @@ function csv2post_diagnostics_databasecomparison_alertonly($expected_tables_arra
             }
         }
     }     
+}
+
+/**
+* Determines if process request of any sort has been requested
+* 1. used to avoid triggering automatic processing during proccess requests
+* 
+* @returns true if processing already requested else false
+*/
+function csv2post_is_processing(){
+    // ajax
+    if(defined('DOING_AJAX') && DOING_AJAX){
+        return true;    
+    } 
+    
+    // form submissions - if $_POST is set that is fine, providing it is an empty array
+    if(isset($_POST) && !empty($_POST)){
+        return true;
+    }
+    
+    // easy csv importer own special processing triggers
+    if(isset($_GET['csv2postprocsub']) || isset($_GET['csv2postprocess'])){
+        return true;
+    }
+    
+    return false;
 }
 ?>

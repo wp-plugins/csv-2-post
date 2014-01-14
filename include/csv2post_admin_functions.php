@@ -1,4 +1,12 @@
-<?php  
+<?php
+/** 
+ * Free edition file (applies to paid also) for CSV 2 POST plugin by WebTechGlobal.co.uk
+ *
+ * @package CSV 2 POST
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+   
 /**
 * Deletes posts for one or more projects.
 * Updates project tables so that the data can easily be used again.
@@ -98,7 +106,7 @@ function csv2post_count_projects(){
 * @todo MEDIUMPRIORITY, Ryanair DF extension uses a different approach and I think its better so we need to switch to that
 */
 function csv2post_export_singlesqltable_as_csvfile(){
-    if(isset($_POST['csv2post_post_processing_required'])){
+    if(isset($_POST['csv2post_post_requested'])){
         if(isset( $_POST['csv2post_hidden_pageid'] ) && $_POST['csv2post_hidden_pageid'] == 'data' && isset($_POST['csv2post_hidden_panel_name']) && $_POST['csv2post_hidden_panel_name'] == 'exportsingletabledata'){
                  
             global $csv2post_is_free;

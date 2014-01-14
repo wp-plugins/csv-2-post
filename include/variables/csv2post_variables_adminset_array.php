@@ -1,9 +1,11 @@
 <?php
-#################################################################
-####                                                         ####
-####            ADMIN ONLY SETTINGS ($csv2post_adm_set)      ####
-####                                                         ####
-################################################################# 
+/** 
+ * Free edition file (applies to paid also) for CSV 2 POST plugin by WebTechGlobal.co.uk
+ *
+ * @package CSV 2 POST
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
 
 // install main admin settings option record
 $csv2post_adm_set = array();
@@ -90,4 +92,19 @@ if(isset($csv2post_is_free) && !$csv2post_is_free){
     $csv2post_adm_set['schedule']['eventtypes']['twitterget']['name'] = 'Twitter Get'; 
     $csv2post_adm_set['schedule']['eventtypes']['twitterget']['switch'] = 0; 
 }  
+
+###############################################################
+#                         LOG SEARCH                          #
+###############################################################
+$csv2post_adm_set['log']['logscreen']['displayedcolumns']['outcome'] = true;
+$csv2post_adm_set['log']['logscreen']['displayedcolumns']['timestamp'] = true;
+$csv2post_adm_set['log']['logscreen']['displayedcolumns']['line'] = true;
+$csv2post_adm_set['log']['logscreen']['displayedcolumns']['function'] = true;
+$csv2post_adm_set['log']['logscreen']['displayedcolumns']['page'] = true; 
+$csv2post_adm_set['log']['logscreen']['displayedcolumns']['panelname'] = true;   
+$csv2post_adm_set['log']['logscreen']['displayedcolumns']['type'] = true;
+$csv2post_adm_set['log']['logscreen']['displayedcolumns']['category'] = true;
+$csv2post_adm_set['log']['logscreen']['displayedcolumns']['action'] = true;
+$csv2post_adm_set['log']['logscreen']['displayedcolumns']['priority'] = true;
+$csv2post_adm_set['log']['logscreen']['displayedcolumns']['comment'] = true;     
 ?>

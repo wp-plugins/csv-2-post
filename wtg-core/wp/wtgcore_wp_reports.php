@@ -1,4 +1,12 @@
 <?php
+/** 
+ * WebTechGlobal standard PHP and CMS function library
+ *
+ * @package WTG Core Functions Library
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 /**
 * Creates a new notification with a long list of style options available.
 * Can return the message for echo or add it to an array, which can also be stored for persistent messages.
@@ -133,6 +141,11 @@ function csv2post_n($title,$mes,$style,$size,$atts = array()){
 * When $placement_type is global, all other parameteres are false
 */
 function csv2post_persistentnotice_output($placement_type,$placement_specific = false,$pageid = false){
+    if(!current_user_can( 'manage_options' ))
+    {
+        wp_die('You do not have permission to perform that action. Notice by CSV 2 POST.');
+    }
+    
     $csv2post_notice_array = csv2post_get_option_persistentnotifications_array();
 
     if(!is_array($csv2post_notice_array) || !isset($csv2post_notice_array['notifications'])){
@@ -232,7 +245,7 @@ function csv2post_persistentnotice_display($type,$helpurl,$size,$title,$message,
 
     <form id="csv2post_notice_delete" method="post" name="csv2post_notice_delete" action="'.$csv2post_form_action.'">
         
-        <input type="hidden" id="csv2post_post_processing_required" name="csv2post_post_processing_required" value="true">       
+        <input type="hidden" id="csv2post_post_requested" name="csv2post_post_requested" value="true">       
         <input type="hidden" id="csv2post_post_deletenotice_id" name="csv2post_post_deletenotice_id" value="'.$id.'">       
         <input type="hidden" id="csv2post_post_deletenotice" name="csv2post_post_deletenotice" value="true">
         
@@ -256,6 +269,11 @@ function csv2post_persistentnotice_display($type,$helpurl,$size,$title,$message,
 * Will hold new and none persistent notifications. May also hold persistent. 
 */
 function csv2post_notice_output(){
+    if(!current_user_can('manage_options'))
+    {     
+        wp_die('You do not have the required permission to perform that action. Notice by CSV 2 POST.');
+    }
+    
     $csv2post_notice_array = csv2post_get_option_persistentnotifications_array();
     if(isset($csv2post_notice_array['notifications'])){
        
@@ -460,22 +478,19 @@ function csv2post_log_posts($post_id,$post_title,$action,$message,$project_name)
 * Use this to log automated events and track progress in automated scripts.
 * Mainly used in schedule function but can be used in any functions called by add_action() or
 * other processing that is triggered by user events but not specifically related to what the user is doing.
-* 
-* @param mixed $outcome
-* @param mixed $trigger schedule, hook (action hooks such as text spinning could be considered automation), cron, url, user (i.e. user does something that triggers background processing)
-* @param mixed $line
-* @param mixed $file
-* @param mixed $function
 */
-function csv2post_log_schedule($action,$outcome,$trigger = 'schedule',$line = 'NA',$file = 'NA',$function = 'NA'){
+function csv2post_log_schedule($comment,$action,$outcome,$category = 'scheduledeventaction',$line = 'NA',$file = 'NA',$function = 'NA',$priority = 'low'){
     $atts = array();   
     $atts['logged'] = csv2post_date();
+    $atts['comment'] = $comment;
     $atts['action'] = $action;
     $atts['outcome'] = $outcome;
-    $atts['trigger'] = $trigger;
+    $atts['category'] = $category;
     $atts['line'] = $line;
     $atts['file'] = $file;
     $atts['function'] = $function;
+    $atts['thetrigger'] = 'autoschedule';
+    $atts['priority'] = $priority;
     // set log type so the log entry is made to the required log file
     $atts['type'] = 'automation';
     csv2post_log($atts);    
@@ -558,10 +573,11 @@ function csv2post_log($atts){
         'userid' => false,# user id if any    
         'noticemessage' => false,# when using log to create a notice OR if logging a notice already displayed      
         'comment' => false,# dev comment to help with troubleshooting
-        'type' => false,# general|error|trace 
-        'category' => false,#  schedule|posts|data|project|forms|useractions|automation 
-        'action' => false,# createposts|importdata|uploadfile|deleteuser|edituser  can add many custom but remember to update log screen
-        'priority' => false# low|normal|high (use high for errors or things that should be investigated, use low for logs created mid procedure for tracing progress)                        
+        'type' => 'general',# general|error|trace
+        'category' => false,# createposts|importdata|uploadfile|deleteuser|edituser 
+        'action' => false,# 3 posts created|22 posts updated (the actuall action performed)
+        'priority' => 'low',# low|normal|high (use high for errors or things that should be investigated, use low for logs created mid procedure for tracing progress)                        
+        'thetrigger' => 'unknown'# autoschedule|cronschedule|manualrequest
     ), $atts ) );
     
     // start query
@@ -595,7 +611,8 @@ function csv2post_log($atts){
     if($category){$query_columns .= ',category';$query_values .= ',"'.$category.'"';}     
     if($action){$query_columns .= ',action';$query_values .= ',"'.$action.'"';}     
     if($priority){$query_columns .= ',priority';$query_values .= ',"'.$priority.'"';}     
-
+    if($thetrigger){$query_columns .= ',thetrigger';$query_values .= ',"'.$thetrigger.'"';}
+    
     $query_columns .= ')';
     $query_values .= ')';
     $query .= $query_columns .' VALUES '. $query_values;  
@@ -733,5 +750,268 @@ function csv2post_log_cleanup(){
             "
         );
     }
+}
+
+/**
+* Default array for log screen
+*
+* @package CSV 2 POST
+* @since 7.0.4
+*
+* @return array $search_headers_array 
+*/
+function csv2post_logscreen_defaultarray(){
+    // search headers (as used in log table)
+    $search_headers_array = array();
+    //rowid (treated different from others)
+    $search_headers_array['rowid']['title'] = 'Row ID';
+    $search_headers_array['rowid']['select'] = true;// add to SELECT part of query
+    $search_headers_array['rowid']['display'] = true;// display in table
+    // outcome
+    $search_headers_array['outcome']['title'] = 'Outcome';
+    $search_headers_array['outcome']['select'] = false;
+    $search_headers_array['outcome']['display'] = false;
+    $search_headers_array['outcome']['searchoptions'] = false;// 0|1
+    // type
+    $search_headers_array['type']['title'] = 'Type';
+    $search_headers_array['type']['select'] = false;
+    $search_headers_array['type']['display'] = false;
+    $search_headers_array['type']['searchoptions'] = false;// general|error|trace
+    // priority
+    $search_headers_array['priority']['title'] = 'Priority';
+    $search_headers_array['priority']['select'] = false;
+    $search_headers_array['priority']['display'] = false;
+    $search_headers_array['priority']['searchoptions'] = false;// low|high|medium
+    // timestamp
+    $search_headers_array['timestamp']['title'] = 'Date + Time';
+    $search_headers_array['timestamp']['select'] = false;
+    $search_headers_array['timestamp']['display'] = false;
+    $search_headers_array['timestamp']['searchoptions'] = false;// onehour|oneday|oneweek 
+    // line
+    $search_headers_array['line']['title'] = 'Line';
+    $search_headers_array['line']['select'] = false;
+    $search_headers_array['line']['display'] = false;
+    $search_headers_array['line']['searchoptions'] = false;
+    // file
+    $search_headers_array['file']['title'] = 'File';
+    $search_headers_array['file']['select'] = false;
+    $search_headers_array['file']['display'] = false;
+    $search_headers_array['file']['searchoptions'] = false;    
+    // function
+    $search_headers_array['function']['title'] = 'Function';
+    $search_headers_array['function']['select'] = false;
+    $search_headers_array['function']['display'] = false;
+    $search_headers_array['function']['searchoptions'] = false;
+    // sqlresult
+    $search_headers_array['sqlresult']['title'] = 'SQL Result';
+    $search_headers_array['sqlresult']['select'] = false;
+    $search_headers_array['sqlresult']['display'] = false;
+    $search_headers_array['sqlresult']['searchoptions'] = false;
+    // sqlquery
+    $search_headers_array['sqlquery']['title'] = 'SQL Query';
+    $search_headers_array['sqlquery']['select'] = false;
+    $search_headers_array['sqlquery']['display'] = false;
+    $search_headers_array['sqlquery']['searchoptions'] = false;
+    // sqlerror
+    $search_headers_array['sqlerror']['title'] = 'SQL Error';
+    $search_headers_array['sqlerror']['select'] = false;
+    $search_headers_array['sqlerror']['display'] = false;
+    $search_headers_array['sqlerror']['searchoptions'] = false;
+    // wordpresserror
+    $search_headers_array['wordpresserror']['title'] = 'WP Error';
+    $search_headers_array['wordpresserror']['select'] = false;
+    $search_headers_array['wordpresserror']['display'] = false;
+    $search_headers_array['wordpresserror']['searchoptions'] = false;
+    // screenshoturl
+    $search_headers_array['screenshoturl']['title'] = 'Screenshot URL';
+    $search_headers_array['screenshoturl']['select'] = false;
+    $search_headers_array['screenshoturl']['display'] = false;
+    $search_headers_array['screenshoturl']['searchoptions'] = false;
+    // userscomment
+    $search_headers_array['userscomment']['title'] = 'Users Comment';
+    $search_headers_array['userscomment']['select'] = false;
+    $search_headers_array['userscomment']['display'] = false;
+    $search_headers_array['userscomment']['searchoptions'] = false;
+    // page
+    $search_headers_array['page']['title'] = 'Page';
+    $search_headers_array['page']['select'] = false;
+    $search_headers_array['page']['display'] = false;
+    $search_headers_array['page']['searchoptions'] = false;
+    // version
+    $search_headers_array['version']['title'] = 'Plugin Version';
+    $search_headers_array['version']['select'] = false;
+    $search_headers_array['version']['display'] = false;
+    $search_headers_array['version']['searchoptions'] = false;
+    // panelname
+    $search_headers_array['panelname']['title'] = 'Panel Name';
+    $search_headers_array['panelname']['select'] = false;
+    $search_headers_array['panelname']['display'] = false;
+    $search_headers_array['panelname']['searchoptions'] = false;
+    // tabscreenid
+    $search_headers_array['tabscreenid']['title'] = 'Screen ID';
+    $search_headers_array['tabscreenid']['select'] = false;
+    $search_headers_array['tabscreenid']['display'] = false;
+    $search_headers_array['tabscreenid']['searchoptions'] = false;
+    // tabscreenname
+    $search_headers_array['tabscreenname']['title'] = 'Screen Name';
+    $search_headers_array['tabscreenname']['select'] = false;
+    $search_headers_array['tabscreenname']['display'] = false;
+    $search_headers_array['tabscreenname']['searchoptions'] = false;
+    // dump
+    $search_headers_array['dump']['title'] = 'Dump';
+    $search_headers_array['dump']['select'] = false;
+    $search_headers_array['dump']['display'] = false;
+    $search_headers_array['dump']['searchoptions'] = false;
+    // ipaddress
+    $search_headers_array['ipaddress']['title'] = 'IP Address';
+    $search_headers_array['ipaddress']['select'] = false;
+    $search_headers_array['ipaddress']['display'] = false;
+    $search_headers_array['ipaddress']['searchoptions'] = false;
+    // userid
+    $search_headers_array['userid']['title'] = 'User ID';
+    $search_headers_array['userid']['select'] = false;
+    $search_headers_array['userid']['display'] = false;
+    $search_headers_array['userid']['searchoptions'] = false;
+    // comment
+    $search_headers_array['comment']['title'] = 'Comment';
+    $search_headers_array['comment']['select'] = false;
+    $search_headers_array['comment']['display'] = false;
+    $search_headers_array['comment']['searchoptions'] = false;       
+    // category
+    $search_headers_array['category']['title'] = 'Category';
+    $search_headers_array['category']['select'] = false;
+    $search_headers_array['category']['display'] = false;
+    $search_headers_array['category']['searchoptions'] = false;
+    // action
+    $search_headers_array['action']['title'] = 'Action';
+    $search_headers_array['action']['select'] = false;
+    $search_headers_array['action']['display'] = false;
+    $search_headers_array['action']['searchoptions'] = false;         
+    // thetrigger
+    $search_headers_array['thetrigger']['title'] = 'Trigger';
+    $search_headers_array['thetrigger']['select'] = false;
+    $search_headers_array['thetrigger']['display'] = false; 
+    $search_headers_array['thetrigger']['searchoptions'] = false;
+    
+    return $search_headers_array;              
+}
+
+/**
+* Updates the default headers array with stored criteria selections, $_GET criteria and columns to be displayed.
+* 
+* 1. The columns displayed are updated with $_GET criteria automatically.
+* 2. The interface reflects $_GET search but the criteria is not stored, user must submit form to save the criteria they see
+*
+* @package CSV 2 POST
+* @since 7.0.4
+*
+* @return array $search_headers_array 
+*/
+function csv2post_logscreen_setcriteria($search_headers_array){
+    global $csv2post_adm_set;
+
+    if(isset($_GET['csv2postlogsearch'])){
+        foreach($search_headers_array as $key => $header){
+            if(isset($_GET[$key . 'criteria'])){
+
+                $search_headers_array[$key]['searchoptions'] = $_GET[$key . 'criteria'];// changes from false to indicate we want to use the preset criteria value
+                $search_headers_array[$key]['select'] = true;
+                $search_headers_array[$key]['display'] = true;
+
+            }            
+        } 
+    }elseif(!isset($_GET['csv2postlogsearch'])){
+        foreach($search_headers_array as $key => $header){
+            if(isset($csv2post_adm_set['log']['logscreen'][$key . 'criteria'])){
+
+                $search_headers_array[$key]['searchoptions'] = $csv2post_adm_set['log']['logscreen'][$key . 'criteria'];// changes from false to indicate we want to use the preset criteria value
+                $search_headers_array[$key]['select'] = true;
+                $search_headers_array[$key]['display'] = true;
+
+            }               
+        }
+    }  
+    
+    return $search_headers_array;      
+}
+
+/**
+* Updates log screen array with column display values from admin settings
+
+* @package WP e-Customers
+* @since 7.0.4
+*
+* @return array $search_headers_array 
+*/
+function csv2post_logscreen_setcolumns($search_headers_array) {
+    global $csv2post_adm_set;                                 
+    foreach($search_headers_array as $key => $header){
+        if(isset($csv2post_adm_set['log']['logscreen']['displayedcolumns'][$key]) && $csv2post_adm_set['log']['logscreen']['displayedcolumns'][$key] == true){
+            $search_headers_array[$key]['select'] = true;
+            $search_headers_array[$key]['display'] = true;
+        }            
+    } 
+            
+    return $search_headers_array;
+}
+
+/**
+* Builds query and executes for log screen based on stored criteria or $_GET values
+*
+* @package CSV 2 POST
+* @since 7.0.4
+*
+* @return $query 
+*/
+function csv2post_logscreen_query($search_headers_array) {
+    global $wpdb;
+           
+    $type = 'all';
+
+    $select = 'rowid,timestamp';
+    foreach($search_headers_array as $column => $column_array){
+        if($search_headers_array[$column]['select'] == true){
+            $select .= ',' . $column;    
+        }
+    }    
+
+    // where
+    $where = 'rowid IS NOT NULL ';
+    foreach($search_headers_array as $column => $column_array){
+        
+        if(isset($search_headers_array[$column]['searchoptions']) && !empty($search_headers_array[$column]['searchoptions'])){
+           
+            $where .= '
+            AND (';
+            
+            $array = explode(',',$search_headers_array[$column]['searchoptions']);
+            
+            $total_strings = count($array);
+            
+            $added = 0;
+            foreach($array as $key => $string){
+                
+                ++$added;
+                
+                $where .= $column . ' = "' . $string .'"';
+                
+                if($total_strings > 0 && $added != $total_strings){
+                    $where .= ' OR ';
+                } 
+            }  
+            
+            $where .= ')';
+        }
+        
+    } 
+                          
+    $query = "SELECT ".$select." 
+    FROM csv2post_log 
+    WHERE ".$where."
+    ORDER BY timestamp DESC
+    LIMIT 200";
+                         
+    // get_results
+    return $wpdb->get_results($query,ARRAY_A);
 }
 ?>

@@ -1,4 +1,12 @@
 <?php
+/** 
+ * Free edition file (applies to paid also) for CSV 2 POST plugin by WebTechGlobal.co.uk
+ *
+ * @package CSV 2 POST
+ * 
+ * @author Ryan Bayne | ryan@webtechglobal.co.uk
+ */
+ 
 if(!isset($csv2post_file_profiles) || !is_array($csv2post_file_profiles)){
     csv2post_n_incontent('You have not used any CSV files yet. When you
     use a CSV file from your list of uploaded files a profile will be created.
