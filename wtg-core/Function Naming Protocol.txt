@@ -1,0 +1,32 @@
+The WebTechGlobal core functions must be suitable to be deployed in any CMS within any plugin for that CMS.
+This requires specific naming protocols.
+
+EXAMPLE: csv2post_PHP_SQL_convert_columnstring_to_valuestring()
+
+PART ONE "csv2post"
+This is project (plugin/extension) specific. 
+
+PART TWO "PHP" or "WP" or "DRU"
+This is specific to the environment. We may eventually use "WPDRU" or "WPphpBB". These would be bridge
+functions. In either case the second part to our function naming is the environment. "PHP" is a standard
+PHP function applicable to any CMS or website.
+
+PART THREE "SQL" or "STRINGS" or "FILES"
+This part helps a lot during development. We use it to narrow down the type of function we are looking for
+and part three determines what file a function is placed in. Part three indicates what sort of function we
+are dealing with and is often determine by PHP core functions used within the function.
+Examples include "STRINGS", "SQL" for MySQL, "ARRAYS", "FILES" and "SECURITY". Feel free to add anymore you feel are
+applicable. If a plugin does not strictly fit any in relation to what it does during the function just 
+name part three based on the script or function that calls the function being named and go by that functions
+purpose.  
+
+PART FOUR "get","update","insert","find","replace","delete","convert"
+This part indicates what the function does overall. If this cannot be determined do not include it.
+
+The rest is up to you. By making good use of PART FOUR we can create a group of functions or even a class
+that does not require the rest of the function name to be long and so the result is unique function names
+that will make sense once you are used to the naming convention. My reason for this approach is my plan to
+deploy the core in many CMS and I intend to do a lot of work in briding website CMS, blog CMS and forum
+software also. The advantage is that any issues found during the use of any of my released software will 
+be reflected in a core used by many software. This is a great strength.
+
