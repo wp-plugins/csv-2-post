@@ -63,9 +63,9 @@ $projectsettings = maybe_unserialize($project_array->projectsettings);
 
             <?php 
             if(!isset($projectsettings['categories']['data'])){
-                $C2P_UI->panel_header($myforms_title,$myforms_name,false,'7dQwGDKvw-g',2,'You have not selected your category columns.');    
+                $C2P_UI->panel_header($myforms_title,$myforms_name,false,'7dQwGDKvw-g',1,'You have not selected your category columns.');    
             }else{
-                $C2P_UI->panel_header($myforms_title,$myforms_name,false,'7dQwGDKvw-g',2);?>
+                $C2P_UI->panel_header($myforms_title,$myforms_name,false,'7dQwGDKvw-g',1);?>
                 
                 <form method="post" name="<?php echo $myforms_name;?>" action="<?php $C2P_UI->form_action(); ?>">
                     <?php $C2P_WP->hidden_form_values($myforms_name,$myforms_title);?>

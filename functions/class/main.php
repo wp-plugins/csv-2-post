@@ -1518,6 +1518,13 @@ class C2P_WP extends C2P_WPDB {
         // get rows not used to create posts
         $unused_rows = $this->get_unused_rows($project_id,$total);
         
+        if(!$unused_rows){
+            $C2P_WP->create_notice(__('You have used all imported rows to create posts. Please
+            ensure you have imported all of your data if you expected more posts than CSV 2 POST
+            has already created.'),'info','Small','No Rows Available');
+            return;
+        }
+                
         // we will control how and when we end the operation
         $autoblog->finished = false;// when true, output will be complete and foreach below will discontinue, this can be happen if maximum execution time is reached
              
@@ -1535,43 +1542,6 @@ class C2P_WP extends C2P_WPDB {
             // create a post - start method is the beginning of many nested functions
             $autoblog->start();
         }
-    }
-    public function update_posts($project_id,$total = 1,$post_id = false){
-        global $c2p_settings,$C2P_WP;
-        
-        $autoblog = new CSV2POST_UpdatePost();
-        $autoblog->settings = $c2p_settings;
-        $autoblog->currentproject = $c2p_settings['currentproject'];
-        $autoblog->project = $this->get_project($project_id);// gets project row, includes sources and settings
-        $autoblog->projectid = $project_id;
-        $autoblog->maintable = $C2P_WP->get_project_main_table($project_id);// main table holds post_id and progress statistics
-        $autoblog->projectsettings = maybe_unserialize($autoblog->project->projectsettings);// unserialize settings
-        $autoblog->projectcolumns = $this->get_project_columns_from_db($project_id);
-        $autoblog->requestmethod = 'manual';
-        $sourceid_array = $C2P_WP->get_project_sourcesid($project_id);
-        $autoblog->mainsourceid = $sourceid_array[0];// update the main source database table per post with new post ID
-        unset($autoblog->project->projectsettings);// just simplifying the project object by removing the project settings
-
-        // we will control how and when we end the operation
-        $autoblog->finished = false;// when true, output will be complete and foreach below will discontinue, this can be happen if maximum execution time is reached
-                       
-        // get rows updated and not yet applied
-        $updated_rows = $this->get_updated_rows($project_id,$total);
-    
-        $foreach_done = 0;
-               
-        foreach($updated_rows as $key => $row){
-            ++$foreach_done;
-                    
-            // to get the output at the end, tell the class we are on the final post, only required in "manual" requestmethod
-            if($foreach_done == $total){
-                $autoblog->finished = true;
-            }      
-            // pass row to $autob
-            $autoblog->row = $row;    
-            // create a post - start method is the beginning of many nested functions
-            $autoblog->start();
-        }          
     }
     /**
     * determines if the giving term already exists within the giving level
@@ -2022,197 +1992,11 @@ class CSV2POST_InsertPost{
     * output results, method is used for manual post creation request only
     */
     public function output(){
-        if($this->requestmethod == 'manual'){        
-            
-        }
-    }
-}
-
-/**
-* Use to update a post created by or adopted by CSV 2 POST, class systematically calls all methods one after the other building the $my_post 
-* and making changes to meta or media
-* 
-* 1. methods are in alphabetical order
-* 2. each method calls the next one in the list
-* 3. eventually a method updates apost using the $my_post object built along the way
-* 4. $my_post is used to store then update meta, thumbnail/featured image and other attachments
-* 5. many methods check for their target value to exist in $my_post already and instead alter it (meaning we can re-call the class on an object)
-* 6. some methods check for values in the $my_post object and perform procedures based on the values found or not found
-*/
-class CSV2POST_UpdatePost{
-    public $my_post = array();
-    public $report_array = array();// will include any problems detected, can be emailed to user    
-    public function replace_tokens($subject){
-        unset($this->projectcolumns['arrayinfo']);
-        foreach($this->row as $columnfromquery => $usersdata){ 
-            foreach($this->projectcolumns as $table_name => $columnfromdb){  
-                $subject = str_replace('#'. $columnfromquery . '#', $usersdata,$subject);
-            }    
-        }
-        return $subject;
-    } 
-    public function start(){
-        $this->my_post['ID'] = $this->row['c2p_postid'];
-        $this->content();
-    }    
-    public function content(){
-        
-        if(isset($this->projectsettings['content']['wysiwygdefaultcontent'])){
-            $this->my_post['post_content'] = $this->replace_tokens($this->projectsettings['content']['wysiwygdefaultcontent']);    
-        }    
-            
-        /*
-        
-          'content' => 
-    array (size=10)
-      'wysiwygdefaultcontent' => string '' (length=0)
-      'designrule1' => 
-        array (size=2)
-          'table' => string 'wp_computers1csv' (length=16)
-          'column' => string '' (length=0)
-      'designruletrigger1' => string '' (length=0)
-      'designtemplate1' => string 'notselected' (length=11)
-      'designrule2' => 
-        array (size=2)
-          'table' => string 'wp_computers1csv' (length=16)
-          'column' => string '' (length=0)
-      'designruletrigger2' => string '' (length=0)
-      'designtemplate2' => string 'notselected' (length=11)
-      'designrule3' => 
-        array (size=2)
-          'table' => string 'wp_computers1csv' (length=16)
-          'column' => string '' (length=0)
-      'designruletrigger3' => string '' (length=0)
-      'designtemplate3' => string 'notselected' (length=11)
-      
-        */
-        
-        // call next method
-        $this->customfields();        
-    }    
-    /**
-    * does not create meta data, only establishes what meta data is to be created and it is created later
-    * it is done this way so that rules can take meta into consideration and meta can be adjusted prior to post creation 
-    */
-    public function customfields(){
-        $this->my_post['newcustomfields'] = array();// we will add keys and values to this, the custom fields are created later    
-        $i = 0;// count number of custom fields, use it as array key
-        
-        // seo title meta
-        if(isset($this->projectsettings['customfields']['seotitletemplate']) && !empty($this->projectsettings['customfields']['seotitletemplate'])
-        && isset($this->projectsettings['customfields']['seotitlekey']) && !empty($this->projectsettings['customfields']['seotitlekey'])){
-            $this->my_post['newcustomfields'][$i]['value'] = $this->replace_tokens($this->projectsettings['customfields']['seotitletemplate']);
-            $this->my_post['newcustomfields'][$i]['name'] = $this->projectsettings['customfields']['seotitlekey']; 
-            ++$i; 
-        }
-        
-        // seo description meta
-        if(isset($this->projectsettings['customfields']['seodescriptiontemplate']) && !empty($this->projectsettings['customfields']['seodescriptiontemplate'])
-        && isset($this->projectsettings['customfields']['seodescriptionkey']) && !empty($this->projectsettings['customfields']['seodescriptionkey'])){
-            $this->my_post['newcustomfields'][$i]['value'] = $this->replace_tokens($this->projectsettings['customfields']['seodescriptiontemplate']);
-            $this->my_post['newcustomfields'][$i]['name'] = $this->projectsettings['customfields']['seodescriptionkey'];  
-            ++$i; 
-        }
-                
-        // seo keywords meta
-        if(isset($this->projectsettings['customfields']['seokeywordstemplate']) && !empty($this->projectsettings['customfields']['seokeywordstemplate'])
-        && isset($this->projectsettings['customfields']['seokeywordskey']) && !empty($this->projectsettings['customfields']['seokeywordskey'])){
-            $this->my_post['newcustomfields'][$i]['value'] = $this->replace_tokens($this->projectsettings['customfields']['seokeywordstemplate']);
-            $this->my_post['newcustomfields'][$i]['name'] = $this->projectsettings['customfields']['seokeywordskey']; 
-            ++$i;       
-        }       
-        
-        // now add all other custom fields
-        if(isset($this->projectsettings['customfields']['cflist'])){
-            foreach($this->projectsettings['customfields']['cflist'] as $key => $cf){
-                $this->my_post['newcustomfields'][$i]['value'] = $this->replace_tokens($cf['value']);
-                $this->my_post['newcustomfields'][$i]['name'] = $cf['name'];                
-                ++$i;     
-            }
-        }
-
-        // call next method
-        $this->excerpt();        
-    }
-    public function excerpt(){
-        
-        // call next method
-        $this->wpautop();         
-    }              
-    /**
-    * change double line breaks into paragraphs
-    * 
-    * @link https://codex.wordpress.org/Function_Reference/wpautop
-    */
-    public function wpautop(){
-        
-        /*  need a setting to apply this or not, it changes double line breaks into <p>
-        if(isset($this->my_post['post_content'])){
-            $this->my_post['post_content'] = wpautop($this->my_post['post_content']);
-        }
-        */
-
-        // call next method
-        $this->update_post();        
-    }
-    public function update_post(){                      
-        wp_update_post( $this->my_post );
-        // call next method
-        $this->update_customfields();        
-    }
-    /**
-    * insert users custom fields, the values are determined before this method
-    */
-    public function update_customfields(){
-        if(isset($this->my_post['ID']) && is_numeric($this->my_post['ID'])){
-            foreach($this->my_post['newcustomfields'] as $key => $cf){
-                update_post_meta($this->my_post['ID'],$cf['name'],$cf['value']);
-            }
-        }
-        
-        // call next method
-        $this->update_plugins_customfields();    
-    }    
-    /**
-    * insert plugins custom fields, used to track and mass manage posts
-    */
-    public function update_plugins_customfields(){
         global $C2P_WP;
-        
-        // call next method
-        $this->update_project();    
-    }
-    /**
-    * update project statistics
-    * 1. save the last post created for reference
-    * 2. store the entire $my_post object for debugging
-    * 3. update the projectsettings value itself (incremental publish date is one example value that needs tracked per post)    
-    */
-    public function update_project(){
-        global $C2P_WP;
-        $C2P_WP->update_project($this->projectid, array('projectsettings' => maybe_serialize($this->projectsettings) ));
-        
-        // call next method
-        $this->update_row();        
-    }
-    /**
-    * updates the users data row, add post ID to create a relationship between imported row and the new post 
-    */
-    public function update_row(){
-        global $C2P_DB,$C2P_WP;      
-        $row_id = $this->row['c2p_rowid'];
-        
-        // we update c2p_applied with mysql current date/time because it is compared to the c2p_updated column which is set by mysql
-        $C2P_DB->update($this->maintable,"c2p_rowid = $row_id",array('c2p_postid' => $this->my_post['ID'],'c2p_applied' => current_time( 'mysql' )) );
-        
-        // call next method
-        $this->output();        
-    }
-    /**
-    * output results, method is used for manual post creation request only
-    */
-    public function output(){
-
+        // $autoblog->finished == true indicates procedure just done the final post or the time limit is reached
+        if($this->requestmethod == 'manual' && $this->finished === true){
+            $C2P_WP->create_notice(__('The post creation procedure has finished.'),'success','Small','Posts Created');
+        }
     }
 }
 ?>

@@ -8,14 +8,15 @@ Requires at least: 3.5.0
 Tested up to: 3.6.0
 Stable tag: trunk
 
-CSV 2 POST 8.0.0 by Ryan Bayne
+CSV 2 POST Version 8 by Ryan Bayne
 
 == Description ==
 
-CSV 2 POST has been around for years and has reached version 8.0.0 thanks to the support from users. Import data, work with your data, use your data to
-create posts. This plugin will help you maximize the use of affiliate data, Wordpress core and your theme.  
+CSV 2 POST data importer for Wordpress can import data, work with your data, use your data to
+create posts and more. This plugin will help you maximize the use of data (affiliate, business or personal), 
+the Wordpress core and your premium theme.  
  
-= Installation ==
+== Installation ==
 
 1. You can place the csv-2-post folder in the plugins directory using FTP
 1. You can also upload the plugin using Wordpress plugin screen (wp-admin/plugin-install.php)
@@ -28,7 +29,7 @@ create posts. This plugin will help you maximize the use of affiliate data, Word
 = When was CSV 2 POST released? =
 The project started in 2009 and was quickly backed by large businesses including Ryanair Ltd. I created the plugin while technically still at University so
 it didn't take long for a re-development to happen. I found myself re-developing it again in 2014 with the aim of making more use of the Wordpress core. Version
-8.0.0 should be the last big update of this plugin which has been designed based on years of feedback.
+8.0.0 should be the last big update of this free plugin which has been designed based on years of feedback. The premium will continue to expand.
 
 == Screenshots ==
 
@@ -42,14 +43,25 @@ it didn't take long for a re-development to happen. I found myself re-developing
 1. Content Templates
 
 == Changelog == 
-
+= 8.0.1 =
+* From The Developer
+    * Released 6th May 2014  
+* Fixes
+    * Panel information popup fixed                                  
+* Feature Changes
+    * Creating posts is now confirmed with a notice
+    * If all rows finished, attempting to create posts results in a notice
+    * Removed help text from the Wordpress Help tab meant for premium features only
+* Technical Notes                                                 
+    * Do not update a Version 7 installation of CSV 2 POST using Version 8 please, you will require a migration tool.
+    
 = 8.0.0 =
 * From The Developer
-    * Released TBC                                    
+    * Released 4th May 2014                                    
 * Feature Changes
     * New Core
 	* New User Interface
 	* New Support Procedures and Services
 	* New Video Tutorials
 * Technical Notes                                                 
-    * Do not update an existing CSV 2 POST installtion with this version, you will require a migration tool.
+    * Do not update an existing CSV 2 POST installation with this version, you will require a migration tool.

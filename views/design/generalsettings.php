@@ -91,7 +91,6 @@ $projectsettings = maybe_unserialize($project_array->projectsettings);
             if(isset($projectsettings['basicsettings']['tags']['table'])){$tags_table = $projectsettings['basicsettings']['tags']['table'];}
             if(isset($projectsettings['basicsettings']['tags']['column'])){$tags_column = $projectsettings['basicsettings']['tags']['column'];}             
             $C2P_UI->option_projectcolumns(__('Tags'),$c2p_settings['currentproject'],'tags','tags',$tags_table,$tags_column,'notrequired','Not Required');
-            $C2P_UI->option_text(__(''),'tagsexample','tagsexample','',true,'csv2post_inputtext');
             
             // featured image
             $featuredimage_table = ''; 
@@ -99,7 +98,6 @@ $projectsettings = maybe_unserialize($project_array->projectsettings);
             if(isset($projectsettings['basicsettings']['featuredimage']['table'])){$featuredimage_table = $projectsettings['basicsettings']['featuredimage']['table'];}
             if(isset($projectsettings['basicsettings']['featuredimage']['column'])){$featuredimage_column = $projectsettings['basicsettings']['featuredimage']['column'];}             
             $C2P_UI->option_projectcolumns(__('Featured Images'),$c2p_settings['currentproject'],'featuredimage','featuredimage',$featuredimage_table,$featuredimage_column,'notrequired','Not Required');
-            $C2P_UI->option_text(__(''),'featuredimageexample','featuredimageexample','',true,'csv2post_inputtext');
             ?>    
             </table>
             
@@ -126,7 +124,6 @@ $projectsettings = maybe_unserialize($project_array->projectsettings);
             if(isset($projectsettings['tags']['generatetags']['table'])){$generatetags_table = $projectsettings['tags']['generatetags']['table'];}
             if(isset($projectsettings['tags']['generatetags']['column'])){$generatetags_column = $projectsettings['tags']['generatetags']['column'];}             
             $C2P_UI->option_projectcolumns(__('Text Data'),$c2p_settings['currentproject'],'generatetags','generatetags',$generatetags_table,$generatetags_column,'notrequired','Not Required');
-            $C2P_UI->option_text(__(''),'generatetagsexample','generatetagsexample','',true,'csv2post_inputtext');
 
             // numeric tags
             $numerictags = 'nocurrent123';

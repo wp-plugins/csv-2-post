@@ -9,9 +9,8 @@
  * @package CSV 2 POST
  */
 
+global $c2p_page_name,$C2P_WP,$c2p_tab_number,$c2p_settings,$c2p_currentversion,$c2p_mpt_arr,$c2p_is_beta,$c2p_is_installed,$c2p_extension_loaded,$c2p_is_free;
 $c2p_page_name = 'main';
- 
-global $C2P_WP,$c2p_tab_number,$c2p_settings,$c2p_currentversion,$c2p_mpt_arr,$c2p_is_beta,$c2p_is_installed,$c2p_extension_loaded,$c2p_is_free;
                             
 $pageid = 'main';// used to access variable.php configuration
 $pagefolder = 'pagemain';             

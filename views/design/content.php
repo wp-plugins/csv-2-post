@@ -33,7 +33,6 @@ $projectsettings = maybe_unserialize($project_array->projectsettings);?>
             $titletemplate = ''; 
             if(isset($projectsettings['titles']['defaulttitletemplate'])){$titletemplate = $projectsettings['titles']['defaulttitletemplate'];}        
             $C2P_UI->option_text('Title Template','defaulttitletemplate','defaulttitletemplate',$titletemplate,false,'csv2post_inputtext');
-            $C2P_UI->option_text('','sampletitle','sampletitle','',true,'csv2post_inputtext');
             ?>
             </table>
             <input class="button" type="submit" value="Submit" />   

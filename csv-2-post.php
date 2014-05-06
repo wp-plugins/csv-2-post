@@ -35,7 +35,7 @@ services not just software. License and agreement is seperate.
 if ( ! defined( 'ABSPATH' ) ) {exit;}
                                  
 // package variables
-$c2p_currentversion = '8.0.0'; 
+$c2p_currentversion = '8.0.1'; 
 $c2p_debug_mode = false;
 $c2p_is_beta = false;// expect beta mode until 2014 - hides partialy completed features or information not true until features complete
 $c2p_is_dev = false;// true will display more information i.e. array dumps using var_dump() 
