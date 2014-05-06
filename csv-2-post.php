@@ -1,12 +1,12 @@
 <?php         
 /*
 Plugin Name: CSV 2 POST
-Version: 8.0.0
+Version: 8.0.1
 Plugin URI: http://www.webtechglobal.co.uk
 Description: CSV 2 POST data importer for Wordpress has been around for years and has reached version 8.0.0 thanks to the support from users.
 Author: Ryan Bayne
 Author URI: http://www.webtechglobal.co.uk
-Last Updated: February 2014
+Last Updated: May 2014
 Text Domain: csv2post
 Domain Path: /languages
 
