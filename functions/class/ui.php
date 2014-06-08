@@ -110,8 +110,21 @@ class C2P_ui {
                             
     <?php  
     }  
-    
-    public function option_text($title,$name,$id,$current_value = '',$readonly = false,$class = 'csv2post_inputtext',$append_text = '',$left_field = false,$right_field_content = ''){
+    /**
+    * add text input to Wordpress style form which is tabled and has optional HTML5 support
+    * 
+    * @param string $title
+    * @param string $name - html name
+    * @param string $id - html id
+    * @param string|numeric $current_value
+    * @param boolean $readonly 
+    * @param string $class
+    * @param string $append_text
+    * @param boolean $left_field
+    * @param string $right_field_content
+    * @param boolean $required
+    */
+    public function option_text($title,$name,$id,$current_value = '',$readonly = false,$class = 'csv2post_inputtext',$append_text = '',$left_field = false,$right_field_content = '',$required = false){
         if(isset($_POST[$name])){                   
             $current_value = stripslashes($_POST[$name]);
         }
@@ -121,10 +134,15 @@ class C2P_ui {
             <th scope="row"><?php echo $title; ?>
             
                 <?php 
+                // if required add asterix ("required" also added to input to make use of HTML5 control")
+                if($required){
+                    echo '<abbr class="req" title="required">*</abbr>';
+                }
+                 
                 // if $left_field is true the input put in the first field and not second
                 if(!$left_field){ echo '</th><td>'; }?>
    
-                <input type="text" name="<?php echo $name;?>" id="<?php echo $id;?>" value="<?php echo $current_value;?>" class="<?php echo $class;?>" <?php if($readonly){echo ' readonly';}?>> 
+                <input type="text" name="<?php echo $name;?>" id="<?php echo $id;?>" value="<?php echo $current_value;?>" class="<?php echo $class;?>" <?php if($readonly){echo ' readonly';}?><?php if($required){echo 'required';}?>> 
                 <?php echo $append_text;?>
 
                 <?php 
@@ -135,6 +153,13 @@ class C2P_ui {
             </td>
         </tr>
         <!-- Option End --><?php 
+    }
+    /**
+    * uses option_text() to add input, this version requires the most common required attributes only
+    * 
+    */
+    public function option_text_simple($title,$nameandid,$current_value = '',$required = false){
+        $this->option_text($title,$nameandid,$nameandid,$current_value,false,'csv2post_inputtext','',false,'',true);
     }
     /**
     * use in options table to add a line of text like a separator 

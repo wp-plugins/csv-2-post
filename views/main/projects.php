@@ -43,7 +43,7 @@ global $C2P_UI,$C2P_WP,$CSV2POST,$wpdb,$C2P_DB;
         <?php $C2P_UI->panel_header($myforms_title,$myforms_name,false,'2UQfk1PLj2s',false,false);?>
 
         <?php
-        echo $C2P_UI->info_area('Example: wp-content\mycsvfiles\affiliatedatafeed.csv','');   
+        echo $C2P_UI->info_area('Example: wp-content\commissionjunction\affiliatedatafeed.csv','');   
         ?>
         
         <form method="post" name="newprojectandnewcsvfiles" action="<?php $C2P_WP->form_action(); ?>">

@@ -22,7 +22,7 @@ foreach($sourceid_array as $key => $source_id){
     $row = $C2P_DB->selectrow($wpdb->c2psources,'sourceid = "' . $source_id . '"','path,tablename,thesep');?>
     <div class="csv2post_boxes_twohalfs">
     
-        <?php $myforms_title = basename($row->path) .' to ' . $row->tablename;?>
+        <?php $myforms_title = 'Import ' . basename($row->path) .' to ' . $row->tablename;?>
         <?php $myforms_name = 'importdata'.$key;?>
         <a id="anchor_<?php echo $myforms_name;?>"></a>
         <h4><?php echo $myforms_title; ?></h4>
@@ -53,5 +53,22 @@ foreach($sourceid_array as $key => $source_id){
             </form>                    
         </div>
     </div>
-<?php }
+<?php }?>
+
+
+<div class="csv2post_boxes_twohalfs">
+    <h4>Data Source Information</h4>
+        
+    <div class="csv2post_boxes_content">
+<?php 
+$query_results = $C2P_DB->selectwherearray($wpdb->c2psources,'projectid = ' . $c2p_settings['currentproject'],'sourceid','*');
+$SourcesTable = new C2P_ProjectDataSources_Table();
+$SourcesTable->prepare_items($query_results,10);
 ?>
+
+<form id="movies-filter" method="get">
+    <input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
+    <?php $SourcesTable->display() ?>
+</form>                
+    </div>
+</div>

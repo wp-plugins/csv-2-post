@@ -11,7 +11,7 @@
 * @author Ryan Bayne 
 */
 
-class C2P_Notice extends C2P_Flags {
+class C2P_Notice {
     public function get_notice_array(){
         $a = get_option('csv2post_notifications');
        

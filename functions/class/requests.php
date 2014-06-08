@@ -342,7 +342,7 @@ class C2P_requests {
         $files_array = array('total_files' => 0);
         
         if(empty($_POST['csvfile1']) || empty($_POST['csvfile2']) && !empty($_POST['csvfile3']) || empty($_POST['csvfile3']) && !empty($_POST['csvfile4']) || empty($_POST['csvfile4']) && !empty($_POST['csvfile5'])){
-            $C2P_WP->create_notice('Please use the text fields in order, enter a value in the first one and do not skip any.','error','Small','Empty Field');
+            $C2P_WP->create_notice('You have missed a required field. Fields marked with an asterix * are required.','error','Small','Field Required');
             return;
         }
                 
@@ -411,7 +411,7 @@ class C2P_requests {
             $files_array[$i]['tablename'] = $wpdb->prefix . $C2P_WP->clean_sqlcolumnname($files_array[$i]['basename']); 
         }
         
-        // ensure headers are sql ready
+        // are headers sql ready
         $nonesql_string = '';
         for($i=1;$i<=$files_array['total_files'];$i++){
             foreach($files_array[$i]['originalheaders'] as $key => $header){
@@ -422,18 +422,14 @@ class C2P_requests {
             }        
         } 
      
-        // error at this stage indicates headers not ready
+        // error at this stage indicates headers are not mysql ready so we need
+        // to create a mysql ready version of them
         if($error){
             $nonesql_string = rtrim($nonesql_string, ",");
-            $C2P_WP->create_notice('CSV 2 POST 8.0.0 does not need specific header titles to be used however it does require headers
-            to be MySQL ready. Meaning they should be lowercase, no special characters or spaces. This standard is important for an effecient 
-            plugin.       
-            
-            <br><br>
-            
-            Your column headers are as follows and SQL ready examples are shown in brackets: '.$nonesql_string.', please update your .csv file/s.',
-            'error','Small',__('File Not Ready'));
-            return;
+            $C2P_WP->create_notice('CSV 2 POST needs to create a database table for your data. To do this your .csv file headers must be cleaned
+            so that they are MySQL ready. Your file itself will not be changed but the plugin will work with the MySQL version of them. It recommended
+            that your .csv file headers are actually updated to be MySQL ready but it is not required.',
+            'warning','Small',__('Header Preparation'));
         } 
 
         // set project name
@@ -786,7 +782,7 @@ class C2P_requests {
         $project_array = maybe_unserialize($project_array->projectsettings); 
         $project_array['content']['wysiwygdefaultcontent'] = $_POST['wysiwygdefaultcontent'];
         $C2P_WP->update_project($c2p_settings['currentproject'], array('projectsettings' => maybe_serialize($project_array) ));
-        $C2P_WP->create_notice(__("Your title template design has been saved to your project settings."),'success','Small',__('Default Title Template Stored'));    
+        $C2P_WP->create_notice(__("Your content template design has been saved to your project settings."),'success','Small',__('Default Content Template Updated'));    
     }    
     public function applydefaultprojectsettings (){
         global $C2P_WP,$c2p_settings,$CSV2POST;
@@ -930,6 +926,13 @@ class C2P_requests {
     public function updatepostscurrentproject(){
         global $c2p_settings,$C2P_WP;
         $C2P_WP->update_posts($c2p_settings['currentproject'],1);    
+    }
+    public function reinstalldatabasetables(){
+        global $C2P_WP;
+        $installation = new C2P_Install();
+        $installation->reinstalldatabasetables();
+        $C2P_WP->create_notice('All tables were re-installed. Please double check the database status list to
+        ensure this is correct before using the plugin.','success','Small','Tables Re-Installed');
     }                        
 }       
 ?>

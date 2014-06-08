@@ -1,12 +1,16 @@
 <?php
 /** 
- * Function file for CSV 2 POST plugin 
+ * Function file for CSV 2 POST plugin
+ * 
+ * It's only use right now is listing the tables, the column information is not accurate and not used in this version (8.1.2)
  * 
  * @link by WebTechGlobal.co.uk
  * 
  * @author Ryan Bayne 
  *
  * @package CSV 2 POST
+ * 
+ * @version 8.1.2
  * 
  * @since 8.0.0
  */
@@ -47,6 +51,7 @@ $c2p_tables_array =  array();
 ##################################################################################        
 $c2p_tables_array['tables']['c2plog']['name'] = $wpdb->prefix . 'c2plog';
 $c2p_tables_array['tables']['c2plog']['required'] = false;// required for all installations or not (boolean)
+$c2p_tables_array['tables']['c2plog']['pluginversion'] = '7.0.0';
 $c2p_tables_array['tables']['c2plog']['usercreated'] = false;// if the table is created as a result of user actions rather than core installation put true
 $c2p_tables_array['tables']['c2plog']['version'] = '0.0.1';// used to force updates based on version alone rather than individual differences
 $c2p_tables_array['tables']['c2plog']['primarykey'] = 'row_id';
@@ -207,4 +212,24 @@ $c2p_tables_array['tables']['c2plog']['columns']['priority']['null'] = '';
 $c2p_tables_array['tables']['c2plog']['columns']['priority']['key'] = '';
 $c2p_tables_array['tables']['c2plog']['columns']['priority']['default'] = 'NULL';
 $c2p_tables_array['tables']['c2plog']['columns']['priority']['extra'] = '';
+##################################################################################
+#                               c2pprojects                                      #
+##################################################################################        
+$c2p_tables_array['tables']['c2pprojects']['name'] = $wpdb->prefix . 'c2pprojects';
+$c2p_tables_array['tables']['c2pprojects']['required'] = true;// required for all installations or not (boolean)
+$c2p_tables_array['tables']['c2pprojects']['pluginversion'] = '8.1.1';
+$c2p_tables_array['tables']['c2pprojects']['usercreated'] = false;// if the table is created as a result of user actions rather than core installation put true
+$c2p_tables_array['tables']['c2pprojects']['version'] = '0.0.1';// used to force updates based on version alone rather than individual differences
+$c2p_tables_array['tables']['c2pprojects']['primarykey'] = 'projectid';
+$c2p_tables_array['tables']['c2pprojects']['uniquekey'] = 'projectid';
+##################################################################################
+#                               c2psources                                      #
+##################################################################################        
+$c2p_tables_array['tables']['c2psources']['name'] = $wpdb->prefix . 'c2psources';
+$c2p_tables_array['tables']['c2psources']['required'] = true;// required for all installations or not (boolean)
+$c2p_tables_array['tables']['c2psources']['pluginversion'] = '8.1.1';
+$c2p_tables_array['tables']['c2psources']['usercreated'] = false;// if the table is created as a result of user actions rather than core installation put true
+$c2p_tables_array['tables']['c2psources']['version'] = '0.0.1';// used to force updates based on version alone rather than individual differences
+$c2p_tables_array['tables']['c2psources']['primarykey'] = 'sourceid';
+$c2p_tables_array['tables']['c2psources']['uniquekey'] = 'sourceid';                
 ?>

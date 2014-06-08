@@ -1060,9 +1060,24 @@ class C2P_WP extends C2P_WPDB {
             return false;
         }
     }
+    /**
+    * builds a url for form action, allows us to force the submission to specific tabs
+    */
     public function form_action(){
         global $C2P_WP;
-        echo $C2P_WP->url_toadmin($_GET['page'],'&c2ptab='.$_GET['c2ptab']);    
+        $get_values = '';
+        
+        // apply tab
+        if(isset($_GET['c2ptab'])){$get_values .= '&c2ptab='.$_GET['c2ptab'];}
+        
+        // apply passed values
+        if(is_array($values_array)){
+            foreach($values_array as $varname => $value){
+                $get_values .= '&'.$varname.'='.$value;
+            }
+        }
+        
+        echo $C2P_WP->url_toadmin($_GET['page'],$get_values);    
     }
     /**
     * count the number of posts in the giving month for the giving post type
@@ -1143,7 +1158,7 @@ class C2P_WP extends C2P_WPDB {
         }
         
         if($apply_exclusions){
-            $excluded_array = array('c2p_rowid','c2p_postid','c2p_use','c2p_updated','c2p_applied','c2p_categories','c2p_changecounter');
+            $excluded_array = array('c2p_changecounter','c2p_rowid','c2p_postid','c2p_use','c2p_updated','c2p_applied','c2p_categories','c2p_changecounter');
             foreach($final_columns_array as $table_name => $columns_array){
                 foreach($excluded_array as $key => $excluded_column){
                     if(in_array($excluded_column,$columns_array)){
@@ -1276,7 +1291,7 @@ class C2P_WP extends C2P_WPDB {
         
         // put headers into array, we will use the key while processing each row, by doing it this way 
         // it should be possible for users to change their database and not interfere this procedure
-        $headers_array = array();
+        $original_headers_array = array();
         
         $rows_looped = 0;
         $inserted = 0;
@@ -1290,7 +1305,12 @@ class C2P_WP extends C2P_WPDB {
             
             // set an array of headers for keeps, we need it to build insert query and rules checking
             if($rows_looped == 0){
-                $headers_array = $currentcsv_row;
+                $original_headers_array = $currentcsv_row;
+                // create array of mysql ready headers
+                $cleaned_headers_array = array();
+                foreach($original_headers_array as $key => $origheader){
+                    $cleaned_headers_array[] = $C2P_WP->clean_sqlcolumnname($origheader);    
+                }                
                 ++$rows_looped;
                 continue;
             }
@@ -1302,7 +1322,7 @@ class C2P_WP extends C2P_WPDB {
             
             // build insert part of query - loop through values, build a new array with columns as the key
             foreach($currentcsv_row as $key => $value){
-                $insertready_array[$headers_array[$key]] = $value;
+                $insertready_array[$cleaned_headers_array[$key]] = $value;
             }
 
             // insert the row
@@ -1636,7 +1656,8 @@ class CSV2POST_InsertPost{
         }
         return $subject;
     } 
-    public function start(){ 
+    public function start(){
+        $this->my_post = array(); 
         $this->author();
     }
     /**
@@ -1665,56 +1686,58 @@ class CSV2POST_InsertPost{
     }    
     public function categories(){    
         global $C2P_WP;
-        if(isset($this->projectsettings['categories'])){  
-            $projection_array = array();
-            $group_array = array();// we will store each cat ID in this array (use to apply parent and store in project table)
-            $level = 0;// in theory this should increment, so that is a good check to do when debugging
-            
-            // loop through all values in $row
-            unset($this->projectcolumns['arrayinfo']);
-            // loop through all columns/values in the row of data
-            foreach($this->row as $columnfromquery => $my_term){ 
-                // loop through all project columns
-                foreach($this->projectcolumns as $table_name => $columnfromdb){
-           
-                    // determine if $columnfromquery and $table_name are selected category data columns
-                    // also establish the level by using array of category column data 
-                    foreach($this->projectsettings['categories']['data'] as $thelevel => $catarray){
-                        if($catarray['table'] == $table_name && $catarray['column'] == $columnfromquery){
-                            $level = $thelevel;
+        if(isset($this->projectsettings['categories'])){ 
+            if(isset($this->projectsettings['categories']['data'])){ 
+                $projection_array = array();
+                $group_array = array();// we will store each cat ID in this array (use to apply parent and store in project table)
+                $level = 0;// in theory this should increment, so that is a good check to do when debugging
                 
-                            // is post manually mapped to this table + column + term
-                            if(isset($categories_array['categories']['mapping'][$table_name][$columnfromdb][ $my_term ])){
-                                // we apply $level here, this is important in this procedure because the order we encounter category terms
-                                // within data may not be in the level order, possibly!
-                                $group_array[$level] = $categories_array['categories']['mapping'][$table_name][$columnfromdb][ $my_term ];
-                            
-                            }else{
+                // loop through all values in $row
+                unset($this->projectcolumns['arrayinfo']);
+                // loop through all columns/values in the row of data
+                foreach($this->row as $columnfromquery => $my_term){ 
+                    // loop through all project columns
+                    foreach($this->projectcolumns as $table_name => $columnfromdb){
+               
+                        // determine if $columnfromquery and $table_name are selected category data columns
+                        // also establish the level by using array of category column data 
+                        foreach($this->projectsettings['categories']['data'] as $thelevel => $catarray){
+                            if($catarray['table'] == $table_name && $catarray['column'] == $columnfromquery){
+                                $level = $thelevel;
+                    
+                                // is post manually mapped to this table + column + term
+                                if(isset($categories_array['categories']['mapping'][$table_name][$columnfromdb][ $my_term ])){
+                                    // we apply $level here, this is important in this procedure because the order we encounter category terms
+                                    // within data may not be in the level order, possibly!
+                                    $group_array[$level] = $categories_array['categories']['mapping'][$table_name][$columnfromdb][ $my_term ];
                                 
-                                // does term exist within the current level? 
-                                $existing_term_id = $C2P_WP->term_exists_in_level($my_term,$level);                                                
-                                if(is_numeric($existing_term_id)){
-                                    $group_array[$level] = $existing_term_id;
                                 }else{
                                     
-                                    // set parent id, by deducting one from the current $level and getting the previous category from $group_array
-                                    $parent_id = 0;
-                                    if($level > 0){
-                                        $parent_keyin_group = $level - 1;
-                                        $parent_id = $group_array[$parent_keyin_group];   
+                                    // does term exist within the current level? 
+                                    $existing_term_id = $C2P_WP->term_exists_in_level($my_term,$level);                                                
+                                    if(is_numeric($existing_term_id)){
+                                        $group_array[$level] = $existing_term_id;
+                                    }else{
+                                        
+                                        // set parent id, by deducting one from the current $level and getting the previous category from $group_array
+                                        $parent_id = 0;
+                                        if($level > 0){
+                                            $parent_keyin_group = $level - 1;
+                                            $parent_id = $group_array[$parent_keyin_group];   
+                                        }
+                                        
+                                        // create a new category term with a parent (if first category it parent is 0)
+                                        $new_cat_id = wp_create_category( $my_term, $parent_id );
+                                          
+                                        if(isset($new_cat_id) && is_numeric($new_cat_id)){
+                                            $group_array[$level] = $new_cat_id;    
+                                        }
                                     }
-                                    
-                                    // create a new category term with a parent (if first category it parent is 0)
-                                    $new_cat_id = wp_create_category( $my_term, $parent_id );
-                                      
-                                    if(isset($new_cat_id) && is_numeric($new_cat_id)){
-                                        $group_array[$level] = $new_cat_id;    
-                                    }
-                                }
-                            }                             
+                                }                             
+                            }
                         }
-                    }
-                }    
+                    }    
+                }
             }
             
             if(isset($group_array) && is_array($group_array)){

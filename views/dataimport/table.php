@@ -45,7 +45,7 @@ foreach($sourceid_array as $key => $source_id){
     $ReceivingTable->prepare_items($importedrows,10);    
     ?>
 
-        <?php $myforms_title = basename($row->path) .' to ' . $row->tablename;?>
+        <?php $myforms_title = 'Data for ' . basename($row->path) .' imported to ' . $row->tablename;?>
         <?php $myforms_name = 'importdatatable'.$key;?>
         <a id="anchor_<?php echo $myforms_name;?>"></a>
         <h4><?php echo $myforms_title; ?></h4>

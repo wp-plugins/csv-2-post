@@ -45,16 +45,6 @@ $c2p_mpt_arr['main']['permissions']['capability'] = $dc;// our best guess on a s
 $c2p_mpt_arr['main']['permissions']['customcapability'] = $dc;// users requested capability which is giving priority over default 
 $sub = 0;  
 $c2p_mpt_arr['main']['tabs'][$sub]['active'] = csv2post_active_status(true);
-$c2p_mpt_arr['main']['tabs'][$sub]['slug'] = 'about';
-$c2p_mpt_arr['main']['tabs'][$sub]['label'] = __('About','csv2post');  
-$c2p_mpt_arr['main']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
-$c2p_mpt_arr['main']['tabs'][$sub]['path'] = $freepath.'main/about.php';
-$c2p_mpt_arr['main']['tabs'][$sub]['permissions']['capability'] = $dc;
-$c2p_mpt_arr['main']['tabs'][$sub]['permissions']['customcapability'] = $dc;
-$c2p_mpt_arr['main']['tabs'][$sub]['help'][0] = array(__('Translators Needed'), __('It is my hope to give translators something back. If you can translate a language not already listed please let me know what you would like in return.'));
-$c2p_mpt_arr['main']['tabs'][$sub]['help'][1] = array(__('Please Donate'), __('You can donate to paypal@webtechglobal.co.uk or click one of the affiliatated ads. If you happen to want your own product added here please email me a link to where I can create an affiliate account.'));
-++$sub; 
-$c2p_mpt_arr['main']['tabs'][$sub]['active'] = csv2post_active_status(true);
 $c2p_mpt_arr['main']['tabs'][$sub]['slug'] = 'projects';
 $c2p_mpt_arr['main']['tabs'][$sub]['label'] = __('Projects','csv2post');
 $c2p_mpt_arr['main']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
@@ -89,21 +79,12 @@ $c2p_mpt_arr['main']['tabs'][$sub]['help'][0] = array(__(''), __('Import data fr
 ++$sub;
 $c2p_mpt_arr['main']['tabs'][$sub]['active'] = true;
 $c2p_mpt_arr['main']['tabs'][$sub]['slug'] = 'table';
-$c2p_mpt_arr['main']['tabs'][$sub]['label'] = 'Tables';
+$c2p_mpt_arr['main']['tabs'][$sub]['label'] = 'Table';
 $c2p_mpt_arr['main']['tabs'][$sub]['allowhide'] = false;
 $c2p_mpt_arr['main']['tabs'][$sub]['display'] = true;
 $c2p_mpt_arr['main']['tabs'][$sub]['path'] = $freepath.'dataimport/table.php';
 $c2p_mpt_arr['main']['tabs'][$sub]['permissions']['defaultcapability'] = 'update_core';  
 $c2p_mpt_arr['main']['tabs'][$sub]['help'][0] = array(__(''), __('You will see any database tables associated with your currently active project on this screen.'));
-++$sub;
-$c2p_mpt_arr['main']['tabs'][$sub]['active'] = true;
-$c2p_mpt_arr['main']['tabs'][$sub]['slug'] = 'sources';
-$c2p_mpt_arr['main']['tabs'][$sub]['label'] = 'Sources';
-$c2p_mpt_arr['main']['tabs'][$sub]['allowhide'] = false;
-$c2p_mpt_arr['main']['tabs'][$sub]['display'] = true;
-$c2p_mpt_arr['main']['tabs'][$sub]['path'] = $freepath.'dataimport/sources.php';
-$c2p_mpt_arr['main']['tabs'][$sub]['permissions']['defaultcapability'] = 'update_core';  
-$c2p_mpt_arr['main']['tabs'][$sub]['help'][0] = array(__(''), __('This screen lists your current projects source data. This comes from the wp_c2psources table and includes information about your .csv file and about how it is used by CSV 2 POST.'));
 ++$sub;
 $c2p_mpt_arr['main']['tabs'][$sub]['active'] = true;
 $c2p_mpt_arr['main']['tabs'][$sub]['slug'] = 'columns';
@@ -171,6 +152,16 @@ $c2p_mpt_arr['main']['tabs'][$sub]['display'] = true;// user can change to false
 $c2p_mpt_arr['main']['tabs'][$sub]['path'] = $freepath.'postcreation/tools.php';
 $c2p_mpt_arr['main']['tabs'][$sub]['permissions']['defaultcapability'] = 'update_core';  
 ++$sub;
+$c2p_mpt_arr['main']['tabs'][$sub]['active'] = csv2post_active_status(true);
+$c2p_mpt_arr['main']['tabs'][$sub]['slug'] = 'about';
+$c2p_mpt_arr['main']['tabs'][$sub]['label'] = __('About','csv2post');  
+$c2p_mpt_arr['main']['tabs'][$sub]['display'] = true;// user can change to false to hide screens
+$c2p_mpt_arr['main']['tabs'][$sub]['path'] = $freepath.'main/about.php';
+$c2p_mpt_arr['main']['tabs'][$sub]['permissions']['capability'] = $dc;
+$c2p_mpt_arr['main']['tabs'][$sub]['permissions']['customcapability'] = $dc;
+$c2p_mpt_arr['main']['tabs'][$sub]['help'][0] = array(__('Translators Needed'), __('It is my hope to give translators something back. If you can translate a language not already listed please let me know what you would like in return.'));
+$c2p_mpt_arr['main']['tabs'][$sub]['help'][1] = array(__('Please Donate'), __('You can donate to paypal@webtechglobal.co.uk or click one of the affiliatated ads. If you happen to want your own product added here please email me a link to where I can create an affiliate account.'));
+++$sub; 
 $c2p_mpt_arr['main']['tabs'][$sub]['active'] = csv2post_active_status(true);
 $c2p_mpt_arr['main']['tabs'][$sub]['slug'] = 'install';
 $c2p_mpt_arr['main']['tabs'][$sub]['label'] = __('Install','csv2post');

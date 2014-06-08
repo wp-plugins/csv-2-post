@@ -45,7 +45,7 @@ $projectsettings = maybe_unserialize($project_array->projectsettings);?>
     <?php $myforms_title = __('Default Content Template');?>
     <?php $myforms_name = 'defaultcontenttemplate';?>
     <div class="csv2post_boxes_content">
-        <?php $C2P_UI->panel_header($myforms_title,$myforms_name,false,false,false);?>
+        <?php $C2P_UI->panel_header($myforms_title,$myforms_name,false,'LVOlbyO2bPs',false);?>
         <form method="post" name="<?php echo $myforms_name;?>" action="<?php $C2P_UI->form_action(); ?>">        
             <?php $C2P_WP->hidden_form_values($myforms_name,$myforms_title);?>        
             <div id="poststuff">

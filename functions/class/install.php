@@ -93,8 +93,7 @@ class C2P_Install{
                 action varchar(45) DEFAULT NULL,
                 priority varchar(45) DEFAULT NULL,
                 triga varchar(45) DEFAULT NULL,        
-                PRIMARY KEY (row_id),
-                UNIQUE KEY row_id (row_id)   
+                PRIMARY KEY row_id (row_id)   
              ) $charset_collate; ";
         dbDelta( $sql_create_table );   
         // row_id
@@ -139,8 +138,8 @@ class C2P_Install{
                 lockmeta tinyint(1) unsigned DEFAULT 0,
                 datatreatment varchar(50) DEFAULT 'single',
                 projectsettings longtext DEFAULT NULL,
-                PRIMARY KEY (projectid),
-                UNIQUE KEY projectid (projectid)   
+                settingschange DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+                PRIMARY KEY projectid (projectid)   
              ) $charset_collate; ";
         dbDelta( $sql_create_table );   
         // projectid - users will see this and use it to identify their project
@@ -172,8 +171,7 @@ class C2P_Install{
                 rules longtext DEFAULT NULL,
                 thesep varchar(1) DEFAULT NULL,
                 theconfig longtext DEFAULT NULL,
-                PRIMARY KEY (sourceid),
-                UNIQUE KEY sourceid (sourceid)   
+                PRIMARY KEY sourceid (sourceid)   
              ) $charset_collate; ";
         dbDelta( $sql_create_table );   
         // sourceid
@@ -207,9 +205,7 @@ class C2P_Install{
             }
         } 
         
-        $this->create_tables();
-        
-        $C2P_WP->n_postresult_depreciated('success',__('Database Operation Complete','csv2post'),sprintf(__('You requested all of the plugins database tables to be re-installed.','csv2post'),$tables));
+        return $this->create_tables();
     } 
     
     function install_options(){

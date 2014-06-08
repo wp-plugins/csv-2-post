@@ -30,6 +30,8 @@ class CSV2POST {
             array('wp_dashboard_setup',             'add_dashboard_widgets',                                  'all'),
             array('wp_insert_post',                 'hook_insert_post',                                       'all'),
             array('admin_head',                     'custom_admin_css',                                       'all'),
+            array('admin_footer',                   'pluginmediabutton_popup',                                'adminpages'),
+            array('media_buttons_context',          'pluginmediabutton_button',                               'adminpages'),            
             //array('set-screen-option',              array('save_screen_option',10,3),                         'all'),
         ),
                                
@@ -129,11 +131,7 @@ class CSV2POST {
     */
     private function filteraction_should_beloaded($whenToLoad) {
         global $c2p_sections_array;
-                                
-        if($whenToLoad != 'all' && !in_array($whenToLoad,$c2p_sections_array) ) {
-            return false;
-        }
-                      
+       
         switch($whenToLoad) {
             case 'all':    
                 return true;
@@ -141,6 +139,10 @@ class CSV2POST {
             case 'projects':
                 return true;    
             break;
+            case 'adminpages':
+                if(is_admin()){return true;}
+                return false;    
+            break;            
         }
 
         return true;
@@ -238,7 +240,45 @@ class CSV2POST {
             ); 
         }      
           */              
-    }          
+    }
+    /**
+    * Popup and content for media button displayed just above the WYSIWYG editor 
+    */
+    public function pluginmediabutton_popup() {
+        global $c2p_settings,$C2P_WP;
+        ?>
+        <div id="csv2post_popup_container" style="display:none;">
+            <h2>Column Replacement Tokens</h2>
+            <?php 
+            if(!isset($c2p_settings['currentproject']) || !is_numeric($c2p_settings['currentproject'])){
+                echo '<p>' . __('') . '</p>';
+            }else{
+                $projectcolumns = $C2P_WP->get_project_columns_from_db($c2p_settings['currentproject'],true);
+                unset($projectcolumns['arrayinfo']);
+                   
+                $tokens = '';
+                foreach($projectcolumns as $table_name => $columnfromdb){
+                    foreach($columnfromdb as $key => $acol){
+                        $tokens .= "#$acol#&#13;&#10;";
+                    }  
+                }     
+                
+                echo '<textarea rows="40" cols="70">' . $tokens . ' </textarea>';
+            }
+            ?>
+        </div><?php
+    } 
+    /**
+    * HTML for a media button that displays above the WYSIWYG editor
+    * 
+    * @param mixed $context
+    */
+    public function pluginmediabutton_button($context) {
+        //append the icon
+        $context .= "<a class='button thickbox' title='CSV 2 POST Column Replacement Tokens (CTRL + C then CTRL + V)'
+        href='#TB_inline?width=400&inlineId=csv2post_popup_container'>CSV 2 POST</a>";
+        return $context;
+    }                 
     public function is_installed(){
         global $c2p_options_array;
            
@@ -504,17 +544,6 @@ class CSV2POST {
         return $c2p_mpt_arr;                    
     }   
     public function custom_post_types(){ 
-        global $c2p_settings;
-      
-        require(WTG_CSV2POST_PATH . 'functions/posttypes/flags.php');
-        //require(WTG_CSV2POST_PATH . 'functions/posttypes/posts.php');
-        
-        /*   
-        if($c2p_settings['affiliatessection']['switch'] === 'enabled'){
-            require(WTG_CSV2POST_PATH . 'functions/posttypes/banners.php');
-        }   
-          */
-          
     }
  
     /**

@@ -1,12 +1,12 @@
 <?php         
 /*
 Plugin Name: CSV 2 POST
-Version: 8.0.1
+Version: 8.0.2
 Plugin URI: http://www.webtechglobal.co.uk
 Description: CSV 2 POST data importer for Wordpress has been around for years and has reached version 8.0.0 thanks to the support from users.
 Author: Ryan Bayne
 Author URI: http://www.webtechglobal.co.uk
-Last Updated: May 2014
+Last Updated: June 2014
 Text Domain: csv2post
 Domain Path: /languages
 
@@ -35,14 +35,14 @@ services not just software. License and agreement is seperate.
 if ( ! defined( 'ABSPATH' ) ) {exit;}
                                  
 // package variables
-$c2p_currentversion = '8.0.1'; 
+$c2p_currentversion = '8.0.2'; 
 $c2p_debug_mode = false;
 $c2p_is_beta = false;// expect beta mode until 2014 - hides partialy completed features or information not true until features complete
 $c2p_is_dev = false;// true will display more information i.e. array dumps using var_dump() 
 $c2p_is_free = false;// change to false when premium phase of development begins (from then on free edition is updated independently)
                                             
 // go into dev mode if on test installation               
-if(strstr(ABSPATH,'csv2post'))
+if(strstr(ABSPATH,'OFFcsv2post'))
 {
     $c2p_debug_mode = true; 
     $c2p_is_beta = true;// we do not want to hide partially completed features or information for those features
@@ -71,8 +71,7 @@ if(!defined("WTG_CSV2POST_PATH")){define("WTG_CSV2POST_PATH", plugin_dir_path(__
 if(!defined("WTG_CSV2POST_PHPVERSIONMINIMUM")){define("WTG_CSV2POST_PHPVERSIONMINIMUM",'5.3.0');}// The minimum php version that will allow the plugin to work                                
 
 // initiate plugin (this is a new class approach being slowly introduced to a function only plugin, expect gradual reduction of this file per version)
-if( !class_exists( 'CSV2POST' ) ) 
-{                    
+if( !class_exists( 'CSV2POST' ) ) {                    
     // include core functions and arrays (many which apply to all WTG plugins)               
     require_once(WTG_CSV2POST_PATH.'arrays/options_array.php');
     require_once(WTG_CSV2POST_PATH.'arrays/sections_array.php');
@@ -86,7 +85,6 @@ if( !class_exists( 'CSV2POST' ) )
     
     require_once(WTG_CSV2POST_PATH . 'functions/class/wpmain.php');
     require_once(WTG_CSV2POST_PATH . 'functions/class/charts.php');
-    require_once(WTG_CSV2POST_PATH . 'functions/class/flags.php');
     require_once(WTG_CSV2POST_PATH . 'functions/class/install.php');
     require_once(WTG_CSV2POST_PATH . 'functions/class/notice.php');
     require_once(WTG_CSV2POST_PATH . 'functions/class/phplibrary.php');
