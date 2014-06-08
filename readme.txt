@@ -14,27 +14,11 @@ CSV 2 POST Version 8 by Ryan Bayne
 
 Lets turn data into websites! CSV 2 POST for Wordpress can import any .csv file (only requirement is MySQL ready headers, basically no special characters allowed) then autoblog the data into hundreds or even thousands of well designed WP posts. My CSV importer plugin creates custom fields, categories and meta. If your new to Wordpress those are some of the elements that make up a web page in WP. CSV 2 POST is the first plugin to import data to a custom database table allowing the data to be prepared and other more advanced steps during the autoblogging procedure. Combine that with the power of Wordpress and there is no limit to how many high quality websites you can create using any data.
  
+= Main Links = 
 *   <a href="http://www.webtechglobal.co.uk/csv-2-post/">Plugins Portal</a>
 *   <a href="http://forum.webtechglobal.co.uk/viewforum.php?f=8">Plugins Forum</a>
 *   <a href="https://www.facebook.com/csv2post">Plugins Facebook</a>
 *   <a href="http://www.twitter.com/CSV2POST">Plugins Twitter</a>
-
-<div>
-  <ol>
-    <li>
-      Mass Creates Posts
-    </li>
-    <li>
-      Design A Template
-    </li>
-    <li>
-      Apply Categories
-    </li>
-	<li>
-      Free Support Available
-    </li>
-  </ol>
-</div>
 
 = Features = 
 
@@ -159,6 +143,14 @@ from you.
 1. Generate Tags
 1. Custom Publish Dates
 1. Content Templates
+
+== Languages ==
+
+Translation has begun. Translators needed.
+
+== Upgrade Notice ==
+
+Do not update previous versions without backing up your exising copy of the plugin.
 
 == Changelog == 
 = 8.0.2 =
