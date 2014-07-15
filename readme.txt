@@ -113,13 +113,13 @@ portal, closer to client treatment than customer treatment even when coming to m
 == Screenshots ==
 
 1. Manage Multiple Projects
-1. Simple Import Statistics
-1. Category Data Selection
-1. Custom Fields With Templates
-1. Standard Post Settings
-1. Generate Tags
-1. Custom Publish Dates
-1. Content Templates
+2. Simple Import Statistics
+3. Category Data Selection
+4. Custom Fields With Templates
+5. Standard Post Settings
+6. Generate Tags
+7. Custom Publish Dates
+8. Content Templates
 
 == Languages ==
 
