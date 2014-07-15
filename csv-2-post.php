@@ -1,12 +1,12 @@
 <?php         
 /*
 Plugin Name: CSV 2 POST
-Version: 8.0.2
+Version: 8.0.3
 Plugin URI: http://www.webtechglobal.co.uk
-Description: CSV 2 POST data importer for Wordpress has been around for years and has reached version 8.0.0 thanks to the support from users.
+Description: CSV 2 POST data importer for Wordpress by Ryan Bayne @WebTechGlobal.
 Author: Ryan Bayne
 Author URI: http://www.webtechglobal.co.uk
-Last Updated: June 2014
+Last Updated: July 2014
 Text Domain: csv2post
 Domain Path: /languages
 
@@ -32,82 +32,68 @@ This license does not apply to the paid edition which comes with premium
 services not just software. License and agreement is seperate.
 */           
   
-if ( ! defined( 'ABSPATH' ) ) {exit;}
-                                 
+// Prohibit direct script loading
+defined( 'ABSPATH' ) || die( 'Direct script access is not allowed!' );
+       
 // package variables
-$c2p_currentversion = '8.0.2'; 
-$c2p_debug_mode = false;
-$c2p_is_beta = false;// expect beta mode until 2014 - hides partialy completed features or information not true until features complete
-$c2p_is_dev = false;// true will display more information i.e. array dumps using var_dump() 
-$c2p_is_free = false;// change to false when premium phase of development begins (from then on free edition is updated independently)
-                                            
+$c2p_currentversion = '8.0.3';# to be removed, version is now in the CSV2POST() class 
+$c2p_debug_mode = false;# to be phased out, going to use environment variables (both WP and php.ini instead)
+$edition = 'free';// free or paid
+              
 // go into dev mode if on test installation               
-if(strstr(ABSPATH,'OFFcsv2post'))
-{
-    $c2p_debug_mode = true; 
-    $c2p_is_beta = true;// we do not want to hide partially completed features or information for those features
-    $c2p_is_dev = true;
-    $c2p_is_free_override = true;// toggle free/paid modes even when paid folder present      
+if( strstr( ABSPATH, 'csv2post' ) ){
+    $c2p_debug_mode = true;     
 }                
 
-// error output should never be on during AJAX requests               
-if(defined('DOING_AJAX') && DOING_AJAX){
-    $c2p_debug_mode = false;    
+// avoid error output when...              
+if ( ( 'wp-login.php' === basename( $_SERVER['SCRIPT_FILENAME'] ) ) // Login screen
+        || ( defined( 'XMLRPC_REQUEST' ) && XMLRPC_REQUEST )
+        || ( defined( 'DOING_CRON' ) && DOING_CRON )
+        || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
+    $c2p_debug_mode = false;
 }                   
          
 // other variables required on installation or loading
-$c2p_is_event = false;// when true, an event is running or has ran, used to avoid over processing         
+$c2p_is_event = false;// locally stored value is used to prevent too much automation         
 $c2p_installation_required = true;                                                     
 $c2p_is_installed = false;        
-$c2p_notice_array = array();// set notice array for storing new notices in (not persistent notices)
-$c2p_extension_loaded = false;                          
-if(file_exists(plugin_dir_path(__FILE__) . 'paidedition') && isset($c2p_is_free_override) && $c2p_is_free_override == false){
-    $c2p_is_free = false;
-}
+$c2p_notice_array = array();// set notice array for storing new notices in (not persistent notices)                         
 
 // define constants                              
-if(!defined("WTG_CSV2POST_NAME")){define("WTG_CSV2POST_NAME",'CSV 2 POST');} 
-if(!defined("WTG_CSV2POST_PATH")){define("WTG_CSV2POST_PATH", plugin_dir_path(__FILE__) );}//C:\AppServ\www\wordpress-testing\wtgplugintemplate\wp-content\plugins\wtgplugintemplate/  
-if(!defined("WTG_CSV2POST_PHPVERSIONMINIMUM")){define("WTG_CSV2POST_PHPVERSIONMINIMUM",'5.3.0');}// The minimum php version that will allow the plugin to work                                
+if(!defined( "WTG_CSV2POST_NAME") ){define( "WTG_CSV2POST_NAME", 'CSV 2 POST' );} 
+if(!defined( "WTG_CSV2POST__FILE__") ){define( "WTG_CSV2POST__FILE__", __FILE__);}
+if(!defined( "WTG_CSV2POST_BASENAME") ){define( "WTG_CSV2POST_BASENAME",plugin_basename( WTG_CSV2POST__FILE__ ) );}
+if(!defined( "WTG_CSV2POST_ABSPATH") ){define( "WTG_CSV2POST_ABSPATH", plugin_dir_path( __FILE__) );}//C:\AppServ\www\wordpress-testing\wtgplugintemplate\wp-content\plugins\wtgplugintemplate/  
+if(!defined( "WTG_CSV2POST_PHPVERSIONMINIMUM") ){define( "WTG_CSV2POST_PHPVERSIONMINIMUM", '5.3.0' );}// The minimum php version that will allow the plugin to work                                
+if(!defined( "WTG_CSV2POST_IMAGES_URL") ){define( "WTG_CSV2POST_IMAGES_URL",plugins_url( 'images/' , __FILE__ ) );}
+if(!defined( "WTG_CSV2POST_FREE") ){define( "WTG_CSV2POST_FREE", $edition );} 
+        
+// require main class
+require_once( WTG_CSV2POST_ABSPATH . 'classes/class-csv2post.php' );
 
-// initiate plugin (this is a new class approach being slowly introduced to a function only plugin, expect gradual reduction of this file per version)
-if( !class_exists( 'CSV2POST' ) ) {                    
-    // include core functions and arrays (many which apply to all WTG plugins)               
-    require_once(WTG_CSV2POST_PATH.'arrays/options_array.php');
-    require_once(WTG_CSV2POST_PATH.'arrays/sections_array.php');
-    require_once(WTG_CSV2POST_PATH.'arrays/tableschema_array.php'); 
-    
-    // include section functions
-    global $c2p_sections_array;
-    foreach ($c2p_sections_array as $section => $section_array){if($section_array['active'] === true){foreach(glob(WTG_CSV2POST_PATH.'functions/sections/'.$section."/*.php") as $filename){include $filename;}}} 
-            
-    // WebTechGlobal Wordpress classes - chained (use $C2P_WP to call methods)
-    
-    require_once(WTG_CSV2POST_PATH . 'functions/class/wpmain.php');
-    require_once(WTG_CSV2POST_PATH . 'functions/class/charts.php');
-    require_once(WTG_CSV2POST_PATH . 'functions/class/install.php');
-    require_once(WTG_CSV2POST_PATH . 'functions/class/notice.php');
-    require_once(WTG_CSV2POST_PATH . 'functions/class/phplibrary.php');
-    require_once(WTG_CSV2POST_PATH . 'functions/class/ui.php');
-    require_once(WTG_CSV2POST_PATH . 'functions/class/updates.php');
-    require_once(WTG_CSV2POST_PATH . 'functions/class/wpdb.php');
-    require_once(WTG_CSV2POST_PATH . 'functions/class/main.php');
+// new plugin load approach, fire a single class, make more use of $this and less use of global
+add_action( 'init', array( 'CSV2POST', 'run' ) );
+// the goal is for everything below this line to be removed
+                
+// include core functions and arrays (many which apply to all WTG plugins)               
+require_once( WTG_CSV2POST_ABSPATH . 'arrays/options_array.php' );
+require_once( WTG_CSV2POST_ABSPATH . 'arrays/tableschema_array.php' ); 
+require_once( WTG_CSV2POST_ABSPATH . 'classes/class-charts.php' );
+require_once( WTG_CSV2POST_ABSPATH . 'classes/class-flags.php' );
+require_once( WTG_CSV2POST_ABSPATH . 'classes/class-install.php' );
+require_once( WTG_CSV2POST_ABSPATH . 'classes/class-phplibrary.php' );
+require_once( WTG_CSV2POST_ABSPATH . 'classes/class-ui.php' );
+require_once( WTG_CSV2POST_ABSPATH . 'classes/class-updates.php' );
+require_once( WTG_CSV2POST_ABSPATH . 'classes/class-wpdb.php' );     
 
-    // integration classes (third party plugins, themes, platforms and web services)
-    if(defined('WP_ESTORE_VERSION') && defined('WP_ESTORE_DB_VERSION') ){
-        require_once(WTG_CSV2POST_PATH . 'functions/integrationclasses/wpestore_class.php');
-    }
+// install class (includes update and surgical installation tools) 
+$C2P_Install = new C2P_Install();
+$C2P_Install->current_version = $c2p_currentversion;
 
-    // install class (includes update and surgical installation tools) 
-    $C2P_Install = new C2P_Install();
-    $C2P_Install->current_version = $c2p_currentversion;
-    
-    // these class objects help in the development of a large project with hundreds of functions
-    $C2P_DB = new C2P_WPDB();// common database methods making development simple (also extended by C2P_WP)
-    $C2P_WP = new C2P_WP();// strictly Wordpress functions/methods for all WTG plugins 
-    $CSV2POST = new CSV2POST();
-    $C2P_UI = new C2P_ui();    
-}  
+// these objects are being phased out slowly to reduce overhead in every loading
+$C2P_DB = new C2P_DB();# this class is loaded in CSV2POST() __construct() and only needs to be called 
+$CSV2POST = new CSV2POST();# this is the main class and might be harder to phase out so caution must be taking
+$C2P_UI = new C2P_UI();# this class is loaded in CSV2POST() __construct() and global use of $C2P_UI should be phased out asap      
    
 $CSV2POST->wp_init();                                                                             
 $c2p_settings = $CSV2POST->adminsettings();
@@ -116,24 +102,20 @@ $CSV2POST->debugmode();
 $c2p_is_installed = $CSV2POST->is_installed();// boolean - if false either plugin has never been installed or installation has been tampered with 
 
 // admin only values (these are arrays that contain data that should never be displayed on public side, load them admin side only reduces a fault causing display of the information)
-if(is_admin()){
-    $c2p_persistent_array = $C2P_WP->persistentnotifications_array();// holds interface notices/messages, some temporary, some are persistent 
-    $c2p_mpt_arr = $CSV2POST->tabmenu();
+if( is_admin() ){
+    $c2p_persistent_array = $C2P_UI->persistentnotifications_array();// holds interface notices/messages, some temporary, some are persistent 
 }   
 
 // load admin that comes last and applys to CSV 2 POST plugin pages only
-if(is_admin() && isset($_GET['page']) && $C2P_WP->is_plugin_page($_GET['page']))
-{
-    $C2P_WP->css_core('admin');// script and css admin side       
-}
-elseif(!is_admin())
-{
+if( is_admin() && isset( $_GET['page'] ) && $CSV2POST->is_plugin_page( $_GET['page'] ) ){
+    $CSV2POST->css_core( 'admin' );// script and css admin side       
+}elseif(!is_admin() ){
     // default to public side script and css      
-    $C2P_WP->css_core('public');    
+    $CSV2POST->css_core( 'public' );    
 }  
 
 function csv2post_textdomain() {
     load_plugin_textdomain( 'csv2post', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' ); 
 }
-add_action('plugins_loaded', 'csv2post_textdomain');                                                                                                                     
+add_action( 'plugins_loaded', 'csv2post_textdomain' );                                                                                                                  
 ?>

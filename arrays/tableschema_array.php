@@ -4,19 +4,17 @@
  * 
  * It's only use right now is listing the tables, the column information is not accurate and not used in this version (8.1.2)
  * 
- * @link by WebTechGlobal.co.uk
- * 
- * @author Ryan Bayne 
- *
  * @package CSV 2 POST
- * 
- * @version 8.1.2
- * 
+ * @author Ryan Bayne   
  * @since 8.0.0
+ * @version 8.1.2
  */
+
+// load in Wordpress only
+defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
  
  
-/*   Column Array Example Returned From "mysql_query("SHOW COLUMNS FROM..."
+/*   Column Array Example Returned From "mysql_query( "SHOW COLUMNS FROM..."
         
           array(6) {
             [0]=>

@@ -1,6 +1,2 @@
-CSV 2 POST is a very large project and it is important that the same approaches are used throughout the plugin. 
-Wordpress standards are important to me sure but a plugin this advanced needs slight modifications that need to be continued
-and not forgotten about as we repeat classes such as those that extend WP_Widget. It was creating a class to extend WP_Widget
-that made me realize that I need snippets that are adapted for CSV 2 POST and need to be kept in mind. Another 20 widgets
-will probably be created this year. Please use the snippets in this folder trusting that any modifications to them make them
-more ready for use in CSV 2 POST, making customizing easier. 
+This folder will contain files that show a standard approach used in CSV 2 POST and many WebTechGlobal plugins. The files
+in this folder are not actually used in the build they simply support development.
