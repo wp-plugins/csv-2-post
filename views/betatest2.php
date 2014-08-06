@@ -53,24 +53,60 @@ class CSV2POST_Betatest2_View extends CSV2POST_View {
         $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
         
         // load the current project row and settings from that row
-        $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
-        $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
-                
-        parent::setup( $action, $data );
-        
-        // introduction to testing
-        $this->add_meta_box( 'betatest2-currenttesting', __( 'Test Introduction', 'csv2post' ), array( $this, 'postbox_betatest2_currenttesting' ), 'normal','default',array( 'formid' => 'currenttesting' ) );      
-        
-        // test boxes
-        $this->add_meta_box( 'betatest2-t1', __( 'Test A', 'csv2post' ), array( $this, 'postbox_betatest2_t1' ), 'normal','default',array( 'formid' => 't1' ) );      
-        $this->add_meta_box( 'betatest2-t2', __( 'WP Pointer Test', 'csv2post' ), array( $this, 'postbox_betatest2_t2' ), 'side','default',array( 'formid' => 't2' ) );      
- 
-        // permanent information applied to all test pages
-        $this->add_meta_box( 'betatest2-errors', __( 'Errors', 'csv2post' ), array( $this, 'postbox_betatest2_errors' ), 'side','default',array( 'formid' => 'errors' ) );          
+        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
+            
+            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
+            $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
+     
+            parent::setup( $action, $data );
+            
+            // introduction to testing
+            $this->add_meta_box( 'betatest2-currenttesting', __( 'Test Introduction', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'currenttesting' ) );      
+            
+            // test boxes
+            $this->add_meta_box( 'betatest2-t1', __( 'Test A', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't1' ) );      
+            $this->add_meta_box( 'betatest2-t2', __( 'WP Pointer Test', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 't2' ) );      
+     
+            // permanent information applied to all test pages
+            $this->add_meta_box( 'betatest2-errors', __( 'Errors', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'errors' ) );          
 
-        $pointer = new C2P_Pointers('mypointer3', 'csv2postpointer1', 'My Pointers Title', 'This pointer will not stay hidden. Indicating the Ajax process is not updating user meta with closed pointers.');
-        $pointer->add_action();
+            $pointer = new C2P_Pointers('mypointer3', 'csv2postpointer1', 'My Pointers Title', 'This pointer will not stay hidden. Indicating the Ajax process is not updating user meta with closed pointers.');
+            $pointer->add_action();
+            
+        } else {
+            $this->add_meta_box( 'betatest2-nocurrentproject', __( 'No Current Project', 'csv2post' ), array( $this->UI, 'metabox_nocurrentproject' ), 'normal','default',array( 'formid' => 'nocurrentproject' ) );      
+        }            
     }
+    
+    /**
+    * All add_meta_box() callback to this function, values in $box are used to then call
+    * the intended box to render a unique form or information. 
+    * 
+    * The purpose of this box is to apply security to all boxes but it could also be used
+    * to dynamically call different functions based on arguments
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.32
+    * @version 1.0.0
+    */
+    function parent( $data, $box ) {
+        
+        // if $box['args']['capability'] is not set with over-riding capability added to add_meta_box() arguments then set it
+        if( !isset( $box['args']['capability'] ) || !is_string( $box['args']['capability'] ) ) {
+            $box['args']['capability'] = $this->UI->get_boxes_capability( $box['args']['formid'] );
+        }
+        
+        // call method in CSV2POST - this is done because it is harder to put this parent() function there as it includes "self::"
+        // any other approach can get messy I think but I'd welcome suggestions on this 
+        if( isset( $box['args']['capability'] ) && !current_user_can( $box['args']['capability'] ) ) { 
+            echo '<p>' . __( 'You do not have permission to access the controls and information in this box.', 'csv2post' ) . '</p>';
+            return false;    
+        }        
+        
+        // call the intended function 
+        eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
+    }    
  
     /**
     * post box function for testing

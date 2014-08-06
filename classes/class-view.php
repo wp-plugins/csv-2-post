@@ -213,7 +213,6 @@ abstract class CSV2POST_View {
     * @param array $data Data for this view
     */
     public function setup( $action, array $data ) {
-        global $C2P_UI;
         $this->action = $action;
         $this->data = $data;
         
@@ -222,7 +221,7 @@ abstract class CSV2POST_View {
         // add .js meant for this view ONLY
         $this->CSV2POST->enqueue_script( 'common', array( 'jquery', 'postbox' ), array() );
         
-        $C2P_UI->add_admin_footer_text();
+        $this->UI->add_admin_footer_text();
 
         // necessary fields for all views
         $this->add_text_box( 'default_nonce_fields', array( $this, 'default_nonce_fields' ), 'header', false );
@@ -443,8 +442,10 @@ abstract class CSV2POST_View {
         $this->CSV2POST->pageheader( $this->menu_array[ $admin_page ]['title'], 0);
                                
         // create tab menu for the giving page
-        $this->CSV2POST->build_tab_menu( $admin_page );
-
+        if( $admin_page !== 'main' ) {
+            $this->CSV2POST->build_tab_menu( $admin_page );
+        }
+        
         $this->do_text_boxes( 'header' );
               
             ?>    

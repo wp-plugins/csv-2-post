@@ -51,20 +51,50 @@ class CSV2POST_Projects_View extends CSV2POST_View {
         $this->UI = CSV2POST::load_class( 'C2P_UI', 'class-ui.php', 'classes' ); 
         $this->DB = CSV2POST::load_class( 'C2P_DB', 'class-wpdb.php', 'classes' );
         $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
-                        
-        // load the current project row and settings from that row
-        if( isset( $c2p_settings['currentproject'] ) ) {
+                              
+        // set current project values
+        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
             $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
             $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
         }
         
         parent::setup( $action, $data );
         
-        $this->add_meta_box( 'projects-allprojects', __( 'All Projects Table', 'csv2post' ), array( $this, 'postbox_projects_allprojectstable' ), 'normal','default',array( 'formid' => 'allprojects' ) );      
-        $this->add_meta_box( 'projects-newprojectandnewcsvfiles', __( 'New Project & New CSV Files', 'csv2post' ), array( $this, 'postbox_projects_newprojectandnewcsvfiles' ), 'normal','default',array( 'formid' => 'newprojectandnewcsvfiles' ) );      
-        $this->add_meta_box( 'projects-deleteproject', __( 'Delete Project', 'csv2post' ), array( $this, 'postbox_projects_deleteproject' ), 'normal','default',array( 'formid' => 'deleteproject' ) );      
+        $this->add_meta_box( 'projects-newprojectandnewcsvfiles', __( 'Create New Project', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'newprojectandnewcsvfiles' ) );              
+        $this->add_meta_box( 'projects-allprojectstable', __( 'All Projects Table', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'allprojectstable' ) );      
+        $this->add_meta_box( 'projects-deleteproject', __( 'Delete Project', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'deleteproject' ) );      
     }
- 
+
+    /**
+    * All add_meta_box() callback to this function, values in $box are used to then call
+    * the intended box to render a unique form or information. 
+    * 
+    * The purpose of this box is to apply security to all boxes but it could also be used
+    * to dynamically call different functions based on arguments
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.32
+    * @version 1.0.0
+    */
+    function parent( $data, $box ) {
+        
+        // if $box['args']['capability'] is not set with over-riding capability added to add_meta_box() arguments then set it
+        if( !isset( $box['args']['capability'] ) || !is_string( $box['args']['capability'] ) ) {
+            $box['args']['capability'] = $this->UI->get_boxes_capability( $box['args']['formid'] );
+        }
+        
+        // call method in CSV2POST - this is done because it is harder to put this parent() function there as it includes "self::"
+        // any other approach can get messy I think but I'd welcome suggestions on this 
+        if( isset( $box['args']['capability'] ) && !current_user_can( $box['args']['capability'] ) ) { 
+            echo '<p>' . __( 'You do not have permission to access the controls and information in this box.', 'csv2post' ) . '</p>';
+            return false;    
+        }        
+        
+        // call the intended function 
+        eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
+    }
+    
     /**
     * post box function
     * 
@@ -76,11 +106,11 @@ class CSV2POST_Projects_View extends CSV2POST_View {
     public function postbox_projects_allprojectstable( $data, $box ) {    
         global $CSV2POST;
         
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false, 'test' );        
 
         $query_results = $CSV2POST->query_projects();
         $ProjectsTable = new C2P_Projects_Table();
-        $ProjectsTable->prepare_items( $query_results,5);
+        $ProjectsTable->prepare_items_further( $query_results,5);
         ?>
 
         <form id="movies-filter" method="get">
@@ -100,25 +130,15 @@ class CSV2POST_Projects_View extends CSV2POST_View {
     * @version 1.0.0
     */
     public function postbox_projects_newprojectandnewcsvfiles( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'You must create a Data Source before using this form.', 'csv2post' ), false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
         ?>  
 
             <table class="form-table">
-             <?php
-                $this->UI->option_text_simple( 'CSV File 1', 'csvfile1', '', true);
-                $this->UI->option_text( 'CSV File 2', 'csvfile2', 'csvfile1', '' );
-                $this->UI->option_text( 'CSV File 3', 'csvfile3', 'csvfile1', '' );
-                $this->UI->option_text( 'CSV File 4', 'csvfile4', 'csvfile1', '' );
-                $this->UI->option_text( 'CSV File 5', 'csvfile5', 'csvfile1', '' );                
-                $this->UI->option_radiogroup( 'Data Treatment', 'datatreatment', 'datatreatment', array( 'single' => 'Single File (default)', 'join' => 'Join Columns', 'append' => 'Append Rows', 'individual' => 'Individual Tables' ) );                                  
-                $this->UI->option_text( 'ID Column', 'uniqueidcolumn', 'uniqueidcolumn', '' );
+                <?php
                 $this->UI->option_text( 'Project Name', 'newprojectname', 'newprojectname', '' );
                 $this->UI->option_switch( 'Apply Defaults', 'applydefaults', 'applydefaults', false, 'Yes', 'No', 'disabled' );
-                
-                // offer option to delete an existing table if the file matches one, user needs to enter random number
-                $this->UI->option_text( 'Delete Existing Table', 'deleteexistingtable', 'deleteexistingtable',rand(100000,999999), true);
-                $this->UI->option_text( 'Enter Code', 'deleteexistingtablecode', 'deleteexistingtablecode', '' );
+                $this->UI->option_menu_datasources( 'Data Source', 'newprojectdatasource', 'newprojectdatasource' );
                 ?>
             </table>
         
@@ -135,7 +155,7 @@ class CSV2POST_Projects_View extends CSV2POST_View {
     * @version 1.0.0
     */
     public function postbox_projects_deleteproject( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Deleting a project will not delete the posts created using the project.', 'csv2post' ), false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
         ?>  
                    

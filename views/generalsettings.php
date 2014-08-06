@@ -53,17 +53,304 @@ class CSV2POST_Generalsettings_View extends CSV2POST_View {
         $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
                         
         // load the current project row and settings from that row
-        $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
-        $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
-        
-        // get schedule array 
-        $this->schedule = CSV2POST::get_option_schedule_array();
-                
-        parent::setup( $action, $data );
-        
-        $this->add_meta_box( 'generalsettings-globaldatasettings', __( 'Global Data Settings', 'csv2post' ), array( $this, 'postbox_generalsettings_globaldatasettings' ), 'normal','default',array( 'formid' => 'globaldatasettings' ) );      
-        $this->add_meta_box( 'generalsettings-logsettings', __( 'Log Settings', 'csv2post' ), array( $this, 'postbox_generalsettings_logsettings' ), 'normal','default',array( 'formid' => 'logsettings' ) );      
+        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
+            
+            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
+            $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
 
+            // get schedule array 
+            $this->schedule = CSV2POST::get_option_schedule_array();
+                    
+            parent::setup( $action, $data );
+            
+            $this->add_meta_box( 'generalsettings-schedulesettings', __( 'Schedule Settings', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'schedulesettings' ) );      
+            $this->add_meta_box( 'generalsettings-globalswitches', __( 'Global Switches', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'globalswitches' ) );      
+            $this->add_meta_box( 'generalsettings-globaldatasettings', __( 'Global Data Settings', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'globaldatasettings' ) );      
+            $this->add_meta_box( 'generalsettings-logsettings', __( 'Log Settings', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'logsettings' ) );      
+
+        } else {
+            $this->add_meta_box( 'generalsettings-nocurrentproject', __( 'No Current Project', 'csv2post' ), array( $this->UI, 'metabox_nocurrentproject' ), 'normal','default',array( 'formid' => 'nocurrentproject' ) );      
+        }    
+    }
+
+    /**
+    * All add_meta_box() callback to this function, values in $box are used to then call
+    * the intended box to render a unique form or information. 
+    * 
+    * The purpose of this box is to apply security to all boxes but it could also be used
+    * to dynamically call different functions based on arguments
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.32
+    * @version 1.0.0
+    */
+    function parent( $data, $box ) {
+        
+        // if $box['args']['capability'] is not set with over-riding capability added to add_meta_box() arguments then set it
+        if( !isset( $box['args']['capability'] ) || !is_string( $box['args']['capability'] ) ) {
+            $box['args']['capability'] = $this->UI->get_boxes_capability( $box['args']['formid'] );
+        }
+        
+        // call method in CSV2POST - this is done because it is harder to put this parent() function there as it includes "self::"
+        // any other approach can get messy I think but I'd welcome suggestions on this 
+        if( isset( $box['args']['capability'] ) && !current_user_can( $box['args']['capability'] ) ) { 
+            echo '<p>' . __( 'You do not have permission to access the controls and information in this box.', 'csv2post' ) . '</p>';
+            return false;    
+        }        
+        
+        // call the intended function 
+        eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
+    }
+     
+    /**
+    * post box function for testing
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_generalsettings_schedulesettings( $data, $box ) {    
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        ?>  
+
+            <table class="form-table">
+ 
+                <!-- Option Start -->
+                <tr valign="top">
+                    <th scope="row"><?php _e( 'Days', 'csv2post' ); ?></th>
+                    <td>
+                        <?php 
+                        $days_array = array( 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' );
+                        $days_counter = 1;
+                        
+                        foreach( $days_array as $key => $day ){
+                            
+                            // set checked status
+                            if( isset( $this->schedule['days'][$day] ) ){
+                                $day_checked = 'checked';
+                            }else{
+                                $day_checked = '';            
+                            }
+                                 
+                            echo '<input type="checkbox" name="csv2post_scheduleday_list[]" id="daycheck'.$days_counter.'" value="'.$day.'" '.$day_checked.' />
+                            <label for="daycheck'.$days_counter.'">'.ucfirst( $day ).'</label><br />';    
+                            ++$days_counter;
+                        }?>
+                    </td>
+                </tr>
+                <!-- Option End -->                          
+
+                <!-- Option Start -->
+                <tr valign="top">
+                    <th scope="row"><?php _e( 'Hours', 'csv2post' ); ?></th>
+                    <td>
+                    <?php
+                    // loop 24 times and create a checkbox for each hour
+                    for( $i=0;$i<24;$i++){
+                        
+                        // check if the current hour exists in array, if it exists then it is permitted, if it does not exist it is not permitted
+                        if( isset( $this->schedule['hours'][$i] ) ){
+                            $hour_checked = ' checked'; 
+                        }else{
+                            $hour_checked = '';
+                        }
+                        
+                        echo '<input type="checkbox" name="csv2post_schedulehour_list[]" id="hourcheck'.$i.'"  value="'.$i.'" '.$hour_checked.' />
+                        <label for="hourcheck'.$i.'">'.$i.'</label><br>';    
+                    }
+                    ?>
+                    </td>
+                </tr>
+                <!-- Option End -->          
+         
+                <!-- Option Start -->
+                <tr valign="top">
+                    <th scope="row"><?php _e( 'Daily Limit', 'csv2post' );?></th>
+                    <td>
+                        <fieldset><legend class="screen-reader-text"><span>Daily Limit</span></legend>
+                            <input type="radio" id="csv2post_radio1_dripfeedrate_maximumperday" name="day" value="1" <?php if( isset( $this->schedule['limits']['day'] ) && $this->schedule['limits']['day'] == 1){echo 'checked';} ?> /><label for="csv2post_radio1_dripfeedrate_maximumperday"> <?php _e( '1', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio2_dripfeedrate_maximumperday" name="day" value="5" <?php if( isset( $this->schedule['limits']['day'] ) && $this->schedule['limits']['day'] == 5){echo 'checked';} ?> /><label for="csv2post_radio2_dripfeedrate_maximumperday"> <?php _e( '5', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio3_dripfeedrate_maximumperday" name="day" value="10" <?php if( isset( $this->schedule['limits']['day'] ) && $this->schedule['limits']['day'] == 10){echo 'checked';} ?> /><label for="csv2post_radio3_dripfeedrate_maximumperday"> <?php _e( '10', 'csv2post' );?> </label><br> 
+                            <input type="radio" id="csv2post_radio9_dripfeedrate_maximumperday" name="day" value="24" <?php if( isset( $this->schedule['limits']['day'] ) && $this->schedule['limits']['day'] == 24){echo 'checked';} ?> /><label for="csv2post_radio9_dripfeedrate_maximumperday"> <?php _e( '24', 'csv2post' );?> </label><br>                    
+                            <input type="radio" id="csv2post_radio4_dripfeedrate_maximumperday" name="day" value="50" <?php if( isset( $this->schedule['limits']['day'] ) && $this->schedule['limits']['day'] == 50){echo 'checked';} ?> /><label for="csv2post_radio4_dripfeedrate_maximumperday"> <?php _e( '50', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio5_dripfeedrate_maximumperday" name="day" value="250" <?php if( isset( $this->schedule['limits']['day'] ) && $this->schedule['limits']['day'] == 250){echo 'checked';} ?> /><label for="csv2post_radio5_dripfeedrate_maximumperday"> <?php _e( '250', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio6_dripfeedrate_maximumperday" name="day" value="1000" <?php if( isset( $this->schedule['limits']['day'] ) && $this->schedule['limits']['day'] == 1000){echo 'checked';} ?> /><label for="csv2post_radio6_dripfeedrate_maximumperday"> <?php _e( '1000', 'csv2post' );?> </label><br>                                                                                                                       
+                            <input type="radio" id="csv2post_radio7_dripfeedrate_maximumperday" name="day" value="2000" <?php if( isset( $this->schedule['limits']['day'] ) && $this->schedule['limits']['day'] == 2000){echo 'checked';} ?> /><label for="csv2post_radio7_dripfeedrate_maximumperday"> <?php _e( '2000', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio8_dripfeedrate_maximumperday" name="day" value="5000" <?php if( isset( $this->schedule['limits']['day'] ) && $this->schedule['limits']['day'] == 5000){echo 'checked';} ?> /><label for="csv2post_radio8_dripfeedrate_maximumperday"> <?php _e( '5000', 'csv2post' );?> </label>                   
+                        </fieldset>
+                    </td>
+                </tr>
+                <!-- Option End -->   
+                         
+                <!-- Option Start -->
+                <tr valign="top">
+                    <th scope="row"><?php _e( 'Hourly Limit', 'csv2post' );?></th>
+                    <td>
+                        <fieldset><legend class="screen-reader-text"><span>Hourly Limit</span></legend>
+                            <input type="radio" id="csv2post_radio1_dripfeedrate_maximumperhour" name="hour" value="1" <?php if( isset( $this->schedule['limits']['hour'] ) && $this->schedule['limits']['hour'] == 1){echo 'checked';} ?> /><label for="csv2post_radio1_dripfeedrate_maximumperhour"> <?php _e( '1', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio2_dripfeedrate_maximumperhour" name="hour" value="5" <?php if( isset( $this->schedule['limits']['hour'] ) && $this->schedule['limits']['hour'] == 5){echo 'checked';} ?> /><label for="csv2post_radio2_dripfeedrate_maximumperhour"> <?php _e( '5', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio3_dripfeedrate_maximumperhour" name="hour" value="10" <?php if( isset( $this->schedule['limits']['hour'] ) && $this->schedule['limits']['hour'] == 10){echo 'checked';} ?> /><label for="csv2post_radio3_dripfeedrate_maximumperhour"> <?php _e( '10', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio9_dripfeedrate_maximumperhour" name="hour" value="24" <?php if( isset( $this->schedule['limits']['hour'] ) && $this->schedule['limits']['hour'] == 24){echo 'checked';} ?> /><label for="csv2post_radio9_dripfeedrate_maximumperhour"> <?php _e( '24', 'csv2post' );?> </label><br>                    
+                            <input type="radio" id="csv2post_radio4_dripfeedrate_maximumperhour" name="hour" value="50" <?php if( isset( $this->schedule['limits']['hour'] ) && $this->schedule['limits']['hour'] == 50){echo 'checked';} ?> /><label for="csv2post_radio4_dripfeedrate_maximumperhour"> <?php _e( '50', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio5_dripfeedrate_maximumperhour" name="hour" value="100" <?php if( isset( $this->schedule['limits']['hour'] ) && $this->schedule['limits']['hour'] == 100){echo 'checked';} ?> /><label for="csv2post_radio5_dripfeedrate_maximumperhour"> <?php _e( '100', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio6_dripfeedrate_maximumperhour" name="hour" value="250" <?php if( isset( $this->schedule['limits']['hour'] ) && $this->schedule['limits']['hour'] == 250){echo 'checked';} ?> /><label for="csv2post_radio6_dripfeedrate_maximumperhour"> <?php _e( '250', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio7_dripfeedrate_maximumperhour" name="hour" value="500" <?php if( isset( $this->schedule['limits']['hour'] ) && $this->schedule['limits']['hour'] == 500){echo 'checked';} ?> /><label for="csv2post_radio7_dripfeedrate_maximumperhour"> <?php _e( '500', 'csv2post' );?> </label><br>       
+                            <input type="radio" id="csv2post_radio8_dripfeedrate_maximumperhour" name="hour" value="1000" <?php if( isset( $this->schedule['limits']['hour'] ) && $this->schedule['limits']['hour'] == 1000){echo 'checked';} ?> /><label for="csv2post_radio8_dripfeedrate_maximumperhour"> <?php _e( '1000', 'csv2post' );?> </label><br>                                                                                                                           
+                       </fieldset>
+                    </td>
+                </tr>
+                <!-- Option End -->   
+
+                <!-- Option Start -->
+                <tr valign="top">
+                    <th scope="row"><?php _e( 'Event Limit', 'csv2post' );?></th>
+                    <td>
+                        <fieldset><legend class="screen-reader-text"><span>Event Limit</span></legend>
+                            <input type="radio" id="csv2post_radio1_dripfeedrate_maximumpersession" name="session" value="1" <?php if( isset( $this->schedule['limits']['session'] ) && $this->schedule['limits']['session'] == 1){echo 'checked';} ?> /><label for="csv2post_radio1_dripfeedrate_maximumpersession"> <?php _e( '1', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio2_dripfeedrate_maximumpersession" name="session" value="5" <?php if( isset( $this->schedule['limits']['session'] ) && $this->schedule['limits']['session'] == 5){echo 'checked';} ?> /><label for="csv2post_radio2_dripfeedrate_maximumpersession"> <?php _e( '5', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio3_dripfeedrate_maximumpersession" name="session" value="10" <?php if( isset( $this->schedule['limits']['session'] ) && $this->schedule['limits']['session'] == 10){echo 'checked';} ?> /><label for="csv2post_radio3_dripfeedrate_maximumpersession"> <?php _e( '10', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio9_dripfeedrate_maximumpersession" name="session" value="25" <?php if( isset( $this->schedule['limits']['session'] ) && $this->schedule['limits']['session'] == 25){echo 'checked';} ?> /><label for="csv2post_radio9_dripfeedrate_maximumpersession"> <?php _e( '25', 'csv2post' );?> </label><br>                    
+                            <input type="radio" id="csv2post_radio4_dripfeedrate_maximumpersession" name="session" value="50" <?php if( isset( $this->schedule['limits']['session'] ) && $this->schedule['limits']['session'] == 50){echo 'checked';} ?> /><label for="csv2post_radio4_dripfeedrate_maximumpersession"> <?php _e( '50', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio5_dripfeedrate_maximumpersession" name="session" value="100" <?php if( isset( $this->schedule['limits']['session'] ) && $this->schedule['limits']['session'] == 100){echo 'checked';} ?> /><label for="csv2post_radio5_dripfeedrate_maximumpersession"> <?php _e( '100', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio6_dripfeedrate_maximumpersession" name="session" value="200" <?php if( isset( $this->schedule['limits']['session'] ) && $this->schedule['limits']['session'] == 200){echo 'checked';} ?> /><label for="csv2post_radio6_dripfeedrate_maximumpersession"> <?php _e( '200', 'csv2post' );?> </label><br>                                                                                                                        
+                            <input type="radio" id="csv2post_radio7_dripfeedrate_maximumpersession" name="session" value="300" <?php if( isset( $this->schedule['limits']['session'] ) && $this->schedule['limits']['session'] == 300){echo 'checked';} ?> /><label for="csv2post_radio7_dripfeedrate_maximumpersession"> <?php _e( '300', 'csv2post' );?> </label><br>          
+                        </fieldset>
+                    </td>
+                </tr>
+                <!-- Option End -->     
+                
+            </table>
+                 
+            <h4><?php _e( 'Last Schedule Finish Reason', 'csv2post' );?></h4>
+            <p>
+            <?php 
+            if( isset( $this->schedule['history']['lastreturnreason'] ) ){
+                echo $this->schedule['history']['lastreturnreason']; 
+            }else{
+                _e( 'No event refusal reason has been set yet', 'csv2post' );    
+            }?>
+            </p>
+            
+            <h4><?php _e( 'Events Counter - 60 Minute Period', 'csv2post' );?></h4>
+            <p>
+            <?php 
+            if( isset( $this->schedule['history']['hourcounter'] ) ){
+                echo $this->schedule['history']['hourcounter']; 
+            }else{
+                _e( 'No events have been done during the current 60 minute period', 'csv2post' );    
+            }?>
+            </p> 
+
+            <h4><?php _e( 'Events Counter - 24 Hour Period', 'csv2post' );?></h4>
+            <p>
+            <?php 
+            if( isset( $this->schedule['history']['daycounter'] ) ){
+                echo $this->schedule['history']['daycounter']; 
+            }else{
+                _e( 'No events have been done during the current 24 hour period', 'csv2post' );    
+            }?>
+            </p>
+
+            <h4><?php _e( 'Last Event Type', 'csv2post' ); ?></h4>
+            <p>
+            <?php 
+            if( isset( $this->schedule['history']['lasteventtype'] ) ){
+                
+                if( $this->schedule['history']['lasteventtype'] == 'dataimport' ){
+                    echo 'Data Import';            
+                }elseif( $this->schedule['history']['lasteventtype'] == 'dataupdate' ){
+                    echo 'Data Update';
+                }elseif( $this->schedule['history']['lasteventtype'] == 'postcreation' ){
+                    echo 'Post Creation';
+                }elseif( $this->schedule['history']['lasteventtype'] == 'postupdate' ){
+                    echo 'Post Update';
+                }elseif( $this->schedule['history']['lasteventtype'] == 'twittersend' ){
+                    echo 'Twitter: New Tweet';
+                }elseif( $this->schedule['history']['lasteventtype'] == 'twitterupdate' ){
+                    echo 'Twitter: Send Update';
+                }elseif( $this->schedule['history']['lasteventtype'] == 'twitterget' ){
+                    echo 'Twitter: Get Reply';
+                }
+                 
+            }else{
+                _e( 'No events have been carried out yet', 'csv2post' );    
+            }?>
+            </p>
+
+            <h4><?php _e( 'Last Event Action', 'csv2post' ); ?></h4>
+            <p>
+            <?php 
+            if( isset( $this->schedule['history']['lasteventaction'] ) ){
+                echo $this->schedule['history']['lasteventaction']; 
+            }else{
+                _e( 'No event actions have been carried out yet', 'csv2post' );    
+            }?>
+            </p>
+                
+            <h4><?php _e( 'Last Event Time', 'csv2post' ); ?></h4>
+            <p>
+            <?php 
+            if( isset( $this->schedule['history']['lasteventtime'] ) ){
+                echo date( "F j, Y, g:i a", $this->schedule['history']['lasteventtime'] ); 
+            }else{
+                _e( 'No schedule events have ran on this server yet', 'csv2post' );    
+            }?>
+            </p>
+            
+            <h4><?php _e( 'Last Hourly Reset', 'csv2post' ); ?></h4>
+            <p>
+            <?php 
+            if( isset( $this->schedule['history']['hour_lastreset'] ) ){
+                echo date( "F j, Y, g:i a", $this->schedule['history']['hour_lastreset'] ); 
+            }else{
+                _e( 'No hourly reset has been done yet', 'csv2post' );    
+            }?>
+            </p>   
+                
+            <h4><?php _e( 'Last 24 Hour Period Reset', 'csv2post' ); ?></h4>
+            <p>
+            <?php 
+            if( isset( $this->schedule['history']['day_lastreset'] ) ){
+                echo date( "F j, Y, g:i a", $this->schedule['history']['day_lastreset'] ); 
+            }else{
+                _e( 'No 24 hour reset has been done yet', 'csv2post' );    
+            }?>
+            </p> 
+               
+            <h4><?php _e( 'Your Servers Current Data and Time', 'csv2post' ); ?></h4>
+            <p><?php echo date( "F j, Y, g:i a",time() );?></p>     
+            
+        <?php 
+        $this->UI->postbox_content_footer();
+    }
+    
+    /**
+    * post box function for testing
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_generalsettings_globalswitches( $data, $box ) {    
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        
+        global $c2p_settings;
+        ?>  
+
+            <table class="form-table">
+            <?php
+            $this->UI->option_switch( 'Text Spin Re-spinning', 'textspinrespinning', 'textspinrespinning', $c2p_settings['standardsettings']['textspinrespinning'] );
+            $this->UI->option_switch( 'Systematic Post Updating', 'systematicpostupdating', 'systematicpostupdating', $c2p_settings['standardsettings']['systematicpostupdating'] );
+            ?>
+            </table> 
+            
+        <?php 
+        $this->UI->postbox_content_footer();
     }
 
         /**

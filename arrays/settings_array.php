@@ -224,5 +224,5 @@ $c2p_settings['projectdefaults']['dates']['randomdateearliest'] = '';
 $c2p_settings['projectdefaults']['dates']['randomdatelatest'] = '';
 
 // post updating
-$c2p_settings['projectdefaults']['updating']['updatepostonviewing'] = '';// enabled | disabled
+$c2p_settings['projectdefaults']['updating']['updatepostonviewing'] = 'disabled';// does not work in free edition
 ?>

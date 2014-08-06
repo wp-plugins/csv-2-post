@@ -56,20 +56,52 @@ class CSV2POST_Pluginupdate_View extends CSV2POST_View {
         $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
                         
         // load the current project row and settings from that row
-        $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
-        $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
+        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
+            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
+            $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
+        }
         
         // get schedule array 
         $this->schedule = CSV2POST::get_option_schedule_array();
                 
         parent::setup( $action, $data );
         
-        $this->add_meta_box( 'pluginupdate-changes', __( 'Changes', 'csv2post' ), array( $this, 'postbox_pluginupdate_changes' ), 'normal','default',array( 'formid' => 'changes' ) );      
-        $this->add_meta_box( 'pluginupdate-instructions', __( 'Update Instructions', 'csv2post' ), array( $this, 'postbox_pluginupdate_instructions' ), 'normal','default',array( 'formid' => 'instructions' ) );      
-        $this->add_meta_box( 'pluginupdate-beginpluginupdate', __( 'Begin Plugin Update', 'csv2post' ), array( $this, 'postbox_pluginupdate_beginpluginupdate' ), 'side','default',array( 'formid' => 'beginpluginupdate' ) );      
+        $this->add_meta_box( 'pluginupdate-changes', __( 'Changes', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'changes' ) );      
+        $this->add_meta_box( 'pluginupdate-instructions', __( 'Update Instructions', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'instructions' ) );      
+        $this->add_meta_box( 'pluginupdate-beginpluginupdate', __( 'Begin Plugin Update', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'beginpluginupdate' ) );      
 
     }
- 
+
+    /**
+    * All add_meta_box() callback to this function, values in $box are used to then call
+    * the intended box to render a unique form or information. 
+    * 
+    * The purpose of this box is to apply security to all boxes but it could also be used
+    * to dynamically call different functions based on arguments
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.32
+    * @version 1.0.0
+    */
+    function parent( $data, $box ) {
+        
+        // if $box['args']['capability'] is not set with over-riding capability added to add_meta_box() arguments then set it
+        if( !isset( $box['args']['capability'] ) || !is_string( $box['args']['capability'] ) ) {
+            $box['args']['capability'] = $this->UI->get_boxes_capability( $box['args']['formid'] );
+        }
+        
+        // call method in CSV2POST - this is done because it is harder to put this parent() function there as it includes "self::"
+        // any other approach can get messy I think but I'd welcome suggestions on this 
+        if( isset( $box['args']['capability'] ) && !current_user_can( $box['args']['capability'] ) ) { 
+            echo '<p>' . __( 'You do not have permission to access the controls and information in this box.', 'csv2post' ) . '</p>';
+            return false;    
+        }        
+        
+        // call the intended function 
+        eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
+    }
+     
     /**
     * post box function for testing
     * 

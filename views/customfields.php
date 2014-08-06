@@ -53,15 +53,51 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
         $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
                         
         // load the current project row and settings from that row
-        $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
-        $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
-                
-        parent::setup( $action, $data );
+        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
+            
+            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
+            $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
+     
+            parent::setup( $action, $data );
+
+            $this->add_meta_box( 'customfields-newcustomfield', __( 'New Custom Field', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'newcustomfield' ) );      
+            $this->add_meta_box( 'customfields-customfieldstable', __( 'Custom Fields', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'customfieldstable' ) );      
+         
+        } else {
+            $this->add_meta_box( 'customfields-nocurrentproject', __( 'No Current Project', 'csv2post' ), array( $this->UI, 'metabox_nocurrentproject' ), 'normal','default',array( 'formid' => 'nocurrentproject' ) );      
+        }   
+    }
+
+    /**
+    * All add_meta_box() callback to this function, values in $box are used to then call
+    * the intended box to render a unique form or information. 
+    * 
+    * The purpose of this box is to apply security to all boxes but it could also be used
+    * to dynamically call different functions based on arguments
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.32
+    * @version 1.0.0
+    */
+    function parent( $data, $box ) {
         
-        $this->add_meta_box( 'meta-newcustomfield', __( 'New Custom Field', 'csv2post' ), array( $this, 'postbox_meta_newcustomfield' ), 'normal','default',array( 'formid' => 'newcustomfield' ) );      
-        $this->add_meta_box( 'meta-customfieldstable', __( 'Custom Fields', 'csv2post' ), array( $this, 'postbox_meta_customfieldstable' ), 'normal','default',array( 'formid' => 'customfieldstable' ) );      
-   }
- 
+        // if $box['args']['capability'] is not set with over-riding capability added to add_meta_box() arguments then set it
+        if( !isset( $box['args']['capability'] ) || !is_string( $box['args']['capability'] ) ) {
+            $box['args']['capability'] = $this->UI->get_boxes_capability( $box['args']['formid'] );
+        }
+        
+        // call method in CSV2POST - this is done because it is harder to put this parent() function there as it includes "self::"
+        // any other approach can get messy I think but I'd welcome suggestions on this 
+        if( isset( $box['args']['capability'] ) && !current_user_can( $box['args']['capability'] ) ) { 
+            echo '<p>' . __( 'You do not have permission to access the controls and information in this box.', 'csv2post' ) . '</p>';
+            return false;    
+        }        
+        
+        // call the intended function 
+        eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
+    }
+     
     /**
     * post box function
     * 
@@ -70,8 +106,8 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_meta_newcustomfield( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
+    public function postbox_customfields_newcustomfield( $data, $box ) {    
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], 'The unique custom field key is also known as the name so put that in the name field. The WYSIWYG editor should be used for the value. Paste column replacement tokens into the editor to add your data as post meta values.', false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
         ?>  
 
@@ -79,7 +115,7 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
                 <?php 
                 // custom field name
                 $this->UI->option_text( 'Name', 'customfieldname', 'customfieldname', '', false, 'csv2post_inputtext', 'Example: mynew_customfield' );
-                $this->UI->option_switch( 'Unique', 'customfieldunique', 'customfieldunique', 'enabled', __( 'Yes' ), __( 'No' ) );
+               $this->UI->option_switch( 'Unique', 'customfieldunique', 'customfieldunique', 'enabled', __( 'Yes' ), __( 'No' ) );
                 ?>        
             </table>
             
@@ -102,7 +138,7 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_meta_customfieldstable( $data, $box ) {    
+    public function postbox_customfields_customfieldstable( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
 
@@ -112,7 +148,7 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
         }
 
         $CFTable = new C2P_CustomFields_Table();
-        $CFTable->prepare_items( $this->projectsettings['customfields']['cflist'],100);
+        $CFTable->prepare_items_further( $this->projectsettings['customfields']['cflist'],100);
         ?>
                     
         <form id="movies-filter" method="get">

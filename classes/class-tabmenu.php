@@ -22,6 +22,25 @@ class CSV2POST_TabMenu {
         $menu_array['main']['title'] = 'CSV 2 POST';// title at the top of the admin page
         $menu_array['main']['parent'] = 'parent';// either "parent" or the name of the parent - used for building tab menu         
         
+        // general settings  
+        $menu_array['generalsettings']['groupname'] = 'main';
+        $menu_array['generalsettings']['slug'] = 'csv2post_generalsettings'; 
+        $menu_array['generalsettings']['menu'] = __( 'General Settings', 'csv2post' );
+        $menu_array['generalsettings']['tabmenu'] = __( 'General Settings', 'csv2post' );        
+        $menu_array['generalsettings']['name'] = "generalsettings";
+        $menu_array['generalsettings']['title'] = __( 'General Settings', 'csv2post' ); 
+        $menu_array['generalsettings']['parent'] = 'main';
+                
+        // plugin configuration AWAITING BETA COMPLETION  
+        /*
+        $menu_array['pluginconfiguration']['groupname'] = 'main';
+        $menu_array['pluginconfiguration']['slug'] = 'csv2post_pluginconfiguration'; 
+        $menu_array['pluginconfiguration']['menu'] = __( 'Plugin Configuration', 'csv2post' );
+        $menu_array['pluginconfiguration']['tabmenu'] = __( 'Plugin Configuration', 'csv2post' );        
+        $menu_array['pluginconfiguration']['name'] = "generalsettings";
+        $menu_array['pluginconfiguration']['title'] = __( 'Plugin Configuration', 'csv2post' ); 
+        $menu_array['pluginconfiguration']['parent'] = 'main';
+                                   */
         ######################################################
         #                                                    #
         #                   PLUGIN UPDATE                    #
@@ -41,32 +60,24 @@ class CSV2POST_TabMenu {
         #                    PROJECTS                        #
         #                                                    #
         ###################################################### 
-        // projects  
-        $menu_array['projects']['groupname'] = 'projects';
-        $menu_array['projects']['slug'] = 'csv2post_projects'; 
-        $menu_array['projects']['menu'] = __( '1. Projects', 'csv2post' );
-        $menu_array['projects']['tabmenu'] = __( 'Projects', 'csv2post' );
-        $menu_array['projects']['name'] = "projects";
-        $menu_array['projects']['title'] = __( 'Projects', 'csv2post' ); 
-        $menu_array['projects']['parent'] = 'parent'; 
-
+        
         // datasources  
         $menu_array['datasources']['groupname'] = 'projects';
         $menu_array['datasources']['slug'] = 'csv2post_datasources'; 
-        $menu_array['datasources']['menu'] = __( 'Data Sources', 'csv2post' );
+        $menu_array['datasources']['menu'] = __( '1. Campaigns', 'csv2post' );
         $menu_array['datasources']['tabmenu'] = __( 'Data Sources', 'csv2post' );
         $menu_array['datasources']['name'] = "datasources";
         $menu_array['datasources']['title'] = __( 'Data Sources', 'csv2post' ); 
-        $menu_array['datasources']['parent'] = 'projects';         
-        
-        // datasources  
-        $menu_array['generalsettings']['groupname'] = 'projects';
-        $menu_array['generalsettings']['slug'] = 'csv2post_generalsettings'; 
-        $menu_array['generalsettings']['menu'] = __( 'General Settings', 'csv2post' );
-        $menu_array['generalsettings']['tabmenu'] = __( 'General Settings', 'csv2post' );        
-        $menu_array['generalsettings']['name'] = "generalsettings";
-        $menu_array['generalsettings']['title'] = __( 'General Settings', 'csv2post' ); 
-        $menu_array['generalsettings']['parent'] = 'projects';                
+        $menu_array['datasources']['parent'] = 'parent'; 
+                
+        // projects  
+        $menu_array['projects']['groupname'] = 'projects';
+        $menu_array['projects']['slug'] = 'csv2post_projects'; 
+        $menu_array['projects']['menu'] = __( 'Projects', 'csv2post' );
+        $menu_array['projects']['tabmenu'] = __( 'Projects', 'csv2post' );
+        $menu_array['projects']['name'] = "projects";
+        $menu_array['projects']['title'] = __( 'Projects', 'csv2post' ); 
+        $menu_array['projects']['parent'] = 'datasources';            
 
         ######################################################
         #                                                    #
@@ -119,7 +130,7 @@ class CSV2POST_TabMenu {
         $menu_array['columns']['groupname'] = 'categories';
         $menu_array['columns']['slug'] = 'csv2post_columns'; 
         $menu_array['columns']['menu'] = __( '3. Categories', 'csv2post' );
-        $menu_array['columns']['tabmenu'] = __( 'Columns', 'csv2post' );
+        $menu_array['columns']['tabmenu'] = __( 'Setup Category Columns', 'csv2post' );
         $menu_array['columns']['name'] = "columns";
         $menu_array['columns']['title'] = __( 'Columns', 'csv2post' ); 
         $menu_array['columns']['parent'] = 'parent';         
@@ -128,7 +139,7 @@ class CSV2POST_TabMenu {
         $menu_array['categorycreation']['groupname'] = 'categories';
         $menu_array['categorycreation']['slug'] = 'csv2post_categorycreation'; 
         $menu_array['categorycreation']['menu'] = __( 'Create Categories', 'csv2post' );
-        $menu_array['categorycreation']['tabmenu'] = __( 'Creation', 'csv2post' );
+        $menu_array['categorycreation']['tabmenu'] = __( 'Create Categories', 'csv2post' );
         $menu_array['categorycreation']['name'] = "categorycreation";
         $menu_array['categorycreation']['title'] = __( 'Create Categories', 'csv2post' ); 
         $menu_array['categorycreation']['parent'] = 'columns';                  
@@ -165,15 +176,6 @@ class CSV2POST_TabMenu {
         $menu_array['dates']['name'] = "dates";
         $menu_array['dates']['title'] = __( 'Dates', 'csv2post' ); 
         $menu_array['dates']['parent'] = 'postsettings';     
-        
-        // posttypes  
-        $menu_array['posttypes']['groupname'] = 'design';
-        $menu_array['posttypes']['slug'] = 'csv2post_posttypes'; 
-        $menu_array['posttypes']['menu'] = __( 'Post Types', 'csv2post' );
-        $menu_array['posttypes']['tabmenu'] = __( 'Post Types', 'csv2post' );
-        $menu_array['posttypes']['name'] = "posttypes";
-        $menu_array['posttypes']['title'] = __( 'Post Types', 'csv2post' ); 
-        $menu_array['posttypes']['parent'] = 'postsettings';
                                                                                                 
         ######################################################
         #                                                    #
@@ -238,12 +240,30 @@ class CSV2POST_TabMenu {
         // test view two
         $menu_array['betatest2']['groupname'] = 'betatesting'; 
         $menu_array['betatest2']['slug'] = 'csv2post_betatest2';// home page slug set in main file
-        $menu_array['betatest2']['menu'] = 'Beta Testing';// main menu title
-        $menu_array['betatest2']['tabmenu'] = 'Test 2: UI (postboxes, pointers, support icons)';// main menu title        
-        $menu_array['betatest2']['name'] = "betatest1";// name of page (slug) and unique
-        $menu_array['betatest2']['title'] = 'Beta Testing 1: Post-boxes UI';// page title seen once page is opened
+        $menu_array['betatest2']['menu'] = 'Beta Page 2';// main menu title
+        $menu_array['betatest2']['tabmenu'] = 'Test 2: UI Improvements';// main menu title        
+        $menu_array['betatest2']['name'] = "betatest2";// name of page (slug) and unique
+        $menu_array['betatest2']['title'] = 'Beta Testing 2: Post-boxes UI';// page title seen once page is opened
         $menu_array['betatest2']['parent'] = 'betatest1';// either "parent" or the name of the parent - used for building tab menu    
-                                   
+        
+        // test view three
+        $menu_array['betatest3']['groupname'] = 'betatesting'; 
+        $menu_array['betatest3']['slug'] = 'csv2post_betatest3';// home page slug set in main file
+        $menu_array['betatest3']['menu'] = 'Beta Page 3';// main menu title
+        $menu_array['betatest3']['tabmenu'] = 'Test 3: Security';// main menu title        
+        $menu_array['betatest3']['name'] = "betatest3";// name of page (slug) and unique
+        $menu_array['betatest3']['title'] = 'Beta Testing 3: Security';// page title seen once page is opened
+        $menu_array['betatest3']['parent'] = 'betatest1';// either "parent" or the name of the parent - used for building tab menu    
+                                               
+        // test view four  
+        $menu_array['betatest4']['groupname'] = 'betatesting'; 
+        $menu_array['betatest4']['slug'] = 'csv2post_betatest4';// home page slug set in main file
+        $menu_array['betatest4']['menu'] = 'Beta Page 4';// main menu title
+        $menu_array['betatest4']['tabmenu'] = 'Test 4: New Data Sources';// main menu title        
+        $menu_array['betatest4']['name'] = "betatest4";// name of page (slug) and unique
+        $menu_array['betatest4']['title'] = 'Beta Testing 4: New Data Sources';// page title seen once page is opened
+        $menu_array['betatest4']['parent'] = 'betatest1';// either "parent" or the name of the parent - used for building tab menu    
+                          
         return $menu_array;
     }
 } 

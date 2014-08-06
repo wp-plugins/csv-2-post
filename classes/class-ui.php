@@ -20,10 +20,36 @@ defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 * @version 1.0.0 
 */
 class C2P_UI extends CSV2POST {     
+    
     public function __construct() {
-        $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-php.php', 'classes' );
+        
+        // load class used at all times
+        $this->DB = self::load_class( 'C2P_DB', 'class-wpdb.php', 'classes' );
+        $this->PHP = self::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
+        $this->WPCore = self::load_class( 'C2P_WPCore', 'class-wpcore.php', 'classes' );
+        
     }  
-
+          
+    /**
+    * Called by main CSV2POST() class using proper hook
+    * 
+    * @uses wp_add_dashboard_widget()
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.32
+    * @version 1.0.0
+    */
+    public function add_dashboard_widgets() {
+        /*
+        wp_add_dashboard_widget(
+             'affiliatessectiondashboard1',// Widget slug.
+             __( 'Test Widget', 'csv2post' ),// Title.
+             array( $this, 'test1' )// Display function.
+        ); 
+         */
+    }
+              
     /**
     * <table class="widefat">
     * Allows control over all table
@@ -238,9 +264,15 @@ class C2P_UI extends CSV2POST {
                             
     <?php  
     }  
+ 
     
     /**
     * add text input to Wordpress style form which is tabled and has optional HTML5 support
+    * 
+    * 1. the $capability value is set systematically, by default it is 'active_plugins' so minimum use is fine, it
+    * is also not required if forms are being hidden from users who shouldnt see them. The security is there as a 
+    * precation from hack (hacker manages to access page form is on) or developer mistake (they open up the page or form
+    * to the wrong users in another method, hopefully this catches the user at submission point)
     * 
     * @param string $title
     * @param string $name - html name
@@ -252,12 +284,12 @@ class C2P_UI extends CSV2POST {
     * @param boolean $left_field
     * @param string $right_field_content
     * @param boolean $required
+    * @param string $validation - appends 'input_validation_' to call a function that validates, so any function and validation method can be setup       
     */
-    public function option_text( $title, $name, $id, $current_value = '', $readonly = false, $class = 'csv2post_inputtext', $append_text = '', $left_field = false, $right_field_content = '', $required = false ){
-        if( isset( $_POST[$name] ) ){                   
-            $current_value = stripslashes( $_POST[$name] );
-        }
+    public function option_text( $title, $name, $id, $current_value = '', $readonly = false, $class = 'csv2post_inputtext', $append_text = '', $left_field = false, $right_field_content = '', $required = false, $validation = false ){
+        self::register_input_validation( $title, $name, $id, $validation );// stored data is used to apply correct validation during processing
         ?>
+        
         <!-- Option Start -->        
         <tr valign="top">
             <th scope="row"><?php echo $title; ?>
@@ -288,8 +320,8 @@ class C2P_UI extends CSV2POST {
     * uses option_text() to add input, this version requires the most common required attributes only
     * 
     */
-    public function option_text_simple( $title, $nameandid, $current_value = '', $required = false ){
-        $this->option_text( $title, $nameandid, $nameandid, $current_value, false, 'csv2post_inputtext', '', false, '', $required);
+    public function option_text_simple( $title, $nameandid, $current_value = '', $required = false, $validation = false ){
+        $this->option_text( $title, $nameandid, $nameandid, $current_value, false, 'csv2post_inputtext', '', false, '', $required, $validation );
     }
     
     /**
@@ -307,7 +339,9 @@ class C2P_UI extends CSV2POST {
         <!-- Option End --><?php     
     }
     
-    public function option_radiogroup( $title, $id, $name, $radio_array, $current = 'nocurrent123', $default = 'nodefaultset123' ){
+    public function option_radiogroup( $title, $id, $name, $radio_array, $current = 'nocurrent123', $default = 'nodefaultset123', $validation = false ){
+        self::register_input_validation( $title, $name, $id, $validation );// stored data is used to apply correct validation during processing
+        
         echo '
         <!-- Option Start -->        
         <tr valign="top">
@@ -369,7 +403,9 @@ class C2P_UI extends CSV2POST {
         <!-- Option End -->';                 
     }
     
-    public function option_textarea( $title, $id, $name, $rows = 4, $cols = 50, $current_value, $required = false ){?>
+    public function option_textarea( $title, $id, $name, $rows = 4, $cols = 50, $current_value, $required = false, $validation = false ){
+        self::register_input_validation( $title, $name, $id, $validation );// stored data is used to apply correct validation during processing
+        ?>
         <!-- Option Start -->        
         <tr valign="top">
             <th scope="row">
@@ -386,7 +422,9 @@ class C2P_UI extends CSV2POST {
         <!-- Option End --><?php     
     }
     
-    public function option_menu( $title, $id, $name, $array, $current = 'nocurrentvalue123', $defaultvalue = 'nodefaultrequired123', $defaulttitle = 'nodefaultrequired123' ){?>
+    public function option_menu( $title, $id, $name, $array, $current = 'nocurrentvalue123', $defaultvalue = 'nodefaultrequired123', $defaulttitle = 'nodefaultrequired123', $validation = false ){
+        self::register_input_validation( $title, $name, $id, $validation );// stored data is used to apply correct validation during processing
+        ?>
         <!-- Option Start -->        
         <tr valign="top">
             <th scope="row"><label for="<?php echo $id; ?>"><?php echo $title; ?>
@@ -411,21 +449,48 @@ class C2P_UI extends CSV2POST {
         </tr>
         <!-- Option End --><?php          
     }
-    public function option_menu_datasources( $label = 'Data Source', $name = 'datasource', $id = 'datasource', $current = false ){
-        global $C2P_DB, $wpdb;
-        $query_results = $C2P_DB->selectwherearray( $wpdb->c2psources, 'sourceid = sourceid', 'sourceid', '*' );?>
+    
+    /**
+    * Form menu wrapped in WP admin styled table row
+    * 
+    * values are numeric, items are numeric
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.0.0
+    * @version 1.0.0
+    * 
+    * @param mixed $title
+    * @param mixed $name
+    * @param mixed $id
+    * @param mixed $current
+    * @param mixed $validation
+    */
+    public function option_menu_datasources( $title = 'Data Source', $name = 'datasource', $id = 'datasource', $current = false ){
+        self::register_input_validation( $title, $name, $id, 'numeric' );// stored data is used to apply correct validation during processing
+        
+        global $wpdb;
+        $query_results = $this->DB->selectwherearray( $wpdb->c2psources, 'sourceid = sourceid', 'sourceid', '*' );?>
         <!-- Option Start -->        
         <tr valign="top">
-            <th scope="row"><label for="<?php echo $id; ?>"><?php echo $label; ?></label></th>
+            <th scope="row"><label for="<?php echo $id; ?>"><?php echo $title; ?></label></th>
             <td>            
                 <select name="<?php echo $name;?>" id="<?php echo $id;?>">
                     <?php                  
                     $selected = '';            
                     foreach( $query_results as $key => $source_array ){
+                        
                         if( $source_array['sourceid'] == $current){
                             $selected = 'selected="selected"';
                         } 
-                        echo '<option '.$selected.' value="'.$source_array['sourceid'].'">'.$source_array['sourceid'].'</option>';    
+                        
+                        // create item name
+                        $item_name = $source_array['sourceid'];
+                        if( isset( $source_array['name'] ) ) {
+                            $item_name . ' - ' . $source_array['name'];
+                        } 
+                        
+                        echo '<option '.$selected.' value="'.$source_array['sourceid'].'">' . $item_name . '</option>';    
                     }
                     ?>
                 </select>                  
@@ -433,6 +498,7 @@ class C2P_UI extends CSV2POST {
         </tr>
         <!-- Option End --><?php         
     }    
+    
     /**
     * outputs a single html checkbox with label
     * 
@@ -440,11 +506,22 @@ class C2P_UI extends CSV2POST {
     * 
     * @param mixed $label
     */
-    public function option_checkbox_single( $name, $label, $id, $check = 'off', $value = false ){
+    public function option_checkbox_single( $name, $label, $id, $check = 'off', $value = false, $validation = false ){
+        self::register_input_validation( $label, $name, $id, $validation );// stored data is used to apply correct validation during processing
+        
         $selected = '';
-        if( $check == 'on' ){$selected = 'checked';}
-        if( $value !== false ){$thevalue = ' value="'.$value.'" ';}else{$thevalue = '';}
-        echo '<label for="'.$id.'"><input name="'.$name.'" type="checkbox" id="'.$id.'"'.$thevalue.''.$selected.'>'.$label.'</label>';
+        
+        if( $check == 'on' ) {
+            $selected = 'checked';
+        }
+        
+        if( $value !== false ) {
+            $thevalue = ' value="' . $value . '" ';
+        } else { 
+            $thevalue = '';
+        }
+        
+        echo '<label for="'.$id.'"><input name="'.$name.'" type="checkbox" id="'.$id.'"'.$thevalue.''.$selected.'>' . $label . '</label>';
     }
 
     /**
@@ -466,7 +543,8 @@ class C2P_UI extends CSV2POST {
     /**
     * a standard menu of users wrapped in <td> 
     */
-    public function option_menu_users( $title, $name, $id, $current_value = 'nocurrentvalue123' ){
+    public function option_menu_users( $title, $name, $id, $current_value = 'nocurrentvalue123', $validation = false ){
+        self::register_input_validation( $title, $name, $id, $validation );// stored data is used to apply correct validation during processing
                  
         $blogusers = get_users( 'blog_id=1&orderby=nicename' );?>
 
@@ -503,7 +581,9 @@ class C2P_UI extends CSV2POST {
     /**
     * a standard menu of categories wrapped in <td> 
     */
-    public function option_menu_categories( $title, $name, $id, $current_value = 'nocurrentvalue123' ){                      
+    public function option_menu_categories( $title, $name, $id, $current_value = 'nocurrentvalue123', $validation = false ){ 
+        self::register_input_validation( $title, $name, $id, $validation );// stored data is used to apply correct validation during processing
+                         
         $cats = get_categories( 'hide_empty=0&echo=0&show_option_none=&style=none&title_li=' );?>
 
         <!-- Option Start -->
@@ -544,7 +624,9 @@ class C2P_UI extends CSV2POST {
     * @param string $id
     * @param string $current_value
     */
-    public function option_radiogroup_posttypes( $title, $name, $id, $current_value = 'nocurrent123' ){         
+    public function option_radiogroup_posttypes( $title, $name, $id, $current_value = 'nocurrent123', $validation = false ){  
+        self::register_input_validation( $title, $name, $id, $validation );// stored data is used to apply correct validation during processing
+           
         echo '
         <!-- Option Start -->        
         <tr valign="top">
@@ -591,7 +673,9 @@ class C2P_UI extends CSV2POST {
         <!-- Option End -->';
     } 
     
-    public function option_radiogroup_postformats( $title, $name, $id, $current_value = 'nocurrent123' ){         
+    public function option_radiogroup_postformats( $title, $name, $id, $current_value = 'nocurrent123', $validation = false ){      
+        self::register_input_validation( $title, $name, $id, $validation );// stored data is used to apply correct validation during processing
+       
         echo '
         <!-- Option Start -->        
         <tr valign="top">
@@ -635,7 +719,9 @@ class C2P_UI extends CSV2POST {
     /**
     * menu of post templates wrapped in <tr> 
     */
-    public function option_menu_posttemplates( $title, $name, $id, $current_value = 'nocurrentvalue123' ){                      
+    public function option_menu_posttemplates( $title, $name, $id, $current_value = 'nocurrentvalue123', $validation = false ){    
+        self::register_input_validation( $title, $name, $id, $validation );// stored data is used to apply correct validation during processing
+                      
         $cats = get_categories( 'hide_empty=0&echo=0&show_option_none=&style=none&title_li=' );?>
 
         <!-- Option Start -->
@@ -674,15 +760,26 @@ class C2P_UI extends CSV2POST {
     
     /**
     * lists a projects headers with checkboxes in Wordpress options table styling
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.32
+    * @version 1.0.0
+    * 
+    * @param mixed $project_id
+    * @param mixed $name
+    * @param mixed $validation
     */
-    public function option_project_headers_checkboxes( $project_id, $name){
-        
+    public function option_project_headers_checkboxes( $project_id, $name, $validation = false ){
+
         // get all project columns, function gets columns from all tables if more than one
         $project_columns_array = CSV2POST::get_project_columns_from_db( $project_id, true);
         
         // get the data treatment then remove it to make the loops simple
-        $treatment = $project_columns_array['arrayinfo']['datatreatment'];
-        unset( $project_columns_array['arrayinfo']['datatreatment'] );
+        if( isset( $project_columns_array['arrayinfo']['datatreatment'] ) ) {
+            $treatment = $project_columns_array['arrayinfo']['datatreatment'];
+            unset( $project_columns_array['arrayinfo']['datatreatment'] );
+        }
    
         // build array data types
         $datatypes_array = array();
@@ -745,7 +842,9 @@ class C2P_UI extends CSV2POST {
         }        
     } 
     
-    public function option_projectcolumns( $title, $project_id, $name, $id, $current_table = 'nocurrentvalue123', $current_column = 'nocurrentvalue123', $default_value = false, $default_label = false ){
+    public function option_projectcolumns( $title, $project_id, $name, $id, $current_table = 'nocurrentvalue123', $current_column = 'nocurrentvalue123', $default_value = false, $default_label = false, $validation = false ){
+        self::register_input_validation( $title, $name, $id, $validation );// stored data is used to apply correct validation during processing
+        
         $project_columns_array = CSV2POST::get_project_columns_from_db( $project_id, true);
         $datatreatment = $project_columns_array['arrayinfo']['datatreatment'];
         unset( $project_columns_array['arrayinfo'] );
@@ -786,7 +885,9 @@ class C2P_UI extends CSV2POST {
         </tr><?php 
     } 
         
-    public function option_projectcolumns_splittermenu( $title, $project_id, $name, $id, $current = 'nocurrentvalue123', $default_value = false, $default_label = false ){
+    public function option_projectcolumns_splittermenu( $title, $project_id, $name, $id, $current = 'nocurrentvalue123', $default_value = false, $default_label = false, $validation = false ){
+        self::register_input_validation( $title, $name, $id, $validation );// stored data is used to apply correct validation during processing
+        
         $project_columns_array = CSV2POST::get_project_columns_from_db( $project_id, true);
         $datatreatment = $project_columns_array['arrayinfo']['datatreatment'];
         unset( $project_columns_array['arrayinfo'] );
@@ -829,7 +930,9 @@ class C2P_UI extends CSV2POST {
         </tr><?php 
     }
     
-    public function option_projectcolumns_categoriesmenu( $title, $project_id, $name, $id, $current_table = 'nocurrentvalue123', $current_column = 'nocurrentvalue123', $default_value = false, $default_label = false ){
+    public function option_projectcolumns_categoriesmenu( $title, $project_id, $name, $id, $current_table = 'nocurrentvalue123', $current_column = 'nocurrentvalue123', $default_value = false, $default_label = false, $validation = false ){
+        self::register_input_validation( $title, $name, $id, $validation );// stored data is used to apply correct validation during processing
+        
         $project_columns_array = CSV2POST::get_project_columns_from_db( $project_id, true);
         $datatreatment = $project_columns_array['arrayinfo']['datatreatment'];
         unset( $project_columns_array['arrayinfo'] );
@@ -869,7 +972,31 @@ class C2P_UI extends CSV2POST {
             </td>
         </tr><?php 
     }  
-             
+
+    /**
+    * Add a file uploader to a form
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    * 
+    * @param string $title
+    * @param string $name
+    * @param string $id
+    * @param string $validation - pass name of a custom validation function 
+    */
+    public function option_file( $title, $name, $id, $validation = false ){
+        self::register_input_validation( $title, $name, $id, $validation );// stored data is used to apply correct validation during processing
+        ?>         
+        <tr valign="top">
+            <th scope="row"><?php echo $title;?></th>
+            <td>
+                <input type="file" name="<?php echo $name;?>" id="<?php echo $id;?>" /> 
+            </td>
+        </tr><?php 
+    }      
+    
     /**
     * menu of project columns with a menu for each used to select that columns data type
     * 
@@ -877,7 +1004,7 @@ class C2P_UI extends CSV2POST {
     * @param mixed $name
     * @param mixed $id
     */
-    public function option_column_datatypes( $project_id, $name, $id){
+    public function option_column_datatypes( $project_id, $name, $id, $validation = false ){
         if(!is_numeric( $project_id) ){
             return false;
         }
@@ -946,7 +1073,7 @@ class C2P_UI extends CSV2POST {
     * displays the current project and a row of quick action buttons (actually links) 
     */
     public function display_current_project() {
-        global $c2p_settings, $C2P_DB, $CSV2POST, $wpdb, $C2P_UI;
+        global $c2p_settings, $CSV2POST, $wpdb;
         
         // set default values
         $current = 'No Projects'; 
@@ -960,7 +1087,7 @@ class C2P_UI extends CSV2POST {
         
         }else{
             
-            $row = $C2P_DB->selectrow( $wpdb->c2pprojects, 'projectid = projectid', 'projectname' );  
+            $row = $this->DB->selectrow( $wpdb->c2pprojects, 'projectid = projectid', 'projectname' );  
             
             if( $row == NULL){
                 
@@ -1006,7 +1133,7 @@ class C2P_UI extends CSV2POST {
             $quick_actions .= $CSV2POST->linkaction( $_GET['page'], 'displaysourcesummary', __( 'Display information about the projects sources' ), 'Source ID: ' . $source_array[0], '' );       
         }
         
-        echo $C2P_UI->info_area( 'Current Project: ' . $current, $quick_actions );
+        echo self::info_area( 'Current Project: ' . $current, $quick_actions );
     }
 
     /**
@@ -1035,6 +1162,8 @@ class C2P_UI extends CSV2POST {
     * @param string $panel_title (panel title form is in)
     * @param integer $panel_number (the panel number form is in),(tab number passed instead when this function called for support button row)
     * @param integer $step (1 = confirm form, 2 = process request, 3+ alternative processing)
+    * 
+    * @todo improve form security by registering hidden inputs then comparing them on $_POST to ensure user has not tampered with them
     */
     public function hidden_form_values( $form_name, $form_title, $return = false ){
         global $c2p_page_name;
@@ -1042,15 +1171,15 @@ class C2P_UI extends CSV2POST {
         
         if( $return){
             $form = '';
-            $form .= wp_nonce_field( $form_name); 
-            $form .= '<input type="hidden" name="csv2post_post_requested" value="true">';
+            $form .= wp_nonce_field( $form_name );// form name is used during processing to complete the security 
+            $form .= '<input type="hidden" name="csv2post_admin_action" value="true">';
             $form .= '<input type="hidden" name="csv2post_hidden_pagename" value="' . $c2p_page_name . '">';
             $form .= '<input type="hidden" name="csv2post_form_name" value="' . $form_name . '">';
             $form .= '<input type="hidden" name="csv2post_form_title" value="' . $form_title . '">'; 
             return $form;           
         }else{
-            wp_nonce_field( $form_name); 
-            echo '<input type="hidden" name="csv2post_post_requested" value="true">';
+            wp_nonce_field( $form_name );// form name is used during processing to complete the security  
+            echo '<input type="hidden" name="csv2post_admin_action" value="true">';
             echo '<input type="hidden" name="csv2post_hidden_pagename" value="' . $c2p_page_name . '">';
             echo '<input type="hidden" name="csv2post_form_name" value="' . $form_name . '">';
             echo '<input type="hidden" name="csv2post_form_title" value="' . $form_title . '">';
@@ -1139,8 +1268,8 @@ class C2P_UI extends CSV2POST {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_content_header( $form_title, $form_id, $introduction = false, $trash_icon = false ) {
-        global $C2P_UI,$C2P_WP;?>
+    public function postbox_content_header( $form_title, $form_id, $introduction = false, $trash_icon = false, $uploader = false ) {
+        global $C2P_WP;?>
         <p>
             <table width="100%">
                 <tr>
@@ -1148,7 +1277,7 @@ class C2P_UI extends CSV2POST {
                         
                     </td>
                     <td width="50%" align="right">
-                        <?php $C2P_UI->panelicons( $form_id, $trash_icon );?>
+                        <?php self::panelicons( $form_id, $trash_icon );?>
                     </td>
                 </tr>
             </table>
@@ -1157,9 +1286,14 @@ class C2P_UI extends CSV2POST {
             
             <?php
             $admurl = get_admin_url() . 'admin.php?page=' . $_GET['page'];
+            
+            $enctype = '';
+            if( $uploader ) {
+                $enctype = 'enctype="multipart/form-data"';
+            }
             ?>
             
-            <form method="post" name="<?php echo $form_id;?>" action="<?php echo $admurl; ?>">
+            <form <?php echo $enctype;?>method="post" name="<?php echo $form_id;?>" action="<?php echo $admurl; ?>">
             
         <?php 
     }
@@ -1661,8 +1795,7 @@ class C2P_UI extends CSV2POST {
     * Will hold new and none persistent notifications. May also hold persistent. 
     */
     public function output_depreciated() {
-        global $C2P_UI;
-        $c2p_notice_array = $C2P_UI->persistentnotifications_array();    
+        $c2p_notice_array = self::persistentnotifications_array();    
         if( isset( $c2p_notice_array['notifications'] ) ){
                                                         
             foreach( $c2p_notice_array['notifications'] as $key => $notice){
@@ -1785,7 +1918,192 @@ class C2P_UI extends CSV2POST {
         
         return wp_nonce_url( $url );
     }    
-} 
+    
+    /**
+    * Gets the capability for giving box based on ID, used as part of system to hide boxes based on users capabilities
+    * 
+    * @returns default 'activate_plugins' if none exists (devs do not need to add every box to the array)
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.32
+    * @version 1.0.0
+    */
+    public static function get_boxes_capability( $box_id ) {
+        $box_capabilities_array = self::box_capabilities_array();
+        
+        // does the box have a capability in code
+        if( isset( $box_capabilities_array[ $box_id ] ) && is_string( $box_capabilities_array[ $box_id ]  ) ) {
+            
+            // now ensure the capability is valid 
+            global $wp_roles; 
+            if( in_array( $box_id, $wp_roles->roles, false ) ) {
+            
+                return $box_capabilities_array[ $box_id ]; 
+                
+            } 
+               
+        }
+        
+        return 'activate_plugins';
+    } 
+    
+    /**
+    * Stores the giving form ID, the inputs ID and the validation that should be applied to any entry.
+    * This information is re-called during processing to validate and ensure the form has not been tampered 
+    * with after being rendered. 
+    * 
+    * This is done on a per user basis, data being stored in user meta table.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.32
+    * @version 1.0.0
+    */
+    public function register_input_validation( $input_title, $input_name, $input_id, $input_validation ) {
+                           
+        // array of validation types - the string is part of function name i.e. input_validation_alphanumeric()
+        $validation_types = array( 'unset', 'alphanumeric', 'URL' );// add more along with validation functionality
+        // unset - used during development to force removal of registered input
+                   
+        // ensure passed $input_validation is expected else do not register, this prevents problems during processing
+        if( !in_array( $input_validation, $validation_types ) ) {
+            return false;    
+        }
+                   
+        // get the form validation array
+        $form_validation_array = self::get_users_input_validation_array();
+        
+        // if unset requested and the current input is registered then removal that registration
+        if( $input_validation === 'unset' && isset( $form_validation_array[ $input_name ] ) ) {
+            unset( $form_validation_array[ $input_name ] );
+            return;    
+        }
+        
+        // if false then initiate array
+        if( !$form_validation_array ) {
+            $form_validation_array = array();
+        }
+            
+        // we use the $input_id (an actual HTML ID) to apply the correct validation at the point of $_POST or $_GET processing
+        $form_validation_array[ $input_name ]['title'] = $input_title;// used to make user readable notice on invalid entry
+        $form_validation_array[ $input_name ]['id'] = $input_id;// used for confirming the submitted $_POST value
+        $form_validation_array[ $input_name ]['validation'] = $input_validation;
+           
+        update_user_meta( get_current_user_id(), 'csv2post_formvalidation', $form_validation_array );
+    }
+    
+    /**
+    * Returns what validation is to be used on form input value
+    * 
+    * @returns optional array (human rea
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.32
+    * @version 1.0.0
+    */
+    public function get_input_validation( $name, $return = 'validation' ) {
+        
+        // get the form validation array
+        $form_validation_array = self::get_users_input_validation_array();  
+        
+        // for now I do not want to assume the input ID will exist, when confident in the system this could be
+        // removed and the security enforced further.
+        if( isset( $form_validation_array[ $name ] ) ) {
+            
+            if( $return === 'validation' ) {
+                return $form_validation_array[ $name ]['validation']; 
+            } elseif( $return === 'array' ) {
+                return $form_validation_array[ $name ]; 
+            } else {
+                return $form_validation_array[ $name ]['validation'];
+            } 
+        }
+        
+        return false;   
+    }    
+    
+    /**
+    * Get the array that might be stored in user meta with form information
+    * 
+    * @return get_user_meta() boolean or array
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.32
+    * @version 1.0.0
+    */
+    public function get_users_input_validation_array( $user_id = false ) {
+        if( $user_id === false ) {
+            $user_id = get_current_user_id();
+        }
+        $test = get_user_meta( $user_id, 'csv2post_formvalidation', true );
+         
+        return get_user_meta( $user_id, 'csv2post_formvalidation', true );
+    }  
+    
+    /**
+    * Displayed on all views when no current project is set.
+    * Rather than hiding pages and hiding what the plugin has to offer on initial installation.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.32
+    * @version 1.0.0
+    */
+    public function metabox_nocurrentproject() {
+        echo '<p>';
+        _e( 'You do not have a "Current Project" set and so the features on this page have been hidden. 
+        The Current Project is the one you are working on. Most of the plugins
+        pages only display information and options for that project. You have not created your first project or delete
+        the one that was active.', 'csv2post' );
+        echo '</p>';
+    }
+
+    /**
+    * A table row with menu of all Wordpress capabilities
+    * 
+    * @param mixed $title
+    * @param mixed $id
+    * @param mixed $name
+    * @param mixed $current
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function option_menu_capabilities( $title, $id, $name, $current = 'nocurrentvalue123' ){
+
+        // create array of capabilities without roles
+        global $wp_roles; 
+        $capabilities_array = $this->WPCore->capabilities();
+        
+        // put into alphabetical order as it is a long list 
+        ksort( $capabilities_array );
+        ?>
+        <!-- Option Start -->        
+        <tr valign="top">
+            <th scope="row"><label for="<?php echo $id; ?>"><?php echo $title; ?></label></th>
+            <td>            
+                <select name="<?php echo $name;?>" id="<?php echo $id;?>">
+                    <?php            
+                    foreach( $capabilities_array as $key => $cap ){
+                        $selected = '';
+                        if( $key == $current){
+                            $selected = 'selected="selected"';
+                        } 
+                        echo '<option value="'.$key.'" '.$selected.'>' . $key . '</option>';    
+                    }
+                    ?>
+                </select>                  
+            </td>
+        </tr>
+        <!-- Option End --><?php          
+    }
+       
+}// class C2P_UI 
   
 /**
 * Adds a Wordpress pointer

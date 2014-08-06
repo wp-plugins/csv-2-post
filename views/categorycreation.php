@@ -53,18 +53,51 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
         $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
                         
         // load the current project row and settings from that row
-        $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
-        $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
-                
-        parent::setup( $action, $data );
+        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
+            
+            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
+            $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
         
-        $this->add_meta_box( 'categories-categorycreation', __( 'Category Creation', 'csv2post' ), array( $this, 'postbox_categories_categorycreation' ), 'side','default',array( 'formid' => 'categorycreation' ) );      
-        $this->add_meta_box( 'categories-setpostscategories', __( 'Set Posts Categories', 'csv2post' ), array( $this, 'postbox_categories_setpostscategories' ), 'side','default',array( 'formid' => 'setpostscategories' ) );      
-        $this->add_meta_box( 'categories-resetpostscategories', __( 'Re-Set Posts Categories', 'csv2post' ), array( $this, 'postbox_categories_resetpostscategories' ), 'side','default',array( 'formid' => 'resetpostscategories' ) );      
-        $this->add_meta_box( 'categories-uncategorisedpoststable', __( 'Uncategorised Posts Table', 'csv2post' ), array( $this, 'postbox_categories_uncategorisedpoststable' ), 'normal','default',array( 'formid' => 'uncategorisedpoststable' ) );      
-
+            parent::setup( $action, $data );
+            
+            $this->add_meta_box( $this->view_name . '-categorycreation', __( 'Category Creation', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'categorycreation' ) );      
+            $this->add_meta_box( $this->view_name . '-uncategorisedpoststable', __( 'Uncategorised Posts Table', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'uncategorisedpoststable' ) );      
+        
+        } else {
+            $this->add_meta_box( $this->view_name . '-nocurrentproject', __( 'No Current Project', 'csv2post' ), array( $this->UI, 'metabox_nocurrentproject' ), 'normal','default',array( 'formid' => 'nocurrentproject' ) );      
+        }
     }
- 
+
+    /**
+    * All add_meta_box() callback to this function, values in $box are used to then call
+    * the intended box to render a unique form or information. 
+    * 
+    * The purpose of this box is to apply security to all boxes but it could also be used
+    * to dynamically call different functions based on arguments
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.32
+    * @version 1.0.0
+    */
+    function parent( $data, $box ) {
+        
+        // if $box['args']['capability'] is not set with over-riding capability added to add_meta_box() arguments then set it
+        if( !isset( $box['args']['capability'] ) || !is_string( $box['args']['capability'] ) ) {
+            $box['args']['capability'] = $this->UI->get_boxes_capability( $box['args']['formid'] );
+        }
+        
+        // call method in CSV2POST - this is done because it is harder to put this parent() function there as it includes "self::"
+        // any other approach can get messy I think but I'd welcome suggestions on this 
+        if( isset( $box['args']['capability'] ) && !current_user_can( $box['args']['capability'] ) ) { 
+            echo '<p>' . __( 'You do not have permission to access the controls and information in this box.', 'csv2post' ) . '</p>';
+            return false;    
+        }        
+        
+        // call the intended function 
+        eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
+    }
+     
     /**
     * post box function for category creation
     * 
@@ -73,40 +106,11 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_categories_categorycreation( $data, $box ) {    
+    public function postbox_categorycreation_categorycreation( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title']); 
         $this->UI->postbox_content_footer();
     }    
-    
-    /**
-    * post box function for category updating
-    * 
-    * @author Ryan Bayne
-    * @package CSV 2 POST
-    * @since 8.1.3
-    * @version 1.0.0
-    */
-    public function postbox_categories_setpostscategories( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']); 
-        $this->UI->postbox_content_footer();
-    }
-        
-    /**
-    * post box function for resetting post categories by removing the relationship
-    * and putting all posts into Uncategorized
-    * 
-    * @author Ryan Bayne
-    * @package CSV 2 POST
-    * @since 8.1.3
-    * @version 1.0.0
-    */
-    public function postbox_categories_resetpostscategories( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']); 
-        $this->UI->postbox_content_footer();
-    }
  
     /**
     * displays a table of the posts that are in the uncategorised category and 
@@ -118,7 +122,7 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_categories_uncategorisedpoststable( $data, $box ) {    
+    public function postbox_categorycreation_uncategorisedpoststable( $data, $box ) {    
         global $c2p_settings, $wpdb;
         
         // load uncategorised posts table class
@@ -148,7 +152,7 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
         }
 
         $SourcesTable = new CSV2POST_UncatPosts_Table();
-        $SourcesTable->prepare_items( $items_array,10);
+        $SourcesTable->prepare_items_further( $items_array,10);
         ?>
 
         <form id="movies-filter" method="get">

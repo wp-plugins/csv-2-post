@@ -1,8 +1,13 @@
 <?php
 /** 
- * Function file for CSV 2 POST plugin
+ * Database tables information for past and new versions.
  * 
- * It's only use right now is listing the tables, the column information is not accurate and not used in this version (8.1.2)
+ * This file is not fully in use yet. The intention is to migrate it to the
+ * installation class and rather than an array I will simply store every version
+ * of each tables query. Each query can be broken down to compare against existing 
+ * tables. I find this array approach too hard to maintain over many plugins.
+ * 
+ * @todo move this to installation class but also reduce the array to actual queries per version
  * 
  * @package CSV 2 POST
  * @author Ryan Bayne   

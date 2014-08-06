@@ -55,20 +55,55 @@ class CSV2POST_Columns_View extends CSV2POST_View {
         $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
                         
         // load the current project row and settings from that row
-        $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
-        $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
-                        
-        parent::setup( $action, $data );
-        
-        $this->add_meta_box( 'categories-categorydata', __( 'Category Data', 'csv2post' ), array( $this, 'postbox_categories_categorydata' ), 'side','default',array( 'formid' => 'categorydata' ) );        
-        $this->add_meta_box( 'categories-categorydescriptions', __( 'Category Descriptions', 'csv2post' ), array( $this, 'postbox_categories_categorydescriptions' ), 'normal','default',array( 'formid' => 'categorydescriptions' ) );      
-        
-        if(!empty( $this->projectsettings['categories'] ) ){
-            $this->add_meta_box( 'categories-presetlevelonecategory', __( 'Pre-Set Level One Category', 'csv2post' ), array( $this, 'postbox_categories_presetlevelonecategory' ), 'normal','default',array( 'formid' => 'presetlevelonecategory' ) );      
-            $this->add_meta_box( 'categories-categorypairing', __( 'Category Mapping/Pairing', 'csv2post' ), array( $this, 'postbox_categories_categorypairing' ), 'normal','default',array( 'formid' => 'categorypairing' ) );      
-        }
+        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
+                
+            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
+            $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
+                            
+            parent::setup( $action, $data );
+            
+            $this->add_meta_box( 'columns-categorydata', __( 'Category Data', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'categorydata' ) );        
+
+            if(!empty( $this->projectsettings['categories'] ) ){
+                $this->add_meta_box( 'columns-presetlevelonecategory', __( 'Pre-Set Level One Category', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'presetlevelonecategory' ) );      
+                $this->add_meta_box( 'columns-categorypairing', __( 'Category Mapping/Pairing', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'categorypairing' ) );      
+            }
+            
+        } else {
+            $this->add_meta_box( 'columns-nocurrentproject', __( 'No Current Project', 'csv2post' ), array( $this->UI, 'metabox_nocurrentproject' ), 'normal','default',array( 'formid' => 'nocurrentproject' ) );      
+        }            
     }
  
+    /**
+    * All add_meta_box() callback to this function, values in $box are used to then call
+    * the intended box to render a unique form or information. 
+    * 
+    * The purpose of this box is to apply security to all boxes but it could also be used
+    * to dynamically call different functions based on arguments
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.32
+    * @version 1.0.0
+    */
+    function parent( $data, $box ) {
+        
+        // if $box['args']['capability'] is not set with over-riding capability added to add_meta_box() arguments then set it
+        if( !isset( $box['args']['capability'] ) || !is_string( $box['args']['capability'] ) ) {
+            $box['args']['capability'] = $this->UI->get_boxes_capability( $box['args']['formid'] );
+        }
+        
+        // call method in CSV2POST - this is done because it is harder to put this parent() function there as it includes "self::"
+        // any other approach can get messy I think but I'd welcome suggestions on this 
+        if( isset( $box['args']['capability'] ) && !current_user_can( $box['args']['capability'] ) ) { 
+            echo '<p>' . __( 'You do not have permission to access the controls and information in this box.', 'csv2post' ) . '</p>';
+            return false;    
+        }        
+        
+        // call the intended function 
+        eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
+    }
+    
     /**
     * post box function for category column selection
     * 
@@ -77,7 +112,7 @@ class CSV2POST_Columns_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_categories_categorydata( $data, $box ) {    
+    public function postbox_columns_categorydata( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
         
@@ -86,7 +121,7 @@ class CSV2POST_Columns_View extends CSV2POST_View {
 
             <table class="form-table">
             <?php
-            for( $i=0;$i<=4;$i++){
+            for( $i=0;$i<=2;$i++){
                 $default_table = false;
                 $default_column = false;
                 if( isset( $this->projectsettings['categories']['data'][$i] ) ){
@@ -112,55 +147,7 @@ class CSV2POST_Columns_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_categories_categorydescriptions( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);     
-        
-        global $c2p_settings;
-
-        if(empty( $this->projectsettings['categories']['data'] ) ){
-            echo 'Please select category data columns.';    
-        }else{ 
-        ?>
-
-            <table class="form-table">
-            <?php
-            foreach( $this->projectsettings['categories']['data'] as $key => $catarray ){
-           
-                // use description data
-                $default_table = false;
-                $default_column = false;
-                if( isset( $this->projectsettings['categories']['data'][$key] ) ){
-                    $default_table = $this->projectsettings['categories']['descriptiondata'][$key]['table'];
-                    $default_column = $this->projectsettings['categories']['descriptiondata'][$key]['column'];                
-                }
-                $level_label = $key + 1;
-                $this->UI->option_projectcolumns_categoriesmenu( __( "Level $level_label"), $c2p_settings['currentproject'], "categorylevel$key", "categorylevel$key", $default_table, $default_column, 'notselected', 'Not Selected' );
-     
-                // or create a template
-                $current_value = '';
-                if( isset( $this->projectsettings['categories']['descriptiontemplates'][$key] ) ){$current_value = $this->projectsettings['categories']['descriptiontemplates'][$key];} 
-                $level_label = $key + 1;
-                $this->UI->option_textarea( "Level $level_label Description", 'level'.$key.'description', 'level'.$key.'description',10,30, $current_value); 
-            }
-            ?>
-            </table>
-        
-        <?php }?>
-        
-        <?php 
-        $this->UI->postbox_content_footer();
-    }    
-    
-    /**
-    * post box function for testing
-    * 
-    * @author Ryan Bayne
-    * @package CSV 2 POST
-    * @since 8.1.3
-    * @version 1.0.0
-    */
-    public function postbox_categories_presetlevelonecategory( $data, $box ) {    
+    public function postbox_columns_presetlevelonecategory( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
         ?>  
@@ -190,7 +177,7 @@ class CSV2POST_Columns_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_categories_categorypairing( $data, $box ) {    
+    public function postbox_columns_categorypairing( $data, $box ) {    
         if(!isset( $this->projectsettings['categories']['data'] ) ){
             $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], 'You have not selected your category columns.', false );    
         }else{

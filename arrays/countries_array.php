@@ -1,4 +1,13 @@
 <?php
+/**
+* Every country in an array with abbreviations as keys
+* 
+* @author Ryan R. Bayne
+* @package CSV 2 POST
+* @since 8.1.3
+* @version 1.0.1
+*/
+
 $c2p_countries = Array(
   "AF" => "Afghanistan",
   "AL" => "Albania",

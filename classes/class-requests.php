@@ -2,16 +2,16 @@
 /** 
 * Class for handling $_POST and $_GET requests
 * 
-* The class is called in the process_POST_GET() method found in the CSV2POST class. 
-* The process_POST_GET() method is hooked at admin_init. It means requests are handled in the admin
+* The class is called in the process_admin_POST_GET() method found in the CSV2POST class. 
+* The process_admin_POST_GET() method is hooked at admin_init. It means requests are handled in the admin
 * head, globals can be updated and pages will show the most recent data. Nonce security is performed
-* within process_POST_GET() then the require method for processing the request is used.
+* within process_admin_POST_GET() then the require method for processing the request is used.
 * 
 * Methods in this class MUST be named within the form or link itself, basically a unique identifier for the form.
 * i.e. the Section Switches settings have a form name of "sectionswitches" and so the method in this class used to
 * save submission of the "sectionswitches" form is named "sectionswitches".
 * 
-* process_POST_GET() uses eval() to call class + method 
+* process_admin_POST_GET() uses eval() to call class + method 
 * 
 * @package CSV 2 POST
 * @author Ryan Bayne   
@@ -38,28 +38,173 @@ class C2P_Requests {
         $this->UI = $this->CSV2POST->load_class( 'C2P_UI', 'class-ui.php', 'classes' ); # interface, mainly notices
         $this->DB = $this->CSV2POST->load_class( 'C2P_DB', 'class-wpdb.php', 'classes' ); # database interaction
         $this->PHP = $this->CSV2POST->load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' ); # php library by Ryan R. Bayne
-                        
+        $this->Files = $this->CSV2POST->load_class( 'C2P_Files', 'class-files.php', 'classes' );
+                       
         // set current project values
-        if( isset( $c2p_settings['currentproject'] ) ) {    
+        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {    
             $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );      
             $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings ); 
         }   
     }
     
     /**
-    * form processing function
+    * Processes security for $_POST and $_GET requests
+    * then calls another function to complete the specific request made
     * 
-    * @author Ryan Bayne
+    * this function is called by process_admin_POST_GET() which is hooked by admin_init
+    * 
+    * @author Ryan R. Bayne
     * @package CSV 2 POST
-    * @since 8.0.0
+    * @since 8.1.32
     * @version 1.0.0
     */
-    public function installtestdata() {
-        global $C2P_Install;
-        $C2P_Install->testdata();// main section and any prep required for other sections
-        $this->UI->create_notice( __( 'Test Data installation procedure has finished.' ), 'success', 'Small', __( 'Test Data Installed' ) );
-    }  
+    public function start_admin_processing() {  
+        // ensure processing requested
+        // if a hacker changes this, no processing happens so no validation required
+        if(!isset( $_POST['csv2post_admin_action'] ) && !isset( $_GET['csv2postaction'] ) ) {
+            return;
+        }          
+               
+        // handle $_POST action - form names are validated
+        if( isset( $_POST['csv2post_admin_action'] ) && $_POST['csv2post_admin_action'] == true){        
+            if( isset( $_POST['csv2post_admin_referer'] ) ){        
+                
+                // a few forms have the csv2post_admin_referer where the default hidden values are not in use
+                check_admin_referer( $_POST['csv2post_admin_referer'] ); 
+                $function_name = $_POST['csv2postaction'];     
+                   
+            }else{                                       
+                
+                // 99% of forms will use this method
+                check_admin_referer( $_POST['csv2post_form_name'] );
+                $function_name = $_POST['csv2post_form_name'];
+            
+            }        
+        }
+                          
+        // $_GET request
+        if( isset( $_GET['csv2postaction'] ) ){      
+            check_admin_referer( $_GET['csv2postaction'] );        
+            $function_name = $_GET['csv2postaction'];
+        }     
+                   
+        // arriving here means check_admin_referer() security is positive       
+        global $c2p_debug_mode, $cont;
 
+        $this->PHP->var_dump( $_POST, '<h1>$_POST</h1>' );           
+        $this->PHP->var_dump( $_GET, '<h1>$_GET</h1>' );    
+
+        // check_admin_referer() wp_die()'s if security fails so if we arrive here Wordpress security has been passed
+        // now we validate individual values against their pre-registered validation method
+        // some generic notices are displayed - this system makes development faster
+        $overall_result = self::apply_input_validation();
+        
+        // if $overall_result includes a single failure then there is no need to call the final function
+        if( $overall_result === false ) {
+            return false;
+        }
+        
+        // handle a situation where the submitted form requests a function that does not exist
+        if( !method_exists( $this, $function_name ) ){
+            wp_die( sprintf( __( "The method for processing your request was not found. This can usually be resolved quickly. Please report method %s does not exist. <a href='https://www.youtube.com/watch?v=vAImGQJdO_k' target='_blank'>Watch a video</a> explaining this problem.", 'csv2post' ), 
+            $function_name) );    
+        }
+        
+        // all security passed - call the processing function
+        if( isset( $function_name) && is_string( $function_name) )
+        {
+            eval( 'self::' . $function_name .'();' );
+        }  
+    }
+    
+    /**
+    * Validates the values for individual form inputs, if they are pre-registered
+    * pre-registration has been made easier with functions for building forms
+    * 
+    * the purpose is to make form creation easy and quick but also apply more security. 
+    * hidden inputs are registered, both name and value, checking them during processing
+    * prevents someone hacking the form
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.32
+    * @version 1.0.0
+    */
+    public function apply_input_validation() {
+        // set result, default true to allow processing to complete, change to false if user made invalid entry
+        $result = true;
+        
+        // build an array of known inputs we do not need to validate
+        $ignored_inputs_array = array( '_wpnonce', '_wp_http_referer' );
+        
+        // get the current users form validation array
+        $form_validation_array = $this->UI->get_users_input_validation_array(); 
+                
+        // loop through $_POST values and if the name is registered apply validation    
+        foreach( $_POST as $name => $value ) {
+                         
+            // get the form inputs validation method if it has been registered
+            $validation_method = $this->UI->get_input_validation( $name );
+                                 
+            if( $validation_method !== false ) {
+                                       
+                // ensure the expected input_validation_example() function exists
+                if( method_exists( $this, 'input_validation_' . $validation_method ) ) { 
+                      
+                    // input_validation functions return boolean false on fail and output a notice to make user aware
+                    // else nothing else happens, next input is processed
+                    eval( '$result = self::input_validation_' . $validation_method . '( $value, $name );');// $result is always boolean    
+                    
+                    // false results in the final processing function not being called at all
+                    return $result;
+                }    
+            }
+        }
+        
+        // true allows the final function to be called, processing the request further
+        // that function may perform further sanitization and even validation
+        return $result;
+    }
+    
+    /**
+    * Confirms if a value is alphanumeric or not (must always return boolean)
+    * 
+    * @returns boolean but also generates notice
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.32
+    * @version 1.0.0
+    */
+    public function input_validation_alphanumeric( $value, $name ) {
+                        
+        // if not alphanumeric generate a notice and return false
+        if( !ctype_alnum( $value ) ) {   
+            $this->UI->create_notice( __( 'Alphanumeric only characters expected but other characters were entered.', 'csv2post' ), 'error', 'Small', __( 'Invalid Text Entered', 'csv2post' ) );               
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+    * Confirms value is a URL or not
+    * 
+    * @returns boolean but also generates notice
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function input_validation_URL( $url, $name ) {
+        if( !$this->PHP->validate_url( $url ) ) {
+            $this->UI->create_notice( __( 'You did not enter a valid URL. Please ensure that all characters match the online URL.', 'csv2post' ), 'error', 'Small', __( 'Invalid URL Entered', 'csv2post' ) );               
+            return false;
+        }        
+        return true;
+    }
+    
     /**
     * form processing function
     * 
@@ -257,24 +402,6 @@ class C2P_Requests {
         $this->CSV2POST->update_settings( $c2p_settings);
         $this->UI->create_notice( __( 'Your data options have been saved.', 'csv2post' ), 'success', 'Small', __( 'Global Data Settings Saved', 'csv2post' ) );        
     } 
-    
-    /**
-    * form processing function
-    * 
-    * @author Ryan Bayne
-    * @package CSV 2 POST
-    * @since 8.0.0
-    * @version 1.0.0
-    */   
-    public function persistentnotice() {
-        global $c2p_persistent_array;
-        foreach( $c2p_persistent_array['notifications'] as $key => $notice){
-            if( $notice['id'] == $_POST['csv2post_post_deletenotice_id'] ){
-                unset( $c2p_persistent_array['notifications'][$key] );
-            }            
-        } 
-        $this->CSV2POST->option( 'csv2post_notifications', 'update', $c2p_persistent_array );            
-    }  
     
     /**
     * form processing function
@@ -2120,9 +2247,9 @@ class C2P_Requests {
     public function displaysourcesummary() {
         global $c2p_settings;
         $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
-        $source = $this->CSV2POST->get_source( $c2p_settings['currentproject'], $project_array->source1); 
-        $config = maybe_unserialize( $source->theconfig);
-        if( $source){
+        $source = $this->CSV2POST->get_source( $project_array->source1 ); 
+        $config = maybe_unserialize( $source->theconfig );
+        if( $source ){
             $message = '';
             $message .= '<table class="form-table">';
 
@@ -2374,305 +2501,58 @@ class C2P_Requests {
     * @version 1.0.0
     */       
     public function newprojectandnewcsvfiles() {
-        global $wpdb, $c2p_settings;
-        $error = false;
-        $files_array = array( 'total_files' => 0);
+        $sourceid_array = array();// increment string key: source1,source2,source3 (not sure why I done this but stick with it for now)
         
-        if(empty( $_POST['csvfile1'] ) || empty( $_POST['csvfile2'] ) && !empty( $_POST['csvfile3'] ) || empty( $_POST['csvfile3'] ) && !empty( $_POST['csvfile4'] ) || empty( $_POST['csvfile4'] ) && !empty( $_POST['csvfile5'] ) ){
-            $this->UI->create_notice( 'You have missed a required field. Fields marked with an asterix * are required.', 'error', 'Small', 'Field Required' );
-            return;
-        }
-                
-        // how many files were submitted
-        for( $i=1;$i<=20;$i++){
-            if(!empty( $_POST['csvfile'.$i] ) ){
-                ++$files_array['total_files'];
-            }
-        }
-        
-        // ensure all files exist
-        for( $i=1;$i<=$files_array['total_files'];$i++){
-            if(!empty( $_POST['csvfile'.$i] ) ){
-                
-                $files_array[$i]['submittedpath'] = $_POST['csvfile'.$i];
-                $files_array[$i]['fullpath'] = ABSPATH . $_POST['csvfile'.$i];
-                
-                $file_one_exists = file_exists( $files_array[$i]['fullpath'] );
-                if(!$file_one_exists)
-                {
-                    $error = true;
-                    $path = $files_array[$i]['fullpath'];
-                    $this->UI->create_notice( "File $i could not be located, please ensure the path is correct and your file exists.
-                    The path checked was $path", 'error', 'Small', 'File Not Found' );    
-                }
-            }        
-        }
-        
-        if( $error){return;}
-        
-        // ensure all files are .csv
-        for( $i=1;$i<=$files_array['total_files'];$i++){
-            // ensure file is .csv
-            if(pathinfo( $files_array[$i]['fullpath'], PATHINFO_EXTENSION) != 'csv' )
-            {
-                $error = true;
-                $this->UI->create_notice( "File $i is not a CSV file. Either change the extension to .csv or use software to re-format it.", 'error', 'Small', 'Not .csv' );
-            }         
-        }
-        
-        if( $error){return;}
-        
-        // build each files configuration (separate, number of fields, original headers and sql ready headers for comparison)
-        for( $i=1;$i<=$files_array['total_files'];$i++){
-            $files_array[$i]['sep'] = $this->CSV2POST->established_separator( $files_array[$i]['fullpath'] );
-           
-            // we are ready to read the file
-            $file = new SplFileObject( $files_array[$i]['fullpath'] );
-            while (!$file->eof() ) {
-                $header_array = $file->fgetcsv( $files_array[$i]['sep'], '"' );
-                break;// we just need the first line to do a count()
-            }
-
-            // count number of fields
-            $files_array[$i]['fields'] = count( $header_array ); 
-      
-            foreach( $header_array as $key => $header){  
-                $files_array[$i]['originalheaders'][$key] = $header;
-                $files_array[$i]['sqlheaders'][$key] = $this->PHP->clean_sqlcolumnname( $header);        
-            }
-            
-            // store basename for each file
-            $files_array[$i]['basename'] = basename( $files_array[$i]['fullpath'] ); 
-            
-            // clean the basename for mysql ready table name (data treatment individual is the only one requiring all files to have a tablename but we will create it to use for other purposes)
-            $files_array[$i]['tablename'] = $wpdb->prefix . $this->PHP->clean_sqlcolumnname( $files_array[$i]['basename'] ); 
-
-            // although this will be the same for every file and a multifile project I'm adding it to avoid having to run 
-            // another query to establish how a file should be treated despite the treatment also being stored in project table. (just depends on procedural situation)
-            $files_array[$i]['datatreatment'] = $_POST['datatreatment'];
-        }
-         
-        // are headers sql ready
-        $nonesql_string = '';
-        for( $i=1;$i<=$files_array['total_files'];$i++){
-            foreach( $files_array[$i]['originalheaders'] as $key => $header){
-                if( $header !== $files_array[$i]['sqlheaders'][$key] ){
-                    $error = true;
-                    $nonesql_string .= $header . ' ( '.$files_array[$i]['sqlheaders'][$key].' ), ';
-                }
-            }        
-        } 
-     
-        // error at this stage indicates headers are not mysql ready so we need
-        // to create a mysql ready version of them
-        if( $error){
-            $nonesql_string = rtrim( $nonesql_string, ", ");
-            $this->UI->create_notice( 'CSV 2 POST creates a database table for your data. It names the columns using your .csv file headers and
-            creates a MySQL ready version of them. Your file itself will not be changed but the plugin will work with the MySQL version of them.',
-            'info', 'Small', __( 'Header Preparation' ) );
-        } 
-                       
-        // ensure ID column is valid
-        $cleanedidcolumn = '';
-        if(!empty( $_POST['uniqueidcolumn'] ) ){
-            $cleanedidcolumn = $this->CSV2POST->clean_sqlcolumnname( $_POST['uniqueidcolumn'] );
-            if(!in_array( $cleanedidcolumn, $files_array[1]['sqlheaders'] ) ){
-                $this->UI->create_notice( 'You entered '.$_POST['uniqueidcolumn'].' as your ID column 
-                it does not appear to be one of your .csv files column names. No project has been 
-                created. Please check the spelling of your column header designated as an ID column
-                with unique values then try again.', 'error', 'Small', __( "ID Column Doesn't Exist") );
-                return;
-            }
-        }
-                    
-        // perform multifile checks 
-        // $_POST['datatreatment'] == 'join' we must ensure no duplicates exist other than a selected ID column
-        // if $_POST['datatreatment'] == 'append' we must ensure all headers in all files are exactly the same
-        if( $files_array['total_files'] > 1){
-            
-            // we require an id column
-            if( $_POST['datatreatment'] == 'join' || $_POST['datatreatment'] == 'append' ){
-                if(empty( $_POST['uniqueidcolumn'] ) ){
-                    $this->UI->create_notice( __( 'Your data treatment requires an ID column to be entered. The column should exist in all of your files and hold
-                    the exact same values. This is used to ensure the correct rows from each file are joined.' ), 'error', 'Small', __( 'ID Column Required' ) );
-                    return;
-                }    
-            }
-            
-            // join + individual: ensure the id column field has a value and it exists in all files
-            if( $_POST['datatreatment'] == 'join' || $_POST['datatreatment'] == 'individual' ){
-                for( $i=1;$i<=$files_array['total_files'];$i++){
-                    $id_column_found = false;
-                    foreach( $files_array[$i]['sqlheaders'] as $key => $header){
-                        if( $header == $_POST['uniqueidcolumn'] ){
-                            $id_column_found = true;
-                        }        
-                    } 
-                    
-                    if(!$id_column_found){
-                        $this->UI->create_notice( "File $i does not appear to have your ID column which you have submitted as ".$_POST['uniqueidcolumn'].". This is required to make
-                        a connection from row to row over multiple files.", 'error', 'Small', 'No ID Column' );  
-                        return;
-                    }                               
-                }     
-            }
-            
-            // append: ensure all files have the exact same columns
-            if( $_POST['datatreatment'] == 'append' ){
-                for( $i=1;$i<=$files_array['total_files'];$i++){
-                    if( $files_array[$i]['sqlheaders'] !== $files_array[1]['sqlheaders'] ){
-                        $this->UI->create_notice( "File $i does not have the exact same headers as your first/main file. To use the append
-                        data treatment all .csv files must have the same headers.", 'error', 'Small', "Headers Don't Match");
-                        return;                    
-                    }    
-                }
-            }            
-        }         
-         
-        // set project name
-        if(empty( $_POST['newprojectname'] ) ){
-            $files_array['projectname'] = basename( $files_array[1]['fullpath'] );
+        // set project name - default to the date if user did not enter a name
+        if( empty( $_POST['newprojectname'] ) ){
+            $project_name = CSV2POST::datewp();
         }else{
-            $files_array['projectname'] = $_POST['newprojectname'];
+            $project_name = sanitize_text_field( $_POST['newprojectname'] );
+        } 
+
+        if( !is_numeric( $_POST['newprojectdatasource'] ) ) {
+            $this->UI->create_notice( __( 'The source ID submitted is invalid and your request to create a new project was denied.' ), 'error', 'Small', __( 'Invalid Source ID' ) );                    
+            return false;                
         }
         
-        // before we make changes to the database we need to ensure our predicted table name/s do not already exist
-        if( $_POST['datatreatment'] == 'single' || $_POST['datatreatment'] == 'append' || $_POST['datatreatment'] == 'join' ){
-            
-            $table_exists_result = $this->DB->does_table_exist( $files_array[1]['tablename'] );
-            
-            if( $table_exists_result){
-                // drop table if user entered the random number
-                if( $_POST['deleteexistingtable'] ==  $_POST['deleteexistingtablecode'] ){   
-                    $this->DB->drop_table( $files_array[1]['tablename'] );           
-                }else{                
-                    $this->UI->create_notice( 'A database table already exists named ' . $files_array[1]['tablename'] . '. Please delete
-                    the existing table if it is not in use or change the name of your .csv file a little.', 'error', 'Small', 'Table Exists Already' );
-                    return;  
-                } 
-            }
-            
-        }elseif( $_POST['datatreatment'] == 'individual' ){
-            for( $i=1;$i<=$files_array['total_files'];$i++){
-                $table_exists_result = $this->DB->does_table_exist( $files_array[$i]['tablename'] );
-                if( $table_exists_result){
-                    
-                    // drop table if user entered the random number
-                    if( $_POST['deleteexistingtable'] ==  $_POST['deleteexistingtablecode'] ){
-                        $this->CSV2POST->drop_table( $files_array[$i]['tablename'] );           
-                    }else{
-                        $this->UI->create_notice( 'A database table already exists named ' . $files_array[$i]['tablename'] . '. Please delete
-                        the existing table if it is not in use or change the name of .csv file '.$i.'.', 'error', 'Small', 'Table Exists Already' );
-                    }
-                    
-                    return;
-                }            
-            }               
-        }
-    
-        // store files as new sources in the c2psources table
-        for( $i=1;$i<=$files_array['total_files'];$i++){
-            if(!empty( $_POST['csvfile'.$i] ) ){
-                if( $i == 1){
-                    $parentfile_id = 0;
-                }else{
-                    $parentfile_id = $files_array[1]['sourceid'];
-                }
-                
-                // if not requesting individual tables for multifile or is single then use the first files tablename
-                if( $files_array['total_files'] > 1 && $_POST['datatreatment'] !== 'individual' || $_POST['datatreatment'] == 'single' ){
-                    $newtablename = $files_array[1]['tablename'];
-                }else{
-                    // individual treatment requested
-                    $newtablename = $files_array[$i]['tablename'];   
-                }
-                                 
-                $files_array[$i]['sourceid'] = $this->CSV2POST->insert_data_source(stripslashes_deep( $_POST['csvfile'.$i] ), $parentfile_id, $newtablename, 'localcsv', $files_array[$i], $_POST['uniqueidcolumn'] );        
-            }            
-        }        
-           
-        // create database table/s
-        if( $_POST['datatreatment'] == 'single' || $_POST['datatreatment'] == 'append' )
-        {
-            $sqlheaders_array = array();
-            foreach( $files_array[1]['sqlheaders'] as $key => $header){
-                $sqlheaders_array[$header] = 'nodetails';
-            }
-     
-            $this->CSV2POST->create_project_table( $files_array[1]['tablename'], $sqlheaders_array ); 
-            self::a_table_was_created( $files_array[1]['tablename'] );   
-        }
-        elseif( $_POST['datatreatment'] == 'join' )
-        {
-            // put all headers into a single array
-            $allheaders_array = array();
-            for( $i=1;$i<=$files_array['total_files'];$i++){
-                foreach( $files_array[$i]['sqlheaders'] as $key => $header){
-                    $allheaders_array[$header] = 'nodetails';      
-                }                     
-            }   
-            
-            $this->CSV2POST->create_project_table( $files_array[1]['tablename'], $allheaders_array ); 
-            self::a_table_was_created( $files_array[1]['tablename'] );
-        }       
-        elseif( $_POST['datatreatment'] == 'individual' )
-        {
-            for( $i=1;$i<=$files_array['total_files'];$i++){
-                
-                $sqlheaders_array = array();
-                foreach( $files_array[$i]['sqlheaders'] as $key => $header){
-                    $sqlheaders_array[$header] = 'nodetails';      
-                }   
-                
-                $this->CSV2POST->create_project_table( $files_array[$i]['tablename'], $sqlheaders_array );
-                self::a_table_was_created( $files_array[$i]['tablename'] );                  
-            }             
-        }       
+        $sourceid_array['source1'] = $_POST['newprojectdatasource'];
         
-        // create array of the source ID's
-        $sourceid_array = array();
-        for( $i=1;$i<=$files_array['total_files'];$i++){
-            $sourceid_array['source' . $i] = $files_array[$i]['sourceid'];
-        }        
-               
         // create a new project in the c2pprojects table
-        $projectid = $this->CSV2POST->insert_project( $files_array['projectname'], $sourceid_array, $_POST['datatreatment'] ); 
-      
+        $projectid = $this->CSV2POST->insert_project( $project_name, $sourceid_array ); 
+
         // ensure we have valid $projectid and set it as the current project
-        if(!is_numeric( $projectid) ){
+        if( !is_numeric( $projectid ) ){
             $this->UI->create_notice( __( 'The plugin could not finish inserting your new project to the database. This should never happen,
             please report it.' ), 'success', 'Small', __( 'Problem Detected When Creating Project' ) );                    
             return false;
         } 
-              
+         
         // if applicable we apply defaults to the projects settings array, initialize it with coded settings or users own defaults
-        $this->CSV2POST->apply_project_defaults( $projectid);
+        $this->CSV2POST->apply_project_defaults( $projectid );
 
         // from here on we can begin using the $project_array
-        $project_array = $this->CSV2POST->get_project( $projectid);      
-        $project_array = maybe_unserialize( $project_array->projectsettings);
+        $project_array = $this->CSV2POST->get_project( $projectid );      
+        $project_settings_array = maybe_unserialize( $project_array->projectsettings );
         
-        // add the id column to the project settings array, we indicate id columns within the source row
-        // however in some procedures we have the $project_array and do not need the source                   
-        $project_array['idcolumn'] = $cleanedidcolumn;
+        // add the id column to the project settings array
+        // this helps to avoid calling entire source record in some situations when querying imported data
+        // get the source data
+        $source_array = $this->CSV2POST->get_source( $sourceid_array['source1'] );                 
+        $project_settings_array['idcolumn'] = $source_array->idcolumn;
+        
+        $this->CSV2POST->update_project( $projectid, array( 'projectsettings' => maybe_serialize( $project_settings_array ) ), false );
 
-        // execute update query
-        $this->CSV2POST->update_project( $projectid, array( 'projectsettings' => maybe_serialize( $project_array ) ), false );
-        
         // set the current project
+        global $c2p_settings;
         $c2p_settings['currentproject'] = $projectid;
-        $this->CSV2POST->update_settings( $c2p_settings);
-        
+        $this->CSV2POST->update_settings( $c2p_settings );
+
         // update source rows with project id
+        // this is not required, I intend for multiple projects to use a single source, but in a simple setup
+        // where the user isnt doing anything advanced, this measure may help
         $this->CSV2POST->update_sources_withprojects( $projectid, $sourceid_array );
             
-        if(empty( $_POST['uniqueidcolumn'] ) ){
-            $this->UI->create_notice( __( 'You did not enter an ID column. You will not be able to update your data using an updated .csv file. If you
-            do not plan on updating your .csv file you can ignore this.' ), 'warning', 'Small', __( 'Data Updating Not Ready' ) );
-        }
-        
-        $this->UI->create_notice( 'Your project has been created and the ID is ' . $projectid . '. The
-        default project name is '.$files_array['projectname'].' which you can change using project settings.', 'success', 'Small', __( 'Project Created' ) );                    
+        $this->UI->create_notice( 'Your project has been created and the ID is ' . $projectid . '. The default project name is ' . $project_name . ' which you can change using project settings.', 'success', 'Small', __( 'Project Created' ) );                    
     }  
 
     public function a_table_was_created( $table_name){
@@ -2702,27 +2582,22 @@ class C2P_Requests {
         }
         
         // ensure is .csv file
-        if(pathinfo(ABSPATH . $_POST['newpath'], PATHINFO_EXTENSION) != 'csv' ){
+        if( pathinfo( ABSPATH . $_POST['newpath'], PATHINFO_EXTENSION) != 'csv' ){
             $this->UI->create_notice( __( "The submitted path does not point to a .csv file. This plugin only works with CSV files. Please see the WebTechGlobal plugin range for one that handles other file types and types of data storage."), 'error', 'Small', __( 'CSV File Required' ) );
             return;
-        }                
-        
-        $this->CSV2POST->update_sources_withpath( $_POST['newpath'], $_POST['datasource'] );
+        }  
         
         // get the source data
-        $source_array = $this->CSV2POST->get_source( $c2p_settings['currentproject'], $_POST['datasource'] );
+        $source_array = $this->CSV2POST->get_source( $_POST['datasource'] );
         
         // has the source row been deleted
         if( $source_array ){
             $this->UI->create_notice( __( 'No source row could be found in the sources table. This can happen if you have deleted the associated project.', 'csv2post' ), 'success', 'Small', __( 'Source Missing', 'csv2post' ) );
             return;            
-        }                       
+        }        
         
-        $theconfig_array = maybe_unserialize( $source_array->theconfig );
-        $theconfig_array['submittedpath'] = $_POST['newpath'];
-        $theconfig_array['fullpath'] = ABSPATH . $_POST['newpath'];
-        
-        $this->CSV2POST->update( $wpdb->c2psources, 'sourceid = ' . $_POST['datasource'], array( 'theconfig' => maybe_serialize( $theconfig_array ) ) );            
+        // apply the new path (updates the "path" column and updates the config array)
+        $this->CSV2POST->update_source_path( ABSPATH . $_POST['newpath'], $_POST['datasource'] );                              
     
         $this->UI->create_notice( __( 'The request has been complete and the source record has been updated. Any projects using the
         source will now also use the new .csv file.' ), 'success', 'Small', 'Source Path Updated' );    
@@ -2861,7 +2736,396 @@ class C2P_Requests {
         
         $this->UI->create_notice( "A total of $posts_deleted posts were deleted and $rows_deleted imported rows were delete.", 'success', 'Small', __( 'Duplicate Deletion Finished', 'csv2post' ) );
     }
-      
+     
+    /**
+    * save capability settings for plugins pages
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.32
+    * @version 1.0.0
+    */
+    public function pagecapabilitysettings () {
+        // get the capabilities array from WP core
+        $capabilities_array = $this->WPCore->capabilities();
+
+        // get stored capability settings 
+        $saved_capability_array = get_option( 'csv2post_capabilities' );
+        
+        // get the tab menu 
+        $pluginmenu = $this->TabMenu->menu_array();
+                
+        // to ensure no extra values are stored (more menus added to source) loop through page array
+        foreach( $pluginmenu as $key => $page_array ) {
+            
+            // ensure $_POST value is also in the capabilities array to ensure user has not hacked form, adding their own capabilities
+            if( isset( $_POST['pagecap' . $page_array['name'] ] ) && in_array( $_POST['pagecap' . $page_array['name'] ], $capabilities_array ) ) {
+                $saved_capability_array['pagecaps'][ $page_array['name'] ] = $_POST['pagecap' . $page_array['name'] ];
+            }
+                
+        }
+          
+        update_option( 'csv2post_capabilities', $saved_capability_array );
+         
+        $this->UI->create_notice( __( 'Capabilities for this plugins pages have been stored. Due to this being security related I recommend
+        testing before you logout. Ensure that each role only has access to the plugin pages you intend.' ),
+        'success', 'Small', __( 'Page Capabilities Updated' ) );        
+    }
+    
+    /**
+    * re-checks submitted sources directory and switches to a newer file if found
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function rechecksourcedirectory () {
+        // validation
+        if( !is_numeric( $_POST['datasourceidforrecheck'] ) ) {
+            $this->UI->create_notice( "The source ID you submitted is not valid. A numeric ID is required.", 'error', 'Small', __( 'Invalid Source ID', 'csv2post' ) );    
+            return;
+        }
+
+        // recheck the source
+        $recheck_outcome_array =  $this->CSV2POST->recheck_source_directory( $_POST['datasourceidforrecheck'], true, true, false, false );
+    
+        if( isset( $recheck_outcome_array['error'] ) && $recheck_outcome_array['error'] === true ) {
+            $this->UI->create_notice( $recheck_outcome_array['message'], 'success', 'Small', __( 'Problem Detected', 'csv2post' ) );
+            return;        
+        }        
+        
+        if( isset( $recheck_outcome_array['outcome'] ) && $recheck_outcome_array['outcome'] === false ) {
+            $this->UI->create_notice( $recheck_outcome_array['message'], 'info', 'Small', __( 'No New Files', 'csv2post' ) );
+            return;        
+        }        
+        
+        if( isset( $recheck_outcome_array['outcome'] ) && $recheck_outcome_array['outcome'] === true ) {
+            $this->UI->create_notice( $recheck_outcome_array['message'], 'success', 'Small', __( 'New File Detected', 'csv2post' ) );
+            return;        
+        }
+
+        $this->UI->create_notice( __( 'The plugin checked the directory but the information returned is unexpected. The plugin may have switched to a new file if that is what you expected to happen but you must check and be sure.', 'csv2post' ), 'success', 'Small', __( 'Unknown State', 'csv2post' ) );       
+    }    
+    
+    /**
+    * processes request to import a new .csv file to an existing sources directory
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function urlimporttoexistingsource () {
+        // perform sanitization
+        $url = sanitize_url( $_POST['newdatasourcetheurl'] );
+
+        // we cannot continue if santization results in a different path
+        if( $url !== $_POST['newdatasourcetheurl'] ) {
+            $this->UI->create_notice( __( 'Sanitization resulted in a change to your URL. This would only happen if you entered invalid characters. Please try again.', 'csv2post' ), 'error', 'Small', __( 'Invalid URL Entered', 'csv2post' ) );
+            return false;            
+        }
+        
+        // ensure user is attempting to transfer a .csv file, this concludes validation
+        $path_parts = pathinfo( $url );
+        if( $path_parts['extension'] !== 'csv' ) {
+            $this->UI->create_notice( __( 'CSV 2 POST focuses on .csv files only. Please see the WebTechGlobal plugin range for other solutions.', 'csv2post' ), 'error', 'Small', __( 'Only .csv Files Allowed', 'csv2post' ) );
+            return false;
+        }
+        
+        // get data source - directory value only
+        $source_array = $this->CSV2POST->get_source( $_POST['newprojectdatasource'] );
+        if( !$source_array ) {
+            $this->UI->create_notice( __( 'Problem obtaining source data. Please seek support from WebTechGlobl.', 'csv2post' ), 'error', 'Small', __( 'Source Query Faileda', 'csv2post' ) );
+            return false;
+        }
+                   
+        $uploads = array( 'path' => $source_array->directory, 
+                          'url' => $url, 
+                          'subdir' => '',// use to create a new directory
+                          'error' => false 
+        );
+          
+        $result = $this->Files->file_from_url( $url, $uploads, false );
+        
+        if( isset( $result['error'] ) && $result['error'] ) {
+            $type = 'error';
+        } else {
+            $type = 'success';
+        }
+            
+        $this->UI->create_notice( $result['message'], $type, 'Small', __( 'File Import Result', 'csv2post' ) );
+    }  
+    
+    /**
+    * upload .csv file and place it in the directory of an existing data source
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function uploadfiletodatasource () {
+        // get data source - directory value only
+        $source_array = $this->CSV2POST->get_source( $_POST['datasourcefornewfile'] );
+        if( !$source_array ) {
+            $this->UI->create_notice( __( 'The data sources record could not be found. Please seek support from WebTechGlobal.', 'csv2post' ), 'error', 'Small', __( 'Source Query Faileda', 'csv2post' ) );
+            return false;
+        }
+                   
+        $uploads = array( 'path' => $source_array->directory, 
+                          'subdir' => '',// use to create a new directory
+                          'error' => false 
+        ); 
+                
+        $file_import_result = $this->Files->singlefile_uploader( $_FILES['uploadsinglefile'], $uploads );
+                               
+        // let the user know it has all gone very wrong and they are DOOMED! 
+        if( !$file_import_result['outcome'] ) {             
+            $this->UI->create_notice( $file_import_result['message'], 'error', 'Small', __( 'File Upload Failed', 'csv2post' ) );
+            return;    
+        }
+                          
+        $this->UI->create_notice( $file_import_result['message'], 'success', 'Small', __( 'File Uploaded', 'csv2post' ) );    
+    }
+    
+    /**
+    * Import new .csv file via URL and create a new data source
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function createurlcsvdatasource() {
+       global $wpdb, $c2p_settings;
+        $C2P_Files = CSV2POST::load_class( 'C2P_Files', 'class-files.php', 'classes' );
+
+        // URL is a required field 
+        if( empty( $_POST['newdatasourcetheurl2'] ) ){
+            $this->UI->create_notice( __( 'Please enter the URL to your .csv file.', 'csv2post' ), 'error', 'Small', __( 'URL Field Required', 'csv2post' ) );
+            return;
+        }
+                            
+        // perform sanitization
+        $url = sanitize_url( $_POST['newdatasourcetheurl2'] );
+        $path = sanitize_text_field( $_POST['newdatasourcethepath2'] );
+                
+        // ensure user is attempting to transfer a .csv file
+        $path_parts = pathinfo( $url );
+        if( $path_parts['extension'] !== 'csv' ) {
+            $this->UI->create_notice( __( 'CSV 2 POST focuses on .csv files only. Please see the WebTechGlobal plugin range for other solutions.', 'csv2post' ), 'error', 'Small', __( 'Only .csv Files Allowed', 'csv2post' ) );
+            return false;
+        }
+        
+        $uploads = array( 'path' => $path, 
+                          'subdir' => '',// use to create a new directory
+                          'error' => false 
+        ); 
+           
+        // import file using URL to the giving path  
+        $file_import_result = $C2P_Files->file_from_url( $url, $uploads, false );       
+        if( !$file_import_result['outcome'] ) {             
+            $this->UI->create_notice( $file_import_result['failurereason'], 'error', 'Small', __( 'File Transfer Failed', 'csv2post' ) );
+            return;    
+        } 
+        
+        // build array of information for this file (this can be customized to work with multiple files)
+        $files_array = array( 'total_files' => 1 );
+                
+        // add path for this file to $files_array which is then stored in data source table
+        $files_array[1]['fullpath'] = $file_import_result['filepath'];
+            
+        // create success notice regarding file processing 
+        $this->UI->create_notice( $file_import_result['message'], 'success', 'Small', __( 'File Transferred', 'csv2post' ) );   
+                
+        // establish separator
+        $files_array[1]['sep'] = $this->Files->established_separator( $file_import_result['filepath'] );
+        
+        // we are ready to read the file
+        $file = new SplFileObject( $file_import_result['filepath'] );
+        while (!$file->eof() ) {
+            $header_array = $file->fgetcsv( $files_array[1]['sep'], '"' );
+            break;// we just need the first line to do a count()
+        }       
+        
+        // count number of fields
+        $files_array[1]['fields'] = count( $header_array );
+        
+        // create arrays of original headers and one of sql prepared headers
+        foreach( $header_array as $key => $header ){  
+            $files_array[1]['originalheaders'][$key] = $header;
+            $files_array[1]['sqlheaders'][$key] = $this->PHP->clean_sqlcolumnname( $header );        
+        }    
+        
+        // set basename
+        $files_array[1]['basename'] = basename( $file_import_result['filepath'] );            
+
+        // use basename to create database table name
+        $files_array[1]['tablename'] = $wpdb->prefix . $this->PHP->clean_sqlcolumnname( $files_array[1]['basename'] );
+        
+        // set data treatment, the form allows a single file so 'single' is applied
+        $files_array[1]['datatreatment'] = 'single';
+        
+        // ensure ID column is valid
+        $cleanedidcolumn = '';
+        if(!empty( $_POST['uniqueidcolumn'] ) ){
+            $cleanedidcolumn = $this->PHP->clean_sqlcolumnname( $_POST['uniqueidcolumn'] );
+            if(!in_array( $cleanedidcolumn, $files_array[1]['sqlheaders'] ) ){
+                $this->UI->create_notice( 'You entered '.$_POST['uniqueidcolumn'].' as your ID column but it
+                does not match any column header in your .csv file.', 'error', 'Small', __( "Invalid ID Column") );
+                return;
+            }
+        } 
+        
+        // set project name
+        if( empty( $_POST['newprojectname'] ) ){
+            $files_array['projectname'] = basename( $files_array[1]['fullpath'] );
+        }else{
+            $files_array['projectname'] = $_POST['newprojectname'];
+        }
+        
+        // does planned database table name exist                       
+        $table_exists_result = $this->DB->does_table_exist( $files_array[1]['tablename'] );
+        if( $table_exists_result){
+            // drop table if user entered the random number
+            if( $_POST['deleteexistingtable'] ==  $_POST['deleteexistingtablecode'] ){   
+                $this->DB->drop_table( $files_array[1]['tablename'] );           
+            }else{                
+                $this->UI->create_notice( 'A database table already exists named ' . $files_array[1]['tablename'] . '. Please delete
+                the existing table if it is not in use or change the name of your .csv file a little.', 'error', 'Small', 'Table Exists Already' );
+                return;  
+            } 
+        }
+        
+        // make entry in the c2psources table
+        $files_array[1]['sourceid'] = $this->CSV2POST->insert_data_source( $file_import_result['filepath'], 0, $files_array[1]['tablename'], 'localcsv', $files_array[1], $cleanedidcolumn );
+        
+        // create database table for importing data into, this is where we prepare it 
+        $sqlheaders_array = array();
+        foreach( $files_array[1]['sqlheaders'] as $key => $header ){
+            $sqlheaders_array[$header] = 'nodetails';
+        }
+
+        $this->CSV2POST->create_project_table( $files_array[1]['tablename'], $sqlheaders_array ); 
+        self::a_table_was_created( $files_array[1]['tablename'] );                                                              
+                    
+        $this->UI->create_notice( __( 'Your new source of data has been setup. You can now create a project using this source. The source ID is ' . $files_array[1]['sourceid'], 'csv2post' ), 'success', 'Small', __( 'Data Source Ready' ) );  
+    
+    }
+    
+    /**
+    * uploads new .csv file and uses it to create a new source
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function createuploadcsvdatasource () {
+        global $wpdb;
+        
+        // perform sanitization
+        $path = sanitize_text_field( $_POST['newdatasourcethepath1'] );
+        $id_column = sanitize_text_field( $_POST['uniqueidcolumn1'] ); 
+        $project_name = sanitize_text_field( $_POST['newprojectname1'] ); 
+                
+        // handle file upload, create the uploads array
+        $uploads = array( 'path' => $path, 
+                          'subdir' => '',// use to create a new directory
+                          'error' => false 
+        ); 
+                
+        $file_import_result = $this->Files->singlefile_uploader( $_FILES['uploadsinglefile1'], $uploads );
+             
+        // let the user know it has all gone very wrong and they are DOOMED! 
+        if( $file_import_result['outcome'] === false ) {   
+            $this->UI->create_notice( $file_import_result['message'], 'error', 'Small', __( 'File Upload Failed', 'csv2post' ) );
+            return;    
+        }
+
+        // build array of information for this file (this can be customized to work with multiple files)
+        $files_array = array( 'total_files' => 1 );
+            
+        // add path for this file to $files_array which is then stored in data source table
+        $files_array[1]['fullpath'] = $file_import_result['filepath'];
+            
+        // create success notice regarding file processing 
+        $this->UI->create_notice( $file_import_result['message'], 'success', 'Small', __( 'File Transferred', 'csv2post' ) );   
+                
+        // establish separator
+        $files_array[1]['sep'] = $this->Files->established_separator( $file_import_result['filepath'] );
+        
+        // we are ready to read the file
+        $file = new SplFileObject( $file_import_result['filepath'] );
+        while (!$file->eof() ) {
+            $header_array = $file->fgetcsv( $files_array[1]['sep'], '"' );
+            break;// we just need the first line to do a count()
+        }       
+        
+        // count number of fields
+        $files_array[1]['fields'] = count( $header_array );
+        
+        // create arrays of original headers and one of sql prepared headers
+        foreach( $header_array as $key => $header ){  
+            $files_array[1]['originalheaders'][$key] = $header;
+            $files_array[1]['sqlheaders'][$key] = $this->PHP->clean_sqlcolumnname( $header );        
+        }    
+        
+        // set basename
+        $files_array[1]['basename'] = basename( $file_import_result['filepath'] );            
+
+        // use basename to create database table name
+        $files_array[1]['tablename'] = $wpdb->prefix . $this->PHP->clean_sqlcolumnname( $files_array[1]['basename'] );
+        
+        // set data treatment, the form allows a single file so 'single' is applied
+        $files_array[1]['datatreatment'] = 'single';
+        
+        // ensure ID column is valid
+        $cleanedidcolumn = '';
+        if( !empty( $id_column ) && is_string( $id_column ) ){
+            $cleanedidcolumn = $this->PHP->clean_sqlcolumnname( $id_column );
+            if(!in_array( $cleanedidcolumn, $files_array[1]['sqlheaders'] ) ){
+                $this->UI->create_notice( 'You entered ' . $id_column . ' as your ID column but it does not match any column header in your .csv file.', 'error', 'Small', __( "Invalid ID Column") );
+                return;
+            }
+        } 
+        
+        // set project name
+        if( empty( $project_name ) ){
+            $files_array['projectname'] = basename( $files_array[1]['fullpath'] );
+        }else{
+            $files_array['projectname'] = $project_name;
+        }
+        
+        // does planned database table name exist                       
+        $table_exists_result = $this->DB->does_table_exist( $files_array[1]['tablename'] );
+        if( $table_exists_result){
+            // drop table if user entered the random number
+            if( $_POST['deleteexistingtable'] ==  $_POST['deleteexistingtablecode'] ){   
+                $this->DB->drop_table( $files_array[1]['tablename'] );           
+            }else{                
+                $this->UI->create_notice( 'A database table already exists named ' . $files_array[1]['tablename'] . '. Please delete the existing table if it is not in use or change the name of your .csv file a little.', 'error', 'Small', 'Table Exists Already' );
+                return;  
+            } 
+        }
+        
+        // make entry in the c2psources table
+        $files_array[1]['sourceid'] = $this->CSV2POST->insert_data_source( $file_import_result['filepath'], 0, $files_array[1]['tablename'], 'localcsv', $files_array[1], $cleanedidcolumn );
+        
+        // create database table for importing data into, this is where we prepare it 
+        $sqlheaders_array = array();
+        foreach( $files_array[1]['sqlheaders'] as $key => $header ){
+            $sqlheaders_array[$header] = 'nodetails';
+        }
+
+        $this->CSV2POST->create_project_table( $files_array[1]['tablename'], $sqlheaders_array ); 
+        self::a_table_was_created( $files_array[1]['tablename'] );                                                              
+                    
+        $this->UI->create_notice( __( 'Your new source of data has been setup. You can now create a project using this source. The source ID is ' . $files_array[1]['sourceid'], 'csv2post' ), 'success', 'Small', __( 'Data Source Ready' ) );  
+  
+    }
+    
     #################################################################
     #                                                               #
     #              BETA TESTING FUNCTIONS BEGIN HERE                #
@@ -2905,5 +3169,425 @@ class C2P_Requests {
                                   
    
     }
+    
+    /**
+    * Processes a beta test form
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function betatest4t1() {    
+        $C2P_Files = CSV2POST::load_class( 'C2P_Files', 'class-files.php', 'classes' );
+        
+        // perform sanitization
+        $url = sanitize_url( $_POST['newdatasourcetheurl'] );
+        
+        // ensure user is attempting to transfer a .csv file, this concludes validation
+        $path_parts = pathinfo( $url );
+        if( $path_parts['extension'] !== 'csv' ) {
+            $this->UI->create_notice( __( 'CSV 2 POST focuses on .csv files only. Please see the WebTechGlobal plugin
+            range for other solutions.', 'csv2post' ), 'error', 'Small', __( 'Only .csv Files Allowed', 'csv2post' ) );
+            return false;
+        }
+          
+        $result = $C2P_Files->file_from_url( $url, null, false );
+        
+        if( $result ) {
+            
+            $this->UI->create_notice( $result['message'], 'success', 'Small', __( 'File Imported', 'csv2post' ) );
+               
+        } else {
+            
+            var_dump( $result );   
+             
+        }
+    }    
+    
+    /**
+    * About
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function betatest4t2() {
+        global $wpdb, $c2p_settings;
+        $C2P_Files = CSV2POST::load_class( 'C2P_Files', 'class-files.php', 'classes' );
+
+        if(empty( $_POST['newdatasourcetheurl'] ) ){
+            $this->UI->create_notice( __( 'Please enter the URL to your .csv file.', 'csv2post' ), 'error', 'Small', __( 'URL Field Required', 'csv2post' ) );
+            return;
+        }
+                            
+        // perform sanitization
+        $url = sanitize_url( $_POST['newdatasourcetheurl'] );
+        
+        // ensure user is attempting to transfer a .csv file
+        $path_parts = pathinfo( $url );
+        if( $path_parts['extension'] !== 'csv' ) {
+            $this->UI->create_notice( __( 'CSV 2 POST focuses on .csv files only. Please see the WebTechGlobal plugin
+            range for other solutions.', 'csv2post' ), 'error', 'Small', __( 'Only .csv Files Allowed', 'csv2post' ) );
+            return false;
+        }
+        
+        // import file using URL to the giving path  
+        $file_import_result = $C2P_Files->file_from_url( $url, null, false );       
+        if( !$file_import_result['outcome'] ) {             
+            $this->UI->create_notice( $file_import_result['failurereason'], 'error', 'Small', __( 'File Transfer Failed', 'csv2post' ) );
+            return;    
+        } 
+        
+        // build array of information for this file (this can be customized to work with multiple files)
+        $files_array = array( 'total_files' => 1 );
+                
+        // add path for this file to $files_array which is then stored in data source table
+        $files_array[1]['fullpath'] = $file_import_result['file']['path'];
+            
+        // create success notice regarding file processing 
+        $this->UI->create_notice( $file_import_result['message'], 'success', 'Small', __( 'File Transferred', 'csv2post' ) );   
+                
+        // establish separator
+        $files_array[1]['sep'] = $this->Files->established_separator( $file_import_result['file']['path'] );
+        
+        // we are ready to read the file
+        $file = new SplFileObject( $file_import_result['file']['path'] );
+        while (!$file->eof() ) {
+            $header_array = $file->fgetcsv( $files_array[1]['sep'], '"' );
+            break;// we just need the first line to do a count()
+        }       
+        
+        // count number of fields
+        $files_array[1]['fields'] = count( $header_array );
+        
+        // create arrays of original headers and one of sql prepared headers
+        foreach( $header_array as $key => $header ){  
+            $files_array[1]['originalheaders'][$key] = $header;
+            $files_array[1]['sqlheaders'][$key] = $this->PHP->clean_sqlcolumnname( $header );        
+        }    
+        
+        // set basename
+        $files_array[1]['basename'] = basename( $file_import_result['file']['path'] );            
+
+        // use basename to create database table name
+        $files_array[1]['tablename'] = $wpdb->prefix . $this->PHP->clean_sqlcolumnname( $files_array[1]['basename'] );
+        
+        // set data treatment, the form allows a single file so 'single' is applied
+        $files_array[1]['datatreatment'] = 'single';
+        
+        // ensure ID column is valid
+        $cleanedidcolumn = '';
+        if(!empty( $_POST['uniqueidcolumn'] ) ){
+            $cleanedidcolumn = $this->PHP->clean_sqlcolumnname( $_POST['uniqueidcolumn'] );
+            if(!in_array( $cleanedidcolumn, $files_array[1]['sqlheaders'] ) ){
+                $this->UI->create_notice( 'You entered '.$_POST['uniqueidcolumn'].' as your ID column but it
+                does not match any column header in your .csv file.', 'error', 'Small', __( "Invalid ID Column") );
+                return;
+            }
+        } 
+        
+        // set project name
+        if( empty( $_POST['newprojectname'] ) ){
+            $files_array['projectname'] = basename( $files_array[1]['fullpath'] );
+        }else{
+            $files_array['projectname'] = $_POST['newprojectname'];
+        }
+        
+        // does planned database table name exist                       
+        $table_exists_result = $this->DB->does_table_exist( $files_array[1]['tablename'] );
+        if( $table_exists_result){
+            // drop table if user entered the random number
+            if( $_POST['deleteexistingtable'] ==  $_POST['deleteexistingtablecode'] ){   
+                $this->DB->drop_table( $files_array[1]['tablename'] );           
+            }else{                
+                $this->UI->create_notice( 'A database table already exists named ' . $files_array[1]['tablename'] . '. Please delete
+                the existing table if it is not in use or change the name of your .csv file a little.', 'error', 'Small', 'Table Exists Already' );
+                return;  
+            } 
+        }
+        
+        // make entry in the c2psources table
+        $files_array[1]['sourceid'] = $this->CSV2POST->insert_data_source( $file_import_result['file']['path'], 0, $files_array[1]['tablename'], 'localcsv', $files_array[1], $cleanedidcolumn );
+        
+        // create database table for importing data into, this is where we prepare it 
+        $sqlheaders_array = array();
+        foreach( $files_array[1]['sqlheaders'] as $key => $header ){
+            $sqlheaders_array[$header] = 'nodetails';
+        }
+
+        $this->CSV2POST->create_project_table( $files_array[1]['tablename'], $sqlheaders_array ); 
+        self::a_table_was_created( $files_array[1]['tablename'] );                                                              
+                    
+        $this->UI->create_notice( __( 'Your new source of data has been setup. You can now create a project using this source. The source ID is ' . $files_array[1]['sourceid'], 'csv2post' ), 'success', 'Small', __( 'Data Source Ready' ) );  
+    }
+    
+    /**
+    * Beta test - tests single file uploader
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function betatest4t4() {    
+        $C2P_Files = CSV2POST::load_class( 'C2P_Files', 'class-files.php', 'classes' );    
+        
+        $file_import_result = $C2P_Files->singlefile_uploader( $_FILES['newsourcefileupload'] );
+        
+        // let the user know it has all gone very wrong and they are DOOMED! 
+        if( !$file_import_result['outcome'] ) {             
+            $this->UI->create_notice( $file_import_result['message'], 'error', 'Small', __( 'File Upload Failed', 'csv2post' ) );
+            return;    
+        }
+        
+        $this->UI->create_notice( $file_import_result['message'], 'success', 'Small', __( 'File Uploaded', 'csv2post' ) );
+
+    }  
+      
+    /**
+    * Beta test - tests single file uploader
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function betatest4t5() {    
+        $C2P_Files = CSV2POST::load_class( 'C2P_Files', 'class-files.php', 'classes' );    
+        
+        $file_import_result = $C2P_Files->singlefile_uploader( $_FILES['uploadsinglefile'], array( 'path' => stripslashes( $_POST['uploadsinglefilepath'] ), 'error' => false ) );
+                               
+        // let the user know it has all gone very wrong and they are DOOMED! 
+        if( !$file_import_result['outcome'] ) {             
+            $this->UI->create_notice( $file_import_result['message'], 'error', 'Small', __( 'File Upload Failed', 'csv2post' ) );
+            return;    
+        }
+        
+        $this->UI->create_notice( $file_import_result['message'], 'success', 'Small', __( 'File Uploaded', 'csv2post' ) );
+
+    }
+
+    /**
+    * Beta test - tests single file uploader
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function betatest4t6() {    
+        $sourceid_array = array();// increment string key: source1,source2,source3 (not sure why I done this but stick with it for now)
+        
+        // set project name - default to the date if user did not enter a name
+        if( empty( $_POST['newprojectname'] ) ){
+            $project_name = CSV2POST::datewp();
+        }else{
+            $project_name = sanitize_text_field( $_POST['newprojectname'] );
+        } 
+
+        if( !is_numeric( $_POST['newprojectdatasource'] ) ) {
+            $this->UI->create_notice( __( 'The source ID submitted is invalid and your request to create a new project was denied.' ), 'error', 'Small', __( 'Invalid Source ID' ) );                    
+            return false;                
+        }
+        
+        $sourceid_array['source1'] = $_POST['newprojectdatasource'];
+        
+        // create a new project in the c2pprojects table
+        $projectid = $this->CSV2POST->insert_project( $project_name, $sourceid_array ); 
+
+        // ensure we have valid $projectid and set it as the current project
+        if( !is_numeric( $projectid ) ){
+            $this->UI->create_notice( __( 'The plugin could not finish inserting your new project to the database. This should never happen,
+            please report it.' ), 'success', 'Small', __( 'Problem Detected When Creating Project' ) );                    
+            return false;
+        } 
+         
+        // if applicable we apply defaults to the projects settings array, initialize it with coded settings or users own defaults
+        $this->CSV2POST->apply_project_defaults( $projectid );
+
+        // from here on we can begin using the $project_array
+        $project_array = $this->CSV2POST->get_project( $projectid );      
+        $project_settings_array = maybe_unserialize( $project_array->projectsettings );
+        
+        // add the id column to the project settings array
+        // this helps to avoid calling entire source record in some situations when querying imported data
+        // get the source data
+        $source_array = $this->CSV2POST->get_source( $sourceid_array['source1'] );                 
+        $project_settings_array['idcolumn'] = $source_array->idcolumn;
+        
+        $this->CSV2POST->update_project( $projectid, array( 'projectsettings' => maybe_serialize( $project_settings_array ) ), false );
+
+        // set the current project
+        global $c2p_settings;
+        $c2p_settings['currentproject'] = $projectid;
+        $this->CSV2POST->update_settings( $c2p_settings );
+
+        // update source rows with project id
+        // this is not required, I intend for multiple projects to use a single source, but in a simple setup
+        // where the user isnt doing anything advanced, this measure may help
+        $this->CSV2POST->update_sources_withprojects( $projectid, $sourceid_array );
+            
+        $this->UI->create_notice( 'Your project has been created and the ID is ' . $projectid . '. The default project name is ' . $project_name . ' which you can change using project settings.', 'success', 'Small', __( 'Project Created' ) );                    
+    }     
+    
+    /**
+    * About
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function betatest4t18() {
+    
+        $recheck_outcome_array =  $this->CSV2POST->recheck_source_directory( $_POST['datasourceidforrecheck'], true, true, false, false );
+    
+        var_dump( $recheck_outcome_array );
+    }
+    
+    /**
+    * Processes a beta test form
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function betatest4t19() {    
+        $C2P_Files = CSV2POST::load_class( 'C2P_Files', 'class-files.php', 'classes' );
+        
+        // perform sanitization
+        $url = sanitize_url( $_POST['newdatasourcetheurl'] );
+        $path = sanitize_text_field( $_POST['newdatasourcethepath'] );
+                        
+        // we cannot continue if santization results in a different path
+        if( $url !== $_POST['newdatasourcetheurl'] ) {
+            $this->UI->create_notice( __( 'Sanitization resulted in a change to your URL. This would only happen if you entered invalid characters. Please try again.', 'csv2post' ), 'error', 'Small', __( 'Invalid URL Entered', 'csv2post' ) );
+            return false;            
+        }
+        if( $path !== $_POST['newdatasourcethepath'] ) {
+            $this->UI->create_notice( __( 'Sanitization of your path resulted in a change. This means your entered path has invalid characters. Please try agsin.', 'csv2post' ), 'error', 'Small', __( 'Invalid Path Entered', 'csv2post' ) );
+            return false;            
+        }
+        
+        // ensure user is attempting to transfer a .csv file, this concludes validation
+        $path_parts = pathinfo( $url );
+        if( $path_parts['extension'] !== 'csv' ) {
+            $this->UI->create_notice( __( 'CSV 2 POST focuses on .csv files only. Please see the WebTechGlobal plugin
+            range for other solutions.', 'csv2post' ), 'error', 'Small', __( 'Only .csv Files Allowed', 'csv2post' ) );
+            return false;
+        }
+        
+        $uploads = array( 'path' => $path, 
+                          'url' => $url, 
+                          'subdir' => '',// use to create a new directory
+                          'error' => false 
+        );
+          
+        $result = $C2P_Files->file_from_url( $url, $uploads, false );
+        
+        if( $result ) {
+            
+            $this->UI->create_notice( $result['message'], 'success', 'Small', __( 'File Imported', 'csv2post' ) );
+               
+        } else {
+            
+            $this->UI->create_notice( 'Test Success', 'success', 'Small', __( 'Test Success', 'csv2post' ) );  
+             
+        }
+    }  
+    
+    /**
+    * Processes a beta test form
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function betatest4t20() {    
+        $C2P_Files = CSV2POST::load_class( 'C2P_Files', 'class-files.php', 'classes' );
+        
+        // perform sanitization
+        $url = sanitize_url( $_POST['newdatasourcetheurl'] );
+
+        // we cannot continue if santization results in a different path
+        if( $url !== $_POST['newdatasourcetheurl'] ) {
+            $this->UI->create_notice( __( 'Sanitization resulted in a change to your URL. This would only happen if you entered invalid characters. Please try again.', 'csv2post' ), 'error', 'Small', __( 'Invalid URL Entered', 'csv2post' ) );
+            return false;            
+        }
+        
+        // ensure user is attempting to transfer a .csv file, this concludes validation
+        $path_parts = pathinfo( $url );
+        if( $path_parts['extension'] !== 'csv' ) {
+            $this->UI->create_notice( __( 'CSV 2 POST focuses on .csv files only. Please see the WebTechGlobal plugin
+            range for other solutions.', 'csv2post' ), 'error', 'Small', __( 'Only .csv Files Allowed', 'csv2post' ) );
+            return false;
+        }
+        
+        // get data source - directory value only
+        $source_array = $this->CSV2POST->get_source( $_POST['newprojectdatasource'] );
+        if( !$source_array ) {
+            $this->UI->create_notice( __( 'Problem obtaining source data. Please seek support from WebTechGlobl.', 'csv2post' ), 'error', 'Small', __( 'Source Query Faileda', 'csv2post' ) );
+            return false;
+        }
+                   
+        $uploads = array( 'path' => $source_array->directory, 
+                          'url' => $url, 
+                          'subdir' => '',// use to create a new directory
+                          'error' => false 
+        );
+          
+        $result = $C2P_Files->file_from_url( $url, $uploads, false );
+        
+        if( $result['outcome'] === true ) {
+            
+            $this->UI->create_notice( $result['message'], 'success', 'Small', __( 'File Imported', 'csv2post' ) );
+               
+        } else {
+            
+            $this->UI->create_notice( 'Test Success', 'success', 'Small', __( 'Test Success', 'csv2post' ) );   
+             
+        }
+    }  
+    
+    /**
+    * Beta test - tests single file uploader
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function betatest4t21() {    
+        $C2P_Files = CSV2POST::load_class( 'C2P_Files', 'class-files.php', 'classes' );    
+        
+        // get data source - directory value only
+        $source_array = $this->CSV2POST->get_source( $_POST['datasourcefornewfile'] );
+        if( !$source_array ) {
+            $this->UI->create_notice( __( 'Problem obtaining source data. Please seek support from WebTechGlobl.', 'csv2post' ), 'error', 'Small', __( 'Source Query Faileda', 'csv2post' ) );
+            return false;
+        }
+                   
+        $uploads = array( 'path' => $source_array->directory, 
+                          'subdir' => '',// use to create a new directory
+                          'error' => false 
+        ); 
+                
+        $file_import_result = $C2P_Files->singlefile_uploader( $_FILES['uploadsinglefile'], $uploads );
+                               
+        // let the user know it has all gone very wrong and they are DOOMED! 
+        if( !$file_import_result['outcome'] ) {             
+            $this->UI->create_notice( $file_import_result['message'], 'error', 'Small', __( 'File Upload Failed', 'csv2post' ) );
+            return;    
+        }
+               
+        
+        $this->UI->create_notice( $file_import_result['message'], 'success', 'Small', __( 'File Uploaded', 'csv2post' ) );
+
+    }
+         
 }       
 ?>

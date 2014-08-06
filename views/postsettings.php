@@ -53,17 +53,51 @@ class CSV2POST_Postsettings_View extends CSV2POST_View {
         $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
                         
         // load the current project row and settings from that row
-        $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
-        $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
-                
-        parent::setup( $action, $data );
-        
-        $this->add_meta_box( 'postsettings-basicpostoptions', __( 'Common Options', 'csv2post' ), array( $this, 'postbox_postsettings_basicpostoptions' ), 'normal','default',array( 'formid' => 'basicpostoptions' ) );      
-        $this->add_meta_box( 'postsettings-databasedoptions', __( 'Options Requiring Data', 'csv2post' ), array( $this, 'postbox_postsettings_databasedoptions' ), 'normal','default',array( 'formid' => 'databasedoptions' ) );
-        $this->add_meta_box( 'postsettings-authoroptions', __( 'Author Options', 'csv2post' ), array( $this, 'postbox_postsettings_authoroptions' ), 'normal','default',array( 'formid' => 'authoroptions' ) );
-        $this->add_meta_box( 'postsettings-defaulttagrules', __( 'Tag Rules', 'csv2post' ), array( $this, 'postbox_postsettings_defaulttagrules' ), 'normal','default',array( 'formid' => 'defaulttagrules' ) );
+        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
+            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
+            $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
+     
+            parent::setup( $action, $data );
+            
+            $this->add_meta_box( 'postsettings-basicpostoptions', __( 'Common Options', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'basicpostoptions' ) );      
+            $this->add_meta_box( 'postsettings-databasedoptions', __( 'Options Requiring Data', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'databasedoptions' ) );
+            $this->add_meta_box( 'postsettings-authoroptions', __( 'Author Options', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'authoroptions' ) );
+            
+        } else {
+            $this->add_meta_box( 'postsettings-nocurrentproject', __( 'No Current Project', 'csv2post' ), array( $this->UI, 'metabox_nocurrentproject' ), 'normal','default',array( 'formid' => 'nocurrentproject' ) );      
+        }    
     }
  
+    /**
+    * All add_meta_box() callback to this function, values in $box are used to then call
+    * the intended box to render a unique form or information. 
+    * 
+    * The purpose of this box is to apply security to all boxes but it could also be used
+    * to dynamically call different functions based on arguments
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.32
+    * @version 1.0.0
+    */
+    function parent( $data, $box ) {
+        
+        // if $box['args']['capability'] is not set with over-riding capability added to add_meta_box() arguments then set it
+        if( !isset( $box['args']['capability'] ) || !is_string( $box['args']['capability'] ) ) {
+            $box['args']['capability'] = $this->UI->get_boxes_capability( $box['args']['formid'] );
+        }
+        
+        // call method in CSV2POST - this is done because it is harder to put this parent() function there as it includes "self::"
+        // any other approach can get messy I think but I'd welcome suggestions on this 
+        if( isset( $box['args']['capability'] ) && !current_user_can( $box['args']['capability'] ) ) { 
+            echo '<p>' . __( 'You do not have permission to access the controls and information in this box.', 'csv2post' ) . '</p>';
+            return false;    
+        }        
+        
+        // call the intended function 
+        eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
+    }
+     
     /**
     * post box function for testing
     * 
@@ -205,55 +239,4 @@ class CSV2POST_Postsettings_View extends CSV2POST_View {
         <?php 
         $this->UI->postbox_content_footer();
     } 
-    
-    /**
-    * post box function for testing
-    * 
-    * @author Ryan Bayne
-    * @package CSV 2 POST
-    * @since 8.1.3
-    * @version 1.0.0
-    */
-    public function postbox_postsettings_defaulttagrules( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
-        
-        global $c2p_settings;
-        ?>  
-
-           <table class="form-table">    
-            <?php
-            // generate tags
-            $generatetags_table = ''; 
-            $generatetags_column = '';
-            if( isset( $this->projectsettings['tags']['generatetags']['table'] ) ){$generatetags_table = $this->projectsettings['tags']['generatetags']['table'];}
-            if( isset( $this->projectsettings['tags']['generatetags']['column'] ) ){$generatetags_column = $this->projectsettings['tags']['generatetags']['column'];}             
-            $this->UI->option_projectcolumns( __( 'Text Data' ), $c2p_settings['currentproject'], 'generatetags', 'generatetags', $generatetags_table, $generatetags_column, 'notrequired', 'Not Required' );
-            $this->UI->option_text( __( '' ), 'generatetagsexample', 'generatetagsexample', '', true, 'csv2post_inputtext' );
-
-            // numeric tags
-            $numerictags = 'nocurrent123';
-            if( isset( $this->projectsettings['tags']['numerictags'] ) ){$numerictags = $this->projectsettings['tags']['numerictags'];}  
-            $this->UI->option_radiogroup( __( 'Numeric Tags' ), 'numerictags', 'numerictags', array( 'allow' => 'Allow', 'disallow' => 'Disallow' ), $numerictags, 'disallow' );
-            
-            // tag string length
-            $tagstringlength = 'nocurrent123';
-            if( isset( $this->projectsettings['tags']['tagstringlength'] ) ){$tagstringlength = $this->projectsettings['tags']['tagstringlength'];}           
-            $this->UI->option_text( __( 'Tag String Length' ), 'tagstringlength', 'tagstringlength', $tagstringlength, false, 'csv2post_inputtext' );
-
-            // maximum tags
-            $maximumtags = 'nocurrent123';
-            if( isset( $this->projectsettings['tags']['maximumtags'] ) ){$maximumtags = $this->projectsettings['tags']['maximumtags'];}                     
-            $this->UI->option_text( __( 'Maximum Tags' ), 'maximumtags', 'maximumtags', $maximumtags, false );
-
-            // excluded tags
-            $excludedtags = 'nocurrent123';
-            if( isset( $this->projectsettings['tags']['excludedtags'] ) ){$excludedtags = $this->projectsettings['tags']['excludedtags'];}                                 
-            $this->UI->option_textarea( 'Excluded', 'excludedtags', 'excludedtags',5,40, $excludedtags);
-            ?>    
-            </table>
-        
-        <?php 
-        $this->UI->postbox_content_footer();
-    }
 }?>

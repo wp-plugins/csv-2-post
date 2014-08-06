@@ -516,14 +516,15 @@ class C2P_DB extends C2P_UpdatePlugin {
     * @version 1.0.0 
     * 
     * @param mixed $table_name
+    * @returns boolean
     */
-    public function drop_table( $table_name){
-        global $wpdb, $C2P_UI;
-        $r = $wpdb->query( "DROP TABLE IF EXISTS ".$table_name."");
+    public function drop_table( $table_name ){
+        global $wpdb;
+        $r = $wpdb->query( "DROP TABLE IF EXISTS $table_name" );
         if( $r ){                  
-            $C2P_UI->notice_depreciated(sprintf( __( 'Database table named %s has been deleted.', 'csv2post' ), $table_name), 'success', 'Small', 'Table Deleted', '', 'echo' );
+            return true;
         }else{
-            $C2P_UI->notice_depreciated(sprintf( __( 'Database table named %s has already been deleted.', 'csv2post' ), $table_name), 'error', 'Small', 'Table Deleted', '', 'echo' );
+            return false;
         }    
     }
     
@@ -540,7 +541,6 @@ class C2P_DB extends C2P_UpdatePlugin {
     */
     public function update_meta_key( $old_key = NULL, $new_key = NULL ){
         global $wpdb;
-        
         $results = $wpdb->get_results( 
             "
                 UPDATE ".$wpdb->prefix."postmeta 

@@ -51,24 +51,84 @@ class CSV2POST_Main_View extends CSV2POST_View {
         $this->UI = CSV2POST::load_class( 'C2P_UI', 'class-ui.php', 'classes' );  
         $this->DB = CSV2POST::load_class( 'C2P_DB', 'class-wpdb.php', 'classes' );
         $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
+        $this->TabMenu = CSV2POST::load_class( 'CSV2POST_TabMenu', 'class-tabmenu.php', 'classes' );
                         
-        // load the current project row and settings from that row
-        $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
-        $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
+        // set current project values
+        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
+            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
+            $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
+        }
                 
         parent::setup( $action, $data );
         
-        $this->add_meta_box( 'about-welcome', __( 'Welcome To Version 8', 'csv2post' ), array( $this, 'postbox_about_welcome' ), 'normal','default',array( 'formid' => 'welcome' ) );      
-        $this->add_meta_box( 'about-computersampledata', __( 'Computer Sample Data', 'csv2post' ), array( $this, 'postbox_about_computersampledata' ), 'normal','default',array( 'formid' => 'computersampledata' ) );      
-        $this->add_meta_box( 'about-iconsexplained', __( 'Icons Explained', 'csv2post' ), array( $this, 'postbox_about_iconsexplained' ), 'normal','default',array( 'formid' => 'iconsexplained' ) );      
-        $this->add_meta_box( 'about-twitterupdates', __( 'Twitter Updates', 'csv2post' ), array( $this, 'postbox_about_twitterupdates' ), 'side','default',array( 'formid' => 'twitterupdates' ) );      
-        $this->add_meta_box( 'about-translatorsneeded', __( 'Translators Needed', 'csv2post' ), array( $this, 'postbox_about_translatorsneeded' ), 'side','default',array( 'formid' => 'translatorsneeded' ) );      
-        $this->add_meta_box( 'about-support', __( 'Support', 'csv2post' ), array( $this, 'postbox_about_support' ), 'normal','default',array( 'formid' => 'support' ) );      
-        $this->add_meta_box( 'about-facebook', __( 'Facebook', 'csv2post' ), array( $this, 'postbox_about_facebook' ), 'side','default',array( 'formid' => 'facebook' ) );      
-        $this->add_meta_box( 'about-theauthor', __( 'The Author', 'csv2post' ), array( $this, 'postbox_about_theauthor' ), 'side','default',array( 'formid' => 'theauthor' ) );      
-        $this->add_meta_box( 'about-freevspaid', __( 'Free vs Paid', 'csv2post' ), array( $this, 'postbox_about_freevspaid' ), 'side','default',array( 'formid' => 'freevspaid' ) );      
+        # form ID should be unique for the entire plugin (forms only) as it is used to call processing function
+        
+        // default normal
+        $this->add_meta_box( 'main-welcome', __( 'Quick Start', 'csv2post' ), 
+        array( $this, 'parent' ), 'normal','default',array( 'formid' => 'welcome' ) );   
+           
+        $this->add_meta_box( 'main-computersampledata', __( 'Computer Sample Data', 'csv2post' ), 
+        array( $this, 'parent' ), 'normal','default',array( 'formid' => 'computersampledata' ) ); 
+             
+        $this->add_meta_box( 'main-schedulesettings', __( 'Schedule Settings', 'csv2post' ), 
+        array( $this, 'parent' ), 'normal','default',array( 'formid' => 'schedulesettings' ) );
+                      
+        $this->add_meta_box( 'main-globaldatasettings', __( 'Global Data Settings', 'csv2post' ), 
+        array( $this, 'parent' ), 'normal','default',array( 'formid' => 'globaldatasettings' ) ); 
+             
+        $this->add_meta_box( 'main-logsettings', __( 'Log Settings', 'csv2post' ), 
+        array( $this, 'parent' ), 'normal','default',array( 'formid' => 'logsettings' ) );   
+
+        $this->add_meta_box( 'main-pagecapabilitysettings', __( 'Page Capability Settings', 'csv2post' ), 
+        array( $this, 'parent' ), 'normal','default',array( 'formid' => 'pagecapabilitysettings' ) );
+                
+        // default side
+        $this->add_meta_box( 'main-twitterupdates', __( 'Twitter Updates', 'csv2post' ), 
+        array( $this, 'parent' ), 'side','default',array( 'formid' => 'twitterupdates' ) );  
+                
+        //$this->add_meta_box( 'main-linkedin', __( 'LinkedIn', 'csv2post' ), 
+        //array( $this, 'parent' ), 'side','default',array( 'formid' => 'linkedin' ) );
+        
+        $this->add_meta_box( 'main-facebook', __( 'Facebook', 'csv2post' ), 
+        array( $this, 'parent' ), 'side','default',array( 'formid' => 'facebook' ) );
+                                
+        $this->add_meta_box( 'main-iconsexplained', __( 'Icons Explained', 'csv2post' ), 
+        array( $this, 'parent' ), 'side','default',array( 'formid' => 'iconsexplained' ) );
+              
+        $this->add_meta_box( 'main-support', __( 'Support', 'csv2post' ), 
+        array( $this, 'parent' ), 'side','default',array( 'formid' => 'support' ) );
     }                   
- 
+    
+    /**
+    * All add_meta_box() callback to this function, values in $box are used to then call
+    * the intended box to render a unique form or information. 
+    * 
+    * The purpose of this box is to apply security to all boxes but it could also be used
+    * to dynamically call different functions based on arguments
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.32
+    * @version 1.0.0
+    */
+    function parent( $data, $box ) {
+        
+        // if $box['args']['capability'] is not set with over-riding capability added to add_meta_box() arguments then set it
+        if( !isset( $box['args']['capability'] ) || !is_string( $box['args']['capability'] ) ) {
+            $box['args']['capability'] = $this->UI->get_boxes_capability( $box['args']['formid'] );
+        }
+        
+        // call method in CSV2POST - this is done because it is harder to put this parent() function there as it includes "self::"
+        // any other approach can get messy I think but I'd welcome suggestions on this 
+        if( isset( $box['args']['capability'] ) && !current_user_can( $box['args']['capability'] ) ) { 
+            echo '<p>' . __( 'You do not have permission to access the controls and information in this box.', 'csv2post' ) . '</p>';
+            return false;    
+        }        
+        
+        // call the intended function 
+        eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
+    }
+         
     /**
     * post box function for testing
     * 
@@ -77,13 +137,16 @@ class CSV2POST_Main_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_about_welcome( $data, $box ) {
-        echo '<p>' . __( 'Version 8 looks, feels and operates far more like true WP software. The biggest change is the implementation of 
-        postboxes on every page. A new help system was implemented but now being upgraded even further. It will allow help text to be created first
-        on the plugins site then imported to the plugin. No other plugin does this. The edition on Wordpress.org is being taking to another level with
-        post updating now being possible. Not to the extent and power in the premium edition but it will be there. The plugins code is of far higher 
-        quality and development ease results in work being complete in half the time it used to take. Version 8 is supported with a new web portal which is intended to become dynamic for different users including optional subscription unlocking
-        more training material.', 'csv2post' ) . '</p>';
+    public function postbox_main_welcome( $data, $box ) {
+        echo '<p>' . __( "Lets begin shall we. This page you are on offers global settings which are usually configured once. That means you
+        will not normally return to use this page. After configuring these settings go to the Campaigns page. There you need to
+        create your first Data Source. The purpose of the Data Sources page is to manage multiple sources but if your working with a single
+        .csv file you won't need to re-visit Data Sources. Once your source of data is setup click on the Projects tab and submit the
+        New Project form. Again that page is designed for managing multiple projects. Please ignore the Default Projects Settings page that is for advanced users.
+        At this point you can go on to importing data and can actually create posts straight away. However until you tell the plugin 
+        exactly what to do with your data, the posts won't look great at all. Once your posts are created you can update them after
+        any changes you make to your projects settings. The <a href='http://www.webtechglobal.co.uk/csv-2-post/' target='_blank'>pro edition</a> offers 
+        more updating ability than the free and is more suitable for constantly re-freshing your content.", 'csv2post' ) . '</p>';
     }       
         
     /**
@@ -94,7 +157,7 @@ class CSV2POST_Main_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_about_computersampledata( $data, $box ) {    
+    public function postbox_main_computersampledata( $data, $box ) {    
         ?>  
  
         <p><?php _e( "I've saved information from PC World to make a sample file. The file is stored on Google Docs and is public. Feel free
@@ -134,6 +197,7 @@ class CSV2POST_Main_View extends CSV2POST_View {
         <?php                             
     }
 
+    
     /**
     * post box function for testing
     * 
@@ -142,7 +206,443 @@ class CSV2POST_Main_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_about_iconsexplained( $data, $box ) {    
+    public function postbox_main_schedulesettings( $data, $box ) {    
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        ?>  
+
+            <table class="form-table">
+ 
+                <!-- Option Start -->
+                <tr valign="top">
+                    <th scope="row"><?php _e( 'Days', 'csv2post' ); ?></th>
+                    <td>
+                        <?php 
+                        $days_array = array( 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' );
+                        $days_counter = 1;
+                        
+                        foreach( $days_array as $key => $day ){
+                            
+                            // set checked status
+                            if( isset( $this->schedule['days'][$day] ) ){
+                                $day_checked = 'checked';
+                            }else{
+                                $day_checked = '';            
+                            }
+                                 
+                            echo '<input type="checkbox" name="csv2post_scheduleday_list[]" id="daycheck'.$days_counter.'" value="'.$day.'" '.$day_checked.' />
+                            <label for="daycheck'.$days_counter.'">'.ucfirst( $day ).'</label><br />';    
+                            ++$days_counter;
+                        }?>
+                    </td>
+                </tr>
+                <!-- Option End -->                          
+
+                <!-- Option Start -->
+                <tr valign="top">
+                    <th scope="row"><?php _e( 'Hours', 'csv2post' ); ?></th>
+                    <td>
+                    <?php
+                    // loop 24 times and create a checkbox for each hour
+                    for( $i=0;$i<24;$i++){
+                        
+                        // check if the current hour exists in array, if it exists then it is permitted, if it does not exist it is not permitted
+                        if( isset( $this->schedule['hours'][$i] ) ){
+                            $hour_checked = ' checked'; 
+                        }else{
+                            $hour_checked = '';
+                        }
+                        
+                        echo '<input type="checkbox" name="csv2post_schedulehour_list[]" id="hourcheck'.$i.'"  value="'.$i.'" '.$hour_checked.' />
+                        <label for="hourcheck'.$i.'">'.$i.'</label><br>';    
+                    }
+                    ?>
+                    </td>
+                </tr>
+                <!-- Option End -->          
+         
+                <!-- Option Start -->
+                <tr valign="top">
+                    <th scope="row"><?php _e( 'Daily Limit', 'csv2post' );?></th>
+                    <td>
+                        <fieldset><legend class="screen-reader-text"><span>Daily Limit</span></legend>
+                            <input type="radio" id="csv2post_radio1_dripfeedrate_maximumperday" name="day" value="1" <?php if( isset( $this->schedule['limits']['day'] ) && $this->schedule['limits']['day'] == 1){echo 'checked';} ?> /><label for="csv2post_radio1_dripfeedrate_maximumperday"> <?php _e( '1', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio2_dripfeedrate_maximumperday" name="day" value="5" <?php if( isset( $this->schedule['limits']['day'] ) && $this->schedule['limits']['day'] == 5){echo 'checked';} ?> /><label for="csv2post_radio2_dripfeedrate_maximumperday"> <?php _e( '5', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio3_dripfeedrate_maximumperday" name="day" value="10" <?php if( isset( $this->schedule['limits']['day'] ) && $this->schedule['limits']['day'] == 10){echo 'checked';} ?> /><label for="csv2post_radio3_dripfeedrate_maximumperday"> <?php _e( '10', 'csv2post' );?> </label><br> 
+                            <input type="radio" id="csv2post_radio9_dripfeedrate_maximumperday" name="day" value="24" <?php if( isset( $this->schedule['limits']['day'] ) && $this->schedule['limits']['day'] == 24){echo 'checked';} ?> /><label for="csv2post_radio9_dripfeedrate_maximumperday"> <?php _e( '24', 'csv2post' );?> </label><br>                    
+                            <input type="radio" id="csv2post_radio4_dripfeedrate_maximumperday" name="day" value="50" <?php if( isset( $this->schedule['limits']['day'] ) && $this->schedule['limits']['day'] == 50){echo 'checked';} ?> /><label for="csv2post_radio4_dripfeedrate_maximumperday"> <?php _e( '50', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio5_dripfeedrate_maximumperday" name="day" value="250" <?php if( isset( $this->schedule['limits']['day'] ) && $this->schedule['limits']['day'] == 250){echo 'checked';} ?> /><label for="csv2post_radio5_dripfeedrate_maximumperday"> <?php _e( '250', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio6_dripfeedrate_maximumperday" name="day" value="1000" <?php if( isset( $this->schedule['limits']['day'] ) && $this->schedule['limits']['day'] == 1000){echo 'checked';} ?> /><label for="csv2post_radio6_dripfeedrate_maximumperday"> <?php _e( '1000', 'csv2post' );?> </label><br>                                                                                                                       
+                            <input type="radio" id="csv2post_radio7_dripfeedrate_maximumperday" name="day" value="2000" <?php if( isset( $this->schedule['limits']['day'] ) && $this->schedule['limits']['day'] == 2000){echo 'checked';} ?> /><label for="csv2post_radio7_dripfeedrate_maximumperday"> <?php _e( '2000', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio8_dripfeedrate_maximumperday" name="day" value="5000" <?php if( isset( $this->schedule['limits']['day'] ) && $this->schedule['limits']['day'] == 5000){echo 'checked';} ?> /><label for="csv2post_radio8_dripfeedrate_maximumperday"> <?php _e( '5000', 'csv2post' );?> </label>                   
+                        </fieldset>
+                    </td>
+                </tr>
+                <!-- Option End -->   
+                         
+                <!-- Option Start -->
+                <tr valign="top">
+                    <th scope="row"><?php _e( 'Hourly Limit', 'csv2post' );?></th>
+                    <td>
+                        <fieldset><legend class="screen-reader-text"><span>Hourly Limit</span></legend>
+                            <input type="radio" id="csv2post_radio1_dripfeedrate_maximumperhour" name="hour" value="1" <?php if( isset( $this->schedule['limits']['hour'] ) && $this->schedule['limits']['hour'] == 1){echo 'checked';} ?> /><label for="csv2post_radio1_dripfeedrate_maximumperhour"> <?php _e( '1', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio2_dripfeedrate_maximumperhour" name="hour" value="5" <?php if( isset( $this->schedule['limits']['hour'] ) && $this->schedule['limits']['hour'] == 5){echo 'checked';} ?> /><label for="csv2post_radio2_dripfeedrate_maximumperhour"> <?php _e( '5', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio3_dripfeedrate_maximumperhour" name="hour" value="10" <?php if( isset( $this->schedule['limits']['hour'] ) && $this->schedule['limits']['hour'] == 10){echo 'checked';} ?> /><label for="csv2post_radio3_dripfeedrate_maximumperhour"> <?php _e( '10', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio9_dripfeedrate_maximumperhour" name="hour" value="24" <?php if( isset( $this->schedule['limits']['hour'] ) && $this->schedule['limits']['hour'] == 24){echo 'checked';} ?> /><label for="csv2post_radio9_dripfeedrate_maximumperhour"> <?php _e( '24', 'csv2post' );?> </label><br>                    
+                            <input type="radio" id="csv2post_radio4_dripfeedrate_maximumperhour" name="hour" value="50" <?php if( isset( $this->schedule['limits']['hour'] ) && $this->schedule['limits']['hour'] == 50){echo 'checked';} ?> /><label for="csv2post_radio4_dripfeedrate_maximumperhour"> <?php _e( '50', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio5_dripfeedrate_maximumperhour" name="hour" value="100" <?php if( isset( $this->schedule['limits']['hour'] ) && $this->schedule['limits']['hour'] == 100){echo 'checked';} ?> /><label for="csv2post_radio5_dripfeedrate_maximumperhour"> <?php _e( '100', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio6_dripfeedrate_maximumperhour" name="hour" value="250" <?php if( isset( $this->schedule['limits']['hour'] ) && $this->schedule['limits']['hour'] == 250){echo 'checked';} ?> /><label for="csv2post_radio6_dripfeedrate_maximumperhour"> <?php _e( '250', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio7_dripfeedrate_maximumperhour" name="hour" value="500" <?php if( isset( $this->schedule['limits']['hour'] ) && $this->schedule['limits']['hour'] == 500){echo 'checked';} ?> /><label for="csv2post_radio7_dripfeedrate_maximumperhour"> <?php _e( '500', 'csv2post' );?> </label><br>       
+                            <input type="radio" id="csv2post_radio8_dripfeedrate_maximumperhour" name="hour" value="1000" <?php if( isset( $this->schedule['limits']['hour'] ) && $this->schedule['limits']['hour'] == 1000){echo 'checked';} ?> /><label for="csv2post_radio8_dripfeedrate_maximumperhour"> <?php _e( '1000', 'csv2post' );?> </label><br>                                                                                                                           
+                       </fieldset>
+                    </td>
+                </tr>
+                <!-- Option End -->   
+
+                <!-- Option Start -->
+                <tr valign="top">
+                    <th scope="row"><?php _e( 'Event Limit', 'csv2post' );?></th>
+                    <td>
+                        <fieldset><legend class="screen-reader-text"><span>Event Limit</span></legend>
+                            <input type="radio" id="csv2post_radio1_dripfeedrate_maximumpersession" name="session" value="1" <?php if( isset( $this->schedule['limits']['session'] ) && $this->schedule['limits']['session'] == 1){echo 'checked';} ?> /><label for="csv2post_radio1_dripfeedrate_maximumpersession"> <?php _e( '1', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio2_dripfeedrate_maximumpersession" name="session" value="5" <?php if( isset( $this->schedule['limits']['session'] ) && $this->schedule['limits']['session'] == 5){echo 'checked';} ?> /><label for="csv2post_radio2_dripfeedrate_maximumpersession"> <?php _e( '5', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio3_dripfeedrate_maximumpersession" name="session" value="10" <?php if( isset( $this->schedule['limits']['session'] ) && $this->schedule['limits']['session'] == 10){echo 'checked';} ?> /><label for="csv2post_radio3_dripfeedrate_maximumpersession"> <?php _e( '10', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio9_dripfeedrate_maximumpersession" name="session" value="25" <?php if( isset( $this->schedule['limits']['session'] ) && $this->schedule['limits']['session'] == 25){echo 'checked';} ?> /><label for="csv2post_radio9_dripfeedrate_maximumpersession"> <?php _e( '25', 'csv2post' );?> </label><br>                    
+                            <input type="radio" id="csv2post_radio4_dripfeedrate_maximumpersession" name="session" value="50" <?php if( isset( $this->schedule['limits']['session'] ) && $this->schedule['limits']['session'] == 50){echo 'checked';} ?> /><label for="csv2post_radio4_dripfeedrate_maximumpersession"> <?php _e( '50', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio5_dripfeedrate_maximumpersession" name="session" value="100" <?php if( isset( $this->schedule['limits']['session'] ) && $this->schedule['limits']['session'] == 100){echo 'checked';} ?> /><label for="csv2post_radio5_dripfeedrate_maximumpersession"> <?php _e( '100', 'csv2post' );?> </label><br>
+                            <input type="radio" id="csv2post_radio6_dripfeedrate_maximumpersession" name="session" value="200" <?php if( isset( $this->schedule['limits']['session'] ) && $this->schedule['limits']['session'] == 200){echo 'checked';} ?> /><label for="csv2post_radio6_dripfeedrate_maximumpersession"> <?php _e( '200', 'csv2post' );?> </label><br>                                                                                                                        
+                            <input type="radio" id="csv2post_radio7_dripfeedrate_maximumpersession" name="session" value="300" <?php if( isset( $this->schedule['limits']['session'] ) && $this->schedule['limits']['session'] == 300){echo 'checked';} ?> /><label for="csv2post_radio7_dripfeedrate_maximumpersession"> <?php _e( '300', 'csv2post' );?> </label><br>          
+                        </fieldset>
+                    </td>
+                </tr>
+                <!-- Option End -->     
+                
+            </table>
+                 
+            <h4><?php _e( 'Last Schedule Finish Reason', 'csv2post' );?></h4>
+            <p>
+            <?php 
+            if( isset( $this->schedule['history']['lastreturnreason'] ) ){
+                echo $this->schedule['history']['lastreturnreason']; 
+            }else{
+                _e( 'No event refusal reason has been set yet', 'csv2post' );    
+            }?>
+            </p>
+            
+            <h4><?php _e( 'Events Counter - 60 Minute Period', 'csv2post' );?></h4>
+            <p>
+            <?php 
+            if( isset( $this->schedule['history']['hourcounter'] ) ){
+                echo $this->schedule['history']['hourcounter']; 
+            }else{
+                _e( 'No events have been done during the current 60 minute period', 'csv2post' );    
+            }?>
+            </p> 
+
+            <h4><?php _e( 'Events Counter - 24 Hour Period', 'csv2post' );?></h4>
+            <p>
+            <?php 
+            if( isset( $this->schedule['history']['daycounter'] ) ){
+                echo $this->schedule['history']['daycounter']; 
+            }else{
+                _e( 'No events have been done during the current 24 hour period', 'csv2post' );    
+            }?>
+            </p>
+
+            <h4><?php _e( 'Last Event Type', 'csv2post' ); ?></h4>
+            <p>
+            <?php 
+            if( isset( $this->schedule['history']['lasteventtype'] ) ){
+                
+                if( $this->schedule['history']['lasteventtype'] == 'dataimport' ){
+                    echo 'Data Import';            
+                }elseif( $this->schedule['history']['lasteventtype'] == 'dataupdate' ){
+                    echo 'Data Update';
+                }elseif( $this->schedule['history']['lasteventtype'] == 'postcreation' ){
+                    echo 'Post Creation';
+                }elseif( $this->schedule['history']['lasteventtype'] == 'postupdate' ){
+                    echo 'Post Update';
+                }elseif( $this->schedule['history']['lasteventtype'] == 'twittersend' ){
+                    echo 'Twitter: New Tweet';
+                }elseif( $this->schedule['history']['lasteventtype'] == 'twitterupdate' ){
+                    echo 'Twitter: Send Update';
+                }elseif( $this->schedule['history']['lasteventtype'] == 'twitterget' ){
+                    echo 'Twitter: Get Reply';
+                }
+                 
+            }else{
+                _e( 'No events have been carried out yet', 'csv2post' );    
+            }?>
+            </p>
+
+            <h4><?php _e( 'Last Event Action', 'csv2post' ); ?></h4>
+            <p>
+            <?php 
+            if( isset( $this->schedule['history']['lasteventaction'] ) ){
+                echo $this->schedule['history']['lasteventaction']; 
+            }else{
+                _e( 'No event actions have been carried out yet', 'csv2post' );    
+            }?>
+            </p>
+                
+            <h4><?php _e( 'Last Event Time', 'csv2post' ); ?></h4>
+            <p>
+            <?php 
+            if( isset( $this->schedule['history']['lasteventtime'] ) ){
+                echo date( "F j, Y, g:i a", $this->schedule['history']['lasteventtime'] ); 
+            }else{
+                _e( 'No schedule events have ran on this server yet', 'csv2post' );    
+            }?>
+            </p>
+            
+            <h4><?php _e( 'Last Hourly Reset', 'csv2post' ); ?></h4>
+            <p>
+            <?php 
+            if( isset( $this->schedule['history']['hour_lastreset'] ) ){
+                echo date( "F j, Y, g:i a", $this->schedule['history']['hour_lastreset'] ); 
+            }else{
+                _e( 'No hourly reset has been done yet', 'csv2post' );    
+            }?>
+            </p>   
+                
+            <h4><?php _e( 'Last 24 Hour Period Reset', 'csv2post' ); ?></h4>
+            <p>
+            <?php 
+            if( isset( $this->schedule['history']['day_lastreset'] ) ){
+                echo date( "F j, Y, g:i a", $this->schedule['history']['day_lastreset'] ); 
+            }else{
+                _e( 'No 24 hour reset has been done yet', 'csv2post' );    
+            }?>
+            </p> 
+               
+            <h4><?php _e( 'Your Servers Current Data and Time', 'csv2post' ); ?></h4>
+            <p><?php echo date( "F j, Y, g:i a",time() );?></p>     
+            
+        <?php 
+        $this->UI->postbox_content_footer();
+    }
+
+    /**
+    * post box function for testing
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_main_globaldatasettings( $data, $box ) {    
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        
+        global $c2p_settings;
+        ?>  
+
+            <table class="form-table">
+            <?php
+            $this->UI->option_text( 'Import/Insert Limit', 'importlimit', 'importlimit', $c2p_settings['datasettings']['insertlimit'], false );
+            ?>
+            </table>
+            
+        <?php 
+        $this->UI->postbox_content_footer();
+    }
+
+    /**
+    * post box function for testing
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_main_logsettings( $data, $box ) {    
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        
+        global $c2p_settings;
+        ?>  
+
+            <table class="form-table">
+                <!-- Option Start -->
+                <tr valign="top">
+                    <th scope="row">Log</th>
+                    <td>
+                        <?php 
+                        // if is not set ['admintriggers']['newcsvfiles']['status'] then it is enabled by default
+                        if(!isset( $c2p_settings['globalsettings']['uselog'] ) ){
+                            $radio1_uselog_enabled = 'checked'; 
+                            $radio2_uselog_disabled = '';                    
+                        }else{
+                            if( $c2p_settings['globalsettings']['uselog'] == 1){
+                                $radio1_uselog_enabled = 'checked'; 
+                                $radio2_uselog_disabled = '';    
+                            }elseif( $c2p_settings['globalsettings']['uselog'] == 0){
+                                $radio1_uselog_enabled = ''; 
+                                $radio2_uselog_disabled = 'checked';    
+                            }
+                        }?>
+                        <fieldset><legend class="screen-reader-text"><span>Log</span></legend>
+                            <input type="radio" id="logstatus_enabled" name="csv2post_radiogroup_logstatus" value="1" <?php echo $radio1_uselog_enabled;?> />
+                            <label for="logstatus_enabled"> <?php _e( 'Enable', 'csv2post' ); ?></label>
+                            <br />
+                            <input type="radio" id="logstatus_disabled" name="csv2post_radiogroup_logstatus" value="0" <?php echo $radio2_uselog_disabled;?> />
+                            <label for="logstatus_disabled"> <?php _e( 'Disable', 'csv2post' ); ?></label>
+                        </fieldset>
+                    </td>
+                </tr>
+                <!-- Option End -->
+      
+                <?php       
+                // log rows limit
+                if(!isset( $c2p_settings['globalsettings']['loglimit'] ) || !is_numeric( $c2p_settings['globalsettings']['loglimit'] ) ){$c2p_settings['globalsettings']['loglimit'] = 1000;}
+                $this->UI->option_text( 'Log Entries Limit', 'csv2post_loglimit', 'loglimit', $c2p_settings['globalsettings']['loglimit'] );
+                ?>
+            </table> 
+            
+                    
+            <h4>Outcomes</h4>
+            <label for="csv2post_log_outcomes_success"><input type="checkbox" name="csv2post_log_outcome[]" id="csv2post_log_outcomes_success" value="1" <?php if( isset( $c2p_settings['logsettings']['logscreen']['outcomecriteria']['1'] ) ){echo 'checked';} ?>> Success</label>
+            <br> 
+            <label for="csv2post_log_outcomes_fail"><input type="checkbox" name="csv2post_log_outcome[]" id="csv2post_log_outcomes_fail" value="0" <?php if( isset( $c2p_settings['logsettings']['logscreen']['outcomecriteria']['0'] ) ){echo 'checked';} ?>> Fail/Rejected</label>
+
+            <h4>Type</h4>
+            <label for="csv2post_log_type_general"><input type="checkbox" name="csv2post_log_type[]" id="csv2post_log_type_general" value="general" <?php if( isset( $c2p_settings['logsettings']['logscreen']['typecriteria']['general'] ) ){echo 'checked';} ?>> General</label>
+            <br>
+            <label for="csv2post_log_type_error"><input type="checkbox" name="csv2post_log_type[]" id="csv2post_log_type_error" value="error" <?php if( isset( $c2p_settings['logsettings']['logscreen']['typecriteria']['error'] ) ){echo 'checked';} ?>> Errors</label>
+            <br>
+            <label for="csv2post_log_type_trace"><input type="checkbox" name="csv2post_log_type[]" id="csv2post_log_type_trace" value="flag" <?php if( isset( $c2p_settings['logsettings']['logscreen']['typecriteria']['flag'] ) ){echo 'checked';} ?>> Trace</label>
+
+            <h4>Priority</h4>
+            <label for="csv2post_log_priority_low"><input type="checkbox" name="csv2post_log_priority[]" id="csv2post_log_priority_low" value="low" <?php if( isset( $c2p_settings['logsettings']['logscreen']['prioritycriteria']['low'] ) ){echo 'checked';} ?>> Low</label>
+            <br>
+            <label for="csv2post_log_priority_normal"><input type="checkbox" name="csv2post_log_priority[]" id="csv2post_log_priority_normal" value="normal" <?php if( isset( $c2p_settings['logsettings']['logscreen']['prioritycriteria']['normal'] ) ){echo 'checked';} ?>> Normal</label>
+            <br>
+            <label for="csv2post_log_priority_high"><input type="checkbox" name="csv2post_log_priority[]" id="csv2post_log_priority_high" value="high" <?php if( isset( $c2p_settings['logsettings']['logscreen']['prioritycriteria']['high'] ) ){echo 'checked';} ?>> High</label>
+            
+            <h1>Custom Search</h1>
+            <p>This search criteria is not currently stored, it will be used on the submission of this form only.</p>
+         
+            <h4>Page</h4>
+            <select name="csv2post_pluginpages_logsearch" id="csv2post_pluginpages_logsearch" >
+                <option value="notselected">Do Not Apply</option>
+                <?php
+                $current = '';
+                if( isset( $c2p_settings['logsettings']['logscreen']['page'] ) && $c2p_settings['logsettings']['logscreen']['page'] != 'notselected' ){
+                    $current = $c2p_settings['logsettings']['logscreen']['page'];
+                } 
+                $this->UI->page_menuoptions( $current);?> 
+            </select>
+            
+            <h4>Action</h4> 
+            <select name="csv2pos_logactions_logsearch" id="csv2pos_logactions_logsearch" >
+                <option value="notselected">Do Not Apply</option>
+                <?php 
+                $current = '';
+                if( isset( $c2p_settings['logsettings']['logscreen']['action'] ) && $c2p_settings['logsettings']['logscreen']['action'] != 'notselected' ){
+                    $current = $c2p_settings['logsettings']['logscreen']['action'];
+                }
+                $action_results = C2P_DB::log_queryactions( $current);
+                if( $action_results){
+                    foreach( $action_results as $key => $action){
+                        $selected = '';
+                        if( $action['action'] == $current){
+                            $selected = 'selected="selected"';
+                        }
+                        echo '<option value="'.$action['action'].'" '.$selected.'>'.$action['action'].'</option>'; 
+                    }   
+                }?> 
+            </select>
+            
+            <h4>Screen Name</h4>
+            <select name="csv2post_pluginscreens_logsearch" id="csv2post_pluginscreens_logsearch" >
+                <option value="notselected">Do Not Apply</option>
+                <?php 
+                $current = '';
+                if( isset( $c2p_settings['logsettings']['logscreen']['screen'] ) && $c2p_settings['logsettings']['logscreen']['screen'] != 'notselected' ){
+                    $current = $c2p_settings['logsettings']['logscreen']['screen'];
+                }
+                $this->UI->screens_menuoptions( $current);?> 
+            </select>
+                  
+            <h4>PHP Line</h4>
+            <input type="text" name="csv2post_logcriteria_phpline" value="<?php if( isset( $c2p_settings['logsettings']['logscreen']['line'] ) ){echo $c2p_settings['logsettings']['logscreen']['line'];} ?>">
+            
+            <h4>PHP File</h4>
+            <input type="text" name="csv2post_logcriteria_phpfile" value="<?php if( isset( $c2p_settings['logsettings']['logscreen']['file'] ) ){echo $c2p_settings['logsettings']['logscreen']['file'];} ?>">
+            
+            <h4>PHP Function</h4>
+            <input type="text" name="csv2post_logcriteria_phpfunction" value="<?php if( isset( $c2p_settings['logsettings']['logscreen']['function'] ) ){echo $c2p_settings['logsettings']['logscreen']['function'];} ?>">
+            
+            <h4>Panel Name</h4>
+            <input type="text" name="csv2post_logcriteria_panelname" value="<?php if( isset( $c2p_settings['logsettings']['logscreen']['panelname'] ) ){echo $c2p_settings['logsettings']['logscreen']['panelname'];} ?>">
+
+            <h4>IP Address</h4>
+            <input type="text" name="csv2post_logcriteria_ipaddress" value="<?php if( isset( $c2p_settings['logsettings']['logscreen']['ipaddress'] ) ){echo $c2p_settings['logsettings']['logscreen']['ipaddress'];} ?>">
+           
+            <h4>User ID</h4>
+            <input type="text" name="csv2post_logcriteria_userid" value="<?php if( isset( $c2p_settings['logsettings']['logscreen']['userid'] ) ){echo $c2p_settings['logsettings']['logscreen']['userid'];} ?>">    
+          
+            <h4>Display Fields</h4>                                                                                                                                        
+            <label for="csv2post_logfields_outcome"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_outcome" value="outcome" <?php if( isset( $c2p_settings['logsettings']['logscreen']['displayedcolumns']['outcome'] ) ){echo 'checked';} ?>> <?php _e( 'Outcome', 'csv2post' );?></label>
+            <br>
+            <label for="csv2post_logfields_line"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_line" value="line" <?php if( isset( $c2p_settings['logsettings']['logscreen']['displayedcolumns']['line'] ) ){echo 'checked';} ?>> <?php _e( 'Line', 'csv2post' );?></label>
+            <br>
+            <label for="csv2post_logfields_file"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_file" value="file" <?php if( isset( $c2p_settings['logsettings']['logscreen']['displayedcolumns']['file'] ) ){echo 'checked';} ?>> <?php _e( 'File', 'csv2post' );?></label> 
+            <br>
+            <label for="csv2post_logfields_function"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_function" value="function" <?php if( isset( $c2p_settings['logsettings']['logscreen']['displayedcolumns']['function'] ) ){echo 'checked';} ?>> <?php _e( 'Function', 'csv2post' );?></label>
+            <br>
+            <label for="csv2post_logfields_sqlresult"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_sqlresult" value="sqlresult" <?php if( isset( $c2p_settings['logsettings']['logscreen']['displayedcolumns']['sqlresult'] ) ){echo 'checked';} ?>> <?php _e( 'SQL Result', 'csv2post' );?></label>
+            <br>
+            <label for="csv2post_logfields_sqlquery"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_sqlquery" value="sqlquery" <?php if( isset( $c2p_settings['logsettings']['logscreen']['displayedcolumns']['sqlquery'] ) ){echo 'checked';} ?>> <?php _e( 'SQL Query', 'csv2post' );?></label>
+            <br>
+            <label for="csv2post_logfields_sqlerror"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_sqlerror" value="sqlerror" <?php if( isset( $c2p_settings['logsettings']['logscreen']['displayedcolumns']['sqlerror'] ) ){echo 'checked';} ?>> <?php _e( 'SQL Error', 'csv2post' );?></label>
+            <br>
+            <label for="csv2post_logfields_wordpresserror"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_wordpresserror" value="wordpresserror" <?php if( isset( $c2p_settings['logsettings']['logscreen']['displayedcolumns']['wordpresserror'] ) ){echo 'checked';} ?>> <?php _e( 'Wordpress Erro', 'csv2post' );?>r</label>
+            <br>
+            <label for="csv2post_logfields_screenshoturl"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_screenshoturl" value="screenshoturl" <?php if( isset( $c2p_settings['logsettings']['logscreen']['displayedcolumns']['screenshoturl'] ) ){echo 'checked';} ?>> <?php _e( 'Screenshot URL', 'csv2post' );?></label>
+            <br>
+            <label for="csv2post_logfields_userscomment"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_userscomment" value="userscomment" <?php if( isset( $c2p_settings['logsettings']['logscreen']['displayedcolumns']['userscomment'] ) ){echo 'checked';} ?>> <?php _e( 'Users Comment', 'csv2post' );?></label>
+            <br>
+            <label for="csv2post_logfields_page"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_page" value="page" <?php if( isset( $c2p_settings['logsettings']['logscreen']['displayedcolumns']['page'] ) ){echo 'checked';} ?>> <?php _e( 'Page', 'csv2post' );?></label>
+            <br>
+            <label for="csv2post_logfields_version"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_version" value="version" <?php if( isset( $c2p_settings['logsettings']['logscreen']['displayedcolumns']['version'] ) ){echo 'checked';} ?>> <?php _e( 'Plugin Version', 'csv2post' );?></label>
+            <br>
+            <label for="csv2post_logfields_panelname"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_panelname" value="panelname" <?php if( isset( $c2p_settings['logsettings']['logscreen']['displayedcolumns']['panelname'] ) ){echo 'checked';} ?>> <?php _e( 'Panel Name', 'csv2post' );?></label>
+            <br>
+            <label for="csv2post_logfields_tabscreenname"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_tabscreenname" value="tabscreenname" <?php if( isset( $c2p_settings['logsettings']['logscreen']['displayedcolumns']['outcome'] ) ){echo 'checked';} ?>> <?php _e( 'Screen Name *', 'csv2post' );?></label>
+            <br>
+            <label for="csv2post_logfields_dump"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_dump" value="dump" <?php if( isset( $c2p_settings['logsettings']['logscreen']['displayedcolumns']['dump'] ) ){echo 'checked';} ?>> <?php _e( 'Dump', 'csv2post' );?></label>
+            <br>
+            <label for="csv2post_logfields_ipaddress"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_ipaddress" value="ipaddress" <?php if( isset( $c2p_settings['logsettings']['logscreen']['displayedcolumns']['ipaddress'] ) ){echo 'checked';} ?>> <?php _e( 'IP Address', 'csv2post' );?></label>
+            <br>
+            <label for="csv2post_logfields_userid"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_userid" value="userid" <?php if( isset( $c2p_settings['logsettings']['logscreen']['displayedcolumns']['userid'] ) ){echo 'checked';} ?>> <?php _e( 'User ID', 'csv2post' );?></label>
+            <br>
+            <label for="csv2post_logfields_comment"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_comment" value="comment" <?php if( isset( $c2p_settings['logsettings']['logscreen']['displayedcolumns']['comment'] ) ){echo 'checked';} ?>> <?php _e( 'Developers Comment', 'csv2post' );?></label>
+            <br>
+            <label for="csv2post_logfields_type"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_type" value="type" <?php if( isset( $c2p_settings['logsettings']['logscreen']['displayedcolumns']['type'] ) ){echo 'checked';} ?>> <?php _e( 'Entry Type', 'csv2post' );?></label>
+            <br>
+            <label for="csv2post_logfields_category"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_category" value="category" <?php if( isset( $c2p_settings['logsettings']['logscreen']['displayedcolumns']['category'] ) ){echo 'checked';} ?>> <?php _e( 'Category', 'csv2post' );?></label>
+            <br>
+            <label for="csv2post_logfields_action"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_action" value="action" <?php if( isset( $c2p_settings['logsettings']['logscreen']['displayedcolumns']['action'] ) ){echo 'checked';} ?>> <?php _e( 'Action', 'csv2post' );?></label>
+            <br>
+            <label for="csv2post_logfields_priority"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_priority" value="priority" <?php if( isset( $c2p_settings['logsettings']['logscreen']['displayedcolumns']['priority'] ) ){echo 'checked';} ?>> <?php _e( 'Priority', 'csv2post' );?></label> 
+            <br>
+            <label for="csv2post_logfields_thetrigger"><input type="checkbox" name="csv2post_logfields[]" id="csv2post_logfields_thetrigger" value="thetrigger" <?php if( isset( $c2p_settings['logsettings']['logscreen']['displayedcolumns']['thetrigger'] ) ){echo 'checked';} ?>> <?php _e( 'Trigger', 'csv2post' );?></label> 
+
+    
+        <?php 
+        $this->UI->postbox_content_footer();
+    }    
+        
+    /**
+    * post box function for testing
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_main_iconsexplained( $data, $box ) {    
         ?>  
         <p class="about-description"><?php _e( 'The plugin has icons on the UI offering different types of help...' ); ?></p>
         
@@ -180,30 +680,27 @@ class CSV2POST_Main_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_about_twitterupdates( $data, $box ) {    
-        ?>      
+    public function postbox_main_twitterupdates( $data, $box ) {    
+        ?>
+        <p class="about-description"><?php _e( 'If you are using the plugin it makes sense to support the project. Every tweet helps to promote it...', 'csv2post' ); ?></p>    
         <a class="twitter-timeline" href="https://twitter.com/CSV2POST" data-widget-id="478813344225189889">Tweets by @CSV2POST</a>
         <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id) ){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document, "script", "twitter-wjs");</script>                                                   
         <?php     
-    }
-
+    }    
+    
     /**
-    * post box function for testing
+    * post box for LinkedIn 
     * 
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_about_translatorsneeded( $data, $box ) {    
-        ?>      
-        <p class="about-description"><?php _e( 'It is finally time to begin translating this massive plugin. You can get your name and website 
-        listed here as the sole and dedicated translator for your region. Affiliates who translate will get their affiliate URL place here instead and in
-        other locations that will generate commission.', 'csv2post' ); ?></p>
-        
-        <ul>
-            <li><a class="button" href="http://www.webtechglobal.co.uk" title="Ryan Bayne translates into English" target="_blank">Ryan Bayne - English Translator</a></li>
-        </ul>                    
+    public function postbox_main_linkedin( $data, $box ) {    
+        ?>
+        <script src="//platform.linkedin.com/in.js" type="text/javascript" data-width="150"></script>
+        <script type="IN/MemberProfile" data-id="http://www.linkedin.com/in/webtechglobal" data-format="inline" data-width="150"></script>
+
         <?php     
     }
         
@@ -215,7 +712,7 @@ class CSV2POST_Main_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_about_support( $data, $box ) {    
+    public function postbox_main_support( $data, $box ) {    
         ?>      
         <p><?php _e( 'All users (free and premium) are invited to use the WebTechGlobal <a href="http://forum.webtechglobal.co.uk/viewforum.php?f=8" title="CSV 2 POST Forum" target="_blank">Forum</a>. Simply <a href="http://www.webtechglobal.co.uk/wp-login.php?action=register" title="Forum" target="_blank">register</a> on our
         Wordpress blog, <a href="http://www.webtechglobal.co.uk/wp-login.php" title="WebTechGlobal Log-In" target="_blank">log into</a> your WTG WP account, activate your account by answering the anti-spam question
@@ -233,46 +730,60 @@ class CSV2POST_Main_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_about_facebook( $data, $box ) {    
+    public function postbox_main_facebook( $data, $box ) {    
         ?>      
-        <p class="about-description"><?php _e( 'The CSV 2 POST project needs your support, please like my plugin...', 'csv2post' ); ?></p>
-        <iframe src="//www.facebook.com/plugins/likebox.php?href=https%3A%2F%2Fwww.facebook.com%2FCSV2POST&amp;width=350&amp;height=290&amp;colorscheme=light&amp;show_faces=true&amp;header=true&amp;stream=false&amp;show_border=true" scrolling="no" frameborder="0" style="padding: 10px 0 0 0;border:none; overflow:hidden; width:100%; height:290px;" allowTransparency="true"></iframe>                                                                             
+        <p class="about-description"><?php _e( 'Please show your appreciation for my plugin which has taking hundreds of hours to create...', 'csv2post' ); ?></p>
+        <iframe src="//www.facebook.com/plugins/likebox.php?href=https%3A%2F%2Fwww.facebook.com%2FWebTechGlobal1&amp;width=350&amp;height=290&amp;colorscheme=light&amp;show_faces=true&amp;header=true&amp;stream=false&amp;show_border=true" scrolling="no" frameborder="0" style="padding: 10px 0 0 0;border:none; overflow:hidden; width:100%; height:290px;" allowTransparency="true"></iframe>                                                                             
         <?php     
     }
 
     /**
-    * post box function for testing
+    * Form for setting which captability is required to view the page
     * 
-    * @author Ryan Bayne
+    * By default there is no settings data for this because most people will never use it.
+    * However when it is used, a new option record is created so that the settings are
+    * independent and can be accessed easier.  
+    * 
+    * @author Ryan R. Bayne
     * @package CSV 2 POST
-    * @since 8.1.3
+    * @since 8.1.32
     * @version 1.0.0
     */
-    public function postbox_about_theauthor( $data, $box ) {    
-        ?>      
-        <p><?php _e( 'I live in a town named Dysart in Scotland. It is an old fishing town of folk just getting by but it has a view of
-        Edinburgh to help keep us proud. As I type this we are talking about Independence. With CSV 2 POST being such a big
-        project I find myself wondering if it is the product to get me and my family through hard times or will independence be a
-        walk in the park!? Either way I will not be taking any chances and I am very determined to make CSV 2 POST work for WebTechGlobal
-        and for you.', 'csv2post' );?></p>
-        <?php     
-    }
-    
-    /**
-    * post box function for testing
-    * 
-    * @author Ryan Bayne
-    * @package CSV 2 POST
-    * @since 8.1.3
-    * @version 1.0.0
-    */
-    public function postbox_about_freevspaid( $data, $box ) {
-        echo '<p>' . __( "The free edition is not intended to be a trial. My goal is for more than 80% of users to feel the free edition 
-        is enough for their project. I feel far too many of free importers hold back basic code and limit the use of standard post options simply
-        because they are being added to an autoblogging sequence which is a process outside of WP's design. I'm currently in the process of implementing a fairer approach
-        which will be used for all of my plugins. One that gives more back to the WP community. My earnings will decrease but the new WP e-Customers plugin will help to streamline
-        customer service and technical support in such a way that will free-up some of my time. In the end users will get more for free, everyone will
-        get better support and I will have a easier job. This is the big plan rolling out right now and will take until 2016 for the entire system", 'csv2post' ) . '</p>';
+    public function postbox_main_pagecapabilitysettings( $data, $box ) {
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        
+        // get the tab menu 
+        $pluginmenu = $this->TabMenu->menu_array();
+        ?>
+        
+        <table class="form-table">
+        
+        <?php 
+        // get stored capability settings 
+        $saved_capability_array = get_option( 'csv2post_capabilities' );
+        
+        // add a menu for each page for the user selecting the required capability 
+        foreach( $pluginmenu as $key => $page_array ) {
+            
+            // do not add the main page to the list as a strict security measure
+            if( $page_array['name'] !== 'main' ) {
+                $current = null;
+                if( isset( $saved_capability_array['pagecaps'][ $page_array['name'] ] ) && is_string( $saved_capability_array['pagecaps'][ $page_array['name'] ] ) ) {
+                    $current = $saved_capability_array['pagecaps'][ $page_array['name'] ];
+                }
+                
+                $this->UI->option_menu_capabilities( $page_array['menu'], 
+                                                    'pagecap' . $page_array['name'], 
+                                                    'pagecap' . $page_array['name'],  
+                                                    $current );
+            }
+        }?>
+        
+        </table>
+        
+        <?php 
+        $this->UI->postbox_content_footer();        
     }
 
 }?>

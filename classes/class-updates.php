@@ -63,7 +63,7 @@ class C2P_UpdatePlugin extends C2P_PHP{
         return $installed_version_cleaned + 1;       
     }
     public function changelist( $scope = 'next' ){
-        global $c2p_currentversion, $C2P_WP, $C2P_UI;
+        global $c2p_currentversion, $C2P_WP;
         
         // standard messages for change types
         $added = __( 'New features added to the plugin, be sure to configure them to suit your needs.', 'csv2post' );
@@ -88,7 +88,7 @@ class C2P_UpdatePlugin extends C2P_PHP{
             }
             $test .= '</ol>';
             
-            echo $C2P_UI->notice_return( 'info', 'Small',ucfirst( $key ), $$key . $test);                
+            echo $this->UI->notice_return( 'info', 'Small',ucfirst( $key ), $$key . $test);                
         }    
     } 
 }

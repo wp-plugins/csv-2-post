@@ -53,14 +53,51 @@ class CSV2POST_Table_View extends CSV2POST_View {
         $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
                         
         // load the current project row and settings from that row
-        $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
-        $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
-                
-        parent::setup( $action, $data );
+        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
+            
+            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
+            $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
+    
+            parent::setup( $action, $data );
         
-        $this->add_meta_box( 'table-datatable', __( 'Table', 'csv2post' ), array( $this, 'postbox_table_datatable' ), 'normal','default',array( 'formid' => 'datatable' ) );      
+            $this->add_meta_box( 'table-datatable', __( 'Table', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'datatable' ) );      
+        
+        } else {
+            $this->add_meta_box( 'rules-nocurrentproject', __( 'No Current Project', 'csv2post' ), array( $this->UI, 'metabox_nocurrentproject' ), 'normal','default',array( 'formid' => 'nocurrentproject' ) );      
+        }    
+    
     }
- 
+
+    /**
+    * All add_meta_box() callback to this function, values in $box are used to then call
+    * the intended box to render a unique form or information. 
+    * 
+    * The purpose of this box is to apply security to all boxes but it could also be used
+    * to dynamically call different functions based on arguments
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.32
+    * @version 1.0.0
+    */
+    function parent( $data, $box ) {
+        
+        // if $box['args']['capability'] is not set with over-riding capability added to add_meta_box() arguments then set it
+        if( !isset( $box['args']['capability'] ) || !is_string( $box['args']['capability'] ) ) {
+            $box['args']['capability'] = $this->UI->get_boxes_capability( $box['args']['formid'] );
+        }
+        
+        // call method in CSV2POST - this is done because it is harder to put this parent() function there as it includes "self::"
+        // any other approach can get messy I think but I'd welcome suggestions on this 
+        if( isset( $box['args']['capability'] ) && !current_user_can( $box['args']['capability'] ) ) { 
+            echo '<p>' . __( 'You do not have permission to access the controls and information in this box.', 'csv2post' ) . '</p>';
+            return false;    
+        }        
+        
+        // call the intended function 
+        eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
+    }
+     
     /**
     * post box function for testing
     * 
@@ -70,7 +107,7 @@ class CSV2POST_Table_View extends CSV2POST_View {
     * @version 1.0.0
     */
     public function postbox_table_datatable( $data, $box ) {    
-        global $CSV2POST, $wpdb, $C2P_WP, $c2p_settings, $C2P_DB, $wpdb, $C2P_UI;
+        global $CSV2POST, $wpdb, $C2P_WP, $c2p_settings, $wpdb;
 
         if(!isset( $c2p_settings['currentproject'] ) || !is_numeric( $c2p_settings['currentproject'] ) ){
             echo "<p class=\"csv2post_boxes_introtext\">". __( 'You have not created a project or somehow a Current Project has not been set.' ) ."</p>";
@@ -84,7 +121,7 @@ class CSV2POST_Table_View extends CSV2POST_View {
         foreach( $sourceid_array as $key => $source_id){
 
             // get the source row
-            $row = $C2P_DB->selectrow( $wpdb->c2psources, 'sourceid = "' . $source_id . '"', 'tablename,path' );
+            $row = $this->DB->selectrow( $wpdb->c2psources, 'sourceid = "' . $source_id . '"', 'tablename,path' );
 
             // avoid displaying the same database table twice
             if(in_array( $row->tablename, $tables_already_displayed) ){
@@ -92,9 +129,9 @@ class CSV2POST_Table_View extends CSV2POST_View {
             }
             $tables_already_displayed[] = $row->tablename;
             
-            $importedrows = $C2P_DB->selectwherearray( $row->tablename);
+            $importedrows = $this->DB->selectwherearray( $row->tablename);
             
-            $projecttable_columns = $C2P_DB->get_tablecolumns( $row->tablename, true, true);
+            $projecttable_columns = $this->DB->get_tablecolumns( $row->tablename, true, true);
             $excluded_array = array( 'c2p_rowid', 'c2p_postid', 'c2p_use', 'c2p_updated', 'c2p_applied', 'c2p_categories', 'c2p_changecounter' );
             foreach( $excluded_array as $key => $excluded_column){
                 if(in_array( $excluded_column, $projecttable_columns) ){
@@ -104,10 +141,10 @@ class CSV2POST_Table_View extends CSV2POST_View {
 
             $ReceivingTable = new C2P_ImportTableInformation_Table();
             $ReceivingTable->columnarray = $projecttable_columns;
-            $ReceivingTable->prepare_items( $importedrows,10);    
+            $ReceivingTable->prepare_items_further( $importedrows,10);    
             ?>
 
-            <?php $postbox_title = basename( $row->path) .' to ' . $row->tablename;?>
+            <?php $postbox_title = basename( $row->path ) .' to ' . $row->tablename;?>
             <?php $form_id = 'importdatatable'.$key;?>
             <a id="anchor_<?php echo $form_id;?>"></a>
             <h4><?php echo $postbox_title; ?></h4>

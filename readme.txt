@@ -3,12 +3,12 @@ Contributors: WebTechGlobal
 Donate link: http://www.webtechglobal.co.uk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Tags: import,importer,csv,csvimporter,dataimport,data,autoblog,autoblogger,wpimporter,wpcsvimporter
+Tags: CSV 2 POST, csv2post,dataimport,importer,.csv,data,autoblogger,autoblogging,wpcsvimporter
 Requires at least: 3.8.0
 Tested up to: 3.9.1
 Stable tag: trunk
 
-CSV 2 POST Version 8 by Ryan Bayne
+CSV 2 POST Version 8 by Ryan R. Bayne
 
 == Description ==
 
@@ -22,16 +22,23 @@ Lets turn data into websites! CSV 2 POST for Wordpress can import any .csv file 
 
 = Why CSV 2 POST? = 
 
+You obviously have a .csv file and you would like to make the contents public by creating hundreds of posts. Using CSV 2 POST
+is the right choice because it offers everything most users need and is being updating frequently. My free edition will allow you to
+do the follow things...
+
 1. Create posts, pages and custom post types.
 1. Update posts
+1. Merge multiple .csv files
+1. Functionality exists to change .csv file path during project
 1. Create hierarchical categories.
+1. Map category terms in data to exisiting categories
 1. Import custom field meta.
 1. Free support from WebTechGlobal.
 1. Design your content using WYSIWYG editor.
 1. Import pre-made tags.
 1. Import images to Wordpress media gallery.
 1. Customize post titles.
-1. Manage multiple CSV files.
+1. Manage .csv files as long term data sources.
 1. Adopt existing posts.
 1. Premium upgrade option when your site needs it.
 1. Generate tags using any text data.
@@ -39,17 +46,13 @@ Lets turn data into websites! CSV 2 POST for Wordpress can import any .csv file 
 1. Works with most .csv files.
 1. Imports data to custom table.
 1. Create image attachments.
-1. Acts as a basic data manager.
-1. Ethical development and marketing.
 1. WordPress styled interface.
+1. Sandbox design for easy upgrading.
 1. No advertising.
-1. Help text for every feature.
-1. Translation has started.
-1. Interface designed for fast and easy customizing.
+1. Help text for every feature.              
 1. Log system to trace staff or even clients steps great if something goes wrong.
 1. More updates planned.
-1. Dedicated developer on-hand everyday.
-1. Multiple form system for safer and more precise configuration of import projects.
+1. Dedicated developer on-hand most days.        
  
 == Installation ==
 
@@ -96,12 +99,8 @@ Innovation went into CSV 2 POST year one
 = Is CSV 2 POST better than any other .csv file importer on Wordpress? =
 
 If I said CSV 2 POST is "better" than any plugin of its kind on Wordpress it would simply be my opinion and a bias one at that. 
-So lets be realistic and honest. Not the usual marketing strategy to get someone using a product. That is because I'm a developer and
-my job is to consider the user who has already downloaded my software, has it installed and wants to see results. I consider your needs,
-your preferences, your Wordpress knowledge, your desired blogging quality and what your business requires. Yet it's not possible to get
-that right because I've never met you to know your exact needs! You can bet most data importers for Wordpress are designed to do all the 
-common and usual stuff. So I designed something different: a flexible plugin that I can configure on request, quickly and
-cheaply. 
+So lets be realistic and honest. You can bet most data importers for Wordpress are designed to do all the 
+common and usual stuff. So I designed something different that is worth trying and supporting even if just a quick Tweet.
 
 = What makes CSV 2 POST different from other importers? =
 
@@ -112,31 +111,56 @@ portal, closer to client treatment than customer treatment even when coming to m
 
 == Screenshots ==
 
-1. Manage Multiple Projects
-2. Simple Import Statistics
-3. Category Data Selection
-4. Custom Fields With Templates
-5. Standard Post Settings
-6. Generate Tags
-7. Custom Publish Dates
-8. Content Templates
+1. Manage Multiple Projects.
+2. Simple Import Statistics.
+3. Category Data Selection.
+4. Custom Fields With Templates.
+5. Standard Post Settings.
+6. Generate Tags.
+7. Custom Publish Dates.
+8. Content Templates.
 
 == Languages ==
 
-Translation has begun. Translators needed.
+Translators needed.
 
 == Upgrade Notice ==
 
-Do not update previous versions without backing up your exising copy of the plugin.
+Do not update without backing up your entire site both files and data. The nature of this plugin requires great care.
 
 == Changelog == 
-= 8.0.3 =
+= 8.0.33 =
+* From The Developer
+    * The beta area has been updated, small improvements are made there before being applied to the rest of the plugin
+* Fixes
+    * unexpected output during activation caused by extending class sharing same function name
+    * dbDelta() problems fixed with changes to queries                 
+* Feature Changes
+    * Data Source page is now used first, then Projects and changes to the forms on both pages help to creat a more logical flow
+    * New capabilities system allows individual boxes/forms to be restricted
+    * General Settings moved to the main page, sorry this was left in Projects when the new page system was applied in the last update 
+    * Security improvements: input validation system helps to prevent users editing the source of forms by registering hidden inputs and their values
+    * Data sources directory plays a bigger part and a new Re-Check Sources Directory form has been added for manually switching to new files without having to enter a path
+    * URL file import to an existing data sources directory added
+* Technical Notes   
+    * Changed theconfig column from longtext to text
+    * New filesarray column in c2psources table for storing multiple file names, partly as a history, can be used to specify some files out of many and is used to continue to manage multiple files                                              
+    * More work done to rely on PHP classes, less global variables and better use of objects
+    * Some redundant code removed  
+    * $_POST and $_GET processing security moved to C2P_Requests() class
+    * c2pprocess change to csv2postaction
+    * New column added to c2psources table "name" for users to name their data source
+    * New column added to c2psources table "directory" for multi-file treatment in a single datasource, the "path" column value can change to any file in the directory
+* Known Issues
+    * Data Table view is not suitable as tables are too wide, column titles cannot be read
+    
+= 8.0.32 =
 * From The Developer
     * Report a bug in the free edition by reporting it on the WebTechGlobal Forum to get a 20% discount on the premium edition
 * Fixes
     * Problem with post status fixed                 
 * Feature Changes
-    * Boxes are not proper WP postboxes which can be: moved, hidden, closed
+    * Boxes are now proper WP postboxes which can be: moved, hidden, closed
     * Every view is now a registered Wordpress page
     * More screens added for various purposes
     * Screen Options available for every page
@@ -146,11 +170,10 @@ Do not update previous versions without backing up your exising copy of the plug
     * Beta Testing area added, submit your own code to me for adding to testing 
 * Technical Notes                                                 
     * Improved coding standards in every file
-    * Class design improved, more to do and coming soon
+    * Class design improved, more to do 
 * Known Issues
     * Data Table view is not suitable as tables are too wide, column titles cannot be read
-    * Still not enough forms in the free edition making existing forms feel spaced out over too many pages without reason
 
-==Plugin Author== 
+== Plugin Author == 
 
 This Readme file was created by Ryan Bayne

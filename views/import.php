@@ -53,15 +53,51 @@ class CSV2POST_Import_View extends CSV2POST_View {
         $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
                         
         // load the current project row and settings from that row
-        $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
-        $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
+        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
             
-        parent::setup( $action, $data );
-        
-        $this->add_meta_box( 'import-importsources', __( 'Import Data', 'csv2post' ), array( $this, 'postbox_import_importsources' ), 'normal','default',array( 'formid' => 'importsources' ) );      
-        $this->add_meta_box( 'import-deleteduplicaterowsandposts', __( 'Delete Duplicate Rows and Posts', 'csv2post' ), array( $this, 'postbox_import_deleteduplicaterowsandposts' ), 'side','default',array( 'formid' => 'deleteduplicaterowsandposts' ) );      
+            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
+            $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
+
+            parent::setup( $action, $data );
+            
+            $this->add_meta_box( 'import-importsources', __( 'Import Data', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'importsources' ) );      
+            $this->add_meta_box( 'import-deleteduplicaterowsandposts', __( 'Delete Duplicate Rows and Posts', 'csv2post' ), array( $this, 'postbox_import_deleteduplicaterowsandposts' ), 'side','default',array( 'formid' => 'deleteduplicaterowsandposts' ) );      
+            
+        } else {
+            $this->add_meta_box( 'import-nocurrentproject', __( 'No Current Project', 'csv2post' ), array( $this->UI, 'metabox_nocurrentproject' ), 'normal','default',array( 'formid' => 'nocurrentproject' ) );      
+        }    
     }
  
+    /**
+    * All add_meta_box() callback to this function, values in $box are used to then call
+    * the intended box to render a unique form or information. 
+    * 
+    * The purpose of this box is to apply security to all boxes but it could also be used
+    * to dynamically call different functions based on arguments
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.32
+    * @version 1.0.0
+    */
+    function parent( $data, $box ) {
+        
+        // if $box['args']['capability'] is not set with over-riding capability added to add_meta_box() arguments then set it
+        if( !isset( $box['args']['capability'] ) || !is_string( $box['args']['capability'] ) ) {
+            $box['args']['capability'] = $this->UI->get_boxes_capability( $box['args']['formid'] );
+        }
+        
+        // call method in CSV2POST - this is done because it is harder to put this parent() function there as it includes "self::"
+        // any other approach can get messy I think but I'd welcome suggestions on this 
+        if( isset( $box['args']['capability'] ) && !current_user_can( $box['args']['capability'] ) ) { 
+            echo '<p>' . __( 'You do not have permission to access the controls and information in this box.', 'csv2post' ) . '</p>';
+            return false;    
+        }        
+        
+        // call the intended function 
+        eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
+    }
+     
     /**
     * post box function for testing
     * 
@@ -120,7 +156,7 @@ class CSV2POST_Import_View extends CSV2POST_View {
                     #                                                      #
                     ########################################################
                     // display the total number of duplicate rows based on unique key column only
-                    $this->duplicate_keys = array();
+                    $duplicate_keys = array();
                     $this->idcolumn = false;
                     if( isset( $this->current_project_settings['idcolumn'] ) ){
                         
@@ -152,7 +188,7 @@ class CSV2POST_Import_View extends CSV2POST_View {
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
 
-        if( isset( $this->duplicate_keys ) ){
+        if( $this->duplicate_keys ){
             echo '<p>' . __( 'You have duplicate key values. You selected column <strong>' . $this->idcolumn . '</strong> as your unique
             value column. Duplicates are not recommended in that column for many operations to work properly. However the plugin does 
             not restrict them without the user requesting it.', 'csv2post' ) . '</p>';

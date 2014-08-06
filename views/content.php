@@ -53,16 +53,51 @@ class CSV2POST_Content_View extends CSV2POST_View {
         $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
                         
         // load the current project row and settings from that row
-        $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
-        $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
-                
-        parent::setup( $action, $data );
+        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
+            
+            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
+            $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
+         
+            parent::setup( $action, $data );
+            
+            $this->add_meta_box( 'content-defaulttitletemplate', __( 'Default Title Template', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'defaulttitletemplate' ) );      
+            $this->add_meta_box( 'content-defaultcontenttemplate', __( 'Default Content Template', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'defaultcontenttemplate' ) );
         
-        $this->add_meta_box( 'content-defaulttitletemplate', __( 'Default Title Template', 'csv2post' ), array( $this, 'postbox_content_defaulttitletemplate' ), 'normal','default',array( 'formid' => 'defaulttitletemplate' ) );      
-        $this->add_meta_box( 'content-defaultcontenttemplate', __( 'Default Content Template', 'csv2post' ), array( $this, 'postbox_content_defaultcontenttemplate' ), 'normal','default',array( 'formid' => 'defaultcontenttemplate' ) );
-        $this->add_meta_box( 'content-multipledesignsrules', __( 'Multiple Design Rules', 'csv2post' ), array( $this, 'postbox_content_multipledesignsrules' ), 'normal','default',array( 'formid' => 'multipledesignsrules' ) );
+        } else {
+            $this->add_meta_box( 'content-nocurrentproject', __( 'No Current Project', 'csv2post' ), array( $this->UI, 'metabox_nocurrentproject' ), 'normal','default',array( 'formid' => 'nocurrentproject' ) );      
+        }    
     }
  
+    /**
+    * All add_meta_box() callback to this function, values in $box are used to then call
+    * the intended box to render a unique form or information. 
+    * 
+    * The purpose of this box is to apply security to all boxes but it could also be used
+    * to dynamically call different functions based on arguments
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.32
+    * @version 1.0.0
+    */
+    function parent( $data, $box ) {
+        
+        // if $box['args']['capability'] is not set with over-riding capability added to add_meta_box() arguments then set it
+        if( !isset( $box['args']['capability'] ) || !is_string( $box['args']['capability'] ) ) {
+            $box['args']['capability'] = $this->UI->get_boxes_capability( $box['args']['formid'] );
+        }
+        
+        // call method in CSV2POST - this is done because it is harder to put this parent() function there as it includes "self::"
+        // any other approach can get messy I think but I'd welcome suggestions on this 
+        if( isset( $box['args']['capability'] ) && !current_user_can( $box['args']['capability'] ) ) { 
+            echo '<p>' . __( 'You do not have permission to access the controls and information in this box.', 'csv2post' ) . '</p>';
+            return false;    
+        }        
+        
+        // call the intended function 
+        eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
+    }
+     
     /**
     * post box function for testing
     * 
@@ -121,45 +156,5 @@ class CSV2POST_Content_View extends CSV2POST_View {
         <?php 
         $this->UI->postbox_content_footer();
     }    
-        
-    /**
-    * post box function
-    * 
-    * @author Ryan Bayne
-    * @package CSV 2 POST
-    * @since 8.1.3
-    * @version 1.0.0
-    */
-    public function postbox_content_multipledesignsrules( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
-        
-        global $c2p_settings;
-        ?>  
-
-            <table class="form-table">
-            <?php
-            for( $i=1;$i<=3;$i++){
-                
-                // design rules data
-                $designrulecolumn_table = ''; 
-                $designrulecolumn_column = '';
-                if( isset( $this->projectsettings['content']["designrulecolumn$i"]['table'] ) ){$designrulecolumn_table = $this->projectsettings['content']["designrulecolumn$i"]['table'];}
-                if( isset( $this->projectsettings['content']["designrulecolumn$i"]['column'] ) ){$designrulecolumn_column = $this->projectsettings['content']["designrulecolumn$i"]['column'];}             
-                $this->UI->option_projectcolumns( __( 'Data' ), $c2p_settings['currentproject'], "designrulecolumn$i", "designrulecolumn$i", $designrulecolumn_table, $designrulecolumn_column, 'notrequired', 'Not Required' );
     
-                $designrulecolumn = ''; 
-                if( isset( $this->projectsettings['content']["designruletrigger$i"] ) ){$designrulecolumn = $this->projectsettings['content']["designruletrigger$i"];}            
-                $this->UI->option_text( "Trigger $i", "designruletrigger$i", "designruletrigger$i", $designrulecolumn, false );
-                
-                $designtemplate = 'nocurrent123'; 
-                if( isset( $this->projectsettings['content']["designtemplate$i"] ) ){$designtemplate = $this->projectsettings['content']["designtemplate$i"];}            
-                $this->UI->option_menu_posttemplates( "Design $i", "designtemplate$i", "designtemplate$i", $designtemplate); 
-            }
-            ?>
-            </table>
-        
-        <?php 
-        $this->UI->postbox_content_footer();
-    }       
 }?>

@@ -331,38 +331,41 @@ class C2P_PHP extends C2P_Flags {
     * 
     * @param mixed $s
     */
-    public function format_money( $s){
+    public function format_money( $s ){
         setlocale(LC_MONETARY, 'en_GB' );
         return money_format( '%!2n', $s) . "\n";        
     } 
   
     /**
-    * Validate a url (http https ftp)
-    * @return true if valid false if not a valid url
-    * @param url $url
-    */
-    public function validate_url( $url){
-        if (!preg_match( '/^(http|https|ftp):\/\/([A-Z0-9][A-Z0-9_-]*(?:\.[A-Z0-9][A-Z0-9_-]*)+):?(\d+)?\/?/i', $url) ){
-                return false;
-        } else {
-                return true;
-        }
-    }
-   
-    /**
-    * Checks if value is valid a url (http https ftp)
-    * 1. Does not check if url is active (not broken)
+    * Validate a url (http https ftp), not for paths to files, only for web pages and directories
     * 
     * @return true if valid false if not a valid url
     * @param url $url
+    * 
+    * @deprecated use is_url()
     */
-    public function is_url( $url){
-        if (!preg_match( '/^(http|https|ftp):\/\/([A-Z0-9][A-Z0-9_-]*(?:\.[A-Z0-9][A-Z0-9_-]*)+):?(\d+)?\/?/i', $url) )
-        {
+    public function validate_url( $url ){
+        return self::is_url( $url );
+    }
+            
+    /**
+    * Checks if value is valid a url (http https ftp)
+    * 1. Does not check if url is active
+    * 2. Removes a filename if exists
+    * 
+    * @uses dirname()
+    * @return true if valid false if not a valid url
+    * @param url $url
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.2
+    */
+    public function is_url( $url ){
+        if (!preg_match( '/^(http|https|ftp):\/\/([A-Z0-9][A-Z0-9_-]*(?:\.[A-Z0-9][A-Z0-9_-]*)+):?(\d+)?\/?/i', dirname( $url )) ){
             return false;
-        } 
-        else 
-        {
+        } else {
             return true;
         }
     }
@@ -372,7 +375,7 @@ class C2P_PHP extends C2P_Flags {
     * 
     * @param mixed $domain_name
     */
-    public function is_valid_domain_name( $domain_name){
+    public function is_valid_domain_name( $domain_name ){
         return (preg_match( "/^([a-z\d](-*[a-z\d] )*)(\.([a-z\d](-*[a-z\d] )*) )*$/i", $domain_name) //valid chars check
                 && preg_match( "/^.{1,253}$/", $domain_name) //overall length check
                 && preg_match( "/^[^\.]{1,63}(\.[^\.]{1,63})*$/", $domain_name)   ); //length of each label
@@ -389,7 +392,7 @@ class C2P_PHP extends C2P_Flags {
     * @param mixed $reason
     * @param mixed $version
     */
-    public function arrayinfo_set( $array, $line, $function, $file){
+    public function arrayinfo_set( $array, $line, $function, $file ){
         global $c2p_currentversion, $C2P_WP;
         $array['arrayinfo']['version'] = $c2p_currentversion;
         $array['arrayinfo']['line'] = $line;
@@ -458,13 +461,13 @@ class C2P_PHP extends C2P_Flags {
     * 
     * @returns boolean
     */
-    public function does_folder_contain_file_type( $path, $extension){
-        $all_files  = new RecursiveIteratorIterator(new RecursiveDirectoryIterator( $path) );
+    public function does_folder_contain_file_type( $path, $extension ){
+        $all_files  = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $path ) );
         $html_files = new RegexIterator( $all_files, '/\.'.$extension.'/' );                        
         foreach( $html_files as $file) {
-            return true;# entering foreach means we found one or more files with our extension
+            return true;// a file with $extension was found
         }    
-        return false;# no files with extension found
+        return false;// no files with our extension found
     }
    
     /**
@@ -480,7 +483,7 @@ class C2P_PHP extends C2P_Flags {
         return $count;
     } 
     
-    public function stringinstring_using_strpos( $needle, $haystack){
+    public function stringinstring_using_strpos( $needle, $haystack ){
         return @strpos( $haystack, $needle) !== false;
     }
     
@@ -495,7 +498,7 @@ class C2P_PHP extends C2P_Flags {
     * @param mixed $string
     * @param mixed $character
     */
-    public function get_string_after_last_character( $string, $character){
+    public function get_string_after_last_character( $string, $character ){
         $explode = explode( $character, $string);
         return end( $explode);
     }
@@ -517,7 +520,7 @@ class C2P_PHP extends C2P_Flags {
     * @return string or false on failure
     * 
     */
-    public function get_string_between_two_characters( $start_limiter, $end_limiter, $haystack){
+    public function get_string_between_two_characters( $start_limiter, $end_limiter, $haystack ){
         $start_pos = strpos( $haystack, $start_limiter);
         if ( $start_pos === false ){
             return false;
@@ -742,6 +745,7 @@ class C2P_PHP extends C2P_Flags {
     public function clean_sqlcolumnname( $column ){
         $string = preg_replace( "/[^a-zA-Z0-9s_]/", "", $column);
         return strtolower ( $string );        
-    }   
+    }  
+        
 }// end class C2P_PHP
 ?>
