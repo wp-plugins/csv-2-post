@@ -130,6 +130,8 @@ Translators needed.
 Do not update without backing up your entire site both files and data. The nature of this plugin requires great care.
 
 == Changelog == 
+= 8.0.34 =
+* Fix: todays update introduced a critical bug triggered when attempting to import data              
 
 = 8.0.33 =
 * From The Developer

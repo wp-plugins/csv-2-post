@@ -38,7 +38,7 @@ class CSV2POST {
      *
      * @const string
      */
-    const version = '8.0.33';
+    const version = '8.0.34';
     
     /**
      * CSV2POST version
@@ -3459,7 +3459,7 @@ class CSV2POST {
         }
                              
         //$source_object = $this->DB->selectrow( $table_name, ' )
-        $file = new SplFileObject( ABSPATH . $source_row->path );
+        $file = new SplFileObject( $source_row->path );
             
         // put headers into array, we will use the key while processing each row, by doing it this way 
         // it should be possible for users to change their database and not interfere this procedure
