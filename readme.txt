@@ -10,6 +10,7 @@ Stable tag: trunk
 
 CSV 2 POST Version 8 by Ryan R. Bayne
 
+
 == Description ==
 
 Lets turn data into websites! CSV 2 POST for Wordpress can import any .csv file (only requirement is MySQL ready headers, basically no special characters allowed ) then autoblog the data into hundreds or even thousands of well designed WP posts. My CSV importer plugin creates custom fields, categories and meta. If your new to Wordpress those are some of the elements that make up a web page in WP. CSV 2 POST is the first plugin to import data to a custom database table allowing the data to be prepared and other more advanced steps during the autoblogging procedure. Combine that with the power of Wordpress and there is no limit to how many high quality websites you can create using any data.
@@ -112,13 +113,13 @@ portal, closer to client treatment than customer treatment even when coming to m
 == Screenshots ==
 
 1. Manage Multiple Projects.
-2. Simple Import Statistics.
-3. Category Data Selection.
-4. Custom Fields With Templates.
-5. Standard Post Settings.
-6. Generate Tags.
-7. Custom Publish Dates.
-8. Content Templates.
+1. Simple Import Statistics.
+1. Category Data Selection.
+1. Custom Fields With Templates.
+1. Standard Post Settings.
+1. Generate Tags.
+1. Custom Publish Dates.
+1. Content Templates.
 
 == Languages ==
 
@@ -129,6 +130,7 @@ Translators needed.
 Do not update without backing up your entire site both files and data. The nature of this plugin requires great care.
 
 == Changelog == 
+
 = 8.0.33 =
 * From The Developer
     * The beta area has been updated, small improvements are made there before being applied to the rest of the plugin
@@ -176,4 +178,5 @@ Do not update without backing up your entire site both files and data. The natur
 
 == Plugin Author == 
 
-This Readme file was created by Ryan Bayne
+Thank you for considering CSV 2 POST. I import data to Wordpress for a living. If your stuck, if you need another solution
+or help with any existing data importer. Please visit forum.webtechglobal.co.uk for free help.
