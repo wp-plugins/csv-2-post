@@ -6,11 +6,11 @@ Plugin URI: http://www.webtechglobal.co.uk
 Description: CSV 2 POST data importer for Wordpress by Ryan Bayne @WebTechGlobal.
 Author: Ryan Bayne
 Author URI: http://www.webtechglobal.co.uk
-Last Updated: July 2014
+Last Updated: September 2014
 Text Domain: csv2post
 Domain Path: /languages
 
-CSV 2 POST Free Edition License (does not apply to premium edition)
+CSV 2 POST Free Edition License (does not apply to pro edition)
 
 GPL v3 
 
