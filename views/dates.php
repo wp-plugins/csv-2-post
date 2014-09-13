@@ -32,6 +32,24 @@ class CSV2POST_Dates_View extends CSV2POST_View {
     
     protected $view_name = 'dates';
     
+    public $purpose = 'normal';// normal, dashboard
+
+    /**
+    * Array of meta boxes, looped through to register them on views and as dashboard widgets
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function meta_box_array() {
+        // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
+        return $this->meta_boxes_array = array(
+            // array( id, title, callback (usually parent, approach created by Ryan Bayne), context (position), priority, call back arguments array, add to dashboard (boolean), required capability
+            array( 'dates-defaultpublishdates', __( 'Default Publish Dates', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'defaultpublishdates' ), true, 'activate_plugins' )
+        );    
+    }
+            
     /**
      * Set up the view with data and do things that are specific for this view
      *
@@ -55,46 +73,66 @@ class CSV2POST_Dates_View extends CSV2POST_View {
         // load the current project row and settings from that row
         if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
            
-            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
-            $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
+            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] ); 
+            if( !$this->project_object ) {
+                $this->current_project_settings = false;
+            } else {
+                $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings ); 
+            }
     
             parent::setup( $action, $data );
+
+            // using array register many meta boxes
+            foreach( self::meta_box_array() as $key => $metabox ) {
+                // the $metabox array includes required capability to view the meta box
+                if( isset( $metabox[7] ) && current_user_can( $metabox[7] ) ) {
+                    $this->add_meta_box( $metabox[0], $metabox[1], $metabox[2], $metabox[3], $metabox[4], $metabox[5] );   
+                }               
+            }        
             
-            $this->add_meta_box( 'dates-defaultpublishdates', __( 'Default Publish Dates', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'defaultpublishdates' ) );      
-        
         } else {
             $this->add_meta_box( 'dates-nocurrentproject', __( 'No Current Project', 'csv2post' ), array( $this->UI, 'metabox_nocurrentproject' ), 'normal','default',array( 'formid' => 'nocurrentproject' ) );      
         }   
-    
     }
- 
+    
     /**
-    * All add_meta_box() callback to this function, values in $box are used to then call
-    * the intended box to render a unique form or information. 
+    * Outputs the meta boxes
     * 
-    * The purpose of this box is to apply security to all boxes but it could also be used
-    * to dynamically call different functions based on arguments
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function metaboxes() {
+        parent::register_metaboxes( self::meta_box_array() );     
+    }
+
+    /**
+    * This function is called when on WP core dashboard and it adds widgets to the dashboard using
+    * the meta box functions in this class. 
+    * 
+    * @uses dashboard_widgets() in parent class CSV2POST_View which loops through meta boxes and registeres widgets
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function dashboard() { 
+        parent::dashboard_widgets( self::meta_box_array() );  
+    }
+    
+    /**
+    * All add_meta_box() callback to this function to keep the add_meta_box() call simple.
+    * 
+    * This function also offers a place to apply more security or arguments.
     * 
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.32
-    * @version 1.0.0
+    * @version 1.0.1
     */
     function parent( $data, $box ) {
-        
-        // if $box['args']['capability'] is not set with over-riding capability added to add_meta_box() arguments then set it
-        if( !isset( $box['args']['capability'] ) || !is_string( $box['args']['capability'] ) ) {
-            $box['args']['capability'] = $this->UI->get_boxes_capability( $box['args']['formid'] );
-        }
-        
-        // call method in CSV2POST - this is done because it is harder to put this parent() function there as it includes "self::"
-        // any other approach can get messy I think but I'd welcome suggestions on this 
-        if( isset( $box['args']['capability'] ) && !current_user_can( $box['args']['capability'] ) ) { 
-            echo '<p>' . __( 'You do not have permission to access the controls and information in this box.', 'csv2post' ) . '</p>';
-            return false;    
-        }        
-        
-        // call the intended function 
         eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
     }
      
@@ -107,7 +145,7 @@ class CSV2POST_Dates_View extends CSV2POST_View {
     * @version 1.0.0
     */
     public function postbox_dates_defaultpublishdates( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( "Rather than let Wordpress set the date and time for a post as it would when creating them manually. We can import dates or generate them in a way that looks more natural to visitors.", 'csv2post' ), false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
         
         global $c2p_settings;
@@ -117,14 +155,14 @@ class CSV2POST_Dates_View extends CSV2POST_View {
                 <?php
                 // date method
                 $publishdatemethod = 'nocurrent123';
-                if( isset( $this->projectsettings['dates']['publishdatemethod'] ) ){$publishdatemethod = $this->projectsettings['dates']['publishdatemethod'];}         
+                if( isset( $this->current_project_settings['dates']['publishdatemethod'] ) ){$publishdatemethod = $this->current_project_settings['dates']['publishdatemethod'];}         
                 $this->UI->option_radiogroup( __( 'Date Method' ), 'publishdatemethod', 'publishdatemethod', array( 'wordpress' => 'Wordpress', 'data' => __( 'Imported Dates' ), 'incremental' => __( 'Incremental' ), 'random' => __( 'Random' ) ), $publishdatemethod, 'random' );
                 
                 // imported dates
                 $datescolumn_table = ''; 
                 $datescolumn_column = '';
-                if( isset( $this->projectsettings['dates']['datescolumn']['table'] ) ){$datescolumn_table = $this->projectsettings['dates']['datescolumn']['table'];}
-                if( isset( $this->projectsettings['dates']['datescolumn']['column'] ) ){$datescolumn_column = $this->projectsettings['dates']['datescolumn']['column'];}             
+                if( isset( $this->current_project_settings['dates']['datescolumn']['table'] ) ){$datescolumn_table = $this->current_project_settings['dates']['datescolumn']['table'];}
+                if( isset( $this->current_project_settings['dates']['datescolumn']['column'] ) ){$datescolumn_column = $this->current_project_settings['dates']['datescolumn']['column'];}             
                 $this->UI->option_projectcolumns( __( 'Pre-Made Dates' ), $c2p_settings['currentproject'], 'datescolumn', 'datescolumn', $datescolumn_table, $datescolumn_column, 'notrequired', 'Not Required' );?>
                 
                 <!-- Option Start -->
@@ -134,7 +172,7 @@ class CSV2POST_Dates_View extends CSV2POST_View {
                     
                         <?php
                         $dateformat = 'nocurrent123'; 
-                        if( isset( $this->projectsettings['dates']['dateformat'] ) ){$dateformat = $this->projectsettings['dates']['dateformat'];}
+                        if( isset( $this->current_project_settings['dates']['dateformat'] ) ){$dateformat = $this->current_project_settings['dates']['dateformat'];}
                         ?>
                         <select name="dateformat" id="dateformat">
                             <option value="noformat" <?php if( $dateformat == 'noformat' ){echo 'selected="selected"';} ?>>Do Not Format (use date data as it is)</option>       
@@ -152,26 +190,26 @@ class CSV2POST_Dates_View extends CSV2POST_View {
                 $this->UI->option_subline( __( 'Incremental dates configuration...' ) );
                 
                 $incrementalstartdate = ''; 
-                if( isset( $this->projectsettings['dates']['incrementalstartdate'] ) ){$incrementalstartdate = $this->projectsettings['dates']['incrementalstartdate'];}        
+                if( isset( $this->current_project_settings['dates']['incrementalstartdate'] ) ){$incrementalstartdate = $this->current_project_settings['dates']['incrementalstartdate'];}        
                 $this->UI->option_text( __( 'Start Date' ), 'incrementalstartdate', 'incrementalstartdate', $incrementalstartdate, false );
                 
                 $naturalvariationlow = ''; 
-                if( isset( $this->projectsettings['dates']['naturalvariationlow'] ) ){$naturalvariationlow = $this->projectsettings['dates']['naturalvariationlow'];}        
+                if( isset( $this->current_project_settings['dates']['naturalvariationlow'] ) ){$naturalvariationlow = $this->current_project_settings['dates']['naturalvariationlow'];}        
                 $this->UI->option_text( __( 'Variation Low' ), 'naturalvariationlow', 'naturalvariationlow', $naturalvariationlow, false );
                 
                 $naturalvariationhigh = ''; 
-                if( isset( $this->projectsettings['dates']['naturalvariationhigh'] ) ){$naturalvariationhigh = $this->projectsettings['dates']['naturalvariationhigh'];}        
+                if( isset( $this->current_project_settings['dates']['naturalvariationhigh'] ) ){$naturalvariationhigh = $this->current_project_settings['dates']['naturalvariationhigh'];}        
                 $this->UI->option_text( __( 'Variation High' ), 'naturalvariationhigh', 'naturalvariationhigh', $naturalvariationhigh, false );
                             
                 // random
                 $this->UI->option_subline( __( 'Random dates configuration...' ) );
                 
                 $randomdateearliest = ''; 
-                if( isset( $this->projectsettings['dates']['randomdateearliest'] ) ){$randomdateearliest = $this->projectsettings['dates']['randomdateearliest'];}        
+                if( isset( $this->current_project_settings['dates']['randomdateearliest'] ) ){$randomdateearliest = $this->current_project_settings['dates']['randomdateearliest'];}        
                 $this->UI->option_text( __( 'Earliest Date' ), 'randomdateearliest', 'randomdateearliest', $randomdateearliest, false );
                
                 $randomdatelatest = ''; 
-                if( isset( $this->projectsettings['dates']['randomdatelatest'] ) ){$randomdatelatest = $this->projectsettings['dates']['randomdatelatest'];}         
+                if( isset( $this->current_project_settings['dates']['randomdatelatest'] ) ){$randomdatelatest = $this->current_project_settings['dates']['randomdatelatest'];}         
                 $this->UI->option_text( __( 'Latest Date' ), 'randomdatelatest', 'randomdatelatest', $randomdatelatest, false ); 
                 ?>
             </table>

@@ -39,26 +39,31 @@ class C2P_Requests {
         $this->DB = $this->CSV2POST->load_class( 'C2P_DB', 'class-wpdb.php', 'classes' ); # database interaction
         $this->PHP = $this->CSV2POST->load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' ); # php library by Ryan R. Bayne
         $this->Files = $this->CSV2POST->load_class( 'C2P_Files', 'class-files.php', 'classes' );
+        $this->Forms = $this->CSV2POST->load_class( 'C2P_Formbuilder', 'class-forms.php', 'classes' );
                        
         // set current project values
         if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {    
-            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );      
-            $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings ); 
+            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] ); 
+            if( !$this->project_object ) {
+                $this->current_project_settings = false;
+            } else {
+                $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings ); 
+            }
         }   
     }
     
     /**
-    * Processes security for $_POST and $_GET requests
-    * then calls another function to complete the specific request made
+    * Processes security for $_POST and $_GET requests,
+    * then calls another function to complete the specific request made.
     * 
-    * this function is called by process_admin_POST_GET() which is hooked by admin_init
+    * This function is called by process_admin_POST_GET() which is hooked by admin_init.
     * 
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.32
     * @version 1.0.0
     */
-    public function start_admin_processing() {  
+    public function process_admin_request() {  
         // ensure processing requested
         // if a hacker changes this, no processing happens so no validation required
         if(!isset( $_POST['csv2post_admin_action'] ) && !isset( $_GET['csv2postaction'] ) ) {
@@ -73,7 +78,7 @@ class C2P_Requests {
                 check_admin_referer( $_POST['csv2post_admin_referer'] ); 
                 $function_name = $_POST['csv2postaction'];     
                    
-            }else{                                       
+            } else {                                       
                 
                 // 99% of forms will use this method
                 check_admin_referer( $_POST['csv2post_form_name'] );
@@ -93,12 +98,15 @@ class C2P_Requests {
 
         $this->PHP->var_dump( $_POST, '<h1>$_POST</h1>' );           
         $this->PHP->var_dump( $_GET, '<h1>$_GET</h1>' );    
-
+                              
         // check_admin_referer() wp_die()'s if security fails so if we arrive here Wordpress security has been passed
         // now we validate individual values against their pre-registered validation method
         // some generic notices are displayed - this system makes development faster
-        $overall_result = self::apply_input_validation();
-        
+        $overall_result = true;
+        $overall_result = $this->Forms->apply_form_security();
+        if( $overall_result ){ $overall_result = $this->Forms->apply_input_validation(); }// values (string,numeric,mixed) validation
+        if( $overall_result ){ $overall_result = $this->Forms->apply_input_security(); }// detect hacking of individual inputs i.e. disabled inputs being enabled 
+
         // if $overall_result includes a single failure then there is no need to call the final function
         if( $overall_result === false ) {
             return false;
@@ -107,123 +115,14 @@ class C2P_Requests {
         // handle a situation where the submitted form requests a function that does not exist
         if( !method_exists( $this, $function_name ) ){
             wp_die( sprintf( __( "The method for processing your request was not found. This can usually be resolved quickly. Please report method %s does not exist. <a href='https://www.youtube.com/watch?v=vAImGQJdO_k' target='_blank'>Watch a video</a> explaining this problem.", 'csv2post' ), 
-            $function_name) );    
+            $function_name) ); 
+            return false;// should not be required with wp_die() but it helps to add clarity when browsing code and is a precaution.   
         }
         
         // all security passed - call the processing function
-        if( isset( $function_name) && is_string( $function_name) )
-        {
+        if( isset( $function_name) && is_string( $function_name) ) {
             eval( 'self::' . $function_name .'();' );
-        }  
-    }
-    
-    /**
-    * Validates the values for individual form inputs, if they are pre-registered
-    * pre-registration has been made easier with functions for building forms
-    * 
-    * the purpose is to make form creation easy and quick but also apply more security. 
-    * hidden inputs are registered, both name and value, checking them during processing
-    * prevents someone hacking the form
-    * 
-    * @author Ryan R. Bayne
-    * @package CSV 2 POST
-    * @since 8.1.32
-    * @version 1.0.0
-    */
-    public function apply_input_validation() {
-        // set result, default true to allow processing to complete, change to false if user made invalid entry
-        $result = true;
-        
-        // build an array of known inputs we do not need to validate
-        $ignored_inputs_array = array( '_wpnonce', '_wp_http_referer' );
-        
-        // get the current users form validation array
-        $form_validation_array = $this->UI->get_users_input_validation_array(); 
-                
-        // loop through $_POST values and if the name is registered apply validation    
-        foreach( $_POST as $name => $value ) {
-                         
-            // get the form inputs validation method if it has been registered
-            $validation_method = $this->UI->get_input_validation( $name );
-                                 
-            if( $validation_method !== false ) {
-                                       
-                // ensure the expected input_validation_example() function exists
-                if( method_exists( $this, 'input_validation_' . $validation_method ) ) { 
-                      
-                    // input_validation functions return boolean false on fail and output a notice to make user aware
-                    // else nothing else happens, next input is processed
-                    eval( '$result = self::input_validation_' . $validation_method . '( $value, $name );');// $result is always boolean    
-                    
-                    // false results in the final processing function not being called at all
-                    return $result;
-                }    
-            }
         }
-        
-        // true allows the final function to be called, processing the request further
-        // that function may perform further sanitization and even validation
-        return $result;
-    }
-    
-    /**
-    * Confirms if a value is alphanumeric or not (must always return boolean)
-    * 
-    * @returns boolean but also generates notice
-    * 
-    * @author Ryan R. Bayne
-    * @package CSV 2 POST
-    * @since 8.1.32
-    * @version 1.0.0
-    */
-    public function input_validation_alphanumeric( $value, $name ) {
-                        
-        // if not alphanumeric generate a notice and return false
-        if( !ctype_alnum( $value ) ) {   
-            $this->UI->create_notice( __( 'Alphanumeric only characters expected but other characters were entered.', 'csv2post' ), 'error', 'Small', __( 'Invalid Text Entered', 'csv2post' ) );               
-            return false;
-        }
-        
-        return true;
-    }
-    
-    /**
-    * Confirms value is a URL or not
-    * 
-    * @returns boolean but also generates notice
-    * 
-    * @author Ryan R. Bayne
-    * @package CSV 2 POST
-    * @since 8.1.33
-    * @version 1.0.0
-    */
-    public function input_validation_URL( $url, $name ) {
-        if( !$this->PHP->validate_url( $url ) ) {
-            $this->UI->create_notice( __( 'You did not enter a valid URL. Please ensure that all characters match the online URL.', 'csv2post' ), 'error', 'Small', __( 'Invalid URL Entered', 'csv2post' ) );               
-            return false;
-        }        
-        return true;
-    }
-    
-    /**
-    * form processing function
-    * 
-    * @author Ryan Bayne
-    * @package CSV 2 POST
-    * @since 8.0.0
-    * @version 1.0.1
-    */    
-    public function user_can( $capability = 'activate_plugins' ){
-        
-        if(!current_user_can( $capability ) ){
-            
-            $this->UI->n_depreciated( 'You Are Restricted', 'You do not have permission to complete that submission. Your
-            Wordpress account requires the "'.$capability.'" capability to perform the action you attempted.', 'warning', 'Small' );
-            return false;
-            
-        }   
-        
-        return true;
     }  
 
     /**
@@ -262,8 +161,7 @@ class C2P_Requests {
         global $c2p_settings;
         $c2p_settings['globalsettings']['uselog'] = $_POST['csv2post_radiogroup_logstatus'];
         $c2p_settings['globalsettings']['loglimit'] = $_POST['csv2post_loglimit'];
-        
-        
+                                                   
         ##################################################
         #           LOG SEARCH CRITERIA                  #
         ##################################################
@@ -348,7 +246,7 @@ class C2P_Requests {
             $c2p_settings['logsettings']['logscreen']['userid'] = $_POST['csv2post_logcriteria_userid'];
         }
         
-        $this->CSV2POST->update_settings( $c2p_settings);
+        $this->CSV2POST->update_settings( $c2p_settings );
         $this->UI->n_postresult_depreciated( 'success', __( 'Log Settings Saved', 'csv2post' ), __( 'It may take sometime for new log entries to be created depending on your websites activity.', 'csv2post' ) );  
     }  
     
@@ -372,7 +270,7 @@ class C2P_Requests {
         $c2p_settings['globalsettings']['admintriggers']['newcsvfiles']['display'] = $_POST['csv2post_radiogroup_detectnewcsvfiles_display'];
         $c2p_settings['globalsettings']['postfilter']['status'] = $_POST['csv2post_radiogroup_postfilter'];          
         $c2p_settings['globalsettings']['postfilter']['tokenrespin']['status'] = $_POST['csv2post_radiogroup_spinnertokenrespin'];        
-        $this->CSV2POST->update_settings( $c2p_settings);
+        $this->CSV2POST->update_settings( $c2p_settings );
         $this->UI->n_postresult_depreciated( 'success', __( 'Data Related Settings Saved', 'csv2post' ), __( 'We recommend that you monitor the plugin for a short time and ensure your new settings are as expected.', 'csv2post' ) );
     }
 
@@ -399,122 +297,9 @@ class C2P_Requests {
         }
         
         $c2p_settings['datasettings']['insertlimit'] = $_POST['importlimit'];
-        $this->CSV2POST->update_settings( $c2p_settings);
+        $this->CSV2POST->update_settings( $c2p_settings );
         $this->UI->create_notice( __( 'Your data options have been saved.', 'csv2post' ), 'success', 'Small', __( 'Global Data Settings Saved', 'csv2post' ) );        
     } 
-    
-    /**
-    * form processing function
-    * 
-    * @author Ryan Bayne
-    * @package CSV 2 POST
-    * @since 8.0.0
-    * @version 1.0.0
-    */       
-    public function screenpermissions() {
-        global $c2pm;
-        // loop through tabs, this is the same loop build as on the capabilities interface itself
-        $menu_id = 0;
-        foreach( $c2pm as $page_name => $page_array ){
-            foreach( $page_array['tabs'] as $key => $tab_array ){
-                if( isset( $tab_array['display'] ) && $tab_array['display'] != false ){                   
-                    // is post value set for current tab
-                    if( isset( $_POST['csv2post_capabilitiesmenu_'.$page_name.'_'.$key.''] ) ){
-         
-                        // update capability setting for screen
-                        $c2pm[$page_name]['tabs'][$key]['permissions']['customcapability'] = $_POST['csv2post_capabilitiesmenu_'.$page_name.'_'.$key.''];
-                    }
-                    ++$menu_id; 
-                }        
-            }
-        }        
-        $this->CSV2POST->option( 'csv2post_tabmenu', 'update', $c2pm);
-        $this->UI->notice_postresult_depreciated( 'success', __( 'Screen Permissions Saved', 'csv2post' ), __( 'Your saved screen permissions may hide or display screens for users. We recommend that you access your blog using applicable user accounts to test your new permissions.', 'csv2post' ) );    
-    } 
-    
-    /**
-    * form processing function
-    * 
-    * @author Ryan Bayne
-    * @package CSV 2 POST
-    * @since 8.0.0
-    * @version 1.0.0
-    */       
-    public function pagepermissions() {
-        global $c2pm;
-        foreach( $c2pm as $page_name => $page_array ){
-            if( isset( $_POST['csv2post_capabilitiesmenu_'.$page_name.'_99'] ) ){
-                $c2pm[$page_name]['permissions']['customcapability'] = $_POST['csv2post_capabilitiesmenu_'.$page_name.'_99'];    
-            }
-        }        
-        $this->CSV2POST->option( 'csv2post_tabmenu', 'update', $c2pm); 
-        $this->UI->notice_postresult_depreciated( 'success', __( 'Page Permissions Saved', 'csv2post' ), __( 'Your saved page permissions may hide or display the plugins pages for users. We recommend that you access your blog using applicable user accounts to test your new permissions.', 'csv2post' ) );     
-    } 
-     
-    /**
-    * Partial Un-install Plugin Options 
-    */
-    public function partialuninstall() {
-        if(current_user_can( 'delete_plugins' ) ){
-                     
-            // if delete data import job tables
-            if( isset( $_POST['csv2post_deletejobtables_array'] ) ){
-                               
-                foreach( $_POST['csv2post_deletejobtables_array'] as $k => $table_name){
-                    $code = str_replace( 'csv2post_', '', $table_name);
-                    csv2post_SQL_drop_dataimportjob_table( $table_name);
-                    $this->CSV2POST->notice_depreciated( 'Table ' . $table_name . ' was deleted.', 'success', 'Tiny', 'Table Deleted', '', 'echo' ); 
-                }
-            }
-            
-            // if delete core plugin tables
-            if( isset( $_POST['csv2post_deletecoretables_array'] ) ){
-                foreach( $_POST['csv2post_deletecoretables_array'] as $key => $table_name){
-                    C2P_DB::drop_table( $table_name);
-                }
-            }
-       
-            // if delete csv files
-            if( isset( $_POST['csv2post_deletecsvfiles_array'] ) ){
-                foreach( $_POST['csv2post_deletecsvfiles_array'] as $k => $csv_file_name){
-                        
-                    $file_is_in_use = false;
-                    $file_is_in_use = csv2post_is_csvfile_in_use( $csv_file_name);
-                       
-                    // if file is in use
-                    if( $file_is_in_use){        
-                        $this->CSV2POST->notice_depreciated( 'The file named ' . $csv_file_name .' is in use, cannot delete.', 'error', 'Tiny', 'File In Use', '', 'echo' );
-                    }else{                         
-                        unlink( $csv_file_name); 
-                        $this->CSV2POST->notice_depreciated( $csv_file_name .' Deleted', 'success', 'Tiny', '', '', 'echo' );
-                    }
-                                            
-                }      
-            }
-                      
-            // if delete folders
-            if( isset( $_POST['csv2post_deletefolders_array'] ) ){    
-                foreach( $_POST['csv2post_deletefolders_array'] as $k => $o){       
-
-                }      
-            }            
-
-            // if delete options
-            if( isset( $_POST['csv2post_deleteoptions_array'] ) ){          
-                foreach( $_POST['csv2post_deleteoptions_array'] as $k => $o){      
-                    delete_option( $o);
-                    $this->CSV2POST->notice_depreciated( 'Option record ' . $o . ' has been deleted.', 'success', 'Tiny', 'Option Record Deleted', '', 'echo' ); 
-                }      
-            }
-            
-            wp_redirect( get_bloginfo( 'url' ) . '/wp-admin/admin.php?page=csv2post' );
-            exit;
-                                                
-        }else{           
-            $this->CSV2POST->notice_depreciated( __( 'You do not have the required permissions to un-install CSV 2 POST. The Wordpress role required is delete_plugins, usually granted to Administrators.' ), 'warning', 'Large', 'No Permission To Uninstall CSV 2 POST', '', 'echo' );
-            return false;
-        }
-    }
     
     /**
     * form processing function
@@ -637,12 +422,6 @@ class C2P_Requests {
     }
     
     /**
-    * creates a new project using existing database tables 
-    */
-    public function newprojectexistingcsvfiles() {
-    }
-    
-    /**
     * form processing function
     * 
     * @author Ryan Bayne
@@ -678,11 +457,80 @@ class C2P_Requests {
                
         // unset current project setting
         unset( $c2p_settings['currentproject'] );
-        $this->CSV2POST->update_settings( $c2p_settings);
+        $this->CSV2POST->update_settings( $c2p_settings );
         
         $this->UI->create_notice( __( 'Your project was deleted.' ), 'success', 'Small', __( 'Success' ) );
     } 
+
+    /**
+    * changes the current project to the next in the list
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function currentprojectnext() {
+        global $wpdb, $c2p_settings;
+        $projects_array = $this->DB->selectwherearray( $wpdb->c2pprojects, 'projectid = projectid', 'timestamp', '*', ARRAY_A, 'ASC' );
+        
+        // get array key for current project
+        $active_array_key = false;
+        foreach( $projects_array as $key => $project ) {
+            if( $project['projectid'] === $c2p_settings['currentproject'] ) {
+                $active_array_key = $key; 
+                break;       
+            }    
+        }
+        
+        // count total projects so we avoid trying to access a none existing array key 
+        $total_projects = count( $projects_array );
+        
+        $last_key = $total_projects - 1;
+
+        if( $active_array_key == $last_key ) {
+            // current project is also the last in the array, set the first as the current project
+            $c2p_settings['currentproject'] = $projects_array[ 0 ]['projectid'];        
+        } else {
+            $new_active_key = $active_array_key + 1;
+            $c2p_settings['currentproject'] = $projects_array[ $new_active_key ]['projectid'];    
+        }
+   
+        $this->CSV2POST->update_settings( $c2p_settings );    
+    }    
     
+    /**
+    * changes the current project to the previous in the list
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function currentprojectprevious() {
+        global $wpdb, $c2p_settings;
+        $projects_array = $this->DB->selectwherearray( $wpdb->c2pprojects, 'projectid = projectid', 'timestamp', '*', ARRAY_A, 'ASC' );
+        
+        // get array key for current project
+        $active_array_key = false;
+        foreach( $projects_array as $key => $project ) {
+            if( $project['projectid'] === $c2p_settings['currentproject'] ) {
+                $active_array_key = $key;        
+            }    
+        }
+        
+        // if $active_array_key is 1 or 0 or accidental -1 set the last item in array as next
+        if( $active_array_key < 2 ) {
+            $new_active_key = count( $projects_array ) - 1;
+            $c2p_settings['currentproject'] = $projects_array[ $new_active_key ]['projectid'];        
+        } else {
+            $new_active_key = $active_array_key - 1;
+            $c2p_settings['currentproject'] = $projects_array[ $new_active_key ]['projectid'];    
+        }
+   
+        $this->CSV2POST->update_settings( $c2p_settings );
+    }
+       
     /**
     * form processing function
     * 
@@ -1545,7 +1393,7 @@ class C2P_Requests {
         $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true );
         $this->UI->create_notice( __( "Your title template design has been saved to your project settings."), 'success', 'Small', __( 'Title Template Updated' ) );    
     }  
-    
+
     /**
     * form processing function
     * 
@@ -1557,32 +1405,45 @@ class C2P_Requests {
     public function defaultcontenttemplate () {
         global $c2p_settings;    
         $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );      
-        $project_array = maybe_unserialize( $project_array->projectsettings); 
+        $project_settings_array = maybe_unserialize( $project_array->projectsettings ); 
         
         // store the content as default value
-        $project_array['content']['wysiwygdefaultcontent'] = stripslashes_deep( $_POST['wysiwygdefaultcontent'] );
-  
-        // if user opted, create a post content template also
-        if( isset( $_POST['createnewtemplate'] ) && $_POST['createnewtemplate'] == 'yes' ){
-            $post = array(
-              'comment_status' => 'closed',
-              'ping_status' => 'closed',
-              'post_author' => get_current_user_id(),
-              'post_content' => $content,
-              'post_status' => 'publish', 
-              'post_title' => $_POST['contenttemplatetitle'],
-              'post_type' => 'wtgcsvcontent'
-            );  
-                        
-            $post_id = wp_insert_post( $post, true );// returns WP_Error on fail  
-            
-            $this->UI->create_notice( __( 'A new content template has been created and your projects default content template was also updated.' ), 'success', 'Small', __( 'Content Template Created' ) );
-            
-        }else{
-            $this->UI->create_notice( __( 'Your content template design has been saved.' ), 'success', 'Small', __( 'Content Template Updated' ) );    
+        $project_settings_array['content']['wysiwygdefaultcontent'] = stripslashes_deep( $_POST['wysiwygdefaultcontent'] );
+
+        $this->UI->create_notice( __( 'Your default content template has been saved. This is a basic template, other advanced options may be available by activating the CSV 2 POST Templates custom post type (pro edition only) for managing multiple template designs.' ), 'success', 'Small', __( 'Default Content Template Updated' ) );    
+
+        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_settings_array ) ), true);     
+    }
+        
+    /**
+    * form processing function
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.0.0
+    * @version 1.0.0
+    */        
+    public function newcontenttemplate () {
+        global $c2p_settings;    
+
+        if( !isset( $_POST['contenttemplatetitle2'] ) || empty( $_POST['contenttemplatetitle2'] ) ) {
+            $this->UI->create_notice( __( 'Please enter a name for your content template.' ), 'error', 'Small', __( 'Name Required' ) );
+            return;      
         }
-    
-        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true);     
+        
+        $post = array(
+          'comment_status' => 'closed',
+          'ping_status' => 'closed',
+          'post_author' => get_current_user_id(),
+          'post_content' => stripslashes_deep( $_POST['editorfornewdesign'] ),
+          'post_status' => 'publish', 
+          'post_title' => $_POST['contenttemplatetitle2'],
+          'post_type' => 'wtgcsvcontent'
+        );  
+                    
+        wp_insert_post( $post, true );
+        
+        $this->UI->create_notice( __( 'A new content template has been created and your projects default content template was also updated.' ), 'success', 'Small', __( 'Content Template Created' ) );
     }
     
     /**
@@ -1622,8 +1483,25 @@ class C2P_Requests {
             $project_array['content']['designtemplate3'] = $_POST['designtemplate3'];
         }
         
-        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true);
+        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true );
         $this->UI->create_notice( __( "Design template rules have been updated."), 'success', 'Small', __( 'Content Design Rules Saved' ) );    
+    }
+    
+    /**
+    * Force systematic update on all posts for the current project
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function refreshallposts() {
+        global $c2p_settings;    
+        $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );      
+        $project_array = maybe_unserialize( $project_array->projectsettings);
+        $project_array['lastrefreshtime'] = time();         
+        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true );
+        $this->UI->create_notice( __( "Please ensure the Systematic Post Updating switch has been set to Enabled. That will allow CSV 2 POST to update posts as they are visited."), 'success', 'Small', __( 'Refresh Initiated', 'csv2post' ) );     
     }
     
     /**
@@ -1873,7 +1751,7 @@ class C2P_Requests {
         // post updating
         $c2p_settings['projectdefaults']['updating']['updatepostonviewing'] = $_POST['updatepostonviewing'];     
         
-        $this->CSV2POST->update_settings( $c2p_settings);
+        $this->CSV2POST->update_settings( $c2p_settings );
         $this->UI->create_notice( __( 'Your default project settings have been stored. Many of the setting will only work with multiple different
         projects if each projects datasource has the same format/configuration. Please configure projects individually where required and do not
         rely on these defaults if working with various different sources.', 'csv2post' ), 'success', 'Small', __( 'Default Project Options Stored Successfully', 'csv2post' ) );
@@ -1892,9 +1770,9 @@ class C2P_Requests {
             $total = $_POST['totalposts'];
         }        
                  
-        $this->CSV2POST->create_posts( $c2p_settings['currentproject'], $total); 
-        
-        $this->UI->create_notice( __( 'Post creation request was performed. This notice does not indicate that posts were created. The actual results should be displayed above this notice.', 'csv2post' ),  'success', 'Small', __( 'Post Creation Ended', 'csv2post' ) );   
+        $this->CSV2POST->create_posts( $c2p_settings['currentproject'], $total ); 
+         
+        $this->UI->create_notice( __( 'Post creation procedure has finished. This notice marks the end of the procedure whatever the outcome.', 'csv2post' ),  'success', 'Small', __( 'Post Creation Ended', 'csv2post' ) );   
     }
     
     /**
@@ -2105,9 +1983,12 @@ class C2P_Requests {
     */          
     public function globalswitches() {
         global $c2p_settings;
+        $c2p_settings['noticesettings']['wpcorestyle'] = $_POST['uinoticestyle'];        
         $c2p_settings['standardsettings']['textspinrespinning'] = $_POST['textspinrespinning'];
         $c2p_settings['standardsettings']['systematicpostupdating'] = $_POST['systematicpostupdating'];
-        $this->CSV2POST->update_settings( $c2p_settings); 
+        $c2p_settings['flagsystem']['status'] = $_POST['flagsystemstatus'];
+        $c2p_settings['widgetsettings']['dashboardwidgetsswitch'] = $_POST['dashboardwidgetsswitch'];
+        $this->CSV2POST->update_settings( $c2p_settings ); 
         $this->UI->create_notice( __( 'Global switches have been updated. These switches can initiate the use of 
         advanced systems. Please monitor your blog and ensure the plugin operates as you expected it to. If
         anything does not appear to work in the way you require please let WebTechGlobal know.' ),
@@ -2510,7 +2391,7 @@ class C2P_Requests {
             $project_name = sanitize_text_field( $_POST['newprojectname'] );
         } 
 
-        if( !is_numeric( $_POST['newprojectdatasource'] ) ) {
+        if( !isset( $_POST['newprojectdatasource'] ) || !is_numeric( $_POST['newprojectdatasource'] ) ) {
             $this->UI->create_notice( __( 'The source ID submitted is invalid and your request to create a new project was denied.' ), 'error', 'Small', __( 'Invalid Source ID' ) );                    
             return false;                
         }
@@ -2567,7 +2448,7 @@ class C2P_Requests {
     * @since 8.0.0
     * @version 1.0.0
     */            
-    public function changecsvfilepath () {
+    public function changecsvfilepath() {
         global $c2p_settings, $wpdb;
         if(!isset( $_POST['newpath'] ) || empty( $_POST['newpath'] ) ){
             $this->UI->create_notice( __( 'Please enter the path to the .csv file that is replacing your sources existing file.' ), 'error', 'Small', __( 'New File Path Required' ) );
@@ -2745,7 +2626,7 @@ class C2P_Requests {
     * @since 8.1.32
     * @version 1.0.0
     */
-    public function pagecapabilitysettings () {
+    public function pagecapabilitysettings() {
         // get the capabilities array from WP core
         $capabilities_array = $this->WPCore->capabilities();
 
@@ -2780,7 +2661,7 @@ class C2P_Requests {
     * @since 8.1.33
     * @version 1.0.0
     */
-    public function rechecksourcedirectory () {
+    public function rechecksourcedirectory() {
         // validation
         if( !is_numeric( $_POST['datasourceidforrecheck'] ) ) {
             $this->UI->create_notice( "The source ID you submitted is not valid. A numeric ID is required.", 'error', 'Small', __( 'Invalid Source ID', 'csv2post' ) );    
@@ -2816,7 +2697,7 @@ class C2P_Requests {
     * @since 8.1.33
     * @version 1.0.0
     */
-    public function urlimporttoexistingsource () {
+    public function urlimporttoexistingsource() {
         // perform sanitization
         $url = sanitize_url( $_POST['newdatasourcetheurl'] );
 
@@ -2865,7 +2746,7 @@ class C2P_Requests {
     * @since 8.1.33
     * @version 1.0.0
     */
-    public function uploadfiletodatasource () {
+    public function uploadfiletodatasource() {
         // get data source - directory value only
         $source_array = $this->CSV2POST->get_source( $_POST['datasourcefornewfile'] );
         if( !$source_array ) {
@@ -2989,11 +2870,10 @@ class C2P_Requests {
         $table_exists_result = $this->DB->does_table_exist( $files_array[1]['tablename'] );
         if( $table_exists_result){
             // drop table if user entered the random number
-            if( $_POST['deleteexistingtable'] ==  $_POST['deleteexistingtablecode'] ){   
+            if( isset( $_POST['deleteexistingtablecode1'] ) && $_POST['deleteexistingtable1'] == $_POST['deleteexistingtablecode1'] ){   
                 $this->DB->drop_table( $files_array[1]['tablename'] );           
             }else{                
-                $this->UI->create_notice( 'A database table already exists named ' . $files_array[1]['tablename'] . '. Please delete
-                the existing table if it is not in use or change the name of your .csv file a little.', 'error', 'Small', 'Table Exists Already' );
+                $this->UI->create_notice( 'A database table already exists named ' . $files_array[1]['tablename'] . '. Please delete the existing table if it is not in use or change the name of your .csv file a little.', 'error', 'Small', 'Table Exists Already' );
                 return;  
             } 
         }
@@ -3011,7 +2891,6 @@ class C2P_Requests {
         self::a_table_was_created( $files_array[1]['tablename'] );                                                              
                     
         $this->UI->create_notice( __( 'Your new source of data has been setup. You can now create a project using this source. The source ID is ' . $files_array[1]['sourceid'], 'csv2post' ), 'success', 'Small', __( 'Data Source Ready' ) );  
-    
     }
     
     /**
@@ -3022,14 +2901,14 @@ class C2P_Requests {
     * @since 8.1.33
     * @version 1.0.0
     */
-    public function createuploadcsvdatasource () {
+    public function createuploadcsvdatasource() {
         global $wpdb;
         
         // perform sanitization
         $path = sanitize_text_field( $_POST['newdatasourcethepath1'] );
         $id_column = sanitize_text_field( $_POST['uniqueidcolumn1'] ); 
         $project_name = sanitize_text_field( $_POST['newprojectname1'] ); 
-                
+                     
         // handle file upload, create the uploads array
         $uploads = array( 'path' => $path, 
                           'subdir' => '',// use to create a new directory
@@ -3102,7 +2981,7 @@ class C2P_Requests {
         $table_exists_result = $this->DB->does_table_exist( $files_array[1]['tablename'] );
         if( $table_exists_result){
             // drop table if user entered the random number
-            if( $_POST['deleteexistingtable'] ==  $_POST['deleteexistingtablecode'] ){   
+            if( isset( $_POST['deleteexistingtablecode2'] ) && $_POST['deleteexistingtable2'] == $_POST['deleteexistingtablecode2'] ){   
                 $this->DB->drop_table( $files_array[1]['tablename'] );           
             }else{                
                 $this->UI->create_notice( 'A database table already exists named ' . $files_array[1]['tablename'] . '. Please delete the existing table if it is not in use or change the name of your .csv file a little.', 'error', 'Small', 'Table Exists Already' );
@@ -3123,14 +3002,307 @@ class C2P_Requests {
         self::a_table_was_created( $files_array[1]['tablename'] );                                                              
                     
         $this->UI->create_notice( __( 'Your new source of data has been setup. You can now create a project using this source. The source ID is ' . $files_array[1]['sourceid'], 'csv2post' ), 'success', 'Small', __( 'Data Source Ready' ) );  
-  
     }
+    
+    /**
+    * Import new .csv file via URL and create a new data source
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.34
+    * @version 1.0.0
+    */
+    public function createservercsvdatasource() {
+       global $wpdb, $c2p_settings;
+        $C2P_Files = CSV2POST::load_class( 'C2P_Files', 'class-files.php', 'classes' );
+
+        // path is a required field 
+        if( empty( $_POST['newdatasourcethepath3'] ) ){
+            $this->UI->create_notice( __( 'Please enter a path to the .csv file on your server.', 'csv2post' ), 'error', 'Small', __( '.csv File Path Required', 'csv2post' ) );
+            return;
+        }
+                            
+        // perform sanitization
+        $path = sanitize_text_field( $_POST['newdatasourcethepath3'] );
+              
+        // ensure user is attempting to use a .csv file
+        $path_parts = pathinfo( $path );
+        if( $path_parts['extension'] !== 'csv' ) {
+            $this->UI->create_notice( __( 'CSV 2 POST focuses on .csv files only. Please see the WebTechGlobal plugin range for other solutions.', 'csv2post' ), 'error', 'Small', __( 'Only .csv Files Allowed', 'csv2post' ) );
+            return false;
+        }
+        
+        // build array of information for this file (this can be customized to work with multiple files)
+        $files_array = array( 'total_files' => 1 );
+                
+        // add path for this file to $files_array which is then stored in data source table
+        $files_array[1]['fullpath'] = $path;
+            
+        // establish separator
+        $files_array[1]['sep'] = $this->Files->established_separator( $path );
+        
+        // we are ready to read the file
+        $file = new SplFileObject( $path );
+        while (!$file->eof() ) {
+            $header_array = $file->fgetcsv( $files_array[1]['sep'], '"' );
+            break;// we just need the first line to do a count()
+        }       
+        
+        // count number of fields
+        $files_array[1]['fields'] = count( $header_array );
+        
+        // create arrays of original headers and one of sql prepared headers
+        foreach( $header_array as $key => $header ){  
+            $files_array[1]['originalheaders'][$key] = $header;
+            $files_array[1]['sqlheaders'][$key] = $this->PHP->clean_sqlcolumnname( $header );        
+        }    
+        
+        // set basename
+        $files_array[1]['basename'] = basename( $path );            
+
+        // use basename to create database table name
+        $files_array[1]['tablename'] = $wpdb->prefix . $this->PHP->clean_sqlcolumnname( $files_array[1]['basename'] );
+        
+        // set data treatment, the form allows a single file so 'single' is applied
+        $files_array[1]['datatreatment'] = 'single';
+        
+        // ensure ID column is valid
+        $cleanedidcolumn = '';
+        if(!empty( $_POST['uniqueidcolumn'] ) ){
+            $cleanedidcolumn = $this->PHP->clean_sqlcolumnname( $_POST['uniqueidcolumn'] );
+            if(!in_array( $cleanedidcolumn, $files_array[1]['sqlheaders'] ) ){
+                $this->UI->create_notice( 'You entered '.$_POST['uniqueidcolumn'].' as your ID column but it does not match any column header in your .csv file.', 'error', 'Small', __( "Invalid ID Column") );
+                return;
+            }
+        } 
+        
+        // set project name
+        if( empty( $_POST['newprojectname'] ) ){
+            $files_array['projectname'] = basename( $files_array[1]['fullpath'] );
+        }else{
+            $files_array['projectname'] = $_POST['newprojectname'];
+        }
+        
+        // does planned database table name exist                       
+        $table_exists_result = $this->DB->does_table_exist( $files_array[1]['tablename'] );
+        if( $table_exists_result){
+            // drop table if user entered the random number
+            if( isset( $_POST['deleteexistingtablecode3'] ) && $_POST['deleteexistingtable3'] == $_POST['deleteexistingtablecode3'] ){   
+                $this->DB->drop_table( $files_array[1]['tablename'] );           
+            }else{                
+                $this->UI->create_notice( 'A database table already exists named ' . $files_array[1]['tablename'] . '. Please delete the existing table if it is not in use or change the name of your .csv file a little.', 'error', 'Small', 'Table Exists Already' );
+                return;  
+            } 
+        }
+        
+        // make entry in the c2psources table
+        $files_array[1]['sourceid'] = $this->CSV2POST->insert_data_source( $files_array[1]['fullpath'], 0, $files_array[1]['tablename'], 'localcsv', $files_array[1], $cleanedidcolumn );
+        
+        // create database table for importing data into, this is where we prepare it 
+        $sqlheaders_array = array();
+        foreach( $files_array[1]['sqlheaders'] as $key => $header ){
+            $sqlheaders_array[$header] = 'nodetails';
+        }
+
+        $this->CSV2POST->create_project_table( $files_array[1]['tablename'], $sqlheaders_array ); 
+        self::a_table_was_created( $files_array[1]['tablename'] );                                                              
+                    
+        $this->UI->create_notice( __( 'Your new source of data has been setup. You can now create a project using this source. The source ID is ' . $files_array[1]['sourceid'], 'csv2post' ), 'success', 'Small', __( 'Data Source Ready' ) );  
+    }
+    
+    /**
+    * use project ID to set giving project
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function setactiveproject() {
+        global $wpdb, $c2p_settings;
+        $projects_array = $this->DB->selectwherearray( $wpdb->c2pprojects, 'projectid = projectid', 'timestamp', '*', ARRAY_A, 'ASC' );
+               
+        $valid_project_id = false;
+        foreach( $projects_array as $key => $project ) {
+            if( $project['projectid'] === $_POST['setprojectid'] ) {
+                $c2p_settings['currentproject'] = $_POST['setprojectid']; 
+                $this->CSV2POST->update_settings( $c2p_settings );
+                $valid_project_id = true;
+                break;       
+            }    
+        }
+   
+        if( $valid_project_id ) {
+            $this->UI->create_notice( __( 'You have actived project with ID ' . $_POST['setprojectid'] . ' and can now change the settings for that projet.', 'csv2post' ), 'success', 'Small', __( 'Project Ready', 'csv2post' ) );    
+        } else { 
+            $this->UI->create_notice( __( 'The project ID you submitted is not valid. Either no existing project has that ID or your entry is not numeric.', 'csv2post' ), 'error', 'Small', __( 'Failed' ) );
+        }       
+    }
+    
+    /**
+    * Saves the plugins global dashboard widget settings i.e. which to display, what to display, which roles to allow access
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function dashboardwidgetsettings() {
+        global $c2p_settings;
+        
+        // loop through pages
+        $C2P_TabMenu = CSV2POST::load_class( 'C2P_TabMenu', 'class-pluginmenu.php', 'classes' );
+        $menu_array = $C2P_TabMenu->menu_array();       
+        foreach( $menu_array as $key => $section_array ) {
+
+            if( isset( $_POST[ $section_array['name'] . 'dashboardwidgetsswitch' ] ) ) {
+                $c2p_settings['widgetsettings'][ $section_array['name'] . 'dashboardwidgetsswitch'] = $_POST[ $section_array['name'] . 'dashboardwidgetsswitch' ];    
+            }
+            
+            if( isset( $_POST[ $section_array['name'] . 'widgetscapability' ] ) ) {
+                $c2p_settings['widgetsettings'][ $section_array['name'] . 'widgetscapability'] = $_POST[ $section_array['name'] . 'widgetscapability' ];    
+            }
+
+        }
+
+        $this->CSV2POST->update_settings( $c2p_settings );    
+        $this->UI->create_notice( __( 'Your dashboard widget settings have been saved. Please check your dashboard to ensure it is configured as required per role.', 'csv2post' ), 'success', 'Small', __( 'Settings Saved', 'csv2post' ) );         
+    }
+    
+    /**
+    * Deletes data source submitted via form $_POST
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function deletedatasource () {
+    
+        if( !isset( $_POST['confirmdeletedatasource'] ) || empty( $_POST['confirmdeletedatasource'] ) ) {
+            $this->UI->create_notice( __( 'To prevent accidental deletion of large amounts of data. The plugin requires users to copy and paste the random code found.', 'csv2post' ), 'error', 'Small', __( 'Confirmation Code Required', 'csv2post' ) );
+            return;    
+        }
+        
+        if( $_POST['confirmdeletedatasource'] !== $_POST['confirmdeletedatasourcecode'] ) {
+            $this->UI->create_notice( __( 'The confirmation code is incorrect please try again.', 'csv2post' ), 'error', 'Small', __( 'Confirmation Code Required', 'csv2post' ) );
+            return;    
+        }
+        
+        $delete = $this->CSV2POST->delete_datasource( $_POST['datasourcefornewfile'] );
+        if( $delete ) {
+            $this->UI->create_notice( __( 'Your datasource with ID '.$_POST['datasourcefornewfile'].' was deleted.', 'csv2post' ), 'success', 'Small', __( 'Deleted', 'csv2post' ) );         
+        } else {
+            $this->UI->create_notice( __( 'Your datasource either no longer exists or could not be deleted. If it is in use by a project that may have caused this.', 'csv2post' ), 'warning', 'Small', __( 'No Changes Made', 'csv2post' ) );                 
+        }        
+    }
+
+    /**
+    * Locates imported records that have a post ID but the post no longer exists.
+    * 
+    * A count is done and optional re-creation of posts available.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function recreatemissingposts() {
+        global $c2p_settings;
+                       
+        $table_name = $this->CSV2POST->get_project_main_table( $c2p_settings['currentproject'] );
+
+        $select = 'c2p_rowid, c2p_postid';
+
+        $missing_posts = 0;
+        
+        // count re-creations
+        $recreated = 0;
+               
+        // get all rows that have a c2p_postid
+        $result = $this->DB->selectwherearray( $table_name, 'c2p_postid != ""', 'c2p_rowid', $select, ARRAY_A );
+        
+        if( $result ){
+            
+            $autoblog = new CSV2POST_InsertPost();
+            $autoblog->settings = $c2p_settings;
+            $autoblog->currentproject = $c2p_settings['currentproject'];
+            $autoblog->project = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );// gets project row, includes sources and settings
+            $autoblog->projectid = $c2p_settings['currentproject'];
+            $autoblog->maintable = $this->CSV2POST->get_project_main_table( $c2p_settings['currentproject'] );// main table holds post_id and progress statistics
+            $autoblog->projectsettings = maybe_unserialize( $autoblog->project->projectsettings );// unserialize settings
+            $autoblog->projectcolumns = $this->CSV2POST->get_project_columns_from_db( $c2p_settings['currentproject'] );
+            $autoblog->requestmethod = 'manual';
+            $sourceid_array = $this->CSV2POST->get_project_sourcesid( $c2p_settings['currentproject'] );
+            $autoblog->mainsourceid = $sourceid_array[0];// update the main source database table per post with new post ID
+            unset( $autoblog->project->projectsettings );// just simplifying the project object by removing the project settings
+
+            $idcolumn = false;
+            if( isset( $autoblog->projectsettings['idcolumn'] ) ){
+                $idcolumn = $autoblog->projectsettings['idcolumn'];    
+            }
+            
+            // we will control how and when we end the operation
+            $autoblog->finished = false;// when true, output will be complete and foreach below will discontinue, this can be happen if maximum execution time is reached
+
+            foreach( $result as $key => $row ) {
+                
+                $get_post_result = get_post( $row['c2p_postid'] );
+                  var_dump( $get_post_result );
+                // create missing post
+                if( !$get_post_result ) {
+                    
+                    ++$missing_posts;
+                    
+                    if( isset( $_POST['recreatemissingposts'] ) ) { 
+
+                        // pass row to $autob
+                        $autoblog->row = $row;    
+                        
+                        // create a post - start method is the beginning of many nested functions
+                        $autoblog->start();
+                                         
+                        ++$recreated;
+                    }
+                }
+            }          
+        }
+        
+        if( $missing_posts === 0 ) {
+            
+            $this->UI->create_notice( __( 'You do not have any missing posts, no changes were made to your blog. If you feel posts are missing, please ensure they are not in the Wordpress trash.' ), 'info', 'Small', __( 'No Missing Posts', 'csv2post' ) );
+            
+        } elseif( $recreated > 0 ) {
+            
+            $this->UI->create_notice( __( "A total of $recreated posts were missing and have been re-created." ), 'info', 'Small', __( 'No Rows Available', 'csv2post' ) );
+             
+        } elseif( $missing_posts > 0 && !isset( $_POST['recreatemissingposts'] ) ) {
+            
+            $this->UI->create_notice( __( "A total of $missing_posts posts appear to be missing but do not worry if you still have your data WTG has made it easy to fix such problems." ), 'info', 'Small', __( 'Posts Missing', 'csv2post' ) );
+    
+        }
+    }    
     
     #################################################################
     #                                                               #
     #              BETA TESTING FUNCTIONS BEGIN HERE                #
     #                                                               #
     #################################################################
+    /**
+    * About
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function t1() {
+
+        $this->UI->create_notice( 'If you submitted a form on the dashboard, it must have been the one that calls
+        this notice which is just a test. Thank you for being a beta tester even if you did not signup for it!', 
+        'success', 'Small', __( 'Dashboard Test Worked', 'csv2post' ) );
+
+    }
     
     /**
     * Processes a beta test form
@@ -3583,11 +3755,121 @@ class C2P_Requests {
             $this->UI->create_notice( $file_import_result['message'], 'error', 'Small', __( 'File Upload Failed', 'csv2post' ) );
             return;    
         }
-               
-        
+ 
         $this->UI->create_notice( $file_import_result['message'], 'success', 'Small', __( 'File Uploaded', 'csv2post' ) );
+    }
+    
+    /**
+    * Add new CRON job to WP.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function newcronrepeatevent() {
+    
+        // process date   
+        $aa = $_POST['aa'];
+        $mm = $_POST['mm'];// month
+        $jj = $_POST['jj'];
+        $hh = $_POST['hh'];// hour
+        $mn = $_POST['mn'];// minute
+        $ss = 1;
+        $aa = ($aa <= 0 ) ? date('Y') : $aa;
+        $mm = ($mm <= 0 ) ? date('n') : $mm;
+        $jj = ($jj > 31 ) ? 31 : $jj;
+        $jj = ($jj <= 0 ) ? date('j') : $jj;
+        $hh = ($hh > 23 ) ? $hh -24 : $hh;
+        $mn = ($mn > 59 ) ? $mn -60 : $mn;
+        $ss = ($ss > 59 ) ? $ss -60 : $ss;
+        $new_date = sprintf( "%04d-%02d-%02d %02d:%02d:%02d", $aa, $mm, $jj, $hh, $mn, $ss );
 
+        $valid_date = wp_checkdate( $mm, $jj, $aa, $new_date );
+        if ( !$valid_date ) {
+            return new WP_Error( 'invalid_date', __( 'Looks like the provided date is invalid please try again then report this problem to WebTechGlobal.', 'csv2post' ) );
+        }
+
+        $time = strtotime ( $new_date, time() );
+
+        // schedule the event
+        wp_schedule_event( $time, $_POST['newcronfrequency'], $_POST['newcronhook'] );
+        
+        $this->UI->create_notice( __( 'Your event has been schedule using the WP CRON system.', 'csv2post'), 'success', 'Small', __( 'Schedule Updated', 'csv2post' ) );    
+    }
+    
+    /**
+    * About
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function unscheduleeventbyhook() {
+        wp_clear_scheduled_hook( $_POST['cronhook2'] );
+        $this->UI->create_notice( __( 'All of the WP CRON schedule events for "' . $_POST['cronhook2'] . '" have been cancelled.', 'csv2post'), 'success', 'Small', __( 'Schedule Updated', 'csv2post' ) );           
+    }
+    
+    #################################################################
+    #                                                               #
+    #         BETA TESTING FUNCTIONS FOR FORM BUILDER CLASS         #
+    #                                                               #
+    #################################################################
+    public function alpha() {
+    
+    }
+    public function alphanumeric() {
+    
+    }
+    public function numeric() {
+    
+    }
+    public function unsettest() {
+    
+    }
+    public function url() {
+    
+    }
+    public function disabledhacked() {
+    
+    }
+    public function menuhacked() {
+    
+    }
+    public function capability() {
+    
+    }
+    public function logrequest() {
+    
+    }
+    public function hiddenvaluehacked() {
+    
+    }
+    public function required() {
+    
+    }
+    public function maximumlength() {
+    
+    }
+    public function specificpattern() {
+    
+    }
+    public function maximumcheckboxes() {
+    
+    }
+    public function minimumcheckboxes() {
+    
+    }
+    public function checkboxesspecifictotal() {
+    
+    }
+    public function radiohacked() {
+    
+    }
+    public function autocomplete() {
+    
     }
          
-}       
+}// C2P_Requests       
 ?>

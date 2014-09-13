@@ -31,7 +31,27 @@ class CSV2POST_Betatest3_View extends CSV2POST_View {
     protected $screen_columns = 2;
     
     protected $view_name = 'betatest3';
-    
+
+    /**
+    * Array of meta boxes, looped through to register them on views and as dashboard widgets
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function meta_box_array() {
+        // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
+        return $this->meta_boxes_array = array(
+            // array( id, title, callback (usually parent, approach created by Ryan Bayne), context (position), priority, call back arguments array, add to dashboard (boolean), required capability
+            array( 'betatest3-currenttesting', __( 'Test Introduction', 'csv2post' ), array( $this, 'parent' ), 'normal', 'default', array( 'formid' => 'currenttesting' ), true, 'activate_plugins' ),
+            array( $this->view_name . '-t1', __( 'WP Roles Array', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't1' ), true, 'activate_plugins' ),
+            array( $this->view_name . '-t2', __( 'Box Array: add_meta_box()', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't2' ), true, 'activate_plugins' ),
+            array( $this->view_name . '-t3', __( 'Invalid Entry: Text Field', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't3' ), true, 'activate_plugins' ),
+            array( $this->view_name . '-errors', __( 'Errors', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'errors' ), true, 'activate_plugins' ),
+        );    
+    }
+            
     /**
     * Set up the view with data and do things that are specific for this view
     *
@@ -56,51 +76,59 @@ class CSV2POST_Betatest3_View extends CSV2POST_View {
         $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
         
         // load the current project row and settings from that row
-        parent::setup( $action, $data );
-        
-        // introduction to testing
-        $this->add_meta_box( 'betatest3-currenttesting', __( 'Test Introduction', 'csv2post' ), array( $this, 'parent' ), 'normal', 'default', array( 'formid' => 'currenttesting', 'capability' => $this->UI->get_boxes_capability( 'currenttesting' ) ) );      
-        
-        // test boxes
-        $this->add_meta_box( $this->view_name . '-t1', __( 'WP Roles Array', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't1' ) );      
-        $this->add_meta_box( $this->view_name . '-t2', __( 'Box Array: add_meta_box()', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't2' ) );      
-        $this->add_meta_box( $this->view_name . '-t3', __( 'Invalid Entry: Text Field', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't3' ) );      
-
-        // permanent information applied to all test pages
-        $this->add_meta_box( $this->view_name . '-errors', __( 'Errors', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'errors' ) );          
-
+        parent::setup( $action, $data );  
+              
+        // using array register many meta boxes
+        foreach( self::meta_box_array() as $key => $metabox ) {
+            // the $metabox array includes required capability to view the meta box
+            if( isset( $metabox[7] ) && current_user_can( $metabox[7] ) ) {
+                $this->add_meta_box( $metabox[0], $metabox[1], $metabox[2], $metabox[3], $metabox[4], $metabox[5] );   
+            }               
+        }
+            
         $pointer = new C2P_Pointers('mypointer3', 'csv2postpointer1', 'My Pointers Title', 'This pointer will not stay hidden. Indicating the Ajax process is not updating user meta with closed pointers.');
         $pointer->add_action(); 
 
     }
-    
+ 
     /**
-    * All add_meta_box() callback to this function, values in $box are used to then call
-    * the intended box to render a unique form or information. 
+    * Outputs the meta boxes
     * 
-    * The purpose of this box is to apply security to all boxes but it could also be used
-    * to dynamically call different functions based on arguments
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function metaboxes() {
+        parent::register_metaboxes( self::meta_box_array() );     
+    }
+
+    /**
+    * This function is called when on WP core dashboard and it adds widgets to the dashboard using
+    * the meta box functions in this class. 
+    * 
+    * @uses dashboard_widgets() in parent class CSV2POST_View which loops through meta boxes and registeres widgets
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function dashboard() { 
+        parent::dashboard_widgets( self::meta_box_array() );  
+    }
+       
+    /**
+    * All add_meta_box() callback to this function to keep the add_meta_box() call simple.
+    * 
+    * This function also offers a place to apply more security or arguments.
     * 
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.32
-    * @version 1.0.0
+    * @version 1.0.1
     */
     function parent( $data, $box ) {
-        
-        // if $box['args']['capability'] is not set with over-riding capability added to add_meta_box() arguments then set it
-        if( !isset( $box['args']['capability'] ) || !is_string( $box['args']['capability'] ) ) {
-            $box['args']['capability'] = $this->UI->get_boxes_capability( $box['args']['formid'] );
-        }
-        
-        // call method in CSV2POST - this is done because it is harder to put this parent() function there as it includes "self::"
-        // any other approach can get messy I think but I'd welcome suggestions on this 
-        if( isset( $box['args']['capability'] ) && !current_user_can( $box['args']['capability'] ) ) { 
-            echo '<p>' . __( 'You do not have permission to access the controls and information in this box.', 'csv2post' ) . '</p>';
-            return false;    
-        }        
-        
-        // call the intended function 
         eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
     }
      
@@ -135,37 +163,37 @@ class CSV2POST_Betatest3_View extends CSV2POST_View {
             </tr>
             <tr>
                 <td>Escape</td>
-                <td>0%</td>
+                <td>100%</td>
                 <td>Consider how best to funnel all $_POST and $_GET values through the same lines for strip slash and escape etc so that this does not need to be done within every processing function. The problem is $_POST processing functions make use of $_POST already and it is impossible to add paramaters to them. So not sure if this is actually possible and instead I may need to create a standard function for placing in every processing function. So these functions will have a sort of standard line of 2-3 other functions.</td>
             </tr>            
             <tr>
                 <td>Register Hidden Inputs</td>
-                <td>0%</td>
+                <td>100%</td>
                 <td>Using the existing registration approach the hidden inputs used in all forms, then validate them on $_POST action. This is where we increase anti hack measures as recieving function expects specific inputs and specific values.</td>
             </tr>            
             <tr>
                 <td>Re-validate Page Permission</td>
-                <td>0%</td>
+                <td>100%</td>
                 <td>Lets say someone is on an admin page they should not be on. It could be that they were viewing the page before an admin or moderator changed the users permissions. Slim chances of this scenario but we don't take chances so we'll use $_POST value with page name in it to check if user is still permitted to access said page.</td>
             </tr>            
             <tr>
                 <td>Consider $_GET</td>
-                <td>0%</td>
+                <td>100%</td>
                 <td>The existing function apply_input_validation() which checks individual $_POST values against registration needs to do the same for $_GET</td>
             </tr>            
             <tr>
                 <td>Delete Form Validation</td>
-                <td>0%</td>
+                <td>100%</td>
                 <td>Delete the data added to user meta for validating individual values, it is added to user data to create a per user and recent set of values matching the forms they have recently viewed in admin. It needs to be cleaned up after use. </td>
             </tr>            
             <tr>
                 <td>Clearer Invalid Entry Notice</td>
-                <td>0%</td>
+                <td>100%</td>
                 <td>Test show the new per input validation system works well. The notices simply need to be clearer about what input they are for. </td>
             </tr>            
             <tr>
                 <td>Indication On Forms</td>
-                <td>0%</td>
+                <td>100%</td>
                 <td>How best do we indicate on the form what values are invalid without using HTML5 and jQuery? Could the registration data in user meta possibly be used by updating it with results then calling on the results when parsing the form. That would require deleting user meta later than planned. </td>
             </tr>
         </table>
@@ -182,7 +210,7 @@ class CSV2POST_Betatest3_View extends CSV2POST_View {
     * @version 1.0.0
     */
     public function postbox_betatest3_t1( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Roles testing.', 'csv2post' ), false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
         
           global $wp_roles; 
@@ -212,11 +240,9 @@ class CSV2POST_Betatest3_View extends CSV2POST_View {
     * @version 1.0.0
     */
     public function postbox_betatest3_t3( $data, $box ) {   
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Invalid Text Field Entry', 'csv2post' ), false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);                                 
         ?>  
-        
-        <h4>Invalid Text Field Entry</h4>
         
         <p>This field requires alphanumeric characters only. Enter # or £ or $ or % and it should result in a none HTML 5 notice. The test is the
         processing part. A generic validation to make development quicker and apply more security. The validation involves checking the database
@@ -224,7 +250,7 @@ class CSV2POST_Betatest3_View extends CSV2POST_View {
  
         <?php 
         $UI = new C2P_UI();
-        $UI->option_text( 'Enter Text', 'entertext', 'entertext', '', false, null, null, null, null, true, 'alphanumeric', $box['args']['capability'] );
+        $UI->option_text( 'Enter Text', 'entertext', 'entertext', '', false, null, null, null, null, true, 'alphanumeric', 'activate_plugins' );
         
         $this->UI->postbox_content_footer();            
     } 

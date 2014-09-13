@@ -37,6 +37,9 @@ class C2P_Install{
         // on activation run install_plugin() method which then runs more methods i.e. create_tables();
         register_activation_hook( WTG_CSV2POST_ABSPATH . 'csv-2-post.php', array( $this, 'install_plugin' ) ); 
 
+        // on deactivation run disabled_plugin() - not a full uninstall
+        register_deactivation_hook( WTG_CSV2POST_ABSPATH . 'csv-2-post.php',  array( $this, 'deactivate_plugin' ) );
+        
         // register c2plog table
         add_action( 'init', array( $this, 'register_c2plog_table' ) );
         add_action( 'switch_blog', array( $this, 'register_c2plog_table' ) );
@@ -66,14 +69,23 @@ class C2P_Install{
         global $wpdb;
         $wpdb->c2psources = "{$wpdb->prefix}c2psources";
     }
-     
+         
     /**
-    * runs all CREATE queries for main and sections                
+    * Creates the plugins database tables
+    * 
+    * @uses dbDelta()
+    * 
+    * @uses upgrade.php however a bug was reported regarding this being included, still awaiting information
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.1
     */
     function create_tables() {       
         global $charset_collate, $wpdb, $CSV2POST;
         
-        require( ABSPATH . 'wp-admin/includes/upgrade.php' );
+        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
           
         // c2plog - log everything in this table and use the data for multiple purposes
         $sql_create_table = "CREATE TABLE {$wpdb->c2plog} (row_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,outcome tinyint(1) unsigned NOT NULL DEFAULT 1,timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,line int(11) unsigned DEFAULT NULL,file varchar(250) DEFAULT NULL,function varchar(250) DEFAULT NULL,sqlresult blob,sqlquery varchar(45) DEFAULT NULL,sqlerror mediumtext,wordpresserror mediumtext,screenshoturl varchar(500) DEFAULT NULL,userscomment mediumtext,page varchar(45) DEFAULT NULL,version varchar(45) DEFAULT NULL,panelid varchar(45) DEFAULT NULL,panelname varchar(45) DEFAULT NULL,tabscreenid varchar(45) DEFAULT NULL,tabscreenname varchar(45) DEFAULT NULL, dump longblob,ipaddress varchar(45) DEFAULT NULL,userid int(11) unsigned DEFAULT NULL,comment mediumtext,type varchar(45) DEFAULT NULL,category varchar(45) DEFAULT NULL,action varchar(45) DEFAULT NULL,priority varchar(45) DEFAULT NULL,triga varchar(45) DEFAULT NULL,PRIMARY KEY (row_id) ) $charset_collate; ";
@@ -150,7 +162,7 @@ class C2P_Install{
     * reinstall all database tables in one go 
     */
     public function reinstalldatabasetables() {
-        global $C2P_WP, $c2p_tables_array, $wpdb;
+        global $c2p_tables_array, $wpdb;
         
         if(is_array( $c2p_tables_array ) ){
             foreach( $c2p_tables_array['tables'] as $key => $table){
@@ -181,6 +193,19 @@ class C2P_Install{
         $this->install_options();
         // if this gets installed we know we arrived here in the installation procedure
         update_option( 'csv2post_is_installed', true );
-    }             
+    } 
+    
+    /**
+    * Deactivate plugin - can use it for uninstall but usually not
+    * 1. can use to cleanup WP CRON schedule, remove plugins scheduled events
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    function deactivate_plugin() {
+        
+    }            
 }
 ?>

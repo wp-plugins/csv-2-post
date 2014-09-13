@@ -8,24 +8,32 @@ Requires at least: 3.8.0
 Tested up to: 4.0.0
 Stable tag: trunk
 
-CSV 2 POST Version 8 by Ryan R. Bayne
-
+CSV import plugins for the latest version of Wordpress. Adaptable autoblogging features included. Free and Pro edition supported daily. Users include Ryanair Ltd and the Trevithick Society.
 
 == Description ==
 
-Lets turn data into websites! CSV 2 POST for Wordpress can import any .csv file (only requirement is MySQL ready headers, basically no special characters allowed ) then autoblog the data into hundreds or even thousands of well designed WP posts. My CSV importer plugin creates custom fields, categories and meta. If your new to Wordpress those are some of the elements that make up a web page in WP. CSV 2 POST is the first plugin to import data to a custom database table allowing the data to be prepared and other more advanced steps during the autoblogging procedure. Combine that with the power of Wordpress and there is no limit to how many high quality websites you can create using any data.
+Lets turn data into websites shall we. CSV 2 POST for Wordpress can import any .csv file then autoblog the data into hundreds or even thousands of well designed WP posts. 
+My CSV importer plugin creates custom fields, categories and meta. If your new to Wordpress those are some of the elements that make up a web page in WP. 
+CSV 2 POST is the first plugin to import data to a custom database table allowing the data to be prepared and other more advanced steps during the autoblogging procedure. 
+Combine that with the power of Wordpress and there is no limit to how many high quality websites you can create using any data.
  
 = Main Links = 
-*   <a href="http://www.webtechglobal.co.uk/csv-2-post/">Plugins Portal</a>
-*   <a href="http://forum.webtechglobal.co.uk/viewforum.php?f=8">Plugins Forum</a>
-*   <a href="https://www.facebook.com/csv2post">Plugins Facebook</a>
-*   <a href="http://www.twitter.com/CSV2POST">Plugins Twitter</a>
+*   <a href="http://www.webtechglobal.co.uk/csv-2-post/" title="CSV 2 POST Website">Plugins Portal</a>
+*   <a href="http://forum.webtechglobal.co.uk/viewforum.php?f=8" title="CSV 2 POST Forum">Plugins Forum</a>
+*   <a href="https://www.facebook.com/csv2post" title="CSV 2 POST Facebook Page">Plugins Facebook</a>
+*   <a href="http://www.twitter.com/CSV2POST" title="CSV 2 POST Twitter Tweets">Plugins Twitter</a>
+*   <a href="http://www.webtechglobal.co.uk/csv-2-post-demo/" title="CSV 2 POST Premium Software and Services Demo">Pro Edition Demo</a>
 
 = Why CSV 2 POST? = 
 
-You obviously have a .csv file and you would like to make the contents public by creating hundreds of posts. Using CSV 2 POST
-is the right choice because it offers everything most users need and is being updating frequently. My free edition will allow you to
-do the follow things...
+You have a .csv file and you would like to see the contents turned into hundreds of posts. CSV 2 POST can do that for you. It will
+also help you manage your posts long after they are created. My Wordpress data importer inserts your .csv file contents to
+a custom database table first. CSV 2 POST was the first plugin to do this and it surprises many but there are many advantages
+to this approach i.e. integration with other software, sharing the table (raw data) and not the data in WP tables which the
+Wordpress core will change in many ways. Professionals need to keep an original, businesses need to do things in smaller steps
+and always have a backup. CSV 2 POST does that and by doing so avoids major mistakes i.e. the wrong rows in .csv file being applied
+to the wrong posts during updating. The pro edition of CSV 2 POST takes things even further and when donations come in I move
+premium features into the free edition to be fair to the Wordpress community.                                     
 
 1. Create posts, pages and custom post types.
 1. Update posts
@@ -113,13 +121,13 @@ portal, closer to client treatment than customer treatment even when coming to m
 == Screenshots ==
 
 1. Manage Multiple Projects.
-1. Simple Import Statistics.
-1. Category Data Selection.
-1. Custom Fields With Templates.
-1. Standard Post Settings.
-1. Generate Tags.
-1. Custom Publish Dates.
-1. Content Templates.
+2. Simple Import Statistics.
+3. Category Data Selection.
+4. Custom Fields With Templates.
+5. Standard Post Settings.
+6. Generate Tags.
+7. Custom Publish Dates.
+8. Content Templates.
 
 == Languages ==
 
@@ -127,25 +135,50 @@ Translators needed.
 
 == Upgrade Notice ==
 
-Do not update without backing up your entire site both files and data. The nature of this plugin requires great care.
+Do not update without backing up your entire site both files and data. The nature of an import plugin requires great care.
 
 == Changelog == 
-= 8.0.34 =
-* Fix: todays update introduced a critical bug triggered when attempting to import data              
-
-= 8.0.33 =
+= 8.0.35 =
 * From The Developer
-    * The beta area has been updated, small improvements are made there before being applied to the rest of the plugin
-* Fixes
-    * unexpected output during activation caused by extending class sharing same function name
-    * dbDelta() problems fixed with changes to queries                 
+    * Worpress 4.0 Supported
+    * Interested in pro edition? Get yourself 10% discount by publishing a YouTube review of the free edition first - See the WebTechGlobal.co.uk blog or forum for details.            
+* Feature Changes
+    * Default content design no longer creates a new post or has option to do so, another form added to do that.
+    * New form added with WYSIWYG editor for creating new content templates from plugin pages, has more use in the pro edition with ability to setup rules etc but it may have other uses
+    * Every existing form can now be added to the dashboard as a widget, security measures available
+    * New UI setting to switched between WTG styled notices and WP core styled, this setting is temporary during a transition to WP core style
+    * List of ShopperPress custom field names added to the Custom Fields page
+    * New form box added for changing the current active project
+    * Form buttons now blue: the primary style, grey is normally for inner form buttons, often for form inputs processed using Ajax
+    * Next button added to quick actions toolbar for changing the current project to the next
+    * Previous button added to quick actions toolbar for changing the current active project to the previous one, as per their order in c2p_projects table
+    * Flag system switch added, can now disable and hide the Flags post type, it is disabled by default and flags will not be created unless activated
+    * Main page is now named the CSV 2 POST Dashboard
+    * Delete datasource form added
+    * Added form for creating data source using .csv file already on the server
+    * Source delete form now has confirmation fields to prevent accidental deletion of sources
+    * Title Template form now displays an example title based on impoted data, refreshing changes the title as it uses a random imported record
+    * Help text added to most boxes, more detailed help text coming to the Help tab in future and documentation in the portal
+* Technical Notes
+    * Someone reported an error regarding upgrade.php which the plugin calls, yet I've never seen it happen myself, changed include to include_once so hopefully it is fixed as I could not generate the error to confirm.
+    * Fix applied for a problem where imported row was not updated after being used to create a post   
+    * Minor error prevented when user does not setup an ID column and the plugin attempts to gather statistics based on such a column
+    * Content and Title templates were not being re-populated in forms that has been corrected
+    * Can now ide tab menu using menu array when one page in use for a section (add $menu_array['eventsone']['pluginmenu'] = false;// boolean (false for single page views))
+* Known Issues
+    * Data Table view is not suitable as tables are too wide, column titles cannot be read
+    * Some forms are not suitable for being in the narrow sidebar by default, probably use that bar for quick tools and small information.
+    
+= 8.0.34 =
+* From The Developer
+    * The beta area has been updated, small improvements are made there before being applied to the rest of the plugin        
 * Feature Changes
     * Data Source page is now used first, then Projects and changes to the forms on both pages help to creat a more logical flow
     * New capabilities system allows individual boxes/forms to be restricted
     * General Settings moved to the main page, sorry this was left in Projects when the new page system was applied in the last update 
     * Security improvements: input validation system helps to prevent users editing the source of forms by registering hidden inputs and their values
     * Data sources directory plays a bigger part and a new Re-Check Sources Directory form has been added for manually switching to new files without having to enter a path
-    * URL file import to an existing data sources directory added
+    * URL file import to an existing data sources directory added    
 * Technical Notes   
     * Changed theconfig column from longtext to text
     * New filesarray column in c2psources table for storing multiple file names, partly as a history, can be used to specify some files out of many and is used to continue to manage multiple files                                              
@@ -155,14 +188,14 @@ Do not update without backing up your entire site both files and data. The natur
     * c2pprocess change to csv2postaction
     * New column added to c2psources table "name" for users to name their data source
     * New column added to c2psources table "directory" for multi-file treatment in a single datasource, the "path" column value can change to any file in the directory
+    * unexpected output during activation caused by extending class sharing same function name
+    * dbDelta() problems fixed with changes to queries  
 * Known Issues
     * Data Table view is not suitable as tables are too wide, column titles cannot be read
     
-= 8.0.32 =
+= 8.0.33 =
 * From The Developer
-    * Report a bug in the free edition by reporting it on the WebTechGlobal Forum to get a 20% discount on the premium edition
-* Fixes
-    * Problem with post status fixed                 
+    * Report a bug in the free edition by reporting it on the WebTechGlobal Forum to get a 20% discount on the premium edition               
 * Feature Changes
     * Boxes are now proper WP postboxes which can be: moved, hidden, closed
     * Every view is now a registered Wordpress page
@@ -175,6 +208,7 @@ Do not update without backing up your entire site both files and data. The natur
 * Technical Notes                                                 
     * Improved coding standards in every file
     * Class design improved, more to do 
+    * Problem with post status fixed
 * Known Issues
     * Data Table view is not suitable as tables are too wide, column titles cannot be read
 
@@ -182,3 +216,28 @@ Do not update without backing up your entire site both files and data. The natur
 
 Thank you for considering CSV 2 POST. I import data to Wordpress for a living. If your stuck, if you need another solution
 or help with any existing data importer. Please visit forum.webtechglobal.co.uk for free help.
+
+== Request Pro Edition Demo ==
+
+A great way to try the pro edition of the CSV 2 POST plugin is to use a test/demo blog setup just for you. You can <a href="http://www.webtechglobal.co.uk/csv-2-post-demo/" title="CSV 2 POST Premium Software and Services Demo">request a pro demo</a> today for free. If you do decide to continue using the free edition, please consider a small donation to help support the plugins development and cover my time.
+
+== Version Numbers and Updating ==
+
+Explanation of versioning used by myself Ryan Bayne. The versioning scheme I use is called "Semantic Versioning 2.0.0" and more
+information about it can be found at http://semver.org/ 
+
+= Summary =
+
+These are the rules followed to increase the CSV 2 POST plugin version number. Given a version number MAJOR.MINOR.PATCH, increment the:
+
+MAJOR version when you make incompatible API changes,
+MINOR version when you add functionality in a backwards-compatible manner, and
+PATCH version when you make backwards-compatible bug fixes.
+Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.
+
+= When To Update = 
+
+Update all plugins and themes...after you have made a copy of all your sites files and data. Files only or data only is not a
+suitable backup. I recommend running updates when you have a free hour ahead of you to reverse the changes should anything go
+wrong. This applies to all plugins and themes not just CSV 2 POST when updating on live blogs. 
+

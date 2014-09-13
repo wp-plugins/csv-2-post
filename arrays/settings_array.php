@@ -1,10 +1,12 @@
 <?php
 /** 
- * Default administration settings for CSV 2 POST plugin 
+ * Default administration settings for CSV 2 POST plugin. These settings are installed to the 
+ * wp_options table and are used from there by default. 
  * 
  * @package CSV 2 POST
  * @author Ryan Bayne   
  * @since 8.0.0
+ * @version 1.0.7
  */
 
 // load in Wordpress only
@@ -39,6 +41,27 @@ $c2p_settings['create_localmedia_fromlocalimages']['destinationdirectory'] = 'wp
 #                                                                                        #
 ##########################################################################################
 $c2p_settings['datasettings']['insertlimit'] = 100;
+
+##########################################################################################
+#                                                                                        #
+#                                    WIDGET SETTINGS                                     #
+#                                                                                        #
+##########################################################################################
+$c2p_settings['widgetsettings']['dashboardwidgetsswitch'] = 'disabled';
+
+##########################################################################################
+#                                                                                        #
+#                                    WIDGET SETTINGS                                     #
+#                                                                                        #
+##########################################################################################
+$c2p_settings['flagsystem']['status'] = 'disabled';
+
+##########################################################################################
+#                                                                                        #
+#                                    NOTICE SETTINGS                                     #
+#                                                                                        #
+##########################################################################################
+$c2p_settings['noticesettings']['wpcorestyle'] = 'enabled';
 
 ##########################################################################################
 #                                                                                        #
@@ -224,5 +247,5 @@ $c2p_settings['projectdefaults']['dates']['randomdateearliest'] = '';
 $c2p_settings['projectdefaults']['dates']['randomdatelatest'] = '';
 
 // post updating
-$c2p_settings['projectdefaults']['updating']['updatepostonviewing'] = 'disabled';// does not work in free edition
+$c2p_settings['projectdefaults']['updating']['updatepostonviewing'] = '';// enabled | disabled
 ?>

@@ -33,7 +33,7 @@ class C2P_DB extends C2P_UpdatePlugin {
         if(empty( $condition) ){
             return null;
         }
-        return $wpdb->get_row( "SELECT $select FROM $tablename WHERE $condition", OBJECT);
+        return $wpdb->get_row( "SELECT $select FROM $tablename WHERE $condition", OBJECT );
     }
     
     /**
@@ -72,11 +72,12 @@ class C2P_DB extends C2P_UpdatePlugin {
     * @param mixed $orderby
     * @param mixed $select
     */
-    public function selectwherearray( $tablename, $condition=null, $orderby=null, $select = '*', $object = 'ARRAY_A' ){
+    public function selectwherearray( $tablename, $condition=null, $orderby=null, $select = '*', $object = 'ARRAY_A', $sort = null ){
         global $wpdb;
         $condition = empty ( $condition)? '' : ' WHERE ' . $condition;
         $condition .= empty( $orderby )? '': ' ORDER BY ' . $orderby;
-        return $wpdb->get_results( "SELECT $select FROM $tablename $condition ", $object);
+        if( $sort == 'ASC' || $sort == 'DESC' ){ $condition .= ' ' . $sort; }
+        return $wpdb->get_results( "SELECT $select FROM $tablename $condition", $object);
     } 
     
     /**
@@ -90,7 +91,7 @@ class C2P_DB extends C2P_UpdatePlugin {
     * @param string $tablename
     * @param array $fields
     */
-    public function insert( $tablename, $fields){
+    public function insert( $tablename, $fields ){
         global $wpdb;
         $fieldss = '';
         $valuess = '';
@@ -122,7 +123,7 @@ class C2P_DB extends C2P_UpdatePlugin {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function update( $tablename, $condition, $fields){
+    public function update( $tablename, $condition, $fields ){
         global $wpdb;
         $query = " UPDATE $tablename SET ";
         $first = true;
@@ -144,7 +145,7 @@ class C2P_DB extends C2P_UpdatePlugin {
     * @since 7.0.0
     * @version 1.0.0
     */
-    public function delete( $tablename, $condition){
+    public function delete( $tablename, $condition ){
         global $wpdb;
         return $wpdb->query( "DELETE FROM $tablename WHERE $condition ");
     }
@@ -170,7 +171,7 @@ class C2P_DB extends C2P_UpdatePlugin {
     * @since 7.0.0
     * @version 1.0.0
     */
-    public function get_value( $columns, $tablename, $conditions){
+    public function get_value( $columns, $tablename, $conditions ){
         global $wpdb;
         return $wpdb->get_var( "SELECT $columns FROM $tablename WHERE $conditions" );
     }  
@@ -479,7 +480,7 @@ class C2P_DB extends C2P_UpdatePlugin {
     * @todo this method could be reduced by using the foreach loop once and everything within it 
     */
     public function get_tablecolumns( $table_name, $return_array = false, $columns_only = false ){
-        global $wpdb, $C2P_WP;
+        global $wpdb;
                     
         // an array is required - what data is required in the array...    
         if( $return_array == true && $columns_only == false ){// return an array holding ALL info
@@ -712,5 +713,19 @@ class C2P_DB extends C2P_UpdatePlugin {
         // build where
         return $wpdb->get_results( $final_query, ARRAY_A );
     }
+    
+    /**
+    * Get the maximum value in column
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.34
+    * @version 1.0.0
+    */
+    public function max_value( $column, $tablename ) {
+        global $wpdb;        
+        return $wpdb->get_var( "SELECT $column FROM $tablename ORDER BY $column DESC LIMIT 1" );        
+    }
+    
 }// end class C2P_DB
 ?>

@@ -38,7 +38,7 @@ class CSV2POST {
      *
      * @const string
      */
-    const version = '8.0.34';
+    const version = '8.1.35';
     
     /**
      * CSV2POST version
@@ -64,12 +64,13 @@ class CSV2POST {
             array( 'admin_init',                     'process_admin_POST_GET',                                 'all' ),
             array( 'admin_init',                     'add_adminpage_actions',                                  'all' ), 
             array( 'wp_dashboard_setup',             'add_dashboard_widgets',                                  'all' ),
-            array( 'admin_head',                     'custom_admin_css',                                       'all' ),
-            array( 'admin_footer',                   'pluginmediabutton_popup',                                'adminpages' ),
-            array( 'media_buttons_context',          'pluginmediabutton_button',                               'adminpages' ),
-            array( 'admin_enqueue_scripts',          'admin_enqueue_scripts',                                  'adminpages' ),
-            array( 'init',                           'admin_register_styles',                                  'adminpages' ),
-            array( 'admin_print_styles',             'admin_print_styles',                                     'adminpages' ),
+            array( 'wp_insert_post',                 'hook_insert_post',                                       'all' ),
+            array( 'admin_footer',                   'pluginmediabutton_popup',                                'pluginscreens' ),
+            array( 'media_buttons_context',          'pluginmediabutton_button',                               'pluginscreens' ),
+            array( 'admin_enqueue_scripts',          'plugin_admin_enqueue_scripts',                           'pluginscreens' ),
+            array( 'init',                           'plugin_admin_register_styles',                           'pluginscreens' ),
+            array( 'admin_print_styles',             'plugin_admin_print_styles',                              'pluginscreens' ),
+            array( 'admin_notices',                  'admin_notices',                                          'admin_notices' ),
         ),        
                               
         $plugin_filters = array(
@@ -81,20 +82,11 @@ class CSV2POST {
                     
             */
         );     
-    
-    private
-        $doneInit = false;
         
     /**
     * This class is being introduced gradually, we will move various lines and config functions from the main file to load here eventually
     */
     public function __construct() {
-        
-        // straight away we need to indicate if phpBB is loaded or not
-        $this->_loaded = false;
-        if(defined( 'IN_PHPBB' ) ) { 
-            $this->_loaded = true;
-        }
                   
         // load class used at all times
         $this->DB = self::load_class( 'C2P_DB', 'class-wpdb.php', 'classes' );
@@ -110,7 +102,7 @@ class CSV2POST {
             // load class used from admin only                   
             $this->UI = self::load_class( 'C2P_UI', 'class-ui.php', 'classes' );
             $this->Helparray = self::load_class( 'C2P_Help', 'class-help.php', 'classes' );
-            $this->Tabmenu = self::load_class( "CSV2POST_TabMenu", "class-tabmenu.php", 'classes','tabmenu' );    
+            $this->Tabmenu = self::load_class( "C2P_TabMenu", "class-pluginmenu.php", 'classes','pluginmenu' );    
         
         }            
       
@@ -123,8 +115,12 @@ class CSV2POST {
         $this->current_project_object = false;
         $this->current_project_settings = false;  
         if( isset( $this->settings['currentproject'] ) && $this->settings['currentproject'] !== false ){
-            $this->current_project_object = self::get_project( $this->settings['currentproject'] );      
-            $this->current_project_settings = maybe_unserialize( $this->current_project_object->projectsettings );
+            $this->current_project_object = self::get_project( $this->settings['currentproject'] ); 
+            if( !$this->current_project_object ) {
+                $this->current_project_settings = false;
+            } else {
+                $this->current_project_settings = maybe_unserialize( $this->current_project_object->projectsettings );
+            }
         }
     }
 
@@ -150,134 +146,9 @@ class CSV2POST {
                 || ( defined( 'XMLRPC_REQUEST' ) && XMLRPC_REQUEST )
                 || ( defined( 'DOING_CRON' ) && DOING_CRON ) ) {
             return;
-        }   
-     
+        }  
     }
     
-    /**
-    * Array of capabilities for individual boxes based on their ID
-    * the same ID is usually applied to the form.
-    * 
-    * This array is optional. The array is installed in wp_options table
-    * with key "csv2post_boxcaps" the first time admin edits permissions.
-    * It is not installed during activation of the plugin.
-    *
-    * @author Ryan R. Bayne
-    * @package CSV 2 POST
-    * @since 8.1.32
-    * @version 1.0.0
-    */
-    public static function box_capabilities_array() {
-        $box_array = array();
-        
-        // currenttesting
-        $box_array['currenttesting'] = 'activate_plugins';
-        
-        /*
-        Capabilities as of WP 3.9.1
-        
-        activate_plugins
-        delete_others_pages
-        delete_others_posts
-        delete_pages
-        delete_plugins
-        delete_posts
-        delete_private_pages
-        delete_private_posts
-        delete_published_pages
-        delete_published_posts
-        edit_dashboard
-        edit_files
-        edit_others_pages
-        edit_others_posts
-        edit_pages
-        edit_posts
-        edit_private_pages
-        edit_private_posts
-        edit_published_pages
-        edit_published_posts
-        edit_theme_options
-        export
-        import
-        list_users
-        manage_categories
-        manage_links
-        manage_options
-        moderate_comments
-        promote_users
-        publish_pages
-        publish_posts
-        read_private_pages
-        read_private_posts
-        read
-        remove_users
-        switch_themes
-        upload_files
-        
-        ADMIN
-        update_core
-        update_plugins
-        update_themes
-        install_plugins
-        install_themes
-        delete_themes
-        edit_plugins
-        edit_themes
-        edit_users
-        create_users
-        delete_users
-        unfiltered_html
-        
-        EDITOR
-        delete_others_pages
-        delete_others_posts
-        delete_pages
-        delete_posts
-        delete_private_pages
-        delete_private_posts
-        delete_published_pages
-        delete_published_posts
-        edit_others_pages
-        edit_others_posts
-        edit_pages
-        edit_posts
-        edit_private_pages
-        edit_private_posts
-        edit_published_pages
-        edit_published_posts
-        manage_categories
-        manage_links
-        moderate_comments
-        publish_pages
-        publish_posts
-        read
-        read_private_pages
-        read_private_posts
-        unfiltered_html (not with Multisite. See Unfiltered MU & RemoveKses)
-        upload_files
-        
-        AUTHOR
-        delete_posts
-        delete_published_posts
-        edit_posts
-        edit_published_posts
-        publish_posts
-        read
-        upload_files
-        
-        CONTRIBUTOR 
-        delete_posts
-        edit_posts
-        read
-        
-        SUBSCRIBER
-        read
-        
-        */
-        
-        return $box_array;
-    }
-        
     /**
     * register admin only .css must be done before printing styles
     * 
@@ -286,7 +157,7 @@ class CSV2POST {
     * @since 8.1.32
     * @version 1.0.0
     */
-    public function admin_register_styles() {
+    public function plugin_admin_register_styles() {
         wp_register_style( 'csv2post_css_notification',plugins_url( 'csv-2-post/css/notifications.css' ), array(), '1.0.0', 'screen' );
         wp_register_style( 'csv2post_css_admin',plugins_url( 'csv-2-post/css/admin.css' ), __FILE__);          
     }
@@ -299,7 +170,7 @@ class CSV2POST {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function admin_print_styles() {
+    public function plugin_admin_print_styles() {
         wp_enqueue_style( 'csv2post_css_notification' );  
         wp_enqueue_style( 'csv2post_css_admin' );               
     }    
@@ -312,7 +183,7 @@ class CSV2POST {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function admin_enqueue_scripts() {
+    public function plugin_admin_enqueue_scripts() {
         wp_enqueue_script( 'wp-pointer' );
         wp_enqueue_style( 'wp-pointer' );          
     }    
@@ -523,10 +394,10 @@ class CSV2POST {
         */
         
         // load tab menu class which contains help content array
-        $CSV2POST_TabMenu = self::load_class( 'CSV2POST_TabMenu', 'class-tabmenu.php', 'classes' );
+        $C2P_TabMenu = self::load_class( 'C2P_TabMenu', 'class-pluginmenu.php', 'classes' );
         
         // call the menu_array
-        $menu_array = $CSV2POST_TabMenu->menu_array();        
+        $menu_array = $C2P_TabMenu->menu_array();        
 
         // remove "csv2post_" from page
         $page = 'main';
@@ -647,20 +518,34 @@ class CSV2POST {
     * @param mixed $whenToLoad
     */
     private function filteraction_should_beloaded( $whenToLoad) {
-        $c2p_settings = $this->adminsettings();             
+        $c2p_settings = $this->adminsettings();
+          
         switch( $whenToLoad) {
             case 'all':    
                 return true;
             break;
             case 'adminpages':
-                // load when logged into admin
+                // load when logged into admin and on any admin page
                 if( is_admin() ){return true;}
                 return false;    
             break;
             case 'pluginscreens':
-            return true;
-                // load when on a CSV 2 POST admin screen only
+       
+                // load when on a CSV 2 POST admin screen
                 if( isset( $_GET['page'] ) && strstr( $_GET['page'], 'csv2post' ) ){return true;}
+                
+                return false;    
+            break;            
+            case 'pluginanddashboard':
+
+                if( self::is_dashboard() ) {
+                    return true;    
+                }
+
+                if( isset( $_GET['page'] ) && strstr( $_GET['page'], 'csv2post' ) ){
+                    return true;
+                }
+                
                 return false;    
             break;
             case 'projects':
@@ -672,11 +557,40 @@ class CSV2POST {
                 }      
                 return true;
             break;
+            case 'admin_notices':                         
+
+                if( self::is_dashboard() ) {
+                    return true;    
+                }
+                                                           
+                if( isset( $_GET['page'] ) && strstr( $_GET['page'], 'csv2post' ) ){
+                    return true;
+                }
+                                                                                                   
+                return false;
+            break;
         }
 
         return true;
     }   
-       
+    
+    /**
+    * Determine if on the dashboard page. 
+    * 
+    * $current_screen is not set early enough for calling in some actions. So use this
+    * function instead.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function is_dashboard() {
+        global $pagenow;
+        if( isset( $pagenow ) && $pagenow == 'index.php' ) { return true; }
+        return strstr( $this->PHP->currenturl(), 'wp-admin/index.php' );
+    }
+                   
     /**
     * When request will display maximum php errors including Wordpress errors 
     */
@@ -695,12 +609,25 @@ class CSV2POST {
             $wpdb->print_error();
         }
     }
-    
-    function custom_admin_css() {
-        echo '<style type="text/css">';
-        echo '.column-c2pbanner { width:40% }';
-        echo '</style>';
-    }  
+      
+    /**
+    * if any class needs to use the wp_insert_post hook simply add a method to this method 
+    */
+    public function hook_insert_post( $post_id ){
+        /*
+        // establish correct procedure for the post type that was inserted
+        $post_type = get_post_type( $post_id );
+      
+        switch ( $post_type) {
+            case 'exampleone':
+                
+                break;
+            case 'c2pnotinuseyet':
+                
+                break;
+        } 
+        */
+    }
     
     /**
     * Gets option value for csv2post _adminset or defaults to the file version of the array if option returns invalid.
@@ -836,10 +763,10 @@ class CSV2POST {
         $help_array = $C2P_Help->get_help_array();
         
         // load tab menu class which contains help content array
-        $CSV2POST_TabMenu = self::load_class( 'CSV2POST_TabMenu', 'class-tabmenu.php', 'classes' );
+        $C2P_TabMenu = self::load_class( 'C2P_TabMenu', 'class-pluginmenu.php', 'classes' );
         
         // call the menu_array
-        $menu_array = $CSV2POST_TabMenu->menu_array();
+        $menu_array = $C2P_TabMenu->menu_array();
              
         // get page name i.e. csv-2-post_page_csv2post_affiliates would return affiliates
         $page_name = $this->PHP->get_string_after_last_character( $screen->id, '_' );
@@ -988,7 +915,7 @@ class CSV2POST {
     * @since 8.1.32
     * @version 1.0.0
     *  
-    * @param mixed $opus_page_name
+    * @param mixed $csv2post_page_name
     * @param mixed $default
     */
     public function get_page_capability( $page_name ){
@@ -1013,9 +940,9 @@ class CSV2POST {
     * @version 1.2.8
     */
     public function admin_menu() { 
-        global $CSV2POST, $c2p_currentversion, $c2pm, $c2p_settings;
+        global $c2p_currentversion, $c2pm, $c2p_settings;
          
-        $C2P_TabMenu = CSV2POST::load_class( 'CSV2POST_TabMenu', 'class-tabmenu.php', 'classes' );
+        $C2P_TabMenu = CSV2POST::load_class( 'C2P_TabMenu', 'class-pluginmenu.php', 'classes' );
         $C2P_Menu = $C2P_TabMenu->menu_array();
  
         // set the callback, we can change this during the loop and call methods more dynamically
@@ -1150,13 +1077,11 @@ class CSV2POST {
      * @param string $thepagekey this is the screen being visited
      */
     public function build_tab_menu( $current_page_name ){           
-        global $C2P_WP;
-        
         // load tab menu class which contains help content array
-        $CSV2POST_TabMenu = CSV2POST::load_class( 'CSV2POST_TabMenu', 'class-tabmenu.php', 'classes' );
+        $C2P_TabMenu = CSV2POST::load_class( 'C2P_TabMenu', 'class-pluginmenu.php', 'classes' );
         
         // call the menu_array
-        $menu_array = $CSV2POST_TabMenu->menu_array();
+        $menu_array = $C2P_TabMenu->menu_array();
                 
         echo '<h2 class="nav-tab-wrapper">';
         
@@ -1172,7 +1097,7 @@ class CSV2POST {
                     $activeclass = 'class="nav-tab nav-tab-active"';
                 }
                 
-                echo '<a href="' . self::create_adminurl( $values['slug'] ) . '" '.$activeclass.'>' . $values['tabmenu'] . '</a>';       
+                echo '<a href="' . self::create_adminurl( $values['slug'] ) . '" '.$activeclass.'>' . $values['pluginmenu'] . '</a>';       
             }
         }      
         
@@ -1192,9 +1117,27 @@ class CSV2POST {
     public function process_admin_POST_GET() {  
         // include the class that processes form submissions and nonce links
         $C2P_REQ = self::load_class( 'C2P_Requests', 'class-requests.php', 'classes' );
-        $C2P_REQ->start_admin_processing();
+        $C2P_REQ->process_admin_request();
     }  
-                             
+
+    /**
+    * Used to display this plugins notices on none plugin pages i.e. dashboard.
+    * 
+    * filteraction_should_beloaded() decides if the admin_notices hook is called, which hooks this function.
+    * I think that check should only check which page is being viewed. Anything more advanced might need to
+    * be performed in display_users_notices().
+    * 
+    * @uses display_users_notices()
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function admin_notices() {
+        $this->UI->display_users_notices();
+    }
+                                 
     /**
     * Popup and content for media button displayed just above the WYSIWYG editor 
     */
@@ -1240,11 +1183,6 @@ class CSV2POST {
         
         // do not continue if Wordpress is DOING_AJAX
         if( self::request_made() ){return;}
-                      
-        // do not continue if certain forms are being submitted i.e. uninstallation or re-installation
-        if( isset( $_POST['csv2post_form_name'] ) && $_POST['csv2post_form_name'] == 'partialuninstall' ){   
-            return;
-        } 
                       
         self::log_schedule( __( 'The schedule is being checked. There should be further log entries explaining the outcome.', 'csv2post' ), __( 'schedule being checked', 'csv2post' ),1, 'scheduledeventcheck', __LINE__, __FILE__, __FUNCTION__);
         
@@ -1454,7 +1392,35 @@ class CSV2POST {
         
         return $event_action_outcome;   
     }
+
+    /**
+    * add_action hook init for calling using WP CRON events as a simple
+    * framework solution. Passing value to this method, can be used to call more specific method
+    * for an event.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function eventcheckwpcron() {
+        echo '<p>CRON JOB EXECUTED...Coool<br><br><br><br><br>MORE TEXT HERE</p>';
+        return false;
+    }
     
+    /**
+    * add_action hook init to act as a parent function to cron jobs run
+    * using the server and not WP CRON or the WebTechGlobal automation system.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function event_check_servercron() {
+        return false;
+    }
+        
     /**
     * Establishes which event should be run then return it.
     * Must call ths function within a function that checks that uses csv2post_DOING_AJAX() first 
@@ -1758,15 +1724,17 @@ class CSV2POST {
     */
     public function install_admin_settings() {
         require_once( WTG_CSV2POST_ABSPATH . 'arrays/settings_array.php' );
-        return $this->option( 'csv2post_settings', 'update', $c2p_settings);# update creates record if it does not exist   
+        return $this->option( 'csv2post_settings', 'update', $c2p_settings );# update creates record if it does not exist   
     } 
      
     /**
     * includes a file per custom post type, we can customize this to include or exclude based on settings
     */
     public function custom_post_types() { 
-        global $c2p_settings;
-        require( WTG_CSV2POST_ABSPATH . 'posttypes/flags.php' );
+        global $c2p_settings;                          
+        if( isset( $c2p_settings['flagsystem']['status'] ) && $c2p_settings['flagsystem']['status'] === 'enabled' ) {    
+            require( WTG_CSV2POST_ABSPATH . 'posttypes/flags.php' );   
+        }                                                       
         require( WTG_CSV2POST_ABSPATH . 'posttypes/posts.php' );
     }
  
@@ -1774,7 +1742,6 @@ class CSV2POST {
     * Admin Triggered Automation
     */
     public function admin_triggered_automation() {
-        global $C2P_WP;
         // clear out log table (48 hour log)
         self::log_cleanup();
     }
@@ -1784,8 +1751,6 @@ class CSV2POST {
     * It also prepares the array to hold other formats of the column headers in prepartion for the plugins various uses
     */
     public function get_headers_formatted( $filename, $separator = ', ', $quote = '"', $fields = 0){
-        global $C2P_WP;
-        
         $header_array = array();
         
         // read and loop through the first row in the csv file  
@@ -1847,7 +1812,7 @@ class CSV2POST {
         return $this->DB->insert( $wpdb->c2pprojects, $fields_array );
     }
     
-    public function query_projects() {
+    public function query_projects( $sort = null ) {
         global $wpdb;
         return $this->DB->selectwherearray( $wpdb->c2pprojects, 'projectid = projectid', 'timestamp', '*' );
     }
@@ -1889,7 +1854,7 @@ class CSV2POST {
     * @version 1.0.2
     */
     public function apply_project_defaults( $project_id ){
-        global $c2p_settings, $C2P_WP;     
+        global $c2p_settings;     
         if( !isset( $c2p_settings['projectdefaults'] ) ) { return false; }
         self::update_project( $project_id, array( 'projectsettings' => maybe_serialize( $c2p_settings['projectdefaults'] ) ), true);
     }
@@ -1906,8 +1871,7 @@ class CSV2POST {
     * @version 1.0.0
     */
     public function systematicpostupdate( $post ){
-          
-        global $wpdb, $c2p_settings, $C2P_WP;
+        global $wpdb, $c2p_settings;
         
         // set a limit when updating multiple posts
         // default is to one avoid updating posts when not in single post view
@@ -1955,7 +1919,7 @@ class CSV2POST {
                 
                 // get the posts import data            
                 $tables_array = self::get_dbtable_sources( $project_id );                 
-                $row = self::query_multipletables( $tables_array, $this->get_project_idcolumn( $project_id), 'c2p_postid = ' . $thepost->ID, 1 );
+                $row = $this->DB->query_multipletables( $tables_array, $this->get_project_idcolumn( $project_id), 'c2p_postid = ' . $thepost->ID, 1 );
                          
                 // if no row of data there is nothing more to be done continue to next item
                 if( !$row ){
@@ -2042,7 +2006,6 @@ class CSV2POST {
     * @version 1.0.0 
     */
     public function get_posts_row_ifoutdated( $project_id, $post_id, $idcolumn = false ){
-        global $C2P_WP;
         $tables_array = self::get_dbtable_sources( $project_id );                       
         return self::query_multipletables( $tables_array, $idcolumn, 'c2p_postid = '.$post_id.' AND c2p_updated > c2p_applied', 1 );
     }
@@ -2057,7 +2020,7 @@ class CSV2POST {
     * @version 1.0.0 
     */
     public function get_project_idcolumn( $project_id ){
-        global $C2P_WP,$wpdb;
+        global $wpdb;
         
         // get the project row
         $project_array = self::get_project( $project_id );   
@@ -2409,7 +2372,6 @@ class CSV2POST {
     * @param mixed $function
     */
     public function log_schedule( $comment, $action, $outcome, $category = 'scheduledeventaction', $trigger = 'autoschedule', $line = 'NA', $file = 'NA', $function = 'NA' ){
-        global $C2P_WP;
         $atts = array();   
         $atts['logged'] = self::datewp();
         $atts['comment'] = $comment;
@@ -2572,16 +2534,16 @@ class CSV2POST {
     * Adds Script Start and Stylesheets to the beginning of pages
     */
     public function pageheader( $pagetitle, $layout){
-        global $CSV2POST, $current_user, $c2pm, $c2p_settings, $c2p_pub_set, $C2P_WP;
+        global $current_user, $c2pm, $c2p_settings, $c2p_pub_set;
 
         // get admin settings again, all submissions and processing should update settings
         // if the interface does not show expected changes, it means there is a problem updating settings before this line
-        $c2p_settings = $CSV2POST->adminsettings(); 
+        $c2p_settings = self::adminsettings(); 
 
         get_currentuserinfo();?>
                     
         <div id="csv2post-page" class="wrap">
-            <?php $CSV2POST->diagnostics_constant();?>
+            <?php self::diagnostics_constant();?>
         
             <div id="icon-options-general" class="icon32"><br /></div>
             
@@ -2601,7 +2563,7 @@ class CSV2POST {
             }
                  
             // run specific admin triggered automation tasks, this way an output can be created for admin to see
-            $CSV2POST->admin_triggered_automation();  
+            self::admin_triggered_automation();  
 
             // check existing plugins and give advice or warnings
             self::conflict_prevention();
@@ -2619,8 +2581,6 @@ class CSV2POST {
     * Checks: Internet Connection (required for jQuery ), PHP version, Soap Extension
     */
     public function check_requirements( $display ){
-        global $C2P_WP;
-        
         // variable indicates message being displayed, we will only show 1 message at a time
         $requirement_missing = false;
 
@@ -2693,7 +2653,6 @@ class CSV2POST {
     * @param mixed $values 
     */
     public function create_adminurl( $page, $values = '' ){
-        global $C2P_WP;
         return self::url_toadmin( $page, $values);    
     }
     
@@ -2717,23 +2676,7 @@ class CSV2POST {
         
         // default to standard PHP with a common format used by Wordpress and MySQL but not the actual database time
         return date( 'Y-m-d H:i:s', $thetime + $timeaddition);    
-    }    
-    
-    /**
-    * Decides a tab screens required capability in order for dashboard visitor to view it
-    * 
-    * @param mixed $c2p_page_name the array key for pages
-    * @param mixed $tab_key the array key for tabs within a page
-    */
-    public function get_tab_capability( $c2p_page_name, $tab_key, $default = false ){
-        global $c2pm;
-        $codedefault = 'activate_plugins';
-        if( isset( $c2pm[$c2p_page_name]['tabs'][$tab_key]['permissions']['capability'] ) ){
-            return $c2pm[$c2p_page_name]['tabs'][$tab_key]['permissions']['capability'];    
-        }else{
-            return $codedefault;    
-        }    
-    }
+    }   
     
     public function get_installed_version() {
         return get_option( 'csv2post_installedversion' );    
@@ -2750,9 +2693,8 @@ class CSV2POST {
     * @param mixed $reason use to explain why the array was updated (rather than what the array is used for)
     * @return string
     */                                   
-    public function result_array( $description, $line, $function, $file){
-        global $C2P_WP;
-        $array = self::arrayinfo_set(array(), $line, $function, $file);
+    public function result_array( $description, $line, $function, $file ){
+        $array = self::arrayinfo_set(array(), $line, $function, $file );
         $array['description'] = $description;
         $array['outcome'] = true;// boolean
         $array['failreason'] = false;// string - our own typed reason for the failure
@@ -2805,8 +2747,6 @@ class CSV2POST {
     * @param strong $response [echo][return]
     */
     public function link( $text, $url, $htmlentities = '', $target = '_blank', $class = '', $response = 'echo', $title = '' ){
-        global $C2P_WP;
-        
         // add ? to $middle if there is no proper join after the domain
         $middle = '';
                                  
@@ -2843,8 +2783,8 @@ class CSV2POST {
         return update_option( 'csv2post_schedule', $schedule_array_serialized);    
     }
     
-    public function update_settings( $c2p_settings){
-        $admin_settings_array_serialized = maybe_serialize( $c2p_settings);
+    public function update_settings( $c2p_settings ){
+        $admin_settings_array_serialized = maybe_serialize( $c2p_settings );
         return update_option( 'csv2post_settings', $admin_settings_array_serialized);    
     }
     
@@ -2949,7 +2889,7 @@ class CSV2POST {
     * @returns false if no record could be found
     */
     public function cols_by_datatype( $tableName, $dataType = false ){
-        global $wpdb, $C2P_WP;
+        global $wpdb;
         
         $ra = array();// returned array - our array of columns matching data type
         $matchCount = 0;// matches
@@ -3022,7 +2962,6 @@ class CSV2POST {
     * Stores the last known reason why auto event was refused during checks in event_check()
     */
     public function event_return( $return_reason){
-        global $C2P_WP;
         $c2p_schedule_array = self::get_option_schedule_array();
         $c2p_schedule_array['history']['lastreturnreason'] = $return_reason;
         self::update_option_schedule_array( $c2p_schedule_array );   
@@ -3149,7 +3088,7 @@ class CSV2POST {
     * @param mixed $overwrite_existing, if post already has a thumbnail do we want to overwrite it or leave it
     */
     public function create_post_thumbnail( $post_id, $image_url, $overwrite_existing = false ){
-        global $wpdb, $C2P_WP;
+        global $wpdb;
 
         if(!file_is_valid_image( $image_url) ){  
             return false;
@@ -3178,7 +3117,6 @@ class CSV2POST {
     * builds a url for form action, allows us to force the submission to specific tabs
     */
     public function form_action( $values_array = false ){
-        global $C2P_WP;
         $get_values = '';
 
         // apply passed values
@@ -3253,7 +3191,7 @@ class CSV2POST {
     * @param mixed $field
     */
     public function get_project( $project_id, $field = false ){
-        global $wpdb;
+        global $wpdb; 
         $result = $this->DB->selectrow( $wpdb->c2pprojects, "projectid = $project_id", '*' );  
         if( $field === false || !is_string( $field) ){return $result;}
         return $result->$field;  
@@ -3438,7 +3376,7 @@ class CSV2POST {
     * @param mixed $project_id
     */         
     public function import_from_csv_file( $source_id, $project_id, $event_type = 'import', $inserted_limit = 9999999 ){
-        global $wpdb, $C2P_WP;
+        global $wpdb;
         // get source
         $source_row = $this->get_source( $source_id );
         
@@ -3456,6 +3394,14 @@ class CSV2POST {
             $rules_array = $this->get_parent_rulesarray( $project_id );// one rules array applied to many sources
         }else{
             $rules_array = maybe_unserialize( $source_row->rules );// rule array per source (individual tables, also the default for single table users which is most common)    
+        }
+        
+        // ensure file exists
+        if( !file_exists( $source_row->path ) ) {
+            $this->UI->create_notice( "Please ensure the .csv file at the following path still exists. The plugin failed to find it.
+            If you see an invalid path, please contact WebTechGlobal so we can correct it: " . $source_row->path, 
+            'success', 'Small', __( '.csv File Not Located' ) );        
+            return;    
         }
                              
         //$source_object = $this->DB->selectrow( $table_name, ' )
@@ -3710,7 +3656,6 @@ class CSV2POST {
     * @param mixed $idcolumn
     */
     public function get_outdatedpost_rows( $project_id, $total = 1, $idcolumn = false ){
-        global $CSV2POST;
         $tables_array = self::get_dbtable_sources( $project_id); 
         $settingschange = self::get_project( $project_id, 'settingschange' );   
         return $this->DB->query_multipletables( $tables_array, $idcolumn, "c2p_postid != 0 AND '".$settingschange."' > c2p_applied", $total);
@@ -3743,19 +3688,31 @@ class CSV2POST {
         return $tables_added;
     }
     
+    /**
+    * Create new posts/pages
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.2
+    * 
+    * @param mixed $project_id
+    * @param mixed $total - apply a limit for this import (global settings can offer a default limit suitable for server also)
+    * @param mixed $row_ids - only use if creating posts using specific row ID's 
+    */
     public function create_posts( $project_id, $total = 1 ){
         global $c2p_settings;
         
         $autoblog = new CSV2POST_InsertPost();
         $autoblog->settings = $c2p_settings;
         $autoblog->currentproject = $c2p_settings['currentproject'];
-        $autoblog->project = $this->get_project( $project_id);// gets project row, includes sources and settings
+        $autoblog->project = $this->get_project( $project_id );// gets project row, includes sources and settings
         $autoblog->projectid = $project_id;
-        $autoblog->maintable = self::get_project_main_table( $project_id);// main table holds post_id and progress statistics
-        $autoblog->projectsettings = maybe_unserialize( $autoblog->project->projectsettings);// unserialize settings
-        $autoblog->projectcolumns = $this->get_project_columns_from_db( $project_id);
+        $autoblog->maintable = self::get_project_main_table( $project_id );// main table holds post_id and progress statistics
+        $autoblog->projectsettings = maybe_unserialize( $autoblog->project->projectsettings );// unserialize settings
+        $autoblog->projectcolumns = $this->get_project_columns_from_db( $project_id );
         $autoblog->requestmethod = 'manual';
-        $sourceid_array = self::get_project_sourcesid( $project_id);
+        $sourceid_array = self::get_project_sourcesid( $project_id );
         $autoblog->mainsourceid = $sourceid_array[0];// update the main source database table per post with new post ID
         unset( $autoblog->project->projectsettings);// just simplifying the project object by removing the project settings
 
@@ -3765,11 +3722,9 @@ class CSV2POST {
         }
         
         // get rows not used to create posts
-        $unused_rows = $this->get_unused_rows( $project_id, $total, $idcolumn);  
+        $unused_rows = $this->get_unused_rows( $project_id, $total, $idcolumn );  
         if(!$unused_rows){
-            $this->UI->create_notice( __( 'You have used all imported rows to create posts. Please
-            ensure you have imported all of your data if you expected more posts than CSV 2 POST
-            has already created.' ), 'info', 'Small', 'No Rows Available' );
+            $this->UI->create_notice( __( 'You have used all imported rows to create posts. Please ensure you have imported all of your data if you expected more posts than CSV 2 POST has already created.' ), 'info', 'Small', 'No Rows Available' );
             return;
         }
         
@@ -3957,7 +3912,7 @@ class CSV2POST {
             $i = rand(0, $tStringCount);
             $replace = $tStringToken[$i];
             $tString = "{".$tString."}";
-            $mytext = self::str_replaceFirst( $tString, $replace, $mytext);
+            $mytext = $this->PHP->str_replaceFirst( $tString, $replace, $mytext);
         }
         
         $content = $mytext;
@@ -4055,7 +4010,21 @@ class CSV2POST {
 
         return $result_array;
     } 
-                
+    
+    /**
+    * Deletes a datasource from the wp_c2psources table
+    * 
+    * @returns the result from WP delete query
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function delete_datasource( $source_id ) {
+        global $wpdb;
+        return $this->DB->delete( $wpdb->c2psources, 'sourceid = ' . $source_id );    
+    }             
 }// end CSV2POST class 
 
 if(!class_exists( 'WP_List_Table' ) ){
@@ -4081,16 +4050,35 @@ class CSV2POST_InsertPost{
     public $my_post = array();
     public $report_array = array();// will include any problems detected, can be emailed to user    
     
-    public function replace_tokens( $subject){
+    public function replace_tokens( $subject ){
         unset( $this->projectcolumns['arrayinfo'] );
-        foreach( $this->row as $columnfromquery => $usersdata){ 
-            foreach( $this->projectcolumns as $table_name => $columnfromdb){  
+        foreach( $this->row as $columnfromquery => $usersdata ){ 
+            foreach( $this->projectcolumns as $table_name => $columnfromdb ){   
                 $subject = str_replace( '#'. $columnfromquery . '#', $usersdata, $subject);
             }    
-        }
+        }         
         return $subject;
     } 
     
+    /**
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function __construct() {
+        $this->CSV2POST = new CSV2POST();
+    }
+    
+    /**
+    * This is not like a __construct() - this called to create a single post,
+    * often while looping through data
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.0.0
+    * @version 1.0.0
+    */
     public function start() { 
         $this->my_post = array();  
         $this->replacevaluerules();
@@ -4134,22 +4122,29 @@ class CSV2POST_InsertPost{
         && isset( $this->projectsettings['authors']['username']['column'] ) && !empty( $this->projectsettings['authors']['username']['column'] ) ){
             // check data $row for a numeric value
             if( isset( $this->row[ $this->projectsettings['authors']['email']['column'] ] ) && is_numeric( $this->row[ $this->projectsettings['authors']['email']['column'] ] ) ){
-                $this->my_post['author'] = $this->row[ $this->projectsettings['authors']['email']['column'] ];
+                $this->my_post['post_author'] = $this->row[ $this->projectsettings['authors']['email']['column'] ];
                 $author_set = true;
             }
         }
-        
+                                   
         // if not $author_set check for a project default author
-        if(!$author_set && isset( $this->projectsettings['basicsettings']['defaultauthor'] ) && is_numeric( $this->projectsettings['basicsettings']['defaultauthor'] ) ){
-            $this->my_post['author'] = $this->projectsettings['basicsettings']['defaultauthor']; 
+        if( !$author_set && isset( $this->projectsettings['basicsettings']['defaultauthor'] ) && is_numeric( $this->projectsettings['basicsettings']['defaultauthor'] ) ){
+            $this->my_post['post_author'] = $this->projectsettings['basicsettings']['defaultauthor']; 
         }
         
         // call next method
         $this->categories();
     } 
-       
+    
+    /**
+    * Category creator
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.0.0
+    * @version 1.0.0
+    */
     public function categories() {
-        global $CSV2POST;
         if( isset( $this->projectsettings['categories'] ) ){  
             if( isset( $this->projectsettings['categories']['data'] ) ){
                 $projection_array = array();
@@ -4158,19 +4153,23 @@ class CSV2POST_InsertPost{
                 
                 // loop through all values in $row
                 unset( $this->projectcolumns['arrayinfo'] );
+                
                 // loop through all columns/values in the row of data
                 foreach( $this->row as $columnfromquery => $my_term ){ 
+                    
                     // loop through all project columns
                     foreach( $this->projectcolumns as $table_name => $columnfromdb){
                
                         // determine if $columnfromquery and $table_name are selected category data columns
                         // also establish the level by using array of category column data 
                         foreach( $this->projectsettings['categories']['data'] as $thelevel => $catarray ){
+                            
                             if( $catarray['table'] == $table_name && $catarray['column'] == $columnfromquery ){
                                 $level = $thelevel;
                     
                                 // is post manually mapped to this table + column + term
                                 if( isset( $categories_array['categories']['mapping'][$table_name][$columnfromdb][ $my_term ] ) ){
+                                    
                                     // we apply $level here, this is important in this procedure because the order we encounter category terms
                                     // within data may not be in the level order, possibly!
                                     $group_array[$level] = $categories_array['categories']['mapping'][$table_name][$columnfromdb][ $my_term ];
@@ -4178,9 +4177,11 @@ class CSV2POST_InsertPost{
                                 }else{
                                     
                                     // does term exist within the current level? 
-                                    $existing_term_id = $CSV2POST->term_exists_in_level( $my_term, $level);                                                
+                                    $existing_term_id = self::term_exists_in_level( $my_term, $level);                                                
                                     if(is_numeric( $existing_term_id) ){
+                                        
                                         $group_array[$level] = $existing_term_id;
+                                        
                                     }else{
                                         
                                         // set parent id, by deducting one from the current $level and getting the previous category from $group_array
@@ -4206,9 +4207,15 @@ class CSV2POST_InsertPost{
             
             if( isset( $group_array ) && is_array( $group_array ) ){
                 $this->my_post['post_category'] = $group_array;
-            }             
+            }    
+                     
+        } 
+        
+        // apply default category if post has none
+        if( empty( $this->my_post['post_category'] ) && isset( $this->projectsettings['basicsettings']['defaultcategory'] ) && is_numeric( $this->projectsettings['basicsettings']['defaultcategory'] ) ) {
+            $this->my_post['post_category'] = array( $this->projectsettings['basicsettings']['defaultcategory'] );
         }  
-         
+   
         // call next method
         $this->commentstatus();
     }  
@@ -4408,8 +4415,7 @@ class CSV2POST_InsertPost{
     * bracketed spinner (spintax)
     */
     public function spinner_brackets() {
-        global $CSV2POST;
-        $this->my_post['post_content'] = $CSV2POST->spin( $this->my_post['post_content'] );
+        $this->my_post['post_content'] = $this->CSV2POST->spin( $this->my_post['post_content'] );
         // call next method
         $this->tags();        
     }   
@@ -4431,6 +4437,7 @@ class CSV2POST_InsertPost{
                 $exploded_tags = explode( ', ', $this->row[$this->projectsettings['tags']['column']] );
                 $final_tags_array = array_merge( $final_tags_array, $exploded_tags);
             }
+            
             // generate tags from text data
             if( isset( $this->projectsettings['tags']['textdata']['column'] ) && !is_string( $this->projectsettings['tags']['textdata']['column'] ) ){
                 // remove multiple spaces, returns, tabs, etc.
@@ -4440,6 +4447,7 @@ class CSV2POST_InsertPost{
                 $exploded_tags = explode( ', ', $text);
                 $final_tags_array = array_merge( $final_tags_array, $exploded_tags);                        
             }
+            
             // cleanup tags
             foreach( $final_tags_array as $key => $tag){
                 // remove numeric values
@@ -4506,11 +4514,9 @@ class CSV2POST_InsertPost{
     * imports groups of images from a local directory, per post using a single term and not full paths
     */
     public function localimagegroupimport() {
-        global $CSV2POST;
-   
         if( isset( $this->projectsettings['content']['groupedimagesdir'] ) && is_string( $this->projectsettings['content']['groupedimagesdir'] ) ){   
             $continue = true;// do checks and change to false if problem detected
-            if(!file_exists(ABSPATH . $this->projectsettings['content']['groupedimagesdir'] ) ){
+            if( !file_exists( ABSPATH . $this->projectsettings['content']['groupedimagesdir'] ) ){
                 $continue = false;
             }
             
@@ -4528,16 +4534,16 @@ class CSV2POST_InsertPost{
                 $continue = false;
             }
             
-            if( $continue){
+            if( $continue ){
                 //setting not yet used = $project_array['content']["incrementalimages"];
                 // create an array to hold directory list
                 $results = array();
 
                 // create a handler for the directory
-                $handler = opendir(ABSPATH . $this->projectsettings['content']['groupedimagesdir'] );
-
+                $handler = opendir( ABSPATH . $this->projectsettings['content']['groupedimagesdir'] );
+                  
                 // open directory and walk through the filenames
-                while ( $file = readdir( $handler) ) {
+                while ( $file = readdir( $handler ) ) {
 
                     // if file isn't this directory or its parent, add it to the results
                     if ( $file != "." && $file != "..") {
@@ -4600,8 +4606,6 @@ class CSV2POST_InsertPost{
     * insert plugins custom fields, used to track and mass manage posts
     */
     public function insert_plugins_customfields() {
-        global $C2P_WP;
-
         // add data source ID for querying source
         add_post_meta( $this->my_post['ID'], 'c2p_project', $this->projectid);
                 
@@ -4625,9 +4629,7 @@ class CSV2POST_InsertPost{
     * 3. update the projectsettings value itself (incremental publish date is one example value that needs tracked per post)    
     */
     public function update_project() {
-        global $CSV2POST;
-        $CSV2POST->update_project( $this->projectid, array( 'projectsettings' => maybe_serialize( $this->projectsettings) ), false );
-        
+        $this->CSV2POST->update_project( $this->projectid, array( 'projectsettings' => maybe_serialize( $this->projectsettings) ), false );
         // call next method
         $this->update_row();        
     }
@@ -4636,8 +4638,13 @@ class CSV2POST_InsertPost{
     * updates the users data row, add post ID to create a relationship between imported row and the new post 
     */
     public function update_row() {      
-        $row_id = $this->row['c2p_rowid'];
-        $this->DB->update( $this->maintable, "c2p_rowid = $row_id", array( 'c2p_postid' => $this->my_post['ID'], 'c2p_applied' => current_time( 'mysql' ) ));
+        global $wpdb;
+        
+        $query = "UPDATE " . $this->maintable; 
+        $query .= " SET c2p_postid = " . $this->my_post['ID'] . ", " . "c2p_applied = '" . current_time( 'mysql' ) . "'";
+        $query .= " WHERE c2p_rowid = " . $this->row['c2p_rowid'];
+        $wpdb->query( $query );         
+        
         // call next method
         $this->output();        
     }
@@ -4647,8 +4654,8 @@ class CSV2POST_InsertPost{
     */
     public function output() {
         // $autoblog->finished == true indicates procedure just done the final post or the time limit is reached
-        if( $this->requestmethod == 'manual' && $this->finished === true){
-            $this->UI->create_notice( __( 'Sorry no report setup yet more information will be added later.' ), 'success', 'Extra', 'Posts Creation Report' );
+        if( $this->requestmethod == 'manual' && $this->finished === true ){
+            //$this->UI->create_notice( __( 'Sorry no report setup yet more information will be added later.' ), 'success', 'Extra', 'Posts Creation Report' );
         }
     }
 }// end CSV2POST_InsertPost
@@ -4688,6 +4695,7 @@ class CSV2POST_UpdatePost{
     } 
     
     public function start() {
+        $this->CSV2POST = new CSV2POST();
         $this->my_post['ID'] = $this->row['c2p_postid'];
         $this->replacevaluerules();
     }
@@ -4877,8 +4885,7 @@ class CSV2POST_UpdatePost{
     * 3. update the projectsettings value itself (incremental publish date is one example value that needs tracked per post)    
     */
     public function then_update_project() {
-        global $CSV2POST;
-        $CSV2POST->update_project( $this->projectid, array( 'projectsettings' => maybe_serialize( $this->projectsettings) ) );
+        $this->CSV2POST->update_project( $this->projectid, array( 'projectsettings' => maybe_serialize( $this->projectsettings) ) );
         
         // call next method
         $this->update_row();        
@@ -4886,13 +4893,20 @@ class CSV2POST_UpdatePost{
     
     /**
     * updates the users data row, add post ID to create a relationship between imported row and the new post 
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.0.0
+    * @version 1.0.2
     */
     public function update_row() {     
-        $row_id = $this->row['c2p_rowid'];
-                     
-        // we update c2p_applied with mysql current date/time because it is compared to the c2p_updated column which is set by mysql
-        $this->DB->update( $this->maintable, "c2p_rowid = $row_id", array( 'c2p_postid' => $this->my_post['ID'], 'c2p_applied' => current_time( 'mysql' ) ) );
+        global $wpdb;
         
+        $query = "UPDATE " . $this->maintable; 
+        $query .= " SET c2p_postid = " . $this->my_post['ID'] . ", " . "c2p_applied = '" . current_time( 'mysql' ) . "'";
+        $query .= " WHERE c2p_rowid = " . $this->row['c2p_rowid'];
+        $wpdb->query( $query );
+               
         // call next method
         $this->output();        
     }
@@ -4903,7 +4917,7 @@ class CSV2POST_UpdatePost{
     public function output() {
         // $autoblog->finished == true indicates procedure just done the final post or the time limit is reached
         if( $this->requestmethod == 'manual' && $this->finished === true){
-            $this->UI->create_notice( __( 'Sorry a report is not available yet, more information coming later.' ), 'info', 'Small', 'Posts Update Report' );
+            //$this->UI->create_notice( __( 'Sorry a report is not available yet, more information coming later.' ), 'info', 'Small', 'Posts Update Report' );
         }
         
         return $this->my_post;
@@ -5735,9 +5749,7 @@ class C2P_CategoryProjection_Table extends WP_List_Table {
         
     }
 
-    function column_default( $item, $column_name){
-        global $C2P_WP;
-
+    function column_default( $item, $column_name ){
         foreach( $item as $table_name => $column_array ){
 
             foreach( $column_array as $category_column => $projection_array ){
@@ -5933,7 +5945,6 @@ class C2P_ReplaceValueRules_Table extends WP_List_Table {
     function column_default( $item, $column_name){
         switch( $column_name){
             case 'delete':
-                global $C2P_WP;
                 return self::linkaction( $_GET['page'], 'deletereplacevaluerule', __( 'Delete this replacement value rule' ), 'Delete', '&cfid='.$item['id'] );    
                 break;                                                                   
             default:

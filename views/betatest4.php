@@ -31,7 +31,23 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     protected $screen_columns = 2;
     
     protected $view_name = 'betatest4';
-    
+
+    /**
+    * Array of meta boxes, looped through to register them on views and as dashboard widgets
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function meta_box_array() {
+        // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
+        return $this->meta_boxes_array = array(
+            // array( id, title, callback (usually parent, approach created by Ryan Bayne), context (position), priority, call back arguments array, add to dashboard (boolean), required capability
+            //array( $this->view_name . '-currenttesting', __( 'WP Roles Array', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'currenttesting' ), true, 'activate_plugins' ),
+        );    
+    }
+        
     /**
     * Set up the view with data and do things that are specific for this view
     *
@@ -54,70 +70,83 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
         $this->UI = CSV2POST::load_class( 'C2P_UI', 'class-ui.php', 'classes' );  
         $this->DB = CSV2POST::load_class( 'C2P_DB', 'class-wpdb.php', 'classes' );
         $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
-        
 
         parent::setup( $action, $data );
         
         // introduction to testing
-        $this->add_meta_box( 'betatest4-currenttesting', __( 'Test Introduction', 'csv2post' ), array( $this, 'parent' ), 'normal', 'default', array( 'formid' => $this->view_name . 'currenttesting', 'capability' => $this->UI->get_boxes_capability( $this->view_name . 'currenttesting' ) ) );      
-        $this->add_meta_box( 'betatest4-guidelines', __( 'Development Guidelines', 'csv2post' ), array( $this, 'parent' ), 'side', 'default', array( 'formid' => $this->view_name . 'guidelines', 'capability' => $this->UI->get_boxes_capability( $this->view_name . 'guidelines' ) ) );      
-        $this->add_meta_box( 'betatest4-warning', __( 'Alpha & Beta', 'csv2post' ), array( $this, 'parent' ), 'side', 'default', array( 'formid' => $this->view_name . 'warning', 'capability' => $this->UI->get_boxes_capability( $this->view_name . 'warning' ) ) );      
+        $this->add_meta_box( 'betatest4-currenttesting', __( 'Test Introduction', 'csv2post' ), array( $this, 'parent' ), 'normal', 'default', array( 'formid' => 'currenttesting' ) );      
+        $this->add_meta_box( 'betatest4-guidelines', __( 'Development Guidelines', 'csv2post' ), array( $this, 'parent' ), 'side', 'default', array( 'formid' => 'guidelines' ) );      
+        $this->add_meta_box( 'betatest4-warning', __( 'Alpha & Beta', 'csv2post' ), array( $this, 'parent' ), 'side', 'default', array( 'formid' => 'warning' ) );      
         
         // test boxes
-        $this->add_meta_box( $this->view_name . '-t1', __( 'URL File Import Only - COMPLETE', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => $this->view_name .'t1' ) );      
-        $this->add_meta_box( $this->view_name . '-t2', __( 'URL File Import + Create New Data Source - COMPLETE', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => $this->view_name .'t2' ) );      
-        $this->add_meta_box( $this->view_name . '-t3', __( 'URL Directory Import (import directory contents)', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => $this->view_name .'t3' ) );      
-        $this->add_meta_box( $this->view_name . '-t4', __( 'Form Uploader (basic) - COMPLETE', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => $this->view_name .'t4' ) );      
-        $this->add_meta_box( $this->view_name . '-t5', __( 'Form Uploader (optional path) - COMPLETE', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => $this->view_name .'t5' ) );      
-        $this->add_meta_box( $this->view_name . '-t6', __( 'New Create Project Form', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => $this->view_name .'t6' ) );      
-        //$this->add_meta_box( $this->view_name . '-t7', __( 'Compare Source .csv To New .csv', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => $this->view_name .'t7' ) );      
-        $this->add_meta_box( $this->view_name . '-t8', __( 'New Data Source + Monitor Directory Option', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => $this->view_name .'t8' ) );      
-        $this->add_meta_box( $this->view_name . '-t9', __( 'New Create Project Form: With Select Template Option', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => $this->view_name .'t9' ) );      
-        $this->add_meta_box( $this->view_name . '-t10', __( 'New Create Project Form: Multiple Data Sources', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => $this->view_name .'t10' ) );      
-        //$this->add_meta_box( $this->view_name . '-t11', __( 'Create New Data Source + Path Option', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => $this->view_name .'t11' ) );      
-        //$this->add_meta_box( $this->view_name . '-t12', __( 'Create New Data Source + Overwrite Option', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => $this->view_name .'t12' ) );      
-        //$this->add_meta_box( $this->view_name . '-t13', __( 'Data Source History', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => $this->view_name .'t13' ) );      
-        $this->add_meta_box( $this->view_name . '-t14', __( 'Switch To Newer File', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => $this->view_name .'t13' ) );      
-        $this->add_meta_box( $this->view_name . '-t15', __( 'Data Source: Multiple Specific .csv File', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => $this->view_name .'t15' ) );      
-        $this->add_meta_box( $this->view_name . '-t16', __( 'Data Source: Folder Contents (multiple none specific .csv files)', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => $this->view_name .'t16' ) );      
-        //$this->add_meta_box( $this->view_name . '-t17', __( 'Add New .csv File To Directory Type Datasource', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => $this->view_name .'t17' ) );      
-        $this->add_meta_box( $this->view_name . '-t18', __( 'Re-Check Source Directory - COMPLETE', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => $this->view_name .'t18' ) );      
-        $this->add_meta_box( $this->view_name . '-t19', __( 'URL File Import + Path Field - COMPLETE', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => $this->view_name .'t19' ) );      
-        $this->add_meta_box( $this->view_name . '-t20', __( 'URL File Import + Source Selection - COMPLETE', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => $this->view_name .'t20' ) );      
-        $this->add_meta_box( $this->view_name . '-t21', __( 'Form Uploader + Select Source - COMPLETE', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => $this->view_name .'t21' ) );      
+        $this->add_meta_box( $this->view_name . '-t1', __( 'URL File Import Only - COMPLETE', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't1' ) );      
+        $this->add_meta_box( $this->view_name . '-t2', __( 'URL File Import + Create New Data Source - COMPLETE', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't2' ) );      
+        $this->add_meta_box( $this->view_name . '-t3', __( 'URL Directory Import (import directory contents)', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't3' ) );      
+        $this->add_meta_box( $this->view_name . '-t4', __( 'Form Uploader (basic) - COMPLETE', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't4' ) );      
+        $this->add_meta_box( $this->view_name . '-t5', __( 'Form Uploader (optional path) - COMPLETE', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't5' ) );      
+        $this->add_meta_box( $this->view_name . '-t6', __( 'New Create Project Form', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't6' ) );      
+        $this->add_meta_box( $this->view_name . '-t8', __( 'New Data Source + Monitor Directory Option', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't8' ) );      
+        $this->add_meta_box( $this->view_name . '-t9', __( 'New Create Project Form: With Select Template Option', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't9' ) );      
+        $this->add_meta_box( $this->view_name . '-t10', __( 'New Create Project Form: Multiple Data Sources', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't10' ) );      
+        $this->add_meta_box( $this->view_name . '-t14', __( 'Switch To Newer File', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't13' ) );      
+        $this->add_meta_box( $this->view_name . '-t15', __( 'Data Source: Multiple Specific .csv File', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't15' ) );      
+        $this->add_meta_box( $this->view_name . '-t16', __( 'Data Source: Folder Contents (multiple none specific .csv files)', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't16' ) );      
+        $this->add_meta_box( $this->view_name . '-t18', __( 'Re-Check Source Directory - COMPLETE', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't18' ) );      
+        $this->add_meta_box( $this->view_name . '-t19', __( 'URL File Import + Path Field - COMPLETE', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't19' ) );      
+        $this->add_meta_box( $this->view_name . '-t20', __( 'URL File Import + Source Selection - COMPLETE', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't20' ) );      
+        $this->add_meta_box( $this->view_name . '-t21', __( 'Form Uploader + Select Source - COMPLETE', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't21' ) );      
   
         // permanent information applied to all test pages
-        $this->add_meta_box( $this->view_name . '-errors', __( 'Errors', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => $this->view_name . 'errors' ) );            
-    }
+        $this->add_meta_box( $this->view_name . '-errors', __( 'Errors', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'errors' ) );            
     
+        // using array register many meta boxes
+        foreach( self::meta_box_array() as $key => $metabox ) {
+            // the $metabox array includes required capability to view the meta box
+            if( isset( $metabox[7] ) && current_user_can( $metabox[7] ) ) {
+                $this->add_meta_box( $metabox[0], $metabox[1], $metabox[2], $metabox[3], $metabox[4], $metabox[5] );   
+            }               
+        }    
+    }
+
     /**
-    * All add_meta_box() callback to this function, values in $box are used to then call
-    * the intended box to render a unique form or information. 
+    * Outputs the meta boxes
     * 
-    * The purpose of this box is to apply security to all boxes but it could also be used
-    * to dynamically call different functions based on arguments
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function metaboxes() {
+        parent::register_metaboxes( self::meta_box_array() );     
+    }
+
+    /**
+    * This function is called when on WP core dashboard and it adds widgets to the dashboard using
+    * the meta box functions in this class. 
+    * 
+    * @uses dashboard_widgets() in parent class CSV2POST_View which loops through meta boxes and registeres widgets
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function dashboard() { 
+        parent::dashboard_widgets( self::meta_box_array() );  
+    }
+        
+    /**
+    * All add_meta_box() callback to this function to keep the add_meta_box() call simple.
+    * 
+    * This function also offers a place to apply more security or arguments.
     * 
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.32
-    * @version 1.0.0
+    * @version 1.0.1
     */
     function parent( $data, $box ) {
-        
-        // if $box['args']['capability'] is not set with over-riding capability added to add_meta_box() arguments then set it
-        if( !isset( $box['args']['capability'] ) || !is_string( $box['args']['capability'] ) ) {
-            $box['args']['capability'] = $this->UI->get_boxes_capability( $box['args']['formid'] );
-        }
-        
-        // call method in CSV2POST - this is done because it is harder to put this parent() function there as it includes "self::"
-        // any other approach can get messy I think but I'd welcome suggestions on this 
-        if( isset( $box['args']['capability'] ) && !current_user_can( $box['args']['capability'] ) ) { 
-            echo '<p>' . __( 'You do not have permission to access the controls and information in this box.', 'csv2post' ) . '</p>';
-            return false;    
-        }        
-        
-        // call the intended function 
-        eval( 'self::postbox_' . $box['args']['formid'] . '( $data, $box );' );
+        eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
     }
      
     /**
@@ -128,7 +157,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest4currenttesting( $data, $box ) { ?>
+    public function postbox_betatest4_currenttesting( $data, $box ) { ?>
         
         <p>Most of the testing here is a variation/improvement of abilities CSV 2 POST already has. A lot of the
         the functionality in CSV 2 POST is hidden. This testing is about creating forms to make use of the functionality
@@ -151,7 +180,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest4t1( $data, $box ) {    
+    public function postbox_betatest4_t1( $data, $box ) {    
         $introduction = __( 'Create and test file transfer from URL i.e. another website, not local.', 'csv2post' );
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], $introduction, false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title'] );                            
@@ -175,7 +204,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest4t2( $data, $box ) {                                 
+    public function postbox_betatest4_t2( $data, $box ) {                                 
         $introduction = __( 'Using new URL method of importing files, create a new datasource. The plan is for 
         users to create a database before creating a project and put more focus into datasources.', 'csv2post' );
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], $introduction, false );        
@@ -206,7 +235,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest4t3( $data, $box ) {   
+    public function postbox_betatest4_t3( $data, $box ) {   
         $introduction = __( 'Import the contents of an external directory, multiple .csv files and put them in a local
         directory. The folder of multiple .csv files will be treated as a datasource but that does not need to be complete
         in this test.', 'csv2post' );
@@ -232,7 +261,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest4t4( $data, $box ) {   
+    public function postbox_betatest4_t4( $data, $box ) {   
                                  
         $introduction = __( 'Create new single file form upload handler. Do not create datasource at this time. Do not
         offer other options. The file will go into WP default uploader directory in this test.', 'csv2post' );
@@ -259,7 +288,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest4t5( $data, $box ) {                                
+    public function postbox_betatest4_t5( $data, $box ) {                                
         $introduction = __( 'Now test the single file uploader with path field.', 'csv2post' );
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], $introduction, false, true );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title'] );                            
@@ -282,7 +311,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest4t6( $data, $box ) {                                       
+    public function postbox_betatest4_t6( $data, $box ) {                                       
         $introduction = 'Create and test a "New Project" form that allows selection of data source.';
          
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], $introduction, false );        
@@ -309,7 +338,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest4t7( $data, $box ) {                                
+    public function postbox_betatest4_t7( $data, $box ) {                                
         $introduction = 'So recently a client replaced an existing .csv file with a new one. Yet despite everything running fine for 
         a couple of weeks. New posts using new rows were blank. This suggests that the new file has changed i.e. a column renamed. Create
         a test which compares old file configuration to the new. Return false on the files not matching. The procedure will be used to prevent
@@ -335,7 +364,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest4t8( $data, $box ) {                                
+    public function postbox_betatest4_t8( $data, $box ) {                                
         $introduction = 'Create function for monitoring directory and detecting then extracting the contents. This will require
         the folder to be the datasource and all .csv files added to the folder part of that datasource. Do not test handling of new
         file, use another test.';
@@ -360,7 +389,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest4t9( $data, $box ) {                                
+    public function postbox_betatest4_t9( $data, $box ) {                                
         $introduction = 'Add more options to the new Create Project form. Selection of any existing content template, entry of a title template. This
         is a small step to being able to create new projects quickly. Far more is to come on this i.e. using previous project history, theme and 
         installed plugins to automatically configure custom fields.';
@@ -385,7 +414,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest4t10( $data, $box ) {                                
+    public function postbox_betatest4_t10( $data, $box ) {                                
         $introduction = 'Low priority. Allow projects to be created with multiple datasources, pulling data from each of them to 
         create posts. This will allow users to create a database table per .csv file and use them all in a single project.';
          
@@ -409,7 +438,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest4t11( $data, $box ) {                                
+    public function postbox_betatest4_t11( $data, $box ) {                                
         $introduction = 'Create new datasource with optional path. Local file, URL and file uploader should be on this form. The
         path field allows any of these methods to result in the new .csv file being placed where the user wishes during the creation
         of a new datasource. This should allow a local file to be moved on the server to another location also.';
@@ -434,7 +463,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest4t12( $data, $box ) {                                
+    public function postbox_betatest4_t12( $data, $box ) {                                
         $introduction = 'Create source form with option for replacing an existing file with the same name. Currently auto rename of new file is
         performed. Also add option to rename the existing file instead so that both files can be kept. This procedure should also compare the files
         and warn the user if the replacement files configuration is different. That ability is covered in an earlier test.';
@@ -459,7 +488,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest4t13( $data, $box ) {                                
+    public function postbox_betatest4_t13( $data, $box ) {                                
         $introduction = 'I want to build a datasources history. Record changes in file, why and how the file changed i.e. did the user initiate the
         change using CSV 2 POST. I want to know if users were warned about file configuration being different or not. This may require a new database
         table.';
@@ -484,7 +513,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest4t14( $data, $box ) {                                
+    public function postbox_betatest4_t14( $data, $box ) {                                
         $introduction = 'New data source form with option to tell the plugin to switch to the newest .csv file in a directory, when a directory
         is the datasource (rather than a single file).';
          
@@ -508,7 +537,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest4t15( $data, $box ) {                                
+    public function postbox_betatest4_t15( $data, $box ) {                                
         $introduction = 'Create form that allows a new datasource to be made with multiple specific .csv files. May need to create 3 forms, one 
         with each file import method.';
          
@@ -532,7 +561,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest4t16( $data, $box ) {                                
+    public function postbox_betatest4_t16( $data, $box ) {                                
         $introduction = 'Low priority feature but premium. What is more important right now due to client request is switching to the latest
         .csv file within a directory. Create the ability to setup a directory as the datasource main path and every .csv file found within the folder
         is part of the datasource. History for individual files must exist in the datasource history. .';
@@ -557,7 +586,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest4t17( $data, $box ) {                                
+    public function postbox_betatest4_t17( $data, $box ) {                                
         $introduction = 'Create a form for uploading a new .csv file to a directory/folder based datasource. It will probably limit
         the path to those in datasources only. That will be for ease and security. The new .csv file would be placed in the directory
         and triggers initiated to switch to that file. Add option to import any new rows straight away. Add option to create posts
@@ -583,7 +612,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest4t18( $data, $box ) {                                
+    public function postbox_betatest4_t18( $data, $box ) {                                
         $introduction = 'Manual Re-Check of source directory for a newer file. This may not be used but this form
         will at first test the functions involved in detected a newer file, ensuring the newer files configuration is
         the same as the old file and then switching to the new file.';
@@ -610,7 +639,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest4t19( $data, $box ) {    
+    public function postbox_betatest4_t19( $data, $box ) {    
         $introduction = __( 'Create and test file transfer from URL i.e. another website, not local.', 'csv2post' );
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], $introduction, false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title'] );                            
@@ -636,7 +665,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest4t20( $data, $box ) {    
+    public function postbox_betatest4_t20( $data, $box ) {    
         $introduction = __( 'Create and test file transfer from URL i.e. another website, not local.', 'csv2post' );
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], $introduction, false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title'] );                            
@@ -659,7 +688,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest4t21( $data, $box ) {                                
+    public function postbox_betatest4_t21( $data, $box ) {                                
         $introduction = __( 'Now test the single file uploader with path field.', 'csv2post' );
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], $introduction, false, true );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title'] );                            
@@ -682,7 +711,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest4errors( $data, $box ) {
+    public function postbox_betatest4_errors( $data, $box ) {
         ?>
         
         <p>Errors and notices will be experienced in this area. They will show on your servers error log.
@@ -702,7 +731,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */                         
-    public function postbox_betatest4guidelines( $data, $box ) {
+    public function postbox_betatest4_guidelines( $data, $box ) {
         ?>
         
         <p>Do not make changes to a metabox already marked with "COMPLETE". We need to keep simplier test as they are for re-testing
@@ -721,7 +750,7 @@ class CSV2POST_Betatest4_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */                         
-    public function postbox_betatest4warning( $data, $box ) {
+    public function postbox_betatest4_warning( $data, $box ) {
         ?>
         
         <p>Some tests may be ALPHA and not BETA. The beta term is simply more recognized. In either case

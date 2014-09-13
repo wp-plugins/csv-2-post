@@ -31,7 +31,23 @@ class CSV2POST_Betatest1_View extends CSV2POST_View {
     protected $screen_columns = 2;
     
     protected $view_name = 'betatest1';
-    
+
+    /**
+    * Array of meta boxes, looped through to register them on views and as dashboard widgets
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function meta_box_array() {
+        // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
+        return $this->meta_boxes_array = array(
+            // array( id, title, callback (usually parent, approach created by Ryan Bayne), context (position), priority, call back arguments array, add to dashboard (boolean), required capability
+            array( 'betatest1-currenttesting', __( 'Test Introduction', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'currenttesting' ), true, 'activate_plugins' ),
+        );    
+    }
+        
     /**
      * Set up the view with data and do things that are specific for this view
      *
@@ -55,13 +71,15 @@ class CSV2POST_Betatest1_View extends CSV2POST_View {
                         
         // load the current project row and settings from that row
         if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
-            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
-            $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
+            
+            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] ); 
+            if( !$this->project_object ) {
+                $this->current_project_settings = false;
+            } else {
+                $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings ); 
+            }
 
             parent::setup( $action, $data );
-            
-            // information about the current testing
-            $this->add_meta_box( 'betatest1-currenttesting', __( 'Test Introduction', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'currenttesting' ) );      
             
             // add test boxes, add more functions if increasing the number
             for($i=1;$i<=16;$i++){
@@ -77,32 +95,43 @@ class CSV2POST_Betatest1_View extends CSV2POST_View {
     }
 
     /**
-    * All add_meta_box() callback to this function, values in $box are used to then call
-    * the intended box to render a unique form or information. 
+    * Outputs the meta boxes
     * 
-    * The purpose of this box is to apply security to all boxes but it could also be used
-    * to dynamically call different functions based on arguments
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function metaboxes() {
+        parent::register_metaboxes( self::meta_box_array() );     
+    }
+
+    /**
+    * This function is called when on WP core dashboard and it adds widgets to the dashboard using
+    * the meta box functions in this class. 
+    * 
+    * @uses dashboard_widgets() in parent class CSV2POST_View which loops through meta boxes and registeres widgets
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function dashboard() { 
+        parent::dashboard_widgets( self::meta_box_array() );  
+    }
+    
+    /**
+    * All add_meta_box() callback to this function to keep the add_meta_box() call simple.
+    * 
+    * This function also offers a place to apply more security or arguments.
     * 
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.32
-    * @version 1.0.0
+    * @version 1.0.1
     */
     function parent( $data, $box ) {
-        
-        // if $box['args']['capability'] is not set with over-riding capability added to add_meta_box() arguments then set it
-        if( !isset( $box['args']['capability'] ) || !is_string( $box['args']['capability'] ) ) {
-            $box['args']['capability'] = $this->UI->get_boxes_capability( $box['args']['formid'] );
-        }
-        
-        // call method in CSV2POST - this is done because it is harder to put this parent() function there as it includes "self::"
-        // any other approach can get messy I think but I'd welcome suggestions on this 
-        if( isset( $box['args']['capability'] ) && !current_user_can( $box['args']['capability'] ) ) { 
-            echo '<p>' . __( 'You do not have permission to access the controls and information in this box.', 'csv2post' ) . '</p>';
-            return false;    
-        }        
-        
-        // call the intended function 
         eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
     }
      
@@ -264,11 +293,9 @@ class CSV2POST_Betatest1_View extends CSV2POST_View {
     * @version 1.0.0
     */
     public function postbox_betatest1_t4( $data, $box ) {   
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Create Category Set: No Mapping In Use', 'csv2post' ), false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);                                 
         ?>  
-        
-        <h4>Create Category Set: No Mapping In Use</h4>
         
         <p>Submission will create a single set of categories. Do not use in a live blog. The function used is intended
         to be used within a loop. It requires an array of terms only. They must be in heirarchical order. This function

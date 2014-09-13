@@ -105,6 +105,11 @@ abstract class CSV2POST_View {
      */
     public function __construct() {
         $screen = get_current_screen();
+          
+        // discontinue if the view is dashboard, this class is loaded by view classes while processes dashboard widgets
+        if( $screen->base === 'dashboard' ) {
+            return false;    
+        }
         
         if ( 0 != $this->screen_columns ) {
             $screen->add_option( 'layout_columns', array( 'max' => $this->screen_columns ) );
@@ -115,7 +120,7 @@ abstract class CSV2POST_View {
        
         // load classes
         $this->CSV2POST = CSV2POST::load_class( 'CSV2POST', 'class-csv2post.php', 'classes' );        
-        $this->Tabmenu = $this->CSV2POST->load_class( 'CSV2POST_TabMenu', 'class-tabmenu.php', 'classes' );
+        $this->Tabmenu = $this->CSV2POST->load_class( 'C2P_TabMenu', 'class-pluginmenu.php', 'classes' );
         $this->Help = $this->CSV2POST->load_class( 'C2P_Help', 'class-help.php', 'classes' );
         $this->PHP = $this->CSV2POST->load_class( 'C2P_PHP', 'class-phplibary.php', 'classes' );
         $this->UI = $this->CSV2POST->load_class( 'C2P_UI', 'class-ui.php', 'classes' );
@@ -176,7 +181,7 @@ abstract class CSV2POST_View {
                 <p><strong>' . __( 'For more information:', 'csv2post' ) . '</strong></p>' . $pagereadmeurl . $pagevideourl . $pagediscussionurl . $pagefaqurl );
                
             }   
-        }
+        } 
     }
 
     /**
@@ -205,8 +210,8 @@ abstract class CSV2POST_View {
     * Set up the view with data and do things that are necessary for all views
     *
     * @author Ryan R. Bayne
-    * @package CSV 2 POST
-    * @since 8.0.0
+    * @package Opus
+    * @since 0.0.1
     * @version 1.0.0
     *
     * @param string $action Action for this view
@@ -228,7 +233,71 @@ abstract class CSV2POST_View {
         $this->add_text_box( 'action_nonce_field', array( $this, 'action_nonce_field' ), 'header', false );
         $this->add_text_box( 'action_field', array( $this, 'action_field' ), 'header', false );
     }
+    
+     /**
+     * Outputs the meta boxes
+     * 
+     * @author Ryan R. Bayne
+     * @package CSV 2 POST
+     * @since 8.1.33
+     * @version 1.0.0
+     */
+     public function register_metaboxes( $meta_box_array ) {
+        // using array register many meta boxes
+        foreach( $meta_box_array as $key => $metabox ) {
+            // the $metabox array includes required capability to view the meta box
+            if( isset( $metabox[7] ) && current_user_can( $metabox[7] ) ) {
+                $this->add_meta_box( $metabox[0], $metabox[1], $metabox[2], $metabox[3], $metabox[4], $metabox[5] );   
+            }               
+        }     
+     }
+     
+    /**
+    * This function is called when on WP core dashboard and it adds widgets to the dashboard using
+    * the meta box functions in this class.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function dashboard_widgets( $meta_box_array ) { 
+        global $c2p_settings;
+        
+        // if dashboard widgets switch not enabled we do nothing, this check should really be done earlier also
+        if( !isset( $c2p_settings['widgetsettings']['dashboardwidgetsswitch'] ) || $c2p_settings['widgetsettings']['dashboardwidgetsswitch'] !== 'enabled' ) {
+            return;    
+        }
 
+        // create class objects for use in the dashboard functions, they aren't loaded on dashboard in this classes construct
+        $this->CSV2POST = CSV2POST::load_class( 'CSV2POST', 'class-csv2post.php', 'classes' );
+        $this->UI = CSV2POST::load_class( 'C2P_UI', 'class-ui.php', 'classes' ); 
+        $this->DB = CSV2POST::load_class( 'C2P_DB', 'class-wpdb.php', 'classes' );
+        $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
+        $this->TabMenu = CSV2POST::load_class( 'C2P_TabMenu', 'class-pluginmenu.php', 'classes' );
+                       
+        // loop through array of meta boxes, which doubles as our array of dashboard widgets      
+        foreach( $meta_box_array as $key => $metabox ) {
+            
+            // ensure the meta box is permitted to be setup as a dashboard widget (first line of security)
+            if( isset( $metabox[6] ) && $metabox[6] === true ) {                  
+            
+                // now ensure the user as required capability to view the meta box
+                if( isset( $metabox[7] ) && current_user_can( $metabox[7] ) ) {      
+                          
+                    wp_add_dashboard_widget(
+                         $metabox[0] . 'dashboardwidget',// Dashboard Widget slug.
+                         $metabox[1],// Title.
+                         array( $this, 'postbox_' . $this->view_name . '_' . $metabox[5]['formid'] ),
+                         false,
+                         $metabox[5]// Arguments.
+                    );
+                    
+                }
+            }
+        }    
+    }
+        
     /**
     * Register a header message for the view
     *
@@ -419,12 +488,12 @@ abstract class CSV2POST_View {
     }
 
     /**
-    * Render the current view
+    * Render the current view of meta boxes, including optional tab menu for sections with multiple pages
     *
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0
+    * @version 1.0.1
     */       
     public function render() { 
 
@@ -441,9 +510,11 @@ abstract class CSV2POST_View {
         // view header - includes notices output and some admin side automation such as conflict prevention
         $this->CSV2POST->pageheader( $this->menu_array[ $admin_page ]['title'], 0);
                                
-        // create tab menu for the giving page
-        if( $admin_page !== 'main' ) {
-            $this->CSV2POST->build_tab_menu( $admin_page );
+        // create tab menu for the giving page if the section has two or more pages
+        if( !isset( $this->menu_array[ $admin_page ]['tabmenu'] ) || $this->menu_array[ $admin_page ]['tabmenu'] === true ) {
+            if( $admin_page !== 'main' ) {
+                $this->CSV2POST->build_tab_menu( $admin_page );
+            }
         }
         
         $this->do_text_boxes( 'header' );

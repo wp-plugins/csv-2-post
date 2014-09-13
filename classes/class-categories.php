@@ -228,8 +228,11 @@ class C2P_Categories {
             // skip the first item in array unless $preset_parent is in use, then the first item is a child
             if( !$preset_parent && $key === 0 ){ continue; }
             
-            // get previous terms array key for using the terms ID as this current terms parent                
-            $parent_key = $terms_added - 1;
+            // get previous terms array key for using the terms ID as this current terms parent
+            // avoid -1 which generates errors as it is not a defined offset
+            if( $terms_added > 0 ) {                
+                $parent_key = $terms_added - 1;
+            }
             
             // does the new term exist
             $term_id = term_exists( $category, '', $category_set_array[ $parent_key ] );

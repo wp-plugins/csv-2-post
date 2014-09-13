@@ -32,6 +32,26 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
     
     protected $view_name = 'customfields';
     
+    public $purpose = 'normal';// normal, dashboard
+
+    /**
+    * Array of meta boxes, looped through to register them on views and as dashboard widgets
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function meta_box_array() {
+        // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
+        return $this->meta_boxes_array = array(
+            // array( id, title, callback (usually parent, approach created by Ryan Bayne), context (position), priority, call back arguments array, add to dashboard (boolean), required capability
+            array( 'customfields-newcustomfield', __( 'New Custom Field', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'newcustomfield' ), true, 'activate_plugins' ),
+            array( 'customfields-customfieldstable', __( 'Custom Fields', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'customfieldstable' ), true, 'activate_plugins' ),
+            array( 'customfields-shopperpresscustomfieldkeys', __( 'ShopperPress Custom Field Names', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'shopperpresscustomfieldkeys' ), true, 'activate_plugins' ),
+        );    
+    }
+           
     /**
      * Set up the view with data and do things that are specific for this view
      *
@@ -55,13 +75,22 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
         // load the current project row and settings from that row
         if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
             
-            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
-            $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
+            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] ); 
+            if( !$this->project_object ) {
+                $this->current_project_settings = false;
+            } else {
+                $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings ); 
+            }
      
             parent::setup( $action, $data );
-
-            $this->add_meta_box( 'customfields-newcustomfield', __( 'New Custom Field', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'newcustomfield' ) );      
-            $this->add_meta_box( 'customfields-customfieldstable', __( 'Custom Fields', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'customfieldstable' ) );      
+            
+            // using array register many meta boxes
+            foreach( self::meta_box_array() as $key => $metabox ) {
+                // the $metabox array includes required capability to view the meta box
+                if( isset( $metabox[7] ) && current_user_can( $metabox[7] ) ) {
+                    $this->add_meta_box( $metabox[0], $metabox[1], $metabox[2], $metabox[3], $metabox[4], $metabox[5] );   
+                }               
+            }
          
         } else {
             $this->add_meta_box( 'customfields-nocurrentproject', __( 'No Current Project', 'csv2post' ), array( $this->UI, 'metabox_nocurrentproject' ), 'normal','default',array( 'formid' => 'nocurrentproject' ) );      
@@ -69,32 +98,43 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
     }
 
     /**
-    * All add_meta_box() callback to this function, values in $box are used to then call
-    * the intended box to render a unique form or information. 
+    * Outputs the meta boxes
     * 
-    * The purpose of this box is to apply security to all boxes but it could also be used
-    * to dynamically call different functions based on arguments
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.3
+    * @version 1.0.0
+    */
+    public function metaboxes() {
+        parent::register_metaboxes( self::meta_box_array() );     
+    }
+
+    /**
+    * This function is called when on WP core dashboard and it adds widgets to the dashboard using
+    * the meta box functions in this class. 
+    * 
+    * @uses dashboard_widgets() in parent class CSV2POST_View which loops through meta boxes and registeres widgets
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.2
+    * @version 1.0.0
+    */
+    public function dashboard() { 
+        parent::dashboard_widgets( self::meta_box_array() );  
+    }
+    
+    /**
+    * All add_meta_box() callback to this function to keep the add_meta_box() call simple.
+    * 
+    * This function also offers a place to apply more security or arguments.
     * 
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.32
-    * @version 1.0.0
+    * @version 1.0.1
     */
     function parent( $data, $box ) {
-        
-        // if $box['args']['capability'] is not set with over-riding capability added to add_meta_box() arguments then set it
-        if( !isset( $box['args']['capability'] ) || !is_string( $box['args']['capability'] ) ) {
-            $box['args']['capability'] = $this->UI->get_boxes_capability( $box['args']['formid'] );
-        }
-        
-        // call method in CSV2POST - this is done because it is harder to put this parent() function there as it includes "self::"
-        // any other approach can get messy I think but I'd welcome suggestions on this 
-        if( isset( $box['args']['capability'] ) && !current_user_can( $box['args']['capability'] ) ) { 
-            echo '<p>' . __( 'You do not have permission to access the controls and information in this box.', 'csv2post' ) . '</p>';
-            return false;    
-        }        
-        
-        // call the intended function 
         eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
     }
      
@@ -107,7 +147,7 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
     * @version 1.0.0
     */
     public function postbox_customfields_newcustomfield( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], 'The unique custom field key is also known as the name so put that in the name field. The WYSIWYG editor should be used for the value. Paste column replacement tokens into the editor to add your data as post meta values.', false );        
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Create a custom field template. Every post you create in this project will get that custom field and the value will be based on the template you create.', 'csv2post' ), false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
         ?>  
 
@@ -115,7 +155,7 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
                 <?php 
                 // custom field name
                 $this->UI->option_text( 'Name', 'customfieldname', 'customfieldname', '', false, 'csv2post_inputtext', 'Example: mynew_customfield' );
-               $this->UI->option_switch( 'Unique', 'customfieldunique', 'customfieldunique', 'enabled', __( 'Yes' ), __( 'No' ) );
+                $this->UI->option_switch( 'Unique', 'customfieldunique', 'customfieldunique', 'enabled', __( 'Yes' ), __( 'No' ) );
                 ?>        
             </table>
             
@@ -139,16 +179,16 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
     * @version 1.0.0
     */
     public function postbox_customfields_customfieldstable( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'This is a table of the custom fields you have setup. This will add meta data to every post you make in this project.', 'csv2post' ), false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
 
         // ensure we have an array
-        if(!isset( $this->projectsettings['customfields']['cflist'] ) || !is_array( $this->projectsettings['customfields']['cflist'] ) ){
-            $this->projectsettings['customfields']['cflist'] = array();
+        if(!isset( $this->current_project_settings['customfields']['cflist'] ) || !is_array( $this->current_project_settings['customfields']['cflist'] ) ){
+            $this->current_project_settings['customfields']['cflist'] = array();
         }
 
         $CFTable = new C2P_CustomFields_Table();
-        $CFTable->prepare_items_further( $this->projectsettings['customfields']['cflist'],100);
+        $CFTable->prepare_items_further( $this->current_project_settings['customfields']['cflist'],100);
         ?>
                     
         <form id="movies-filter" method="get">
@@ -158,5 +198,35 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
         
         <?php 
         $this->UI->postbox_content_footer();
+    }    
+    
+    /**
+    * post box function
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_customfields_shopperpresscustomfieldkeys( $data, $box ) {     
+        echo '<p>' . __( 'A list of the custom field names (meta keys) for the ShopperPress theme.', 'csv2post' ) . '</p>';
+        
+        echo '<ul>';
+        echo '<li>price<li>';
+        echo '<li>old_price<li>';
+        echo '<li>image<li>';
+        echo '<li>images<li>';
+        echo '<li>thumbnail<li>';
+        echo '<li>shipping<li>';
+        echo '<li>warranty<li>';
+        echo '<li>qty<li>';
+        echo '<li>featured<li>';
+        echo '<li>customlist1<li>';
+        echo '<li>customlist2<li>';
+        echo '<li>amazon_link<li>';
+        echo '<li>amazon_guid<li>';
+        echo '<li>file<li>';
+        echo '<li>type<li>';
+        echo '</ul>';
     }    
 }?>

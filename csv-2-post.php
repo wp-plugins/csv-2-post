@@ -1,16 +1,16 @@
 <?php         
 /*
 Plugin Name: CSV 2 POST
-Version: 8.0.34
+Version: 8.0.35
 Plugin URI: http://www.webtechglobal.co.uk
 Description: CSV 2 POST data importer for Wordpress by Ryan Bayne @WebTechGlobal.
 Author: Ryan Bayne
 Author URI: http://www.webtechglobal.co.uk
-Last Updated: September 2014
+Last Updated: July 2014
 Text Domain: csv2post
 Domain Path: /languages
 
-CSV 2 POST Free Edition License (does not apply to pro edition)
+CSV 2 POST Free Edition License (does not apply to premium edition)
 
 GPL v3 
 
@@ -36,13 +36,8 @@ services not just software. License and agreement is seperate.
 defined( 'ABSPATH' ) || die( 'Direct script access is not allowed!' );
        
 // package variables
-$c2p_currentversion = '8.0.34';# to be removed, version is now in the CSV2POST() class 
+$c2p_currentversion = '8.0.35';# to be removed, version is now in the CSV2POST() class 
 $c2p_debug_mode = false;# to be phased out, going to use environment variables (both WP and php.ini instead)
-
-// go into dev mode if on test installation               
-if( strstr( ABSPATH, 'csv2post' ) ){
-    $c2p_debug_mode = false;     
-}                
 
 // avoid error output when...              
 if ( ( 'wp-login.php' === basename( $_SERVER['SCRIPT_FILENAME'] ) ) // Login screen
@@ -64,7 +59,7 @@ if(!defined( "WTG_CSV2POST_BASENAME") ){define( "WTG_CSV2POST_BASENAME",plugin_b
 if(!defined( "WTG_CSV2POST_ABSPATH") ){define( "WTG_CSV2POST_ABSPATH", plugin_dir_path( __FILE__) );}//C:\AppServ\www\wordpress-testing\wtgplugintemplate\wp-content\plugins\wtgplugintemplate/  
 if(!defined( "WTG_CSV2POST_PHPVERSIONMINIMUM") ){define( "WTG_CSV2POST_PHPVERSIONMINIMUM", '5.3.0' );}// The minimum php version that will allow the plugin to work                                
 if(!defined( "WTG_CSV2POST_IMAGES_URL") ){define( "WTG_CSV2POST_IMAGES_URL",plugins_url( 'images/' , __FILE__ ) );}
-if(!defined( "WTG_CSV2POST_FREE") ){define( "WTG_CSV2POST_FREE", 'paid' );} 
+if(!defined( "WTG_CSV2POST_FREE") ){define( "WTG_CSV2POST_FREE", 'free' );} 
         
 // require main class
 require_once( WTG_CSV2POST_ABSPATH . 'classes/class-csv2post.php' );
@@ -96,5 +91,5 @@ $CSV2POST->debugmode();
 function csv2post_textdomain() {
     load_plugin_textdomain( 'csv2post', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' ); 
 }
-add_action( 'plugins_loaded', 'csv2post_textdomain' );                                                                                                                  
+add_action( 'plugins_loaded', 'csv2post_textdomain' );                                                                                                       
 ?>

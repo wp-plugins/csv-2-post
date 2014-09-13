@@ -393,7 +393,7 @@ class C2P_PHP extends C2P_Flags {
     * @param mixed $version
     */
     public function arrayinfo_set( $array, $line, $function, $file ){
-        global $c2p_currentversion, $C2P_WP;
+        global $c2p_currentversion;
         $array['arrayinfo']['version'] = $c2p_currentversion;
         $array['arrayinfo']['line'] = $line;
         $array['arrayinfo']['function'] = $function;
@@ -547,8 +547,6 @@ class C2P_PHP extends C2P_Flags {
     * @returns unknown if could not establish types
     */
     public function type( $value ){
-        global $C2P_WP;
-        
         if( CSV2POST::is_image_url( $value ) ){
             return 'image';
         }

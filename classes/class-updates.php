@@ -54,7 +54,7 @@ class C2P_UpdatePlugin extends C2P_PHP{
         }
     }    
     public function nextversion_clean() {
-        global $c2p_currentversion, $C2P_WP;
+        global $c2p_currentversion;
         
         $installed_version = CSV2POST::get_installed_version();
         
@@ -63,7 +63,7 @@ class C2P_UpdatePlugin extends C2P_PHP{
         return $installed_version_cleaned + 1;       
     }
     public function changelist( $scope = 'next' ){
-        global $c2p_currentversion, $C2P_WP;
+        global $c2p_currentversion;
         
         // standard messages for change types
         $added = __( 'New features added to the plugin, be sure to configure them to suit your needs.', 'csv2post' );

@@ -32,6 +32,27 @@ class CSV2POST_Betatest2_View extends CSV2POST_View {
     
     protected $view_name = 'betatest2';
     
+    public $purpose = 'normal';// normal, dashboard, metaarray (return the meta array only)
+    
+    /**
+    * Array of meta boxes, looped through to register them on views and as dashboard widgets
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function meta_box_array() {  
+        // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
+        return $this->meta_boxes_array = array(
+            // array( id, title, callback (usually parent, approach created by Ryan Bayne), context (position), priority, call back arguments array, add to dashboard (boolean), required capability
+            array( 'betatest2-currenttesting', __( 'Test Introduction', 'csv2post' ), array( $this, 'parent' ), 'normal', 'default', array( 'formid' => 'currenttesting' ), true, 'activate_plugins' ),
+            array( 'betatest2-t1', __( 'Test A', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't1' ), true, 'activate_plugins' ),
+            array( 'betatest2-t2', __( 'WP Pointer Test', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 't2' ), true, 'activate_plugins' ),
+            array( 'betatest2-errors', __( 'Errors', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'errors' ), true, 'activate_plugins' )
+        );    
+    }
+    
     /**
      * Set up the view with data and do things that are specific for this view
      *
@@ -55,21 +76,23 @@ class CSV2POST_Betatest2_View extends CSV2POST_View {
         // load the current project row and settings from that row
         if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
             
-            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
-            $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
+            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] ); 
+            if( !$this->project_object ) {
+                $this->current_project_settings = false;
+            } else {
+                $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings ); 
+            }
      
             parent::setup( $action, $data );
             
-            // introduction to testing
-            $this->add_meta_box( 'betatest2-currenttesting', __( 'Test Introduction', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'currenttesting' ) );      
+            // using array register many meta boxes
+            foreach( self::meta_box_array() as $key => $metabox ) {
+                // the $metabox array includes required capability to view the meta box
+                if( isset( $metabox[7] ) && current_user_can( $metabox[7] ) ) {
+                    $this->add_meta_box( $metabox[0], $metabox[1], $metabox[2], $metabox[3], $metabox[4], $metabox[5] );   
+                }               
+            }
             
-            // test boxes
-            $this->add_meta_box( 'betatest2-t1', __( 'Test A', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 't1' ) );      
-            $this->add_meta_box( 'betatest2-t2', __( 'WP Pointer Test', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 't2' ) );      
-     
-            // permanent information applied to all test pages
-            $this->add_meta_box( 'betatest2-errors', __( 'Errors', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'errors' ) );          
-
             $pointer = new C2P_Pointers('mypointer3', 'csv2postpointer1', 'My Pointers Title', 'This pointer will not stay hidden. Indicating the Ajax process is not updating user meta with closed pointers.');
             $pointer->add_action();
             
@@ -79,32 +102,43 @@ class CSV2POST_Betatest2_View extends CSV2POST_View {
     }
     
     /**
-    * All add_meta_box() callback to this function, values in $box are used to then call
-    * the intended box to render a unique form or information. 
+    * Outputs the meta boxes
     * 
-    * The purpose of this box is to apply security to all boxes but it could also be used
-    * to dynamically call different functions based on arguments
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function metaboxes() {
+        parent::register_metaboxes( self::meta_box_array() );     
+    }
+
+    /**
+    * This function is called when on WP core dashboard and it adds widgets to the dashboard using
+    * the meta box functions in this class. 
+    * 
+    * @uses dashboard_widgets() in parent class CSV2POST_View which loops through meta boxes and registeres widgets
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function dashboard() { 
+        parent::dashboard_widgets( self::meta_box_array() );  
+    }
+                                                                                                                             
+    /**
+    * All add_meta_box() callback to this function to keep the add_meta_box() call simple.
+    * 
+    * This function also offers a place to apply more security or arguments.
     * 
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.32
-    * @version 1.0.0
+    * @version 1.0.1
     */
     function parent( $data, $box ) {
-        
-        // if $box['args']['capability'] is not set with over-riding capability added to add_meta_box() arguments then set it
-        if( !isset( $box['args']['capability'] ) || !is_string( $box['args']['capability'] ) ) {
-            $box['args']['capability'] = $this->UI->get_boxes_capability( $box['args']['formid'] );
-        }
-        
-        // call method in CSV2POST - this is done because it is harder to put this parent() function there as it includes "self::"
-        // any other approach can get messy I think but I'd welcome suggestions on this 
-        if( isset( $box['args']['capability'] ) && !current_user_can( $box['args']['capability'] ) ) { 
-            echo '<p>' . __( 'You do not have permission to access the controls and information in this box.', 'csv2post' ) . '</p>';
-            return false;    
-        }        
-        
-        // call the intended function 
         eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
     }    
  
@@ -128,6 +162,7 @@ class CSV2POST_Betatest2_View extends CSV2POST_View {
         <h4>The following work and tests are to be carried out...</h4>
         
         <ol>
+            <li>Make the boxes on this screen, appear as widgets on the dashboard, without duplicating the code that makes the forms. As far as I know this has never been done in a plugin this advanced i.e. multiple pages with tab navigation on each, multiple views.</li>
             <li>Add a third column, with 3rd option in Screen Options to hide and display it.</li>
             <li>Possibly add the full width box as seen on dashboard.</li>
             <li>Re-add the information and video icons using the new help content management system.</li>
@@ -144,8 +179,9 @@ class CSV2POST_Betatest2_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest2_t1( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
+    public function postbox_betatest2_t1( $data, $box ) {  
+  
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], 'Forms introduction text.', false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
         ?>  
 
@@ -190,13 +226,20 @@ class CSV2POST_Betatest2_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_betatest1_t3( $data, $box ) {                                
+    public function postbox_betatest2_t3( $data, $box ) {                                
+  
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], 'Forms introduction text.', false );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
         ?>  
-        
-        <h4>Test Name</h4>
+
+            <table class="form-table">                  
+            <?php 
             
+            ?>
+            </table>
         
-        <?php                    
+        <?php 
+        $this->UI->postbox_content_footer();                  
     } 
        
     /**

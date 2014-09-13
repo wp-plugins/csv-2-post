@@ -1,6 +1,9 @@
 <?php
 /** 
-* Flag system (much like a TODO list with much advanced functionality )
+* Flag system (much like a TODO list with much advanced functionality planned )
+* 
+* This system will be integrated with all WTG plugins so that all plugins use the same custom post type. This
+* is a pending development that WebTechGlobal requires for its own websites.
 * 
 * See posttypes\flags.php for meta values
 * 
@@ -12,8 +15,22 @@
 // load in Wordpress only
 defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 
+/**
+* WebTechGlobal Flag System class
+* 
+* @author Ryan R. Bayne
+* @package CSV 2 POST
+* @since 8.0.0
+* @version 1.0.1
+*/
 class C2P_Flags {
     public function newflag() {
+        global $c2p_settings;
+        
+        // stop if user has not activted the flag system
+        if( !isset( $c2p_settings['flagsystem']['status'] ) || $c2p_settings['flagsystem']['status'] !== 'enabled' ) {
+            return;    
+        }
         
         // flag/post title is required
         if(!isset( $this->title) ){
@@ -37,8 +54,7 @@ class C2P_Flags {
 
         $post_id = wp_insert_post( $post );
         if(!$post_id ){return false;}
-    
-            
+ 
             
         /*  add arguments for these meta
         

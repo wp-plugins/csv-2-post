@@ -32,6 +32,41 @@ class CSV2POST_Main_View extends CSV2POST_View {
     
     protected $view_name = 'main';
     
+    public $purpose = 'normal';// normal, dashboard
+
+    /**
+    * Array of meta boxes, looped through to register them on views and as dashboard widgets
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function meta_box_array() {
+        global $c2p_settings;
+
+        // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
+        $this->meta_boxes_array = array(
+            // array( id, title, callback (usually parent, approach created by Ryan Bayne), context (position), priority, call back arguments array, add to dashboard (boolean), required capability
+            array( 'main-welcome', __( 'Quick Start', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'welcome' ), true, 'activate_plugins' ),
+            array( 'main-computersampledata', __( 'Computer Sample Data', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'computersampledata' ), true, 'activate_plugins' ),
+            array( 'main-globalswitches', __( 'Global Switches', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'globalswitches' ), true, 'activate_plugins' ),
+            array( 'main-globaldatasettings', __( 'Global Data Settings', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'globaldatasettings' ) , true, 'activate_plugins' ),
+            array( 'main-logsettings', __( 'Log Settings', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'logsettings' ), true, 'activate_plugins' ),
+            // side boxes
+            array( 'main-support', __( 'Support', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'support' ), true, 'activate_plugins' ),            
+            array( 'main-twitterupdates', __( 'Twitter Updates', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'twitterupdates' ), true, 'activate_plugins' ),
+            array( 'main-facebook', __( 'Facebook', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'facebook' ), true, 'activate_plugins' ),
+        );
+        
+        // add meta boxes that have conditions i.e. a global switch
+        if( isset( $c2p_settings['widgetsettings']['dashboardwidgetsswitch'] ) && $c2p_settings['widgetsettings']['dashboardwidgetsswitch'] == 'enabled' ) {
+            $this->meta_boxes_array[] = array( 'main-dashboardwidgetsettings', __( 'Dashboard Widget Settings', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'dashboardwidgetsettings' ), true, 'activate_plugins' );   
+        }
+        
+        return $this->meta_boxes_array;                
+    }
+          
     /**
      * Set up the view with data and do things that are specific for this view
      *
@@ -51,81 +86,70 @@ class CSV2POST_Main_View extends CSV2POST_View {
         $this->UI = CSV2POST::load_class( 'C2P_UI', 'class-ui.php', 'classes' );  
         $this->DB = CSV2POST::load_class( 'C2P_DB', 'class-wpdb.php', 'classes' );
         $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
-        $this->TabMenu = CSV2POST::load_class( 'CSV2POST_TabMenu', 'class-tabmenu.php', 'classes' );
+        $this->TabMenu = CSV2POST::load_class( 'C2P_TabMenu', 'class-pluginmenu.php', 'classes' );
                         
         // set current project values
         if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
-            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
-            $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
+            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] ); 
+            if( !$this->project_object ) {
+                $this->current_project_settings = false;
+            } else {
+                $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings ); 
+            }
         }
                 
         parent::setup( $action, $data );
         
-        # form ID should be unique for the entire plugin (forms only) as it is used to call processing function
-        
-        // default normal
-        $this->add_meta_box( 'main-welcome', __( 'Quick Start', 'csv2post' ), 
-        array( $this, 'parent' ), 'normal','default',array( 'formid' => 'welcome' ) );   
-           
-        $this->add_meta_box( 'main-computersampledata', __( 'Computer Sample Data', 'csv2post' ), 
-        array( $this, 'parent' ), 'normal','default',array( 'formid' => 'computersampledata' ) ); 
-             
-        $this->add_meta_box( 'main-schedulesettings', __( 'Schedule Settings', 'csv2post' ), 
-        array( $this, 'parent' ), 'normal','default',array( 'formid' => 'schedulesettings' ) );
-                      
-        $this->add_meta_box( 'main-globaldatasettings', __( 'Global Data Settings', 'csv2post' ), 
-        array( $this, 'parent' ), 'normal','default',array( 'formid' => 'globaldatasettings' ) ); 
-             
-        $this->add_meta_box( 'main-logsettings', __( 'Log Settings', 'csv2post' ), 
-        array( $this, 'parent' ), 'normal','default',array( 'formid' => 'logsettings' ) );   
+        // only output meta boxes
+        if( $this->purpose == 'normal' ) {
+            self::metaboxes();// register meta boxes for the current view
+        } elseif( $this->purpose == 'dashboard' ) {
+            // do nothing - add_dashboard_widgets() in class-ui.php calls dashboard_widgets() from this class
+        } elseif( $this->purpose == 'customdashboard' ) {
+            return self::meta_box_array();// return meta box array
+        } else {
+            // do nothing 
+        }       
+    } 
+    
+     /**
+     * Outputs the meta boxes
+     * 
+     * @author Ryan R. Bayne
+     * @package CSV 2 POST
+     * @since 8.1.33
+     * @version 1.0.0
+     */
+     public function metaboxes() {
+        parent::register_metaboxes( self::meta_box_array() );     
+     }
 
-        $this->add_meta_box( 'main-pagecapabilitysettings', __( 'Page Capability Settings', 'csv2post' ), 
-        array( $this, 'parent' ), 'normal','default',array( 'formid' => 'pagecapabilitysettings' ) );
-                
-        // default side
-        $this->add_meta_box( 'main-twitterupdates', __( 'Twitter Updates', 'csv2post' ), 
-        array( $this, 'parent' ), 'side','default',array( 'formid' => 'twitterupdates' ) );  
-                
-        //$this->add_meta_box( 'main-linkedin', __( 'LinkedIn', 'csv2post' ), 
-        //array( $this, 'parent' ), 'side','default',array( 'formid' => 'linkedin' ) );
-        
-        $this->add_meta_box( 'main-facebook', __( 'Facebook', 'csv2post' ), 
-        array( $this, 'parent' ), 'side','default',array( 'formid' => 'facebook' ) );
-                                
-        $this->add_meta_box( 'main-iconsexplained', __( 'Icons Explained', 'csv2post' ), 
-        array( $this, 'parent' ), 'side','default',array( 'formid' => 'iconsexplained' ) );
-              
-        $this->add_meta_box( 'main-support', __( 'Support', 'csv2post' ), 
-        array( $this, 'parent' ), 'side','default',array( 'formid' => 'support' ) );
-    }                   
+    /**
+    * This function is called when on WP core dashboard and it adds widgets to the dashboard using
+    * the meta box functions in this class. 
+    * 
+    * @uses dashboard_widgets() in parent class CSV2POST_View which loops through meta boxes and registeres widgets
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV2POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function dashboard() { 
+        parent::dashboard_widgets( self::meta_box_array() );  
+    }                 
     
     /**
-    * All add_meta_box() callback to this function, values in $box are used to then call
-    * the intended box to render a unique form or information. 
+    * All add_meta_box() callback to this function to keep the add_meta_box() call simple.
     * 
-    * The purpose of this box is to apply security to all boxes but it could also be used
-    * to dynamically call different functions based on arguments
+    * This function also offers a place to apply more security or arguments.
     * 
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.32
-    * @version 1.0.0
+    * @version 1.0.1
     */
     function parent( $data, $box ) {
-        
-        // if $box['args']['capability'] is not set with over-riding capability added to add_meta_box() arguments then set it
-        if( !isset( $box['args']['capability'] ) || !is_string( $box['args']['capability'] ) ) {
-            $box['args']['capability'] = $this->UI->get_boxes_capability( $box['args']['formid'] );
-        }
-        
-        // call method in CSV2POST - this is done because it is harder to put this parent() function there as it includes "self::"
-        // any other approach can get messy I think but I'd welcome suggestions on this 
-        if( isset( $box['args']['capability'] ) && !current_user_can( $box['args']['capability'] ) ) { 
-            echo '<p>' . __( 'You do not have permission to access the controls and information in this box.', 'csv2post' ) . '</p>';
-            return false;    
-        }        
-        
-        // call the intended function 
         eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
     }
          
@@ -137,7 +161,7 @@ class CSV2POST_Main_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_main_welcome( $data, $box ) {
+    public function postbox_main_welcome( $data, $box ) {    
         echo '<p>' . __( "Lets begin shall we. This page you are on offers global settings which are usually configured once. That means you
         will not normally return to use this page. After configuring these settings go to the Campaigns page. There you need to
         create your first Data Source. The purpose of the Data Sources page is to manage multiple sources but if your working with a single
@@ -197,7 +221,6 @@ class CSV2POST_Main_View extends CSV2POST_View {
         <?php                             
     }
 
-    
     /**
     * post box function for testing
     * 
@@ -207,7 +230,7 @@ class CSV2POST_Main_View extends CSV2POST_View {
     * @version 1.0.0
     */
     public function postbox_main_schedulesettings( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'This is a less of a specific day and time schedule. More of a system that allows systematic triggering of events within permitted hours. A new schedule system is in development though and will offer even more control with specific timing of events capable.', 'csv2post' ), false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
         ?>  
 
@@ -421,6 +444,33 @@ class CSV2POST_Main_View extends CSV2POST_View {
         <?php 
         $this->UI->postbox_content_footer();
     }
+    
+    /**
+    * post box function for testing
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_main_globalswitches( $data, $box ) {    
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'These switches disable or enable systems. Disabling systems you do not require will improve the plugins performance.', 'csv2post' ), false );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        
+        global $c2p_settings;
+        ?>  
+
+            <table class="form-table">
+            <?php        
+            $this->UI->option_switch( __( 'Wordpress Notice Styles', 'csv2post' ), 'uinoticestyle', 'uinoticestyle', $c2p_settings['noticesettings']['wpcorestyle'] );
+            $this->UI->option_switch( __( 'WTG Flag System', 'csv2post' ), 'flagsystemstatus', 'flagsystemstatus', $c2p_settings['flagsystem']['status'] );
+            $this->UI->option_switch( __( 'Dashboard Widgets Switch', 'csv2post' ), 'dashboardwidgetsswitch', 'dashboardwidgetsswitch', $c2p_settings['widgetsettings']['dashboardwidgetsswitch'], 'Enabled', 'Disabled', 'disabled' );      
+            ?>
+            </table> 
+            
+        <?php 
+        $this->UI->postbox_content_footer();
+    }
 
     /**
     * post box function for testing
@@ -431,7 +481,7 @@ class CSV2POST_Main_View extends CSV2POST_View {
     * @version 1.0.0
     */
     public function postbox_main_globaldatasettings( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'These are settings related to data management and apply to all projects.', 'csv2post' ), false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
         
         global $c2p_settings;
@@ -456,7 +506,7 @@ class CSV2POST_Main_View extends CSV2POST_View {
     * @version 1.0.0
     */
     public function postbox_main_logsettings( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'The plugin has its own log system with multi-purpose use. Not everything is logged for the sake of performance so please request increased log use if required.', 'csv2post' ), false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
         
         global $c2p_settings;
@@ -689,38 +739,18 @@ class CSV2POST_Main_View extends CSV2POST_View {
     }    
     
     /**
-    * post box for LinkedIn 
-    * 
-    * @author Ryan Bayne
-    * @package CSV 2 POST
-    * @since 8.1.3
-    * @version 1.0.0
-    */
-    public function postbox_main_linkedin( $data, $box ) {    
-        ?>
-        <script src="//platform.linkedin.com/in.js" type="text/javascript" data-width="150"></script>
-        <script type="IN/MemberProfile" data-id="http://www.linkedin.com/in/webtechglobal" data-format="inline" data-width="150"></script>
-
-        <?php     
-    }
-        
-    /**
     * post box function for testing
     * 
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.0.4
     */
     public function postbox_main_support( $data, $box ) {    
         ?>      
-        <p><?php _e( 'All users (free and premium) are invited to use the WebTechGlobal <a href="http://forum.webtechglobal.co.uk/viewforum.php?f=8" title="CSV 2 POST Forum" target="_blank">Forum</a>. Simply <a href="http://www.webtechglobal.co.uk/wp-login.php?action=register" title="Forum" target="_blank">register</a> on our
-        Wordpress blog, <a href="http://www.webtechglobal.co.uk/wp-login.php" title="WebTechGlobal Log-In" target="_blank">log into</a> your WTG WP account, activate your account by answering the anti-spam question
-        and then your phpBB forum account will be automatically created. You can read more <a href="http://forum.webtechglobal.co.uk/viewtopic.php?f=18&t=8" title="How To Register" target="_blank">detailed instructions</a> here.
-        Please expect some content to be restricted to clients and subscribers. Their funds go towards creating professional documentation and videos specifically
-        for a subscriber only area. Such areas can be accessed for a trial period in return for a small fee.', 'csv2post' ); ?></p>                     
+        <p><?php _e( 'All users (free and pro editions) are supported. Please get to know the plugins <a href="http://www.webtechglobal.co.uk/csv-2-post-support/" title="CSV 2 POST Support" target="_blank">support page</a> where you may seek free or paid support.', 'csv2post' ); ?></p>                     
         <?php     
-    }    
+    }   
     
     /**
     * post box function for testing
@@ -750,7 +780,7 @@ class CSV2POST_Main_View extends CSV2POST_View {
     * @version 1.0.0
     */
     public function postbox_main_pagecapabilitysettings( $data, $box ) {
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Set the capability a user requires to view any of the plugins pages. This works independently of role plugins such as Role Scoper.', 'csv2post' ), false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
         
         // get the tab menu 
@@ -773,10 +803,7 @@ class CSV2POST_Main_View extends CSV2POST_View {
                     $current = $saved_capability_array['pagecaps'][ $page_array['name'] ];
                 }
                 
-                $this->UI->option_menu_capabilities( $page_array['menu'], 
-                                                    'pagecap' . $page_array['name'], 
-                                                    'pagecap' . $page_array['name'],  
-                                                    $current );
+                $this->UI->option_menu_capabilities( $page_array['menu'], 'pagecap' . $page_array['name'], 'pagecap' . $page_array['name'], $current );
             }
         }?>
         
@@ -785,5 +812,66 @@ class CSV2POST_Main_View extends CSV2POST_View {
         <?php 
         $this->UI->postbox_content_footer();        
     }
+    
+    /**
+    * post box function for testing
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_main_dashboardwidgetsettings( $data, $box ) { 
+        global $c2p_settings;
+           
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'This panel is new and is advanced.   
+        Please seek my advice before using it.
+        You must be sure and confident that it operates in the way you expect.
+        It will add widgets to your dashboard. 
+        The capability menu allows you to set a global role/capability requirements for the group of wigets from any giving page. 
+        The capability options in the "Page Capability Settings" panel are regarding access to the admin page specifically.', 'csv2post' ), false );   
+             
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+
+        echo '<table class="form-table">';
+
+        // now loop through views, building settings per box (display or not, permitted role/capability  
+        $C2P_TabMenu = CSV2POST::load_class( 'C2P_TabMenu', 'class-pluginmenu.php', 'classes' );
+        $menu_array = $C2P_TabMenu->menu_array();
+        foreach( $menu_array as $key => $section_array ) {
+
+            /*
+                'groupname' => string 'main' (length=4)
+                'slug' => string 'csv2post_generalsettings' (length=24)
+                'menu' => string 'General Settings' (length=16)
+                'pluginmenu' => string 'General Settings' (length=16)
+                'name' => string 'generalsettings' (length=15)
+                'title' => string 'General Settings' (length=16)
+                'parent' => string 'main' (length=4)
+            */
+            
+            // get dashboard activation status for the current page
+            $current_for_page = '123nocurrentvalue';
+            if( isset( $c2p_settings['widgetsettings'][ $section_array['name'] . 'dashboardwidgetsswitch'] ) ) {
+                $current_for_page = $c2p_settings['widgetsettings'][ $section_array['name'] . 'dashboardwidgetsswitch'];   
+            }
+            
+            // display switch for current page
+            $this->UI->option_switch( $section_array['menu'], $section_array['name'] . 'dashboardwidgetsswitch', $section_array['name'] . 'dashboardwidgetsswitch', $current_for_page, 'Enabled', 'Disabled', 'disabled' );
+            
+            // get current pages minimum dashboard widget capability
+            $current_capability = '123nocapability';
+            if( isset( $c2p_settings['widgetsettings'][ $section_array['name'] . 'widgetscapability'] ) ) {
+                $current_capability = $c2p_settings['widgetsettings'][ $section_array['name'] . 'widgetscapability'];   
+            }
+                            
+            // capabilities menu for each page (rather than individual boxes, the boxes will have capabilities applied in code)
+            $this->UI->option_menu_capabilities( __( 'Capability Required', 'csv2post' ), $section_array['name'] . 'widgetscapability', $section_array['name'] . 'widgetscapability', $current_capability );
+        }
+
+        echo '</table>';
+                    
+        $this->UI->postbox_content_footer();
+    }    
 
 }?>

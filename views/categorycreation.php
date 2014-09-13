@@ -31,7 +31,28 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
     protected $screen_columns = 2;
     
     protected $view_name = 'categorycreation';
-    
+
+    public $purpose = 'normal';// normal, dashboard
+
+    /**
+    * Array of meta boxes, looped through to register them on views and as dashboard widgets
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function meta_box_array() {
+        // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
+        return $this->meta_boxes_array = array(
+            // array( id, title, callback (usually parent, approach created by Ryan Bayne), context (position), priority, call back arguments array, add to dashboard (boolean), required capability
+            array( $this->view_name . '-categorycreation', __( 'Category Creation', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'categorycreation' ), true, 'activate_plugins' ),
+            array( $this->view_name . '-setpostscategories', __( 'Set Posts Categories', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'setpostscategories' ), true, 'activate_plugins' ),
+            array( $this->view_name . '-resetpostscategories', __( 'Re-Set Posts Categories', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'resetpostscategories' ), true, 'activate_plugins' ),
+            array( $this->view_name . '-uncategorisedpoststable', __( 'Uncategorised Posts Table', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'uncategorisedpoststable' ), true, 'activate_plugins' ),
+        );    
+    }
+        
     /**
      * Set up the view with data and do things that are specific for this view
      *
@@ -55,46 +76,66 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
         // load the current project row and settings from that row
         if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
             
-            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
-            $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
+            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] ); 
+            if( !$this->project_object ) {
+                $this->current_project_settings = false;
+            } else {
+                $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings ); 
+            }
         
-            parent::setup( $action, $data );
+            parent::setup( $action, $data );   
             
-            $this->add_meta_box( $this->view_name . '-categorycreation', __( 'Category Creation', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'categorycreation' ) );      
-            $this->add_meta_box( $this->view_name . '-uncategorisedpoststable', __( 'Uncategorised Posts Table', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'uncategorisedpoststable' ) );      
-        
+            // using array register many meta boxes
+            foreach( self::meta_box_array() as $key => $metabox ) {
+                // the $metabox array includes required capability to view the meta box
+                if( isset( $metabox[7] ) && current_user_can( $metabox[7] ) ) {
+                    $this->add_meta_box( $metabox[0], $metabox[1], $metabox[2], $metabox[3], $metabox[4], $metabox[5] );   
+                }               
+            }
+                    
         } else {
             $this->add_meta_box( $this->view_name . '-nocurrentproject', __( 'No Current Project', 'csv2post' ), array( $this->UI, 'metabox_nocurrentproject' ), 'normal','default',array( 'formid' => 'nocurrentproject' ) );      
         }
     }
 
     /**
-    * All add_meta_box() callback to this function, values in $box are used to then call
-    * the intended box to render a unique form or information. 
+    * Outputs the meta boxes
     * 
-    * The purpose of this box is to apply security to all boxes but it could also be used
-    * to dynamically call different functions based on arguments
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function metaboxes() {
+        parent::register_metaboxes( self::meta_box_array() );     
+    }
+
+    /**
+    * This function is called when on WP core dashboard and it adds widgets to the dashboard using
+    * the meta box functions in this class. 
+    * 
+    * @uses dashboard_widgets() in parent class CSV2POST_View which loops through meta boxes and registeres widgets
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function dashboard() { 
+        parent::dashboard_widgets( self::meta_box_array() );  
+    }
+    
+    /**
+    * All add_meta_box() callback to this function to keep the add_meta_box() call simple.
+    * 
+    * This function also offers a place to apply more security or arguments.
     * 
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.32
-    * @version 1.0.0
+    * @version 1.0.1
     */
     function parent( $data, $box ) {
-        
-        // if $box['args']['capability'] is not set with over-riding capability added to add_meta_box() arguments then set it
-        if( !isset( $box['args']['capability'] ) || !is_string( $box['args']['capability'] ) ) {
-            $box['args']['capability'] = $this->UI->get_boxes_capability( $box['args']['formid'] );
-        }
-        
-        // call method in CSV2POST - this is done because it is harder to put this parent() function there as it includes "self::"
-        // any other approach can get messy I think but I'd welcome suggestions on this 
-        if( isset( $box['args']['capability'] ) && !current_user_can( $box['args']['capability'] ) ) { 
-            echo '<p>' . __( 'You do not have permission to access the controls and information in this box.', 'csv2post' ) . '</p>';
-            return false;    
-        }        
-        
-        // call the intended function 
         eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
     }
      
@@ -107,10 +148,39 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
     * @version 1.0.0
     */
     public function postbox_categorycreation_categorycreation( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false );        
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Once you have selected your category columns you can initiate category creation using this form.', 'csv2post' ), false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title']); 
         $this->UI->postbox_content_footer();
     }    
+    
+    /**
+    * post box function for category updating
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_categorycreation_setpostscategories( $data, $box ) {    
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Does not create categories. Submitting this form will put posts by CSV 2 POST into categories based on your category column settings.', 'csv2post' ), false );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']); 
+        $this->UI->postbox_content_footer();
+    }
+        
+    /**
+    * post box function for resetting post categories by removing the relationship
+    * and putting all posts into Uncategorized
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_categorycreation_resetpostscategories( $data, $box ) {    
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Another user requested feature. This one removes all of the current projects posts from their categories. They will end up in your WP blogs default category.', 'csv2post' ), false );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']); 
+        $this->UI->postbox_content_footer();
+    }
  
     /**
     * displays a table of the posts that are in the uncategorised category and 

@@ -32,6 +32,28 @@ class CSV2POST_Datasources_View extends CSV2POST_View {
     
     protected $view_name = 'datasources';
     
+    public $purpose = 'normal';// normal, dashboard
+
+    /**
+    * Array of meta boxes, looped through to register them on views and as dashboard widgets
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function meta_box_array() {
+        // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
+        return $this->meta_boxes_array = array(
+            // array( id, title, callback (usually parent, approach created by Ryan Bayne), context (position), priority, call back arguments array, add to dashboard (boolean), required capability
+            array( $this->view_name . '-createuploadcsvdatasource', __( 'Create Data Source: Upload File', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'createuploadcsvdatasource' ), true, 'activate_plugins' ),
+            array( $this->view_name . '-createurlcsvdatasource', __( 'Create Data Source: Import Via URL', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'createurlcsvdatasource' ), true, 'activate_plugins' ),
+            array( $this->view_name . '-createservercsvdatasource', __( 'Create Data Source: Existing Server File', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'createservercsvdatasource' ), true, 'activate_plugins' ),           
+            array( $this->view_name . '-datasourcestable', __( 'Data Sources Table', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'datasourcestable' ), true, 'activate_plugins' ),
+            array( $this->view_name . '-deletedatasource', __( 'Delete Data Source', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'deletedatasource' ), true, 'activate_plugins' ),
+        );    
+    }
+            
     /**
      * Set up the view with data and do things that are specific for this view
      *
@@ -54,48 +76,63 @@ class CSV2POST_Datasources_View extends CSV2POST_View {
 
         // set current project values
         if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
-            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
-            $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
+            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] ); 
+            if( !$this->project_object ) {
+                $this->current_project_settings = false;
+            } else {
+                $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings ); 
+            }
         }
         
         parent::setup( $action, $data );
-    
-        // normal
-        $this->add_meta_box( 'datasources-createuploadcsvdatasource', __( 'Create New Data Source', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'createuploadcsvdatasource' ) );            
-        $this->add_meta_box( 'datasources-createurlcsvdatasource', __( 'Create New Data Source (URL Method)', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'createurlcsvdatasource' ) );            
-        $this->add_meta_box( 'datasources-datasourcestable', __( 'Data Sources Table', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'datasourcestable' ) );            
         
-        // side
-        $this->add_meta_box( 'datasources-emptyspace', __( 'Why So Much Space?', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'emptyspace' ) );            
+        // using array register many meta boxes
+        foreach( self::meta_box_array() as $key => $metabox ) {
+            // the $metabox array includes required capability to view the meta box
+            if( isset( $metabox[7] ) && current_user_can( $metabox[7] ) ) {
+                $this->add_meta_box( $metabox[0], $metabox[1], $metabox[2], $metabox[3], $metabox[4], $metabox[5] );   
+            }               
+        }                  
     }
 
     /**
-    * All add_meta_box() callback to this function, values in $box are used to then call
-    * the intended box to render a unique form or information. 
+    * Outputs the meta boxes
     * 
-    * The purpose of this box is to apply security to all boxes but it could also be used
-    * to dynamically call different functions based on arguments
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.3
+    * @version 1.0.0
+    */
+    public function metaboxes() {
+        parent::register_metaboxes( self::meta_box_array() );     
+    }
+
+    /**
+    * This function is called when on WP core dashboard and it adds widgets to the dashboard using
+    * the meta box functions in this class. 
+    * 
+    * @uses dashboard_widgets() in parent class CSV2POST_View which loops through meta boxes and registeres widgets
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.2
+    * @version 1.0.0
+    */
+    public function dashboard() { 
+        parent::dashboard_widgets( self::meta_box_array() );  
+    }
+    
+    /**
+    * All add_meta_box() callback to this function to keep the add_meta_box() call simple.
+    * 
+    * This function also offers a place to apply more security or arguments.
     * 
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.32
-    * @version 1.0.0
+    * @version 1.0.1
     */
     function parent( $data, $box ) {
-        
-        // if $box['args']['capability'] is not set with over-riding capability added to add_meta_box() arguments then set it
-        if( !isset( $box['args']['capability'] ) || !is_string( $box['args']['capability'] ) ) {
-            $box['args']['capability'] = $this->UI->get_boxes_capability( $box['args']['formid'] );
-        }
-        
-        // call method in CSV2POST - this is done because it is harder to put this parent() function there as it includes "self::"
-        // any other approach can get messy I think but I'd welcome suggestions on this 
-        if( isset( $box['args']['capability'] ) && !current_user_can( $box['args']['capability'] ) ) { 
-            echo '<p>' . __( 'You do not have permission to access the controls and information in this box.', 'csv2post' ) . '</p>';
-            return false;    
-        }        
-        
-        // call the intended function 
         eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
     }
     
@@ -166,7 +203,40 @@ class CSV2POST_Datasources_View extends CSV2POST_View {
 
         <?php 
         $this->UI->postbox_content_footer();
-    } 
+    }    
+    
+    /**
+    * Use a .csv file already on the server as a datasource without moving or altering it.
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_datasources_createservercsvdatasource( $data, $box ) { 
+        $intro = __( 'Use a .csv file already uploaded to your server.', 'csv2post' );
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], $intro, false, true );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        ?>  
+
+            <table class="form-table">
+
+            <?php                     
+            $wp_upload_dir_array = wp_upload_dir();                
+            $this->UI->option_text_simple( __( 'Files Path', 'csv2post' ), 'newdatasourcethepath3',$wp_upload_dir_array['path'], true );                
+            $this->UI->option_text( __( 'ID Column', 'csv2post' ), 'uniqueidcolumn3', 'uniqueidcolumn3', '' );
+            $this->UI->option_text( __( 'Source Name', 'csv2post' ), 'newprojectname3', 'newprojectname3', '' );
+
+            // offer option to delete an existing table if the file matches one, user needs to enter random number
+            $this->UI->option_text( __( 'Delete Existing Table', 'csv2post' ), 'deleteexistingtable3', 'deleteexistingtable3',rand(100000,999999), true);
+            $this->UI->option_text( __( 'Enter Code', 'csv2post' ), 'deleteexistingtablecode3', 'deleteexistingtablecode3', '' );
+            ?>
+            
+            </table>
+
+        <?php 
+        $this->UI->postbox_content_footer();
+    }   
          
     /**
     * post box function for testing
@@ -177,7 +247,7 @@ class CSV2POST_Datasources_View extends CSV2POST_View {
     * @version 1.0.0
     */
     public function postbox_datasources_changecsvfilepath( $data, $box ) {  
-        global $CSV2POST, $wpdb, $C2P_WP;
+        global $wpdb;
         $query_results = $this->DB->selectwherearray( $wpdb->c2psources, 'sourceid = sourceid', 'sourceid', '*' );
         if(!$query_results){
             $intro = __( 'No sources were found.' );
@@ -218,13 +288,89 @@ class CSV2POST_Datasources_View extends CSV2POST_View {
         ?>
 
         <form id="movies-filter" method="get">
-            <input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
+            <input type="hidden" name="page" value="<?php echo $_REQUEST['page']; ?>" />
             <?php $SourcesTable->display() ?>
         </form>
 
         <?php 
-    }   
+    }     
+    
+    /**
+    * form for manual re-check of a sources directory
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_datasources_rechecksourcedirectory( $data, $box ) { 
+        $intro = __( 'Manual re-check of source directory will make the plugin switch to newer .csv files.', 'csv2post' );
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], $intro, false );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        ?>  
+
+            <table class="form-table">
+                <?php $this->UI->option_menu_datasources( 'Data Source', 'datasourceidforrecheck', 'datasourceidforrecheck' ); ?> 
+            </table>
+
+        <?php 
+        $this->UI->postbox_content_footer();
+    } 
         
+    /**
+    * import a new file via URL to an existing data source directory
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_datasources_urlimporttoexistingsource( $data, $box ) { 
+        $intro = __( 'Import a .csv file via URL to an existing data source directory to add newer data.', 'csv2post' );
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], $intro, false );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        ?>  
+
+            <table class="form-table">
+
+            <?php
+            $this->UI->option_text_simple( __( 'URL', 'csv2post' ), 'newdatasourcetheurl','', true, 'URL' );
+            $this->UI->option_menu_datasources( 'Data Source', 'newprojectdatasource', 'newprojectdatasource' );
+            ?>
+            
+            </table>
+
+        <?php 
+        $this->UI->postbox_content_footer();
+    }     
+    
+    /**
+    * upload a new file via form to an existing data source directory
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_datasources_uploadfiletodatasource( $data, $box ) { 
+        $intro = __( 'Upload a .csv file to an existing data source directory for adding newer data.', 'csv2post' );
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], $intro, false, true );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        ?>  
+
+            <table class="form-table">
+
+            <?php
+            $this->UI->option_file( __( 'Select .csv File', 'csv2post' ), 'uploadsinglefile', 'uploadsinglefile' );
+            $this->UI->option_menu_datasources( 'Data Source', 'datasourcefornewfile', 'datasourcefornewfile' );
+            ?>
+            
+            </table>
+
+        <?php 
+        $this->UI->postbox_content_footer();
+    } 
+              
     /**
     * details about why there is so much space in the plugin and the sandbox approach
     * 
@@ -241,5 +387,33 @@ class CSV2POST_Datasources_View extends CSV2POST_View {
         The sandbox approach will really come into effect then as the interface will be packed. The first thing
         users will do is hide all the boxes they never use. It will almost be like creating a custom plugin and 
         progress is being made to deliver that experience.', 'csv2post' );
-    }    
+    } 
+    
+    /**
+    * Form for deleting a specific data source.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function postbox_datasources_deletedatasource( $data, $box ) {
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], '', false, true );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        ?>  
+
+            <table class="form-table">
+
+            <?php
+            $this->UI->option_menu_datasources( 'Data Source', 'datasourcefornewfile', 'datasourcefornewfile' );
+            // offer option to delete an existing table if the file matches one, user needs to enter random number
+            $this->UI->option_text( __( 'Copy Code', 'csv2post' ), 'confirmdeletedatasourcecode', 'confirmdeletedatasourcecode',rand(1000,9999), true);
+            $this->UI->option_text( __( 'Enter Code', 'csv2post' ), 'confirmdeletedatasource', 'confirmdeletedatasource', '' );            
+            ?>
+            
+            </table>
+
+        <?php 
+        $this->UI->postbox_content_footer();    
+    }   
 }?>

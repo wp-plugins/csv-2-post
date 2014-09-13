@@ -32,6 +32,27 @@ class CSV2POST_Projects_View extends CSV2POST_View {
     
     protected $view_name = 'projects';
     
+    public $purpose = 'normal';// normal, dashboard
+
+    /**
+    * Array of meta boxes, looped through to register them on views and as dashboard widgets
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function meta_box_array() {
+        // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
+        return $this->meta_boxes_array = array(
+            // array( id, title, callback (usually parent, approach created by Ryan Bayne), context (position), priority, call back arguments array, add to dashboard (boolean), required capability
+            array( 'projects-newprojectandnewcsvfiles', __( 'Create New Project', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'newprojectandnewcsvfiles' ), true, 'activate_plugins' ),
+            array( 'projects-allprojectstable', __( 'All Projects Table', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'allprojectstable' ), true, 'activate_plugins' ),
+            array( 'projects-deleteproject', __( 'Delete Project', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'deleteproject' ), true, 'activate_plugins' ),
+            array( 'projects-setactiveproject', __( 'Set Currently Active Project', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'setactiveproject' ), true, 'activate_plugins' ),
+        );    
+    }
+            
     /**
      * Set up the view with data and do things that are specific for this view
      *
@@ -53,45 +74,64 @@ class CSV2POST_Projects_View extends CSV2POST_View {
         $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
                               
         // set current project values
-        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
-            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
-            $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings );
+        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {    
+            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] ); 
+            if( !$this->project_object ) {
+                $this->current_project_settings = false;
+            } else {
+                $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings ); 
+            }
         }
         
-        parent::setup( $action, $data );
+        parent::setup( $action, $data );   
         
-        $this->add_meta_box( 'projects-newprojectandnewcsvfiles', __( 'Create New Project', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'newprojectandnewcsvfiles' ) );              
-        $this->add_meta_box( 'projects-allprojectstable', __( 'All Projects Table', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'allprojectstable' ) );      
-        $this->add_meta_box( 'projects-deleteproject', __( 'Delete Project', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'deleteproject' ) );      
+        // using array register many meta boxes
+        foreach( self::meta_box_array() as $key => $metabox ) {
+            // the $metabox array includes required capability to view the meta box
+            if( isset( $metabox[7] ) && current_user_can( $metabox[7] ) ) {
+                $this->add_meta_box( $metabox[0], $metabox[1], $metabox[2], $metabox[3], $metabox[4], $metabox[5] );   
+            }               
+        }                 
     }
 
     /**
-    * All add_meta_box() callback to this function, values in $box are used to then call
-    * the intended box to render a unique form or information. 
+    * Outputs the meta boxes
     * 
-    * The purpose of this box is to apply security to all boxes but it could also be used
-    * to dynamically call different functions based on arguments
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.3
+    * @version 1.0.0
+    */
+    public function metaboxes() {
+        parent::register_metaboxes( self::meta_box_array() );     
+    }
+
+    /**
+    * This function is called when on WP core dashboard and it adds widgets to the dashboard using
+    * the meta box functions in this class. 
+    * 
+    * @uses dashboard_widgets() in parent class CSV2POST_View which loops through meta boxes and registeres widgets
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.2
+    * @version 1.0.0
+    */
+    public function dashboard() { 
+        parent::dashboard_widgets( self::meta_box_array() );  
+    }
+    
+    /**
+    * All add_meta_box() callback to this function to keep the add_meta_box() call simple.
+    * 
+    * This function also offers a place to apply more security or arguments.
     * 
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.32
-    * @version 1.0.0
+    * @version 1.0.1
     */
     function parent( $data, $box ) {
-        
-        // if $box['args']['capability'] is not set with over-riding capability added to add_meta_box() arguments then set it
-        if( !isset( $box['args']['capability'] ) || !is_string( $box['args']['capability'] ) ) {
-            $box['args']['capability'] = $this->UI->get_boxes_capability( $box['args']['formid'] );
-        }
-        
-        // call method in CSV2POST - this is done because it is harder to put this parent() function there as it includes "self::"
-        // any other approach can get messy I think but I'd welcome suggestions on this 
-        if( isset( $box['args']['capability'] ) && !current_user_can( $box['args']['capability'] ) ) { 
-            echo '<p>' . __( 'You do not have permission to access the controls and information in this box.', 'csv2post' ) . '</p>';
-            return false;    
-        }        
-        
-        // call the intended function 
         eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
     }
     
@@ -104,11 +144,9 @@ class CSV2POST_Projects_View extends CSV2POST_View {
     * @version 1.0.0
     */
     public function postbox_projects_allprojectstable( $data, $box ) {    
-        global $CSV2POST;
-        
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false, 'test' );        
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'This plugin can make use of data in multiple tables to create a single post. This is a list of the tables for your current project.', 'csv2post' ), false );        
 
-        $query_results = $CSV2POST->query_projects();
+        $query_results = $this->CSV2POST->query_projects();
         $ProjectsTable = new C2P_Projects_Table();
         $ProjectsTable->prepare_items_further( $query_results,5);
         ?>
@@ -130,7 +168,7 @@ class CSV2POST_Projects_View extends CSV2POST_View {
     * @version 1.0.0
     */
     public function postbox_projects_newprojectandnewcsvfiles( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'You must create a Data Source before using this form.', 'csv2post' ), false );        
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'A project holds the settings that configure the posts you wish to create. We can make multiple projects, even using the same imported data, but each creating different posts in different ways.', 'csv2post' ), false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
         ?>  
 
@@ -155,7 +193,7 @@ class CSV2POST_Projects_View extends CSV2POST_View {
     * @version 1.0.0
     */
     public function postbox_projects_deleteproject( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Deleting a project will not delete the posts created using the project.', 'csv2post' ), false );        
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Delete a project. This will not delete posts created by a project or effect the data source the project is using.', 'csv2post' ), false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
         ?>  
                    
@@ -170,6 +208,30 @@ class CSV2POST_Projects_View extends CSV2POST_View {
         
         <?php 
         $this->UI->postbox_content_footer();               
+    } 
+    
+    /**
+    * post box function
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function postbox_projects_setactiveproject( $data, $box ) {    
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], 
+        __( 'Most of this plugins pages display the settings for a single project. This is called the Current Project. Enter a projects ID here to set it as the Current Project.', 'csv2post' ), false );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        ?>  
+                   
+            <table class="form-table">
+            <?php
+                $this->UI->option_text( 'Project ID', 'setprojectid', 'setprojectid', '' );
+            ?>
+            </table>
+        
+        <?php 
+        $this->UI->postbox_content_footer();              
     }    
     
 }?>

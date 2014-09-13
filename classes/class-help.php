@@ -92,7 +92,7 @@ class C2P_Help {
         // PAGE: main
         $h[ 'main' ][ 'pageinfo' ] = self::enterpage( __( 'Welcome', 'csv2post' ), __( 'My name Ryan and I can help. If your not new to CSV 2 POST you may notice a lot of help text in version 8 has been removed from the interface already. Do not worry it is only temporary. I decided that it was best for everyone if the help text was typed and published on WebTechGlobal then imported to the plugin using a clever system. That clever system is being made right now and involves a Wordpress plugin plus SOAP web services. I refer to it as documentation handling. Such a system has never been seen in any Wordpress plugin. In short it will deliver help content from the plugins website too the plugins interface.', 'csv2post' ), 'www.webtechglobal.co.uk', 'www.youtube.com/WebTechGlobal' );
 
-        // PAGE: generalsettings      
+        // PAGE: generalsettings (EXAMPLE ONLY THIS PAGE DOES NOT EXIST)      
         $h[ 'generalsettings' ][ 'pageinfo' ][ 'pagetitle' ]       = __( 'General Post Settings', 'csv2post' ); 
         $h[ 'generalsettings' ][ 'pageinfo' ][ 'pageabout' ]       = __( 'Beta Testing: These settings reflect what Wordpress already has to offer. You will find these settings on the Edit Post screen and in most other .csv import plugins.', 'csv2post' );    
         $h[ 'generalsettings' ][ 'pageinfo' ][ 'pagereadmoreurl' ] = 'https://codex.wordpress.org/Post_Status';
