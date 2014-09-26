@@ -1,2 +1,0 @@
-This folder will contain files that show a standard approach used in CSV 2 POST and many WebTechGlobal plugins. The files
-in this folder are not actually used in the build they simply support development.

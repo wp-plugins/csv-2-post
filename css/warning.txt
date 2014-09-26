@@ -1,4 +1,0 @@
-Do not edit or modify the files in this directory unless you are confident that your files
-will be backed up before updating the plugin. If you update the files your changes will be
-lost.
-
