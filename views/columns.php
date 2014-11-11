@@ -48,7 +48,7 @@ class CSV2POST_Columns_View extends CSV2POST_View {
         // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
         return $this->meta_boxes_array = array(
             // array( id, title, callback (usually parent, approach created by Ryan Bayne), context (position), priority, call back arguments array, add to dashboard (boolean), required capability
-            array( 'columns-categorydata', __( 'Category Data', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'categorydata' ), true, 'activate_plugins' ),
+            array( 'columns-categorydata', __( 'Category Data', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'categorydata' ), true, 'activate_plugins' ),
             array( 'columns-categorydescriptions', __( 'Category Descriptions', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'categorydescriptions' ), true, 'activate_plugins' ),
         );    
     }
@@ -95,7 +95,8 @@ class CSV2POST_Columns_View extends CSV2POST_View {
             
             if(!empty( $this->current_project_settings['categories'] ) ){
                 $this->add_meta_box( 'columns-presetlevelonecategory', __( 'Pre-Set Level One Category', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'presetlevelonecategory' ) );      
-           }
+                $this->add_meta_box( 'columns-categorypairing', __( 'Category Mapping/Pairing', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'categorypairing' ) );      
+            }
             
         } else {
             $this->add_meta_box( 'columns-nocurrentproject', __( 'No Current Project', 'csv2post' ), array( $this->UI, 'metabox_nocurrentproject' ), 'normal','default',array( 'formid' => 'nocurrentproject' ) );      
@@ -253,5 +254,76 @@ class CSV2POST_Columns_View extends CSV2POST_View {
         
         <?php 
         $this->UI->postbox_content_footer();
-    } 
+    }
+
+    
+    /**
+    * post box function for testing
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_columns_categorypairing( $data, $box ) {    
+        if(!isset( $this->current_project_settings['categories']['data'] ) ){
+            $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], 'You have not selected your category columns.', false );    
+        }else{
+            $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false);
+            $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+            
+            global $wpdb;
+            ?>
+
+                <table class="form-table">
+                <?php
+                foreach( $this->current_project_settings['categories']['data'] as $key => $catarray ){
+
+                    $column = $catarray['column'];
+                    $table = $catarray['table'];
+                    $current_category_id = 'nocurrentcategoryid';
+                                        
+                    $distinct_result = $wpdb->get_results( "SELECT DISTINCT $column FROM $table",ARRAY_A);
+                    foreach( $distinct_result as $key => $value ){
+                        $distinctval_cleaned = $this->PHP->clean_string( $value[$column] );
+                        $nameandid = 'distinct'.$table.$column.$distinctval_cleaned;
+                        ?>
+                        
+                        <tr valign="top">
+                            <th scope="row">
+                                <input type="text" name="<?php echo $column .'#'. $table .'#' . $distinctval_cleaned;?>" id="<?php echo $nameandid;?>" value="<?php echo $value[$column];?>" title="<?php echo $column;?>" class="csv2post_inputtext" readonly> 
+                            </th>
+                            <td>
+                                <select name="existing<?php echo $distinctval_cleaned;?>" id="existing<?php echo $distinctval_cleaned;?>">
+                                    
+                                    <option value="notselected">Not Required</option> 
+                                    <?php $cats = get_categories( 'hide_empty=0&echo=0&show_option_none=&style=none&title_li=' );?>
+                                    <?php         
+                                    foreach( $cats as $c ){ 
+    
+                                        $selected = '';
+                                        if( isset( $this->current_project_settings['categories']['mapping'][$table][$column][ $value[$column] ] ) ){  
+                                            $current_category_id = $this->current_project_settings['categories']['mapping'][$table][$column][ $value[$column] ];        
+                                            if( $current_category_id === $c->term_id ) {
+                                                $selected = ' selected="selected"';
+                                            }                                        
+                                        }
+                  
+                                        echo '<option value="'.$c->term_id.'"'.$selected.'>'. $c->name . ' - ' . $c->term_id . '</option>'; 
+                                    }?>
+                                                                                                                                                                                 
+                                </select> 
+                            </td>
+                        </tr>
+                        <?php
+                    }
+                }
+                ?>
+                </table>
+
+         <?php }?> 
+        
+        <?php 
+        $this->UI->postbox_content_footer();
+    }   
 }?>

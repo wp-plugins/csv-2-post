@@ -47,11 +47,16 @@ class CSV2POST_Tools_View extends CSV2POST_View {
         return $this->meta_boxes_array = array(
             // array( id, title, callback (usually parent, approach created by Ryan Bayne), context (position), priority, call back arguments array, add to dashboard (boolean), required capability
             array( 'tools-createpostsbasic', __( 'Create Posts', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'createpostsbasic' ), true, 'activate_plugins' ),
+            array( 'tools-updatepostsbasic', __( 'Update Posts', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'updatepostsbasic' ), true, 'activate_plugins' ),
+            array( 'tools-updatepostsbasicnewdataonly', __( 'Update Posts: New Data Only', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'updatepostsbasicnewdataonly' ), true, 'activate_plugins' ),
+            array( 'tools-updatepostsbasicprojectchangesonly', __( 'Update Posts: Project Changes Only', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'updatepostsbasicprojectchangesonly' ), true, 'activate_plugins' ),
             array( 'tools-updatespecificpost', __( 'Update Specific Post', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'updatespecificpost' ), true, 'activate_plugins' ),
             array( 'tools-queryduplicateposts', __( 'Delete Duplicate Posts', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'queryduplicateposts' ), true, 'activate_plugins' ),
+            array( 'tools-refreshallposts', __( 'Refresh All Posts', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'refreshallposts' ), true, 'activate_plugins' ),
             array( 'tools-undoprojectposts', __( 'Undo Projects Posts', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'undoprojectposts' ), true, 'activate_plugins' ),
             array( 'tools-resetimportedrows', __( 'Reset Imported Rows', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'resetimportedrows' ), true, 'activate_plugins' ),
             array( 'tools-proeditionupdating', __( 'Pro Edition Update Power', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'proeditionupdating' ), true, 'activate_plugins' ),
+            array( 'tools-recreatemissingposts', __( 'Re-Create Missing Posts', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'recreatemissingposts' ), true, 'activate_plugins' )
         );    
     }
             
@@ -164,6 +169,69 @@ class CSV2POST_Tools_View extends CSV2POST_View {
         <?php 
         $this->UI->postbox_content_footer();
     } 
+    
+    /**
+    * post box function
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_tools_updatepostsbasic( $data, $box ) {    
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Update posts where applicable. This will only update posts if a change of settings or data has occurred.', 'csv2post' ), false );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        ?>  
+
+            <table class="form-table">
+            <?php $this->UI->option_text( __( 'Total Posts' ), 'totalposts', 'totalposts', '1' )?>
+            </table>
+        
+        <?php 
+        $this->UI->postbox_content_footer();
+    }
+
+    /**
+    * post box function
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_tools_updatepostsbasicnewdataonly( $data, $box ) {    
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Update posts created by the current project if the imported record used to create them has been updated.', 'csv2post' ), false );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        ?>  
+
+            <table class="form-table">
+            <?php $this->UI->option_text( __( 'Total Posts' ), 'totalposts', 'totalposts', '1' )?>
+            </table>
+        
+        <?php 
+        $this->UI->postbox_content_footer();
+    }  
+      
+    /**
+    * post box function
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_tools_updatepostsbasicprojectchangesonly( $data, $box ) {    
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Update posts that have not been updated since the current projects settings were changed.', 'csv2post' ), false );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        ?>  
+
+            <table class="form-table">
+            <?php $this->UI->option_text( __( 'Total Posts' ), 'totalposts', 'totalposts', '1' )?>
+            </table>
+        
+        <?php 
+        $this->UI->postbox_content_footer();
+    }
         
     /**
     * post box function
@@ -219,6 +287,20 @@ class CSV2POST_Tools_View extends CSV2POST_View {
         <?php 
         $this->UI->postbox_content_footer();
     }   
+      
+    /**
+    * post box function
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_tools_refreshallposts( $data, $box ) {    
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'If your using Systematic Post Updating you can force an update on all posts for the current active project you are working on by submitting this form.', 'csv2post' ), false );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->UI->postbox_content_footer();
+    }      
     
     /**
     * post box function
@@ -290,5 +372,31 @@ class CSV2POST_Tools_View extends CSV2POST_View {
         more than a few hundred posts to be updated at once.', 'csv2post' );
         
         echo '</p>';
+    } 
+    
+    /**
+    * Locates imported rows that are meant to have a post but the post cannot be found.
+    * 1. Re-creating the posts is optional
+    * 2. Total missing posts is confirmed after subsmission
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.33
+    * @version 1.0.0
+    */
+    public function postbox_tools_recreatemissingposts( $data, $box ) {    
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'If admin accidently deletes posts created by CSV 2 POST you will need to go through the correct repair process. Tools like this are to help avoid it being a complex and time consuming task. This processes will query the database one or more times per record imported. This may only work with 200 or less missing posts. Contact WebTechGlobal for consultation if you are dealing with a far greater number of accidently deleted posts.', 'csv2post' ), false );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']); 
+        ?>  
+
+            <table class="form-table">
+                <tr valign="top">
+                    <th scope="row"><?php _e( 'Re-Create Posts', 'csv2post' ); ?></th>
+                    <td><?php $this->UI->option_checkbox_single( 'recreatemissingposts', __( 'Yes', 'csv2post' ), 'recreatemissingpostsyes', 'off', 1 );?></td>
+                </tr>            
+            </table>
+        
+        <?php       
+        $this->UI->postbox_content_footer();
     } 
 }?>

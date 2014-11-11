@@ -49,7 +49,7 @@ class CSV2POST_Datasources_View extends CSV2POST_View {
             array( $this->view_name . '-createuploadcsvdatasource', __( 'Create Data Source: Upload File', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'createuploadcsvdatasource' ), true, 'activate_plugins' ),
             array( $this->view_name . '-createurlcsvdatasource', __( 'Create Data Source: Import Via URL', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'createurlcsvdatasource' ), true, 'activate_plugins' ),
             array( $this->view_name . '-createservercsvdatasource', __( 'Create Data Source: Existing Server File', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'createservercsvdatasource' ), true, 'activate_plugins' ),           
-            array( $this->view_name . '-datasourcestable', __( 'Data Sources Table', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'datasourcestable' ), true, 'activate_plugins' ),
+            array( $this->view_name . '-createdirectorycsvdatasource', __( 'Create Data Source: Process Directory/Folder', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'createdirectorycsvdatasource' ), true, 'activate_plugins' ),           
             array( $this->view_name . '-changecsvfilepath', __( 'Change CSV File Path', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'changecsvfilepath' ), true, 'activate_plugins' ),
             array( $this->view_name . '-rechecksourcedirectory', __( 'Re-check Source Directory', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'rechecksourcedirectory' ), true, 'activate_plugins' ),
             array( $this->view_name . '-urlimporttoexistingsource', __( 'URL Import To Data Source', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'urlimporttoexistingsource' ), true, 'activate_plugins' ),
@@ -241,6 +241,47 @@ class CSV2POST_Datasources_View extends CSV2POST_View {
         <?php 
         $this->UI->postbox_content_footer();
     }   
+        
+    /**
+    * Point to a folder on the local server that contains one or more (usually two or more) .csv files.
+    * 
+    * The plugin will read all files and create a new data source using each .csv file. That is so each file
+    * can be managed on its own. A Directory Data Source will be created which is not much different to
+    * a normal data source in terms of data. 
+    * 
+    * The purpose of the Directory Data Source record will be to hold settings regarding the automatic finding
+    * and handling of more .csv files in the specific directory i.e. ignore new files, import them, only create a
+    * data source do not import etc.
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_datasources_createdirectorycsvdatasource( $data, $box ) { 
+        $intro = __( 'Process all .csv in a folder. One file is made a parent for all other files. The parent files configuration is used to create the database table which all files will be imported into. It means all files must have the same configuration.', 'csv2post' );
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], $intro, false, true );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        ?>  
+
+            <table class="form-table">
+
+            <?php                     
+            $wp_upload_dir_array = wp_upload_dir();                
+            $this->UI->option_text_simple( __( 'Folder Path', 'csv2post' ), 'newdirectorysource', $wp_upload_dir_array['path'], true );                
+            $this->UI->option_text( __( 'ID Column (all files)', 'csv2post' ), 'uniqueidcolumnallfiles', 'uniqueidcolumnallfiles', '' );
+            $this->UI->option_text( __( 'Source Name', 'csv2post' ), 'newsourcename1', 'newsourcename1', '' );
+
+            // offer option to delete an existing table if the file matches one, user needs to enter random number
+            $this->UI->option_text( __( 'Delete Existing Table', 'csv2post' ), 'deleteexistingtable3', 'deleteexistingtable3',rand(100000,999999), true);
+            $this->UI->option_text( __( 'Enter Code', 'csv2post' ), 'deleteexistingtablecode3', 'deleteexistingtablecode3', '' );
+            ?>
+            
+            </table>
+
+        <?php 
+        $this->UI->postbox_content_footer();
+    }   
          
     /**
     * post box function for testing
@@ -274,30 +315,7 @@ class CSV2POST_Datasources_View extends CSV2POST_View {
         
         <?php 
         $this->UI->postbox_content_footer();
-    }
-
-    /**
-    * post box function for testing
-    * 
-    * @author Ryan Bayne
-    * @package CSV 2 POST
-    * @since 8.1.3
-    * @version 1.0.0
-    */
-    public function postbox_datasources_datasourcestable( $data, $box ) { 
-        global $wpdb;
-        $query_results = $this->DB->selectwherearray( $wpdb->c2psources, 'sourceid = sourceid', 'sourceid', '*' );      
-        $SourcesTable = new C2P_DataSources_Table();
-        $SourcesTable->prepare_items_further( $query_results,10);
-        ?>
-
-        <form id="movies-filter" method="get">
-            <input type="hidden" name="page" value="<?php echo $_REQUEST['page']; ?>" />
-            <?php $SourcesTable->display() ?>
-        </form>
-
-        <?php 
-    }     
+    } 
     
     /**
     * form for manual re-check of a sources directory

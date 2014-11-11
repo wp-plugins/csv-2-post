@@ -1,6 +1,6 @@
 <?php
 /**
- * Custom Fields [page]   
+ * Post Types [page]   
  *
  * @package CSV 2 POST
  * @subpackage Views
@@ -12,14 +12,14 @@
 defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 
 /**
- * Custom Fields [page] 
+ * Post Types [page] 
  * 
  * @package CSV 2 POST
  * @subpackage Views
  * @author Ryan Bayne
  * @since 8.1.3
  */
-class CSV2POST_Customfields_View extends CSV2POST_View {
+class CSV2POST_Posttypes_View extends CSV2POST_View {
 
     /**
      * Number of screen columns for post boxes on this screen
@@ -30,7 +30,7 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
      */
     protected $screen_columns = 2;
     
-    protected $view_name = 'customfields';
+    protected $view_name = 'posttypes';
     
     public $purpose = 'normal';// normal, dashboard
 
@@ -46,12 +46,10 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
         // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
         return $this->meta_boxes_array = array(
             // array( id, title, callback (usually parent, approach created by Ryan Bayne), context (position), priority, call back arguments array, add to dashboard (boolean), required capability
-            array( 'customfields-newcustomfield', __( 'New Custom Field', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'newcustomfield' ), true, 'activate_plugins' ),
-            array( 'customfields-customfieldstable', __( 'Custom Fields', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'customfieldstable' ), true, 'activate_plugins' ),
-            array( 'customfields-shopperpresscustomfieldkeys', __( 'ShopperPress Custom Field Names', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'shopperpresscustomfieldkeys' ), true, 'activate_plugins' ),
+            array( 'posttypes-defaultposttyperules', __( 'Post Type Rules', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'defaultposttyperules' ), true, 'activate_plugins' )
         );    
     }
-           
+            
     /**
      * Set up the view with data and do things that are specific for this view
      *
@@ -68,7 +66,7 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
         
         // create class objects
         $this->CSV2POST = CSV2POST::load_class( 'CSV2POST', 'class-csv2post.php', 'classes' );
-        $this->UI = CSV2POST::load_class( 'C2P_UI', 'class-ui.php', 'classes' );
+        $this->UI = CSV2POST::load_class( 'C2P_UI', 'class-ui.php', 'classes' ); 
         $this->DB = CSV2POST::load_class( 'C2P_DB', 'class-wpdb.php', 'classes' );
         $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
                         
@@ -81,7 +79,7 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
             } else {
                 $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings ); 
             }
-     
+      
             parent::setup( $action, $data );
             
             // using array register many meta boxes
@@ -91,10 +89,10 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
                     $this->add_meta_box( $metabox[0], $metabox[1], $metabox[2], $metabox[3], $metabox[4], $metabox[5] );   
                 }               
             }
-         
+            
         } else {
-            $this->add_meta_box( 'customfields-nocurrentproject', __( 'No Current Project', 'csv2post' ), array( $this->UI, 'metabox_nocurrentproject' ), 'normal','default',array( 'formid' => 'nocurrentproject' ) );      
-        }   
+            $this->add_meta_box( 'posttypes-nocurrentproject', __( 'No Current Project', 'csv2post' ), array( $this->UI, 'metabox_nocurrentproject' ), 'normal','default',array( 'formid' => 'nocurrentproject' ) );      
+        }    
     }
 
     /**
@@ -146,88 +144,35 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_customfields_newcustomfield( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Create a custom field template. Every post you create in this project will get that custom field and the value will be based on the template you create.', 'csv2post' ), false );        
+    public function postbox_posttypes_defaultposttyperules( $data, $box ) {    
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Advanced projects may require posts to be filtered into different post types. If you have no idea what that means, just ignore this form.', 'csv2post' ), false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        
+        global $c2p_settings;
         ?>  
 
-            <table class="form-table"> 
-                <?php 
-                // custom field name
-                $this->UI->option_text( 'Name', 'customfieldname', 'customfieldname', '', false, 'csv2post_inputtext', 'Example: mynew_customfield' );
-                $this->UI->option_switch( 'Updating', 'customfieldupdating', 'customfieldupdating', 'disabled' );
-                $this->UI->option_switch( 'Unique', 'customfieldunique', 'customfieldunique', 'enabled', __( 'Yes' ), __( 'No' ) );
-                ?>        
+            <table class="form-table">
+            <?php
+            for( $i=1;$i<=3;$i++){
+                
+                $posttyperule_table = ''; 
+                $posttyperule_column = '';
+                if( isset( $this->current_project_settings['posttypes']["posttyperule$i"]['table'] ) ){$posttyperule_table = $this->current_project_settings['posttypes']["posttyperule$i"]['table'];}
+                if( isset( $this->current_project_settings['posttypes']["posttyperule$i"]['column'] ) ){$posttyperule_column = $this->current_project_settings['posttypes']["posttyperule$i"]['column'];}             
+                $this->UI->option_projectcolumns( __( "Column $i"), $c2p_settings['currentproject'], "posttyperule$i", "posttyperule$i", $posttyperule_table, $posttyperule_column, 'notrequired', 'Not Required' );
+
+                $posttyperuletrigger = '';
+                if( isset( $this->current_project_settings['posttypes']["posttyperuletrigger$i"] ) ){$posttyperuletrigger = $this->current_project_settings['posttypes']["posttyperuletrigger$i"];}            
+                $this->UI->option_text( __( "Trigger $i"), "posttyperuletrigger$i", "posttyperuletrigger$i", $posttyperuletrigger, false );
+                
+                $posttyperuleposttype = '';
+                if( isset( $this->current_project_settings['posttypes']["posttyperuleposttype$i"] ) ){$posttyperuleposttype = $this->current_project_settings['posttypes']["posttyperuleposttype$i"];}            
+                $this->UI->option_radiogroup_posttypes( __( "Post Type $i"), "posttyperuleposttype$i", "posttyperuleposttype$i", $posttyperuleposttype);
+            }
+            ?>
             </table>
-            
-            <div id="poststuff">
-                <?php 
-                $cfcontent = '';
-                if( isset( $_POST['customfielddefaultcontent'] ) ){$cfcontent = $_POST['customfielddefaultcontent'];}?>
-                <?php wp_editor( $cfcontent, 'customfielddefaultcontent', array( 'textarea_name' => 'customfielddefaultcontent' ) );?>
-            </div>
         
         <?php 
         $this->UI->postbox_content_footer();
     }
-
-    /**
-    * post box function
-    * 
-    * @author Ryan Bayne
-    * @package CSV 2 POST
-    * @since 8.1.3
-    * @version 1.0.0
-    */
-    public function postbox_customfields_customfieldstable( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'This is a table of the custom fields you have setup. This will add meta data to every post you make in this project.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
-
-        // ensure we have an array
-        if(!isset( $this->current_project_settings['customfields']['cflist'] ) || !is_array( $this->current_project_settings['customfields']['cflist'] ) ){
-            $this->current_project_settings['customfields']['cflist'] = array();
-        }
-
-        $CFTable = new C2P_CustomFields_Table();
-        $CFTable->prepare_items_further( $this->current_project_settings['customfields']['cflist'],100);
-        ?>
-                    
-        <form id="movies-filter" method="get">
-            <input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
-            <?php $CFTable->display() ?>
-        </form>
-        
-        <?php 
-        $this->UI->postbox_content_footer();
-    }    
-    
-    /**
-    * post box function
-    * 
-    * @author Ryan Bayne
-    * @package CSV 2 POST
-    * @since 8.1.3
-    * @version 1.0.0
-    */
-    public function postbox_customfields_shopperpresscustomfieldkeys( $data, $box ) {     
-        echo '<p>' . __( 'A list of the custom field names (meta keys) for the ShopperPress theme.', 'csv2post' ) . '</p>';
-        
-        echo '<ul>';
-        echo '<li>price<li>';
-        echo '<li>old_price<li>';
-        echo '<li>image<li>';
-        echo '<li>images<li>';
-        echo '<li>thumbnail<li>';
-        echo '<li>shipping<li>';
-        echo '<li>warranty<li>';
-        echo '<li>qty<li>';
-        echo '<li>featured<li>';
-        echo '<li>customlist1<li>';
-        echo '<li>customlist2<li>';
-        echo '<li>amazon_link<li>';
-        echo '<li>amazon_guid<li>';
-        echo '<li>file<li>';
-        echo '<li>type<li>';
-        echo '</ul>';
-    }    
 }?>

@@ -516,7 +516,7 @@ class C2P_UI extends CSV2POST {
     * @param mixed $current
     * @param mixed $validation
     */
-    public function option_menu_datasources( $title = 'Data Source', $name = 'datasource', $id = 'datasource', $current = false ){
+    public function option_menu_datasources( $title = 'Data Source', $name = 'datasource', $id = 'datasource', $current = false, $parent_sources_only = false ){
         self::register_input_validation( $title, $name, $id, 'numeric' );// stored data is used to apply correct validation during processing
         
         global $wpdb;
@@ -528,22 +528,27 @@ class C2P_UI extends CSV2POST {
                 <select name="<?php echo $name;?>" id="<?php echo $id;?>">
                     <?php                  
                     $selected = '';            
-                    foreach( $query_results as $key => $source_array ){
-                        
-                        if( $source_array['sourceid'] == $current){
-                            $selected = 'selected="selected"';
-                        } 
-                        
-                        // create item name
-                        $item_name = $source_array['sourceid'];
-                        if( isset( $source_array['name'] ) ) {
-                            $item_name . ' - ' . $source_array['name'];
-                        } 
-                        
-                        echo '<option '.$selected.' value="'.$source_array['sourceid'].'">' . $item_name . '</option>';    
+                    foreach( $query_results as $key => $source_array ){            
+                        // avoid displaying child files of a multfile project 
+                        if( $parent_sources_only === false || $parent_sources_only === true && $source_array['parentfileid'] == '0' ) {
+                            if( $source_array['sourceid'] == $current){
+                                $selected = 'selected="selected"';
+                            } 
+                            
+                            // create item name
+                            $item_name = $source_array['sourceid'];
+                            if( isset( $source_array['name'] ) ) {
+                                $item_name . ' - ' . $source_array['name'];
+                            } 
+                            
+                            echo '<option '.$selected.' value="'.$source_array['sourceid'].'">' . $item_name . '</option>';
+                        }    
                     }
                     ?>
-                </select>                  
+                </select>  
+                
+                <?php if( $parent_sources_only ) { echo '(parent sources only)'; }?>
+                                
             </td>
         </tr>
         <!-- Option End --><?php         
@@ -1252,7 +1257,9 @@ class C2P_UI extends CSV2POST {
             
             $quick_actions .= $project_message;
             $quick_actions .= $CSV2POST->linkaction( $_GET['page'], 'createpostscurrentproject', __( 'Create posts using the current project' ), __( 'Create Posts' ), '' ); 
+            $quick_actions .= $CSV2POST->linkaction( $_GET['page'], 'updatepostscurrentproject', __( 'Update posts originally created by the current project' ), __( 'Update Posts' ), '' );
             $quick_actions .= $CSV2POST->linkaction( $_GET['page'], 'importdatecurrentproject', __( 'Import data for the current project' ), __( 'Import Data' ), '' );
+            $quick_actions .= $CSV2POST->linkaction( $_GET['page'], 'updatedatacurrentproject', __( 'Update the current projects data' ), __( 'Update Data' ), '' ); 
             $quick_actions .= $CSV2POST->linkaction( $_GET['page'], 'displayprojectsummary', __( 'Display the current projects summary' ), 'Project ID: ' . $projectid, '' );      
             $quick_actions .= $CSV2POST->linkaction( $_GET['page'], 'displaysourcesummary', __( 'Display information about the projects sources' ), 'Source ID: ' . $source_array[0], '' );       
             $quick_actions .= $CSV2POST->linkaction( $_GET['page'], 'currentprojectprevious', __( 'Change the current active project to an earlier one', 'csv2post' ), __( 'Previous Project', 'csv2post' ), '' );

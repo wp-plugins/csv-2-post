@@ -46,6 +46,8 @@ class CSV2POST_Rules_View extends CSV2POST_View {
         // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
         return $this->meta_boxes_array = array(
             // array( id, title, callback (usually parent, approach created by Ryan Bayne), context (position), priority, call back arguments array, add to dashboard (boolean), required capability
+            array( 'rules-setexpecteddatatypes', __( 'Set Expected Data Types', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'setexpecteddatatypes' ), true, 'activate_plugins' ),
+            array( 'rules-datasplitter', __( 'Data Splitter', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'datasplitter' ), true, 'activate_plugins' ),
             array( 'rules-roundnumberup', __( 'Round Number Up', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'roundnumberup' ), true, 'activate_plugins' ),
             array( 'rules-roundnumber', __( 'Round Number', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'roundnumber' ), true, 'activate_plugins' ),
             array( 'rules-captalizefirstletter', __( 'Capitalize First Letter', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'captalizefirstletter' ), true, 'activate_plugins' ),
@@ -140,6 +142,97 @@ class CSV2POST_Rules_View extends CSV2POST_View {
     function parent( $data, $box ) {
         eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
     }
+     
+    /**
+    * post box function for testing
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_rules_setexpecteddatatypes( $data, $box ) {    
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'An optional form and in early use. The intention is to tell the plugin what should be in our columns and handle any discrepancies based on that information.', 'csv2post' ), false );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        
+        global $c2p_settings;
+        ?>  
+
+            <table class="form-table">
+            <?php
+            $this->UI->option_column_datatypes( $c2p_settings['currentproject'], 'datatypescolumns', 'datatypescolumns' ); 
+            ?>
+            </table>
+        
+        <?php 
+        $this->UI->postbox_content_footer();
+    }
+    
+    /**
+    * post box function for testing
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_rules_datasplitter( $data, $box ) {    
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Some affiliate networks provide multiple values of data in a single column, each value separated by a slash.', 'csv2post' ), false );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        
+        global $c2p_settings,$wpdb;
+        ?>  
+
+            <table class="form-table">
+            <?php
+            // check if main table has splitter rule, if not check the next and so on
+            // if splitter rule found use it to populate this form else show default and empty values
+            $sourceid_array = $this->CSV2POST->get_project_sourcesid( $c2p_settings['currentproject'] );
+            foreach( $sourceid_array as $key => $sourceid){
+                $rules_array = $this->DB->selectrow( $wpdb->c2psources, "sourceid = $sourceid", 'rules' );
+                $rules_array = maybe_unserialize( $rules_array->rules);
+                if(!is_null( $rules_array ) ){
+                    break;
+                }         
+            }
+            
+            // separator menu
+            $sep_array = array( ', ' => ', ', '|' => '|', ';' => ';', '/' => '/' );
+            $sep = ', ';
+            if( isset( $rules_array['splitter']['separator'] ) && in_array( $rules_array['splitter']['separator'], $sep_array ) ){$sep = $rules_array['splitter']['separator'];}                                                           
+            $this->UI->option_menu( 'Separator', 'datasplitterseparator', 'datasplitterseparator', $sep_array, $sep);
+            
+            // menu of columns for selecting data to be split into multiple columns
+            $currentsplittercolumn = array( 'nosplittertable', 'nosplittercolumn' );
+            if( isset( $rules_array['splitter']['datasplitertable'] ) && isset( $rules_array['splitter']['datasplitercolumn'] ) ){
+                $currentsplittercolumn = array( $rules_array['splitter']['datasplitertable'], $rules_array['splitter']['datasplitercolumn'] );    
+            }
+            $this->UI->option_projectcolumns_splittermenu( 'Column', $c2p_settings['currentproject'], 'datasplitercolumn', 'datasplittercolumn', $currentsplittercolumn);
+            
+            // columns that data will be inserted too
+            for( $i=1;$i<=5;$i++){
+                $current_table = '';
+                $current_column = '';
+                
+                // receiving tables
+                if( isset( $rules_array['splitter']["receivingtable$i"] ) ){
+                    $current_table = $rules_array['splitter']["receivingtable$i"];
+                }
+                $this->UI->option_text( __( 'Receiving Table' ) . ' ' . $i, "receivingtable$i", "receivingtable$i", $current_table, false );
+                
+                // receiving columns
+                if( isset( $rules_array['splitter']["receivingcolumn$i"] ) ){
+                    $current_column = $rules_array['splitter']["receivingcolumn$i"];
+                }                
+                $this->UI->option_text( __( 'Receiving Column' ) . ' ' . $i, "receivingcolumn$i", "receivingcolumn$i", $current_column, false );
+            }
+            ?>
+            </table>
+        
+        <?php 
+        $this->UI->postbox_content_footer();
+    }
+   
     
     /**
     * post box function for testing

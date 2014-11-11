@@ -305,11 +305,6 @@ class C2P_Formbuilder extends C2P_UI {
                                        
                 // ensure the expected input_validation_example() function exists
                 if( method_exists( $this, 'validate_' . $validation_method ) ) { 
-                    
-                    // found a situation where this is not set, this is probably temporary
-                    if( !isset( $form_validation_array[$name]["seentitle"] ) ) {
-                        $form_validation_array[$name]["seentitle"] = 'the submitted form';
-                    }
                       
                     // input_validation functions return boolean false on fail and output a notice to make user aware
                     // else nothing else happens, next input is processed

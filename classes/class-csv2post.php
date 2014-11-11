@@ -68,6 +68,7 @@ class CSV2POST {
             array( 'event_check_servercron',         'event_check_servercron',                                 'all' ),
             array( 'wp_dashboard_setup',             'add_dashboard_widgets',                                  'all' ),
             array( 'wp_insert_post',                 'hook_insert_post',                                       'all' ),
+            array( 'the_posts',                      'systematicpostupdate',                                   'systematicpostupdating' ),
             array( 'admin_footer',                   'pluginmediabutton_popup',                                'pluginscreens' ),
             array( 'media_buttons_context',          'pluginmediabutton_button',                               'pluginscreens' ),
             array( 'admin_enqueue_scripts',          'plugin_admin_enqueue_scripts',                           'pluginscreens' ),
@@ -513,6 +514,12 @@ class CSV2POST {
             case 'projects':
                 return true;    
             break;            
+            case 'systematicpostupdating':  
+                if(!isset( $c2p_settings['standardsettings']['systematicpostupdating'] ) || $c2p_settings['standardsettings']['systematicpostupdating'] != 'enabled' ){
+                    return false;    
+                }      
+                return true;
+            break;
             case 'admin_notices':                         
 
                 if( self::is_dashboard() ) {
@@ -1085,8 +1092,7 @@ class CSV2POST {
                 echo '<p>' . __( '' ) . '</p>';
             }else{
                 $projectcolumns = self::get_project_columns_from_db( $c2p_settings['currentproject'], true );
-                unset( $projectcolumns['arrayinfo'] );
-                   
+                unset( $projectcolumns['arrayinfo'] ); 
                 $tokens = '';
                 foreach( $projectcolumns as $table_name => $columnfromdb ){
                     foreach( $columnfromdb as $key => $acol){
@@ -3081,7 +3087,7 @@ class CSV2POST {
     * @param mixed $from
     * @param boolean $apply_exclusions removes c2p columns in db method
     */
-    public function get_project_columns_from_db( $project_id, $apply_exclusions = true){
+    public function get_project_columns_from_db( $project_id, $apply_exclusions = true ){
         if(!is_numeric( $project_id) ){return false;}
                     
         global $wpdb;
@@ -3095,7 +3101,7 @@ class CSV2POST {
         
         // return the data treatment with columns to avoid having to query it again
         $final_columns_array['arrayinfo']['datatreatment'] = $project_row->datatreatment;
-                       
+                      
         // put source id's into array because the rest of the function was already written before adding this approach
         $sourceid_array[] = $project_row->source1;
         if(!empty( $project_row->source2) ){$sourceid_array[] = $project_row->source2;}
@@ -3112,18 +3118,26 @@ class CSV2POST {
             // avoid querying the same table twice to prevent a single table project being queried equal to number of sources
             if(!in_array( $row->tablename, $queried_already ) ){
                 $queried_already[] = $row->tablename;
-                $final_columns_array[$row->tablename] = $this->DB->get_tablecolumns( $row->tablename, true, true);
-                $final_columns_array['arrayinfo']['sources'][$row->tablename] = $source_id;
+                $final_columns_array[ $row->tablename ] = $this->DB->get_tablecolumns( $row->tablename, true, true);
+                $final_columns_array[ 'arrayinfo' ][ 'sources' ][ $row->tablename ] = $source_id;
             }
         }
-        
+              
         if( $apply_exclusions){
+            
+            // array of columns not to be used as column replacement tokens
             $excluded_array = array( 'c2p_changecounter', 'c2p_rowid', 'c2p_postid', 'c2p_use', 'c2p_updated', 'c2p_applied', 'c2p_categories', 'c2p_changecounter' );
+            
+            // loop through tables first
             foreach( $final_columns_array as $table_name => $columns_array ){
-                foreach( $excluded_array as $key => $excluded_column){
-                    if(in_array( $excluded_column, $columns_array ) ){
-                        unset( $final_columns_array[$table_name][$key] );
-                    }
+                // skip array of information
+                if( $table_name !== 'arrayinfo' ) {        
+                    // loop through the columns for $table_name
+                    foreach( $columns_array as $numeric_key => $column ) {
+                        if( in_array( $column, $excluded_array ) ) {
+                            unset( $final_columns_array[ $table_name ][ $numeric_key ] );    
+                        }
+                    }    
                 }
             }
         }       
@@ -3281,7 +3295,7 @@ class CSV2POST {
         $rows_exist = $this->DB->count_rows( $source_row->tablename );
         if( $rows_exist){$firsttimeimport = false;}
         
-        while (!$file->eof() ) {      
+        while ( !$file->eof() ) {      
             $insertready_array = array();
             $currentcsv_row = $file->fgetcsv( $source_row->thesep, '"' );
     
@@ -3360,9 +3374,7 @@ class CSV2POST {
         $this->DB->update( $wpdb->c2psources, "sourceid = $source_id", array( 'progress' => $total_progress) );
         
         if( $source_row->progress == $total_progress){
-            $this->UI->create_notice( __( "It appears all rows have already been imported according to the progress counter. 
-            You could use an Update button to reset your source progress and make the plugin start from the 
-            first row again."), 'success', 'Small', __( 'Source Fully Imported' ) );            
+            $this->UI->create_notice( __( "All rows have already been imported according to the progress counter. If you wish to re-import due to your file being updated please click Update Data."), 'success', 'Small', __( 'Source Fully Imported' ) );            
         }else{    
             if( $event_type == 'import' ){    
                 $this->UI->create_notice( "A total of $rows_looped .csv file rows were processed (including header). 
@@ -3747,6 +3759,54 @@ class CSV2POST {
     }
     
     /**
+    * call to process all methods of spinning on a string
+    * 
+    * @param mixed $content
+    */
+    public function spin( $content){
+        $content = $this->spinner_brackets( $content);
+        return $content;
+    }
+    
+    public function spinner_brackets( $content){
+        $mytext = $content;
+        while( $this->PHP->stringinstring_using_strpos( "}", $mytext) ){
+            $rbracket = strpos( $mytext, "}",0);
+            $tString = substr( $mytext,0, $rbracket);
+            $tStringToken = explode( "{", $tString);
+            $tStringCount = count( $tStringToken) - 1;
+            $tString = $tStringToken[$tStringCount];
+            $tStringToken = explode( "|", $tString);
+            $tStringCount = count( $tStringToken) - 1;
+            $i = rand(0, $tStringCount);
+            $replace = $tStringToken[$i];
+            $tString = "{".$tString."}";
+            $mytext = $this->PHP->str_replaceFirst( $tString, $replace, $mytext);
+        }
+        
+        $content = $mytext;
+
+        // set our start and stop characters
+        $start_string ='{';
+        $stop_string = '}';
+        
+        // preg match all possible spinners, putting them into $strings array
+        preg_match_all( '/' . $start_string. '(.*)' . $stop_string . '/Usi' , $content, $strings);
+        
+        // count through loop, used to replace the entire string including brackets
+        $count = 0; 
+        foreach( $strings[1] as &$value ){
+            $explodePhrase = explode( "|", $value );// $value is the string without brackets so we explode that
+            $key = array_rand( $explodePhrase);// we get one random value
+            // $strings includes both with and without brackets. We use $coutn to str_replace the brackets version in our content
+            $content = str_replace( $strings[0][$count], $explodePhrase[$key], $content);                 
+            ++$count;
+        } 
+        
+        return $content;    
+    }  
+    
+    /**
     * checks for a new .csv file and can switch to that file for import
     * 
     * @returns array
@@ -3985,8 +4045,8 @@ class CSV2POST_InsertPost{
                                 
                                 }else{
                                     
-                                    // does term exist within the current level? 
-                                    $existing_term_id = self::term_exists_in_level( $my_term, $level);                                                
+                                    // does term exist within the current level?  
+                                    $existing_term_id = $this->CSV2POST->term_exists_in_level( $my_term, $level);                                              
                                     if(is_numeric( $existing_term_id) ){
                                         
                                         $group_array[$level] = $existing_term_id;
@@ -4099,7 +4159,7 @@ class CSV2POST_InsertPost{
     }
     
     public function poststatus() {
-
+        
         if( isset( $this->projectsettings['basicsettings']['poststatus'] ) ){
             $this->my_post['post_status'] = $this->projectsettings['basicsettings']['poststatus'];
         }else{
@@ -4155,6 +4215,11 @@ class CSV2POST_InsertPost{
     /**
     * applys post type based on rules
     * 1. if multiple rules apply to the $row the last rule and post type is the one used 
+    * 
+    * @author Ryan R. Bayne
+    * @package Wordpress Plugin Framework Pro
+    * @since 8.0.0
+    * @version 1.1
     */
     public function posttype() {
         if( isset( $this->projectsettings['posttypes'] ) ){
@@ -4164,15 +4229,15 @@ class CSV2POST_InsertPost{
                 && isset( $this->projectsettings['posttypes']["posttyperuleposttype$i"] )
                 && isset( $this->row[ $this->projectsettings['posttypes']["posttyperule$i"]['column'] ] )
                 && $this->row[ $this->projectsettings['posttypes']["posttyperule$i"]['column'] ] === $this->projectsettings['posttypes']["posttyperuletrigger$i"] ){
-                    $this->my_post['post_type'] = $this->projectsettings['posttypes']["posttyperuleposttype$i"];            
+                    $my_post['post_type'] = $this->projectsettings['posttypes']["posttyperuleposttype$i"];            
                 }
             }            
-        }
+        }    
 
         if( !isset( $this->my_post['post_type'] ) ) {
             $this->my_post['post_type'] = $this->projectsettings['basicsettings']['defaultposttype'];
-        }    
-
+        }
+                
         // call next method
         $this->publishdate();         
     }  
@@ -4228,7 +4293,7 @@ class CSV2POST_InsertPost{
     * bracketed spinner (spintax)
     */
     public function spinner_brackets() {
-
+        $this->my_post['post_content'] = $this->CSV2POST->spin( $this->my_post['post_content'] );
         // call next method
         $this->tags();        
     }   
@@ -5192,113 +5257,6 @@ class C2P_Projects_Table extends WP_List_Table {
             'source1' => 'Source 1',
             'source2' => 'Source 2',
             'source3' => 'Source 3'
-        );
-
-        return $columns;
-    }
-
-    function get_sortable_columns() {
-        $sortable_columns = array(
-            //'post_title'     => array( 'post_title', false ),     //true means it's already sorted
-        );
-        return $sortable_columns;
-    }
-
-    function get_bulk_actions() {
-        $actions = array(
-
-        );
-        return $actions;
-    }
-
-    function process_bulk_action() {
-        
-        //Detect when a bulk action is being triggered...
-        if( 'delete'===$this->current_action() ) {
-            wp_die( 'Items deleted (or they would be if we had items to delete)!' );
-        }
-        
-    }
-
-    function prepare_items_further( $data, $per_page = 5) {
-        global $wpdb; //This is used only if making any database queries        
-
-        $columns = $this->get_columns();
-        $hidden = array();
-        $sortable = $this->get_sortable_columns();
-
-        $this->_column_headers = array( $columns, $hidden, $sortable);
-
-        $this->process_bulk_action();
-
-        $current_page = $this->get_pagenum();
-
-        $total_items = count( $data);
-
-        $data = array_slice( $data,(( $current_page-1)*$per_page), $per_page);
-
-        $this->items = $data;
-
-        $this->set_pagination_args( array(
-            'total_items' => $total_items,                  //WE have to calculate the total number of items
-            'per_page'    => $per_page,                     //WE have to determine how many items to show on a page
-            'total_pages' => ceil( $total_items/$per_page)   //WE have to calculate the total number of pages
-        ) );
-    }
-}
-
-class C2P_DataSources_Table extends WP_List_Table {
-
-    function __construct() {
-        global $status, $page;
-             
-        //Set parent defaults
-        parent::__construct( array(
-            'singular'  => 'movie',     //singular name of the listed records
-            'plural'    => 'movies',    //plural name of the listed records
-            'ajax'      => false        //does this table support ajax?
-        ) );
-        
-    }
-
-    function column_default( $item, $column_name){
-             
-        $attributes = "class=\"$column_name column-$column_name\"";
-                
-        switch( $column_name){
-            case 'sourceid':
-                return $item['sourceid'];    
-                break;            
-            case 'projectid':
-                if( $item['projectid'] == 0){return 'Unknown';}
-                return $item['projectid'];    
-                break;
-            case 'sourcetype':
-                return $item['sourcetype'];    
-                break;
-            case 'path':
-                return $item['path'];    
-                break;            
-            case 'timestamp':
-                return $item['timestamp'];    
-                break;                                                        
-            default:
-                return 'No column function or default setup in switch statement';
-        }
-    }
-
-    /*
-    function column_title( $item){
-
-    } */
-
-    function get_columns() {
-        $columns = array(
-            'sourceid' => 'Source ID',
-            'projectid' => 'projectid',
-            'sourcetype' => 'Type',
-            'path' => 'Path',
-            'timestamp' => 'Timestamp'
         );
 
         return $columns;

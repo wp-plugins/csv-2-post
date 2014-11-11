@@ -155,11 +155,13 @@ class CSV2POST_Import_View extends CSV2POST_View {
             // get the source row
             $row = $this->DB->selectrow( $wpdb->c2psources, 'sourceid = "' . $source_id . '"', 'path,tablename,thesep' );?>
 
-            <?php $postbox_title = basename( $row->path) . ' to ' . $row->tablename;?>
+            <?php $postbox_title = __( 'Import data into', 'csv2pot' ) . ' ' . $row->tablename;?>
             <?php $form_id = 'importdata'.$key;?>
             <a id="anchor_<?php echo $form_id;?>"></a>
             <h4><?php echo $postbox_title; ?></h4>
 
+            <p class="csv2post_boxes_introtext">This action will attempt to import data from all files. If your working with a bath of files, it could really push CSV 2 POST and your WordPress. Your server may not allow the amount of processing involved. Feel free to visit the WebTechGlobal forum to discuss how best to manage your project.</p>
+            
             <form method="post" name="<?php echo $form_id;?>" action="<?php echo get_admin_url() . 'admin.php?page=' . $_GET['page']; ?>">
                 <?php $this->UI->hidden_form_values( $form_id, $postbox_title);?>
 

@@ -32,33 +32,36 @@ and always have a backup. CSV 2 POST does that and by doing so avoids major mist
 to the wrong posts during updating. The pro edition of CSV 2 POST takes things even further and when donations come in I move
 premium features into the free edition to be fair to the Wordpress community.                                     
 
-1. Create posts, pages and custom post types.
-1. Update posts
+1. No autoblogging limits at all
+1. Create posts, pages and custom post types
+1. Systematic post updating or do it all at once
+1. Text-spinning to improve SEO
 1. Merge multiple .csv files
 1. Functionality exists to change .csv file path during project
-1. Create hierarchical categories.
+1. Create hierarchical categories
 1. Map category terms in data to exisiting categories
-1. Import custom field meta.
-1. Free support from WebTechGlobal.
-1. Design your content using WYSIWYG editor.
-1. Import pre-made tags.
-1. Import images to Wordpress media gallery.
-1. Customize post titles.
-1. Manage .csv files as long term data sources.
-1. Adopt existing posts.
-1. Premium upgrade option when your site needs it.
-1. Generate tags using any text data.
-1. YouTube video tutorials linked from specific forms for faster training.
-1. Works with most .csv files.
-1. Imports data to custom table.
-1. Create image attachments.
-1. WordPress styled interface.
-1. Sandbox design for easy upgrading.
-1. No advertising.
-1. Help text for every feature.              
-1. Log system to trace staff or even clients steps great if something goes wrong.
-1. More updates planned.
-1. Dedicated developer on-hand most days.        
+1. Import custom field meta
+1. Free support from WebTechGlobal
+1. Design your content using WYSIWYG editor
+1. Import pre-made tags
+1. Import images to Wordpress media gallery
+1. Customize post titles
+1. Manage .csv files as long term data sources
+1. Adopt existing posts
+1. Premium upgrade option when your site needs it
+1. Generate tags using any text data
+1. Works with most .csv files
+1. Imports data to custom table
+1. Create image attachments
+1. WordPress styled interface
+1. Sandbox design for easy upgrading
+1. No advertising
+1. Help text for every feature              
+1. Log system to trace staff or even clients steps great if something goes wrong
+1. More updates planned
+1. Free support
+1. More updates coming 
+1. Services available    
  
 == Installation ==
 
@@ -82,38 +85,12 @@ my hundreds of hours unpaid work on the project.
 
 = Will CSV 2 POST help me with SEO? = 
 Yes CSV 2 POST allows the creation of post meta (custom fields) which are used by most SEO solutions. More support can be added on
-request for free.
-
-= Why does the free editon have help text that only applies to premium edition? =
-The plugin has a help system which stores help text. The help system includes tools on WebTechGlobal to manage a projects
-documentation. Right now I do not have the time to write free edition versions as my time on this project is not paid.
-
-= Why are most videos based on the premium editions interface? =
-This is a one man project and this one man does not earn a lot. I just can't find the hours in the day to create two videos for each page systematically but I'm still
-happy to take requests.
+request for free. The plugin also offers text-spinning without limits and there is more planned on that.
 
 = When was CSV 2 POST released? =
 The project started in 2009 and was quickly backed by large businesses including Ryanair Ltd. I created the plugin while technically still at University so
 it didn't take long for a re-development to happen. I found myself re-developing it again in 2014 with the aim of making more use of the Wordpress core. Version
-8.0.0 should be the last big update of this free plugin which has been designed based on years of feedback. The premium will continue to expand.
-
-= Is CSV 2 POST just like any-other .csv file importer for Wordpress? =
-
-I spent months perfecting my design and creating a very different auto-blogging plugin. It has a sand-box approach designed to
-act like a set of tools. As the plugin gains more support this collection of tools will grow.
-
-= Is CSV 2 POST better than any other .csv file importer on Wordpress? =
-
-If I said CSV 2 POST is "better" than any plugin of its kind on Wordpress it would simply be my opinion and a bias one at that. 
-So lets be realistic and honest. You can bet most data importers for Wordpress are designed to do all the 
-common and usual stuff. So I designed something different that is worth trying and supporting even if just a quick Tweet.
-
-= What makes CSV 2 POST different from other importers? =
-
-Possible better support as most free plugins lack support, sandbox style interface making it easy to customize, 
-Wordpress styles used on the admin interface making it a better choice for developers to install in their clients blogs,
-more video and test tutorials, less pushy sales tactics for our premium edition on both the free UI and the plugins 
-portal, closer to client treatment than customer treatment even when coming to me for help as a free user.  
+8.0.0 should be the last big update of this free plugin which has been designed based on years of feedback.
 
 == Screenshots ==
 
@@ -135,9 +112,33 @@ Translators needed.
 Do not update without backing up your entire site both files and data. The nature of an import plugin requires great care.
 
 == Changelog == 
-= 8.0.36 =          
+
+= 8.1.35 =          
 * Feature Changes
-    * Beta testing section removed, will be pro only due to many features in testing being paid requests and actually working 100%
+    * Automatic post updating addeded based on schedule
+    * Systematic post updating now post (happens when old post is opened)
+    * Unlimited manual post updating using a forum
+    * Spintax (text-spinning) added
+    * Multiple post design form added
+    * Multiple post types can be applied dynamically
+    * Better data source management (more updates coming for that)
+    * Can now split data from one .csv file column into multiple database columns
+    * Data Sources page renamed to Manage Data Sources
+    * The table of sources has been removed from Manage Data Sources (new improved table being added)
+    * New page named Data Sources List with a table of all sources (more details about sources available than the previous table)
+    * New form for creating multiple data sources using a directory of .csv files, one file is made parent and it is the parent source that is linked to a project.
+* Technical Notes
+    * Fault relating to term_exists_in_level() when creating posts has been fixed
+    * Title sample field reads "Please import data to see a sample based on your template." when user has not imported data
+    * Accidental dump of post data fixed (happens when using Re-create Missing Posts form)
+* Known Issues
+    * Data Table view is not suitable as tables are too wide, column titles cannot be read
+    * Some forms are not suitable for being in the narrow sidebar by default, probably use that bar for quick tools and small information.
+    * Occasionally clicking on "CSV 2 POST" media button above WYSIWYG editor shows an overlay but the content is not centered. Found this myself and has not been reported by a user.
+    
+= 8.1.34 =          
+* Feature Changes
+    * None
 * Technical Notes
     * options_array.php removed (new options class coming and will be used to improve installation)
     * Most class no longer use extend
@@ -145,13 +146,12 @@ Do not update without backing up your entire site both files and data. The natur
     * get_category_data_used() no longer creates new C2P_DB object
     * beginpluginupdate() function now loads
     * $c2p_installation_required removed 100%
-    * Couple of fixes
-    * Lighter due to less class objects being created on loading, more performance changes to come
+    * Couple of bugs fixed
 * Known Issues
     * Data Table view is not suitable as tables are too wide, column titles cannot be read
     * Some forms are not suitable for being in the narrow sidebar by default, probably use that bar for quick tools and small information.
 
-= 8.0.35 =
+= 8.1.33 =
 * Feature Changes
     * Default content design no longer creates a new post or has option to do so, another form added to do that.
     * New form added with WYSIWYG editor for creating new content templates from plugin pages, has more use in the pro edition with ability to setup rules etc but it may have other uses
@@ -179,7 +179,7 @@ Do not update without backing up your entire site both files and data. The natur
     * Data Table view is not suitable as tables are too wide, column titles cannot be read
     * Some forms are not suitable for being in the narrow sidebar by default, probably use that bar for quick tools and small information.
     
-= 8.0.34 =
+= 8.1.32 =
 * Feature Changes
     * Data Source page is now used first, then Projects and changes to the forms on both pages help to creat a more logical flow
     * New capabilities system allows individual boxes/forms to be restricted
@@ -201,7 +201,7 @@ Do not update without backing up your entire site both files and data. The natur
 * Known Issues
     * Data Table view is not suitable as tables are too wide, column titles cannot be read
     
-= 8.0.33 =
+= 8.1.31 =
 * Feature Changes
     * Boxes are now proper WP postboxes which can be: moved, hidden, closed
     * Every view is now a registered Wordpress page
@@ -240,10 +240,4 @@ MAJOR version when you make incompatible API changes,
 MINOR version when you add functionality in a backwards-compatible manner, and
 PATCH version when you make backwards-compatible bug fixes.
 Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.
-
-= When To Update = 
-
-Update all plugins and themes...after you have backedup all your sites files and data. Files only or data only is not a
-suitable backup. I recommend running updates when you have a free hour ahead of you to reverse the changes should anything go
-wrong. 
 

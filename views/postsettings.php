@@ -48,6 +48,8 @@ class CSV2POST_Postsettings_View extends CSV2POST_View {
             // array( id, title, callback (usually parent, approach created by Ryan Bayne), context (position), priority, call back arguments array, add to dashboard (boolean), required capability
             array( 'postsettings-basicpostoptions', __( 'Common Options', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'basicpostoptions' ), true, 'activate_plugins' ),
             array( 'postsettings-databasedoptions', __( 'Options Requiring Data', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'databasedoptions' ), true, 'activate_plugins' ),
+            array( 'postsettings-authoroptions', __( 'Author Options', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'authoroptions' ), true, 'activate_plugins' ),
+            array( 'postsettings-defaulttagrules', __( 'Tag Rules', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'defaulttagrules' ), true, 'activate_plugins' ),
         );    
     }
             
@@ -229,10 +231,107 @@ class CSV2POST_Postsettings_View extends CSV2POST_View {
             if( isset( $this->current_project_settings['permalink']['table'] ) ){$permalink_table = $this->current_project_settings['permalink']['table'];}
             if( isset( $this->current_project_settings['permalink']['column'] ) ){$permalink_column = $this->current_project_settings['permalink']['column'];}             
             $this->UI->option_projectcolumns( __( 'Permalink Column' ), $c2p_settings['currentproject'], 'permalink', 'permalink', $permalink_table, $permalink_column, 'notrequired', 'Not Required' );
+
+            // url cloak 1
+            $urlcloak1_table = ''; 
+            $urlcloak1_column = '';
+            if( isset( $this->current_project_settings['urlcloak1']['table'] ) ){$urlcloak1_table = $this->current_project_settings['urlcloak1']['table'];}
+            if( isset( $this->current_project_settings['urlcloak1']['column'] ) ){$urlcloak1_column = $this->current_project_settings['urlcloak1']['column'];}             
+            $this->UI->option_projectcolumns( __( 'URL Cloak 1' ), $c2p_settings['currentproject'], 'urlcloak1', 'urlcloak1', $urlcloak1_table, $urlcloak1_column, 'notrequired', 'Not Required' );
             ?>    
         </table>
         
         <?php 
         $this->UI->postbox_content_footer();
     } 
+    
+    /**
+    * post box function for testing
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_postsettings_authoroptions( $data, $box ) {    
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'If you have email address and usernames in your data. You can create users who will be applied as authors to the posts they share a row with.', 'csv2post' ), false );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        
+        global $c2p_settings;
+        ?>  
+
+           <table class="form-table">    
+            <?php
+            // email (for user creation)
+            $email_table = ''; 
+            $email_column = '';
+            if( isset( $this->current_project_settings['authors']['email']['table'] ) ){$urlcloak1_table = $this->current_project_settings['authors']['email']['table'];}
+            if( isset( $this->current_project_settings['authors']['email']['column'] ) ){$urlcloak1_column = $this->current_project_settings['authors']['email']['column'];}             
+            $this->UI->option_projectcolumns( __( 'Email Address Data' ), $c2p_settings['currentproject'], 'email', 'email', $email_table, $email_column, 'notrequired', 'Not Required' );
+            $this->UI->option_text( __( '' ), 'emailexample', 'emailexample', '', true, 'csv2post_inputtext' );
+
+            // username (for user creation)
+            $username_table = ''; 
+            $username_column = '';
+            if( isset( $this->current_project_settings['authors']['username']['table'] ) ){$username_table = $this->current_project_settings['authors']['username']['table'];}
+            if( isset( $this->current_project_settings['authors']['username']['column'] ) ){$username_column = $this->current_project_settings['authors']['username']['column'];}             
+            $this->UI->option_projectcolumns( __( 'Username Data' ), $c2p_settings['currentproject'], 'username', 'username', $username_table, $username_column, 'notrequired', 'Not Required' );
+            $this->UI->option_text( __( '' ), 'usernameexample', 'usernameexample', '', true, 'csv2post_inputtext' );
+            ?>    
+            </table>
+        
+        <?php 
+        $this->UI->postbox_content_footer();
+    } 
+    
+    /**
+    * post box function for testing
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.0.0
+    */
+    public function postbox_postsettings_defaulttagrules( $data, $box ) {    
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Import pre-made tags or generate them.', 'csv2post' ), false );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        
+        global $c2p_settings;
+        ?>  
+
+           <table class="form-table">    
+            <?php
+            // generate tags
+            $generatetags_table = ''; 
+            $generatetags_column = '';
+            if( isset( $this->current_project_settings['tags']['generatetags']['table'] ) ){$generatetags_table = $this->current_project_settings['tags']['generatetags']['table'];}
+            if( isset( $this->current_project_settings['tags']['generatetags']['column'] ) ){$generatetags_column = $this->current_project_settings['tags']['generatetags']['column'];}             
+            $this->UI->option_projectcolumns( __( 'Text Data' ), $c2p_settings['currentproject'], 'generatetags', 'generatetags', $generatetags_table, $generatetags_column, 'notrequired', 'Not Required' );
+            $this->UI->option_text( __( '' ), 'generatetagsexample', 'generatetagsexample', '', true, 'csv2post_inputtext' );
+
+            // numeric tags
+            $numerictags = 'nocurrent123';
+            if( isset( $this->current_project_settings['tags']['numerictags'] ) ){$numerictags = $this->current_project_settings['tags']['numerictags'];}  
+            $this->UI->option_radiogroup( __( 'Numeric Tags' ), 'numerictags', 'numerictags', array( 'allow' => 'Allow', 'disallow' => 'Disallow' ), $numerictags, 'disallow' );
+            
+            // tag string length
+            $tagstringlength = 'nocurrent123';
+            if( isset( $this->current_project_settings['tags']['tagstringlength'] ) ){$tagstringlength = $this->current_project_settings['tags']['tagstringlength'];}           
+            $this->UI->option_text( __( 'Tag String Length' ), 'tagstringlength', 'tagstringlength', $tagstringlength, false, 'csv2post_inputtext' );
+
+            // maximum tags
+            $maximumtags = 'nocurrent123';
+            if( isset( $this->current_project_settings['tags']['maximumtags'] ) ){$maximumtags = $this->current_project_settings['tags']['maximumtags'];}                     
+            $this->UI->option_text( __( 'Maximum Tags' ), 'maximumtags', 'maximumtags', $maximumtags, false );
+
+            // excluded tags
+            $excludedtags = 'nocurrent123';
+            if( isset( $this->current_project_settings['tags']['excludedtags'] ) ){$excludedtags = $this->current_project_settings['tags']['excludedtags'];}                                 
+            $this->UI->option_textarea( 'Excluded', 'excludedtags', 'excludedtags',5,40, $excludedtags);
+            ?>    
+            </table>
+        
+        <?php 
+        $this->UI->postbox_content_footer();
+    }
 }?>

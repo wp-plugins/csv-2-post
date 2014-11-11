@@ -175,7 +175,8 @@ class CSV2POST_Projects_View extends CSV2POST_View {
             <table class="form-table">
                 <?php
                 $this->UI->option_text( 'Project Name', 'newprojectname', 'newprojectname', '' );
-                $this->UI->option_menu_datasources( 'Data Source', 'newprojectdatasource', 'newprojectdatasource' );
+                $this->UI->option_switch( 'Apply Defaults', 'applydefaults', 'applydefaults', false, 'Yes', 'No', 'disabled' );
+                $this->UI->option_menu_datasources( 'Data Source', 'newprojectdatasource', 'newprojectdatasource', null, true );
                 ?>
             </table>
         
