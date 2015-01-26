@@ -66,9 +66,10 @@ class CSV2POST_Dates_View extends CSV2POST_View {
         
         // create class objects
         $this->CSV2POST = CSV2POST::load_class( 'CSV2POST', 'class-csv2post.php', 'classes' );
-        $this->UI = CSV2POST::load_class( 'C2P_UI', 'class-ui.php', 'classes' ); 
-        $this->DB = CSV2POST::load_class( 'C2P_DB', 'class-wpdb.php', 'classes' );
-        $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
+        $this->UI = CSV2POST::load_class( 'CSV2POST_UI', 'class-ui.php', 'classes' ); 
+        $this->DB = CSV2POST::load_class( 'CSV2POST_DB', 'class-wpdb.php', 'classes' );
+        $this->PHP = CSV2POST::load_class( 'CSV2POST_PHP', 'class-phplibrary.php', 'classes' );
+        $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
                         
         // load the current project row and settings from that row
         if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
@@ -145,8 +146,8 @@ class CSV2POST_Dates_View extends CSV2POST_View {
     * @version 1.0.0
     */
     public function postbox_dates_defaultpublishdates( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( "Rather than let Wordpress set the date and time for a post as it would when creating them manually. We can import dates or generate them in a way that looks more natural to visitors.", 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( "Rather than let WordPress set the date and time for a post as it would when creating them manually. We can import dates or generate them in a way that looks more natural to visitors.", 'csv2post' ), false );        
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
         global $c2p_settings;
         ?>  
@@ -156,7 +157,7 @@ class CSV2POST_Dates_View extends CSV2POST_View {
                 // date method
                 $publishdatemethod = 'nocurrent123';
                 if( isset( $this->current_project_settings['dates']['publishdatemethod'] ) ){$publishdatemethod = $this->current_project_settings['dates']['publishdatemethod'];}         
-                $this->UI->option_radiogroup( __( 'Date Method' ), 'publishdatemethod', 'publishdatemethod', array( 'wordpress' => 'Wordpress', 'data' => __( 'Imported Dates' ), 'incremental' => __( 'Incremental' ), 'random' => __( 'Random' ) ), $publishdatemethod, 'random' );
+                $this->UI->option_radiogroup( __( 'Date Method' ), 'publishdatemethod', 'publishdatemethod', array( 'wordpress' => 'WordPress', 'data' => __( 'Imported Dates' ), 'incremental' => __( 'Incremental' ), 'random' => __( 'Random' ) ), $publishdatemethod, 'random' );
                 
                 // imported dates
                 $datescolumn_table = ''; 

@@ -1,6 +1,6 @@
 <?php
 /** 
- * Class for Wordpress category related functions 
+ * Class for WordPress category related functions 
  * 
  * @package CSV 2 POST
  * @author Ryan Bayne   
@@ -8,12 +8,12 @@
  * @version 1.0.0
  */
 
-// load in Wordpress only
+// load in WordPress only
 defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 
  
 /**
- * Categories for Wordpress
+ * Categories for WordPress
  * 
  * Create, modify and search categories in ways that plugins can use 
  * 
@@ -27,7 +27,7 @@ defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 class C2P_Categories {
 
     public function __construct() {
-        $this->DB = CSV2POST::load_class( 'C2P_DB', 'class-wpdb.php', 'classes' );    
+        $this->DB = CSV2POST::load_class( 'CSV2POST_DB', 'class-wpdb.php', 'classes' );    
     }
     
     /**
@@ -142,7 +142,7 @@ class C2P_Categories {
     
     /**
     * gets a categories parents (every level upwards) and returns ID
-    * use Wordpress own get_category_parents() if you want to return the term names.
+    * use WordPress own get_category_parents() if you want to return the term names.
     * 
     * this function assumes that the $category_id exists as a term id 
     * 

@@ -53,7 +53,7 @@ class CSV2POST_Rules_View extends CSV2POST_View {
             array( 'rules-captalizefirstletter', __( 'Capitalize First Letter', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'captalizefirstletter' ), true, 'activate_plugins' ),
             array( 'rules-lowercaseall', __( 'All Lower Case', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'lowercaseall' ), true, 'activate_plugins' ),
             array( 'rules-uppercaseall', __( 'All Upper Case', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'uppercaseall' ), true, 'activate_plugins' ),
-            array( 'rules-buycustomrules', __( 'Buy Custom Rules From £10/$15', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'buycustomrules' ), true, 'activate_plugins' ),
+            array( 'rules-requestcustomrules', __( 'Request Custom Rules', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'requestcustomrules' ), true, 'activate_plugins' ),
         );    
     }
             
@@ -73,9 +73,10 @@ class CSV2POST_Rules_View extends CSV2POST_View {
         
         // create class objects
         $this->CSV2POST = CSV2POST::load_class( 'CSV2POST', 'class-csv2post.php', 'classes' );
-        $this->UI = CSV2POST::load_class( 'C2P_UI', 'class-ui.php', 'classes' ); 
-        $this->DB = CSV2POST::load_class( 'C2P_DB', 'class-wpdb.php', 'classes' );
-        $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
+        $this->UI = CSV2POST::load_class( 'CSV2POST_UI', 'class-ui.php', 'classes' ); 
+        $this->DB = CSV2POST::load_class( 'CSV2POST_DB', 'class-wpdb.php', 'classes' );
+        $this->PHP = CSV2POST::load_class( 'CSV2POST_PHP', 'class-phplibrary.php', 'classes' );
+        $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
                         
         // set current project values
         if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
@@ -153,7 +154,7 @@ class CSV2POST_Rules_View extends CSV2POST_View {
     */
     public function postbox_rules_setexpecteddatatypes( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'An optional form and in early use. The intention is to tell the plugin what should be in our columns and handle any discrepancies based on that information.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
         global $c2p_settings;
         ?>  
@@ -178,7 +179,7 @@ class CSV2POST_Rules_View extends CSV2POST_View {
     */
     public function postbox_rules_datasplitter( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Some affiliate networks provide multiple values of data in a single column, each value separated by a slash.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
         global $c2p_settings,$wpdb;
         ?>  
@@ -244,7 +245,7 @@ class CSV2POST_Rules_View extends CSV2POST_View {
     */
     public function postbox_rules_roundnumberup( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Replace decimal numbers by rounding them up on one or more columns.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
         global $c2p_settings;
         ?>  
@@ -269,7 +270,7 @@ class CSV2POST_Rules_View extends CSV2POST_View {
     */
     public function postbox_rules_roundnumber( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( '', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
         global $c2p_settings;
         ?>  
@@ -294,7 +295,7 @@ class CSV2POST_Rules_View extends CSV2POST_View {
     */
     public function postbox_rules_captalizefirstletter( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( '', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
         global $c2p_settings;
         ?>  
@@ -319,7 +320,7 @@ class CSV2POST_Rules_View extends CSV2POST_View {
     */
     public function postbox_rules_lowercaseall( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( '', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
         global $c2p_settings;
         ?>  
@@ -344,7 +345,7 @@ class CSV2POST_Rules_View extends CSV2POST_View {
     */
     public function postbox_rules_uppercaseall( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Transform all letters to uppercase in the selected colums.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
         global $c2p_settings;
         ?>  
@@ -359,25 +360,25 @@ class CSV2POST_Rules_View extends CSV2POST_View {
         $this->UI->postbox_content_footer();
     }        
     
-    public function postbox_rules_buycustomrules( $data, $box ) {    
+    public function postbox_rules_requestcustomrules( $data, $box ) {    
         echo '<p>';
         
-        _e( 'Do you need a custom rule added to this page? I will add it for just £10.00, that is around $15 USD. You can
-        even get a 50% discount simply by reviewing the free edition on Wordpress.org! In otherwords for the same amount 
-        as a donation, you can hire a developer and get a plugin that is even closer to your needs.', 'csv2post' );
+        _e( "Do you need a custom rule added to this page? I will add it in return for supporting the project. That
+        could be a Facebook Like, a Tweet with a link to the plugins pages, a review on WordPress.org, a donation
+        or a thumbs up on one of the plugins YouTube tutorials. Get that done and I will work for you.", 'csv2post' );
         
         echo '</p>';
 
         echo '<p>';
         
-        echo '<a href="http://wordpress.org/support/view/plugin-reviews/csv-2-post#postform" target="_blank" title="' . __( 'Visit the Wordpress.org site and review CSV 2 POST free edition', 'csv2post' ) . '">' . 
-        __( 'Ready to Review? Click here.', 'csv2post' ) . '</a>';
+        echo '<a href="http://wordpress.org/support/view/plugin-reviews/csv-2-post#postform" target="_blank" title="' . __( 'Visit the WordPress.org site and review CSV 2 POST free edition', 'csv2post' ) . '">' . 
+        __( 'Still need to review CSV 2 POST? Just click here.', 'csv2post' ) . '</a>';
         
         echo '<p>';
-        
+                     
         echo '<p>';
          
-        _e( 'When ready please email csv2post@webtechglobal.co.uk with details about your custom data rule.', 'csv2post' );
+        _e( 'Email csv2post@webtechglobal.co.uk with requests but remember to do something to support the project first, I will ask.', 'csv2post' );
     
         echo '</p>';        
         

@@ -1,6 +1,6 @@
 <?php
 /** 
-* WebTechGlobal Flag system for Wordpress
+* WebTechGlobal Flag system for WordPress
 * 
 * Use to flag anything that matters. Creates a task list but can also be configured or developed into a global alert system for many 
 * administrators or all staff in a business. The flag itself holding all information to be communicated. It is temporary until manually
@@ -11,7 +11,7 @@
 * @since 8.0.0
 */
 
-// load in Wordpress only
+// load in WordPress only
 defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 
 add_action( 'init', 'csv2post_register_customposttype_flags' );   

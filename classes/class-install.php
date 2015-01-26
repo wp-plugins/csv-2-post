@@ -11,7 +11,7 @@
 * @since 8.0.0
 */
 
-// load in Wordpress only
+// load in WordPress only
 defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 
 /**
@@ -31,9 +31,9 @@ class C2P_Install {
     public function __construct() {
 
         // load class used at all times
-        // $this->DB = new C2P_DB(); commeted 14092014
-        $this->DB = CSV2POST::load_class( 'C2P_DB', 'class-wpdb.php', 'classes' );
-        $this->PHP = new C2P_PHP();
+        // $this->DB = new CSV2POST_DB(); commeted 14092014
+        $this->DB = CSV2POST::load_class( 'CSV2POST_DB', 'class-wpdb.php', 'classes' );
+        $this->PHP = new CSV2POST_PHP();
                 
         // on activation run install_plugin() method which then runs more methods i.e. create_tables();
         register_activation_hook( WTG_CSV2POST_ABSPATH . 'csv-2-post.php', array( $this, 'install_plugin' ) ); 
@@ -111,7 +111,7 @@ class C2P_Install {
         // tabscreenname - the on screen name of the tab in question, if any i.e. Downloads Overview
         // dump - anything the developer thinks will help with debugging or training
         // ipaddress - security side of things, record who is using the site
-        // userid - if user logged into Wordpress
+        // userid - if user logged into WordPress
         // comment - developers comment in-code i.e. recommendation on responding to the log entry
         // type - general|error|trace
         // category - any term that suits the section or system
@@ -196,6 +196,7 @@ class C2P_Install {
         $this->install_options();
         // if this gets installed we know we arrived here in the installation procedure
         update_option( 'csv2post_is_installed', true );
+        // check if files are a new version compared to installation
     } 
     
     /**

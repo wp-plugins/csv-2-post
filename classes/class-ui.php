@@ -8,7 +8,7 @@
  * @since 8.0.0
  */
 
-// load in Wordpress only
+// load in WordPress only
 defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 
 /**
@@ -19,14 +19,14 @@ defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 * @since 7.0.0
 * @version 1.0.0 
 */
-class C2P_UI extends CSV2POST {     
+class CSV2POST_UI extends CSV2POST {     
     
     public function __construct() {
         
         // load class used at all times
-        $this->DB = self::load_class( 'C2P_DB', 'class-wpdb.php', 'classes' );
-        $this->PHP = self::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
-        $this->WPCore = self::load_class( 'C2P_WPCore', 'class-wpcore.php', 'classes' );  
+        $this->DB = self::load_class( 'CSV2POST_DB', 'class-wpdb.php', 'classes' );
+        $this->PHP = self::load_class( 'CSV2POST_PHP', 'class-phplibrary.php', 'classes' );
+        $this->WPCore = self::load_class( 'CSV2POST_WPCore', 'class-wpcore.php', 'classes' );  
     }  
           
     /**
@@ -65,8 +65,8 @@ class C2P_UI extends CSV2POST {
         #   ADVANCED WIDGETS   #
         #                      #
         ########################
-        $C2P_TabMenu = CSV2POST::load_class( 'C2P_TabMenu', 'class-pluginmenu.php', 'classes' );
-        $menu_array = $C2P_TabMenu->menu_array();
+        $CSV2POST_TabMenu = CSV2POST::load_class( 'C2P_TabMenu', 'class-pluginmenu.php', 'classes' );
+        $menu_array = $CSV2POST_TabMenu->menu_array();
         foreach( $menu_array as $key => $section_array ) {
             
             // has the current view been activated for dashboard widgets, if not continue to the next view
@@ -187,11 +187,9 @@ class C2P_UI extends CSV2POST {
                     <h4>Section Development Progress</h4>
  
                     '.        self::info_area( '', '                    
-                    Free Edition: <progress max="100" value="'.$progress_array['free'].'"></progress> <br>
-                    Premium Edition: <progress max="100" value="'.$progress_array['paid'].'"></progress> <br>
                     Support Content: <progress max="100" value="'.$progress_array['support'].'"></progress> <br>
                     Translation: <progress max="100" value="'.$progress_array['translation'].'"></progress>' ) .'
-                    <p>'.__( 'Pledge £9.99 to the CSV 2 POST project for 50% discount on the premium edition.' ).'</p>                                                     
+                    <p>'.__( 'Please donate to help progress.' ).'</p>                                                     
                 </div>
 
             </div> 
@@ -199,7 +197,7 @@ class C2P_UI extends CSV2POST {
     }  
     
     /**
-    * table row with two choice radio group styled by Wordpress and used for switch type settings
+    * table row with two choice radio group styled by WordPress and used for switch type settings
     * 
     * $current_value should be enabled or disabled, use another method and do not change this if you need other values
     *     
@@ -271,7 +269,7 @@ class C2P_UI extends CSV2POST {
     } 
         
     /**
-    * add text input to Wordpress style form which is tabled and has optional HTML5 support
+    * add text input to WordPress style form which is tabled and has optional HTML5 support
     * 
     * 1. the $capability value is set systematically, by default it is 'active_plugins' so minimum use is fine, it
     * is also not required if forms are being hidden from users who shouldnt see them. The security is there as a 
@@ -724,7 +722,7 @@ class C2P_UI extends CSV2POST {
                 }
             }
             
-            // add post last, if none of the previous post types are the default, then we display this as default as it would be in Wordpress
+            // add post last, if none of the previous post types are the default, then we display this as default as it would be in WordPress
             $post_default = '';
             if(!$current_applied){
                 $post_default = 'checked="checked"';            
@@ -845,7 +843,7 @@ class C2P_UI extends CSV2POST {
     }
     
     /**
-    * lists a projects headers with checkboxes in Wordpress options table styling
+    * lists a projects headers with checkboxes in WordPress options table styling
     * 
     * @author Ryan R. Bayne
     * @package CSV 2 POST
@@ -1295,8 +1293,8 @@ class C2P_UI extends CSV2POST {
     * @param integer $panel_number (the panel number form is in),(tab number passed instead when this function called for support button row)
     * @param integer $step (1 = confirm form, 2 = process request, 3+ alternative processing)
     * 
-    * @todo improve form security by registering hidden inputs then comparing them on $_POST to ensure user has not tampered with them
-    */
+    * @deprecated use form_start() in class-forms.php
+    */               
     public function hidden_form_values( $form_name, $form_title, $return = false ){
         global $c2p_page_name;
         $form_name = strtolower( $form_name );          
@@ -1307,6 +1305,7 @@ class C2P_UI extends CSV2POST {
             $form .= '<input type="hidden" name="csv2post_hidden_pagename" value="' . $c2p_page_name . '">';
             $form .= '<input type="hidden" name="csv2post_form_name" value="' . $form_name . '">';
             $form .= '<input type="hidden" name="csv2post_form_title" value="' . $form_title . '">'; 
+            $form .= '<input type="hidden" name="csv2post_form_formid" value="' . $form_name . '">'; 
             return $form;           
         } else {
             wp_nonce_field( $form_name );// form name is used during processing to complete the security  
@@ -1314,6 +1313,8 @@ class C2P_UI extends CSV2POST {
             echo '<input type="hidden" name="csv2post_hidden_pagename" value="' . $c2p_page_name . '">';
             echo '<input type="hidden" name="csv2post_form_name" value="' . $form_name . '">';
             echo '<input type="hidden" name="csv2post_form_title" value="' . $form_title . '">';
+            echo '<input type="hidden" name="csv2post_form_formid" value="' . $form_name . '">';
+            
         }
     }
         
@@ -1336,9 +1337,9 @@ class C2P_UI extends CSV2POST {
         global $c2pm, $c2p_page_name, $c2p_tab_number;
         
         // load help array
-        $C2P_Help = CSV2POST::load_class( 'C2P_Help', 'class-help.php', 'classes' );
+        $CSV2POST_Help = CSV2POST::load_class( 'C2P_Help', 'class-help.php', 'classes' );
                     
-        $help_array = $C2P_Help->get_help_array();
+        $help_array = $CSV2POST_Help->get_help_array();
 
         $total_icons = 0; 
 
@@ -1455,9 +1456,9 @@ class C2P_UI extends CSV2POST {
         global $c2pm, $c2p_page_name, $c2p_tab_number;
         add_thickbox();
         
-        $C2P_Help = CSV2POST::load_class( 'C2P_Help', 'class-help.php', 'classes' );
+        $CSV2POST_Help = CSV2POST::load_class( 'C2P_Help', 'class-help.php', 'classes' );
 
-        $help_array = $C2P_Help->get_help_array();
+        $help_array = $CSV2POST_Help->get_help_array();
         
         // start the hidden div
         $all_help_content = '<div id="infothickbox' . $form_id . '" style="display:none;">';   
@@ -1605,7 +1606,7 @@ class C2P_UI extends CSV2POST {
      
     /**
     * use to create an in-content notice i.e. the notice is built and echoed straight away it is not
-    * stored within an array for output at a later point in the plugin or Wordpress loading 
+    * stored within an array for output at a later point in the plugin or WordPress loading 
     */
     
     /**
@@ -1627,7 +1628,7 @@ class C2P_UI extends CSV2POST {
     public function notice_return( $type, $size, $title = false, $message = 'no message has been set', $helpurl = false, $forcewtgstyle = false ){
         global $c2p_settings;
         
-        // Is Wordpress core style to be returned? 
+        // Is WordPress core style to be returned? 
         if( $forcewtgstyle === false ) {
             if( isset( $c2p_settings['noticesettings']['wpcorestyle'] ) && $c2p_settings['noticesettings']['wpcorestyle'] == 'enabled' ) {
        
@@ -1715,7 +1716,7 @@ class C2P_UI extends CSV2POST {
     * Displays a no permission notice
     * 
     * Call the method and follow it up with a return. Use it before a procedure within a method. Only step into the procedure
-    * if user has the required Wordpress capability. So this method is called within the if statement. 
+    * if user has the required WordPress capability. So this method is called within the if statement. 
     */
     public function adminonly() {
         $this->create_notice( 'You do not have permission to complete that action.', 'warning', 'Small', 'No Permission' );
@@ -1725,7 +1726,7 @@ class C2P_UI extends CSV2POST {
     * 
     */
     public function invaliduserid() {
-        $this->create_notice( 'You did not enter a valid Wordpress user ID which are always numeric and do not have any special characters.', 'warning', 'Small', 'Invalid User ID' );
+        $this->create_notice( 'You did not enter a valid WordPress user ID which are always numeric and do not have any special characters.', 'warning', 'Small', 'Invalid User ID' );
     }
     
     /**
@@ -1796,7 +1797,7 @@ class C2P_UI extends CSV2POST {
         // begin building output
         $output = '';
                         
-        // if clickable (only allowed when no other links being used) - $helpurl will actually be a local url to another plugin or Wordpress page
+        // if clickable (only allowed when no other links being used) - $helpurl will actually be a local url to another plugin or WordPress page
         if( $clickable){
             $output .= '<div class="stepLargeTest"><a href="'.$helpurl.'">';
         }
@@ -1879,7 +1880,7 @@ class C2P_UI extends CSV2POST {
             return false;
         }
                 
-        // arriving here means normal, most common output to the backend of Wordpress
+        // arriving here means normal, most common output to the backend of WordPress
         $c2p_notice_array = $this->persistentnotifications_array();
         
         // set next array key value
@@ -1922,7 +1923,7 @@ class C2P_UI extends CSV2POST {
     }
     
     /**
-    * Updates notifications array in Wordpress options table
+    * Updates notifications array in WordPress options table
     * 
     * @param array $notifications_array
     * @return bool
@@ -2005,7 +2006,7 @@ class C2P_UI extends CSV2POST {
     }
     
     /**
-    * Gets notifications array if it exists in Wordpress options table else returns empty array
+    * Gets notifications array if it exists in WordPress options table else returns empty array
     */
     public function persistentnotifications_array() {
         $a = get_option( 'csv2post_notifications' );
@@ -2042,14 +2043,14 @@ class C2P_UI extends CSV2POST {
     } 
     
     /**
-    * Builds a nonced admin link styled as button by Wordpress
+    * Builds a nonced admin link styled as button by WordPress
     *
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.3
     * @version 1.0.1
     *
-    * @return string html a href link nonced by Wordpress  
+    * @return string html a href link nonced by WordPress  
     * 
     * @param mixed $page - $_GET['page']
     * @param mixed $action - examplenonceaction
@@ -2194,7 +2195,7 @@ class C2P_UI extends CSV2POST {
     }
 
     /**
-    * A table row with menu of all Wordpress capabilities
+    * A table row with menu of all WordPress capabilities
     * 
     * @param mixed $title
     * @param mixed $id
@@ -2360,10 +2361,10 @@ class C2P_UI extends CSV2POST {
         update_user_option( $userid, $optionname, $close );
     }    
            
-}// class C2P_UI 
+}// class CSV2POST_UI 
   
 /**
-* Adds a Wordpress pointer
+* Adds a WordPress pointer
 * 
 * @author Ryan R. Bayne
 * @package CSV 2 POST

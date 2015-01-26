@@ -69,9 +69,10 @@ class CSV2POST_Columns_View extends CSV2POST_View {
         
         // create class objects
         $this->CSV2POST = CSV2POST::load_class( 'CSV2POST', 'class-csv2post.php', 'classes' );
-        $this->UI = CSV2POST::load_class( 'C2P_UI', 'class-ui.php', 'classes' );
-        $this->DB = CSV2POST::load_class( 'C2P_DB', 'class-wpdb.php', 'classes' );
-        $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
+        $this->UI = CSV2POST::load_class( 'CSV2POST_UI', 'class-ui.php', 'classes' );
+        $this->DB = CSV2POST::load_class( 'CSV2POST_DB', 'class-wpdb.php', 'classes' );
+        $this->PHP = CSV2POST::load_class( 'CSV2POST_PHP', 'class-phplibrary.php', 'classes' );
+        $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
                         
         // load the current project row and settings from that row
         if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
@@ -154,7 +155,7 @@ class CSV2POST_Columns_View extends CSV2POST_View {
     */
     public function postbox_columns_categorydata( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Select your columns of categories (term data) in order that your categories need to be in as a hierarchy.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
         global $c2p_settings;
         ?>  
@@ -189,7 +190,7 @@ class CSV2POST_Columns_View extends CSV2POST_View {
     */
     public function postbox_columns_categorydescriptions( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Enter column replacement tokens to generate unique category descriptions. One of many optional features, do not use if you do not require category descriptions.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);     
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );     
         
         global $c2p_settings;
 
@@ -237,7 +238,7 @@ class CSV2POST_Columns_View extends CSV2POST_View {
     */
     public function postbox_columns_presetlevelonecategory( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Select a category to be the parent over all of the categories you plan to create. Only use if all of our imported records belong under that main category.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
 
             <table class="form-table">
@@ -270,7 +271,7 @@ class CSV2POST_Columns_View extends CSV2POST_View {
             $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], 'You have not selected your category columns.', false );    
         }else{
             $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], false, false);
-            $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+            $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
             
             global $wpdb;
             ?>

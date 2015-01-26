@@ -55,8 +55,9 @@ class CSV2POST_Tools_View extends CSV2POST_View {
             array( 'tools-refreshallposts', __( 'Refresh All Posts', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'refreshallposts' ), true, 'activate_plugins' ),
             array( 'tools-undoprojectposts', __( 'Undo Projects Posts', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'undoprojectposts' ), true, 'activate_plugins' ),
             array( 'tools-resetimportedrows', __( 'Reset Imported Rows', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'resetimportedrows' ), true, 'activate_plugins' ),
-            array( 'tools-proeditionupdating', __( 'Pro Edition Update Power', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'proeditionupdating' ), true, 'activate_plugins' ),
-            array( 'tools-recreatemissingposts', __( 'Re-Create Missing Posts', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'recreatemissingposts' ), true, 'activate_plugins' )
+            array( 'tools-freeupdatingfeatures', __( 'Free Advanced Features Require Donations', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'freeupdatingfeatures' ), true, 'activate_plugins' ),
+            array( 'tools-recreatemissingposts', __( 'Re-Create Missing Posts', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'recreatemissingposts' ), true, 'activate_plugins' ),
+            array( 'tools-masspublishposts', __( 'Mass Publish Posts', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'masspublishposts' ), true, 'activate_plugins' )
         );    
     }
             
@@ -76,10 +77,11 @@ class CSV2POST_Tools_View extends CSV2POST_View {
         
         // create class objects
         $this->CSV2POST = CSV2POST::load_class( 'CSV2POST', 'class-csv2post.php', 'classes' );
-        $this->UI = CSV2POST::load_class( 'C2P_UI', 'class-ui.php', 'classes' );
-        $this->DB = CSV2POST::load_class( 'C2P_DB', 'class-wpdb.php', 'classes' );
-        $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
-                 
+        $this->UI = CSV2POST::load_class( 'CSV2POST_UI', 'class-ui.php', 'classes' );// extended by CSV2POST_Forms
+        $this->DB = CSV2POST::load_class( 'CSV2POST_DB', 'class-wpdb.php', 'classes' );
+        $this->PHP = CSV2POST::load_class( 'CSV2POST_PHP', 'class-phplibrary.php', 'classes' );
+        $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
+
         // load the current project row and settings from that row
         if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
               
@@ -159,7 +161,7 @@ class CSV2POST_Tools_View extends CSV2POST_View {
     */
     public function postbox_tools_createpostsbasic( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Import your data, create a title template, a content template and your ready to use this form. Enter the number of posts you would like to create. Start with small numbers to test your project settings.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
 
             <table class="form-table">
@@ -180,7 +182,7 @@ class CSV2POST_Tools_View extends CSV2POST_View {
     */
     public function postbox_tools_updatepostsbasic( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Update posts where applicable. This will only update posts if a change of settings or data has occurred.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
 
             <table class="form-table">
@@ -201,7 +203,7 @@ class CSV2POST_Tools_View extends CSV2POST_View {
     */
     public function postbox_tools_updatepostsbasicnewdataonly( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Update posts created by the current project if the imported record used to create them has been updated.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
 
             <table class="form-table">
@@ -222,7 +224,7 @@ class CSV2POST_Tools_View extends CSV2POST_View {
     */
     public function postbox_tools_updatepostsbasicprojectchangesonly( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Update posts that have not been updated since the current projects settings were changed.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
 
             <table class="form-table">
@@ -243,7 +245,7 @@ class CSV2POST_Tools_View extends CSV2POST_View {
     */
     public function postbox_tools_updatespecificpost( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Enter the ID of a post created by CSV 2 POST to initiate an update. This is a great way to test your updating configuration.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
 
             <table class="form-table">
@@ -264,7 +266,7 @@ class CSV2POST_Tools_View extends CSV2POST_View {
     */
     public function postbox_tools_queryduplicateposts( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'If you suspect your .csv file contains duplicate rows you can use this to find the resulting duplicate posts then delete one of them.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
 
             <table class="form-table">
@@ -298,7 +300,7 @@ class CSV2POST_Tools_View extends CSV2POST_View {
     */
     public function postbox_tools_refreshallposts( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'If your using Systematic Post Updating you can force an update on all posts for the current active project you are working on by submitting this form.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         $this->UI->postbox_content_footer();
     }      
     
@@ -312,7 +314,7 @@ class CSV2POST_Tools_View extends CSV2POST_View {
     */
     public function postbox_tools_undoprojectposts( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Delete posts created by the current project. Currently has a restriction to be safe but it can easily inreased by editing source or the tools.php view file.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
 
             <table class="form-table">
@@ -339,7 +341,7 @@ class CSV2POST_Tools_View extends CSV2POST_View {
     */
     public function postbox_tools_resetimportedrows( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Delete 100% of the data imported for the current projects data source/s. Please use with care.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']); 
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] ); 
         $this->UI->postbox_content_footer();
     }  
         
@@ -351,25 +353,14 @@ class CSV2POST_Tools_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_tools_proeditionupdating( $data, $box ) {    
+    public function postbox_tools_freeupdatingfeatures( $data, $box ) {    
         echo '<p>';
         
-        _e( 'In 2014 I added the plugins first post update feature to the free edition. This is because the pro
-        edition updating ability continues to improve. I always promised that the free edition will be improved
-        as the pro edition grows. This is my policy to ensure WebTechGlobal continues to give back to the Wordpress
-        community.', 'csv2post' );
-        
-        echo '</p>';
-        
-        echo '<p>' . __( 'Visit the', 'csv2post' ) . ' <a href="" target="_blank" title="' . __( 'Go to the WebTechGlobal website and browse the CSV 2 POST portal.', 'csv2post' ) . '">' . __( 'CSV 2 POST Portal', 'csv2post' ) . '</a> to read more or buy.</p>';
-        
-        echo '<p>';
-        
-        _e( ' The pro edition has a systematic update
-        ability meaning when someone visits a post on your blog. The post will be updated if out of date compared to
-        your imported data. The visitor will see the new version of the post, neat huh. This means updating hundreds of
-        thousands of posts in a single blog becomes an easier task especially on low cost hosting which do not allow
-        more than a few hundred posts to be updated at once.', 'csv2post' );
+        _e( 'No other FREE WordPress importer offers systematic updating at this time (January 2015). It is a tool
+        that allows a website to refresh content constantly. The refresh of a post or page is triggered by a visitor
+        or WordPress loading. It is highly valuable and deserves donation which I am very serious about. Anyone
+        seeking support for this feature who has not supported the project in any form will wait a while for help
+        from me. I spent hundreds of hours creating this plugin first, so now it is your move.', 'csv2post' );
         
         echo '</p>';
     } 
@@ -386,7 +377,7 @@ class CSV2POST_Tools_View extends CSV2POST_View {
     */
     public function postbox_tools_recreatemissingposts( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'If admin accidently deletes posts created by CSV 2 POST you will need to go through the correct repair process. Tools like this are to help avoid it being a complex and time consuming task. This processes will query the database one or more times per record imported. This may only work with 200 or less missing posts. Contact WebTechGlobal for consultation if you are dealing with a far greater number of accidently deleted posts.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']); 
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] ); 
         ?>  
 
             <table class="form-table">
@@ -399,4 +390,32 @@ class CSV2POST_Tools_View extends CSV2POST_View {
         <?php       
         $this->UI->postbox_content_footer();
     } 
+    
+    /**
+    * Mass publish posts.
+    * 1. Select all posts for current project.
+    * 2. Select all posts for CSV 2 POST.
+    * 3. Select all posts even those not created by CSV 2 POST.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
+    */
+    public function postbox_tools_masspublishposts( $data, $box ) {
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Mass publish draft posts with ability to select the scope.', 'csv2post' ), false );        
+        $this->UI->hidden_form_values( $box['args']['formid'], $box['title'] ); 
+     
+        $items_array = array( 'currentproject' => __( 'Current Project', 'csv2post' ), 'allprojects' => __( 'All Projects', 'csv2post' ), 'entireblog' => __( 'Entire Blog', 'csv2post' )  );
+        ?>  
+
+            <table class="form-table">
+                <tr valign="top">
+                    <td><?php $this->FORMS->radiogroup_basic( $box['args']['formid'], 'masspublishscope', 'masspublishscope', __( 'Mass Publish Scope', 'csv2post' ), $items_array, 'currentproject', true, array() ); ?></td>
+                </tr>            
+            </table>
+        
+        <?php       
+        $this->UI->postbox_content_footer();    
+    }
 }?>

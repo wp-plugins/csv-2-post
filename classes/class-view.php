@@ -122,8 +122,8 @@ abstract class CSV2POST_View {
         $this->CSV2POST = CSV2POST::load_class( 'CSV2POST', 'class-csv2post.php', 'classes' );        
         $this->Tabmenu = $this->CSV2POST->load_class( 'C2P_TabMenu', 'class-pluginmenu.php', 'classes' );
         $this->Help = $this->CSV2POST->load_class( 'C2P_Help', 'class-help.php', 'classes' );
-        $this->PHP = $this->CSV2POST->load_class( 'C2P_PHP', 'class-phplibary.php', 'classes' );
-        $this->UI = $this->CSV2POST->load_class( 'C2P_UI', 'class-ui.php', 'classes' );
+        $this->PHP = $this->CSV2POST->load_class( 'CSV2POST_PHP', 'class-phplibary.php', 'classes' );
+        $this->UI = $this->CSV2POST->load_class( 'CSV2POST_UI', 'class-ui.php', 'classes' );
         
         // load the help array
         $this->help_array = $this->Help->get_help_array();
@@ -210,7 +210,7 @@ abstract class CSV2POST_View {
     * Set up the view with data and do things that are necessary for all views
     *
     * @author Ryan R. Bayne
-    * @package Opus
+    * @package CSV 2 POST
     * @since 0.0.1
     * @version 1.0.0
     *
@@ -271,9 +271,9 @@ abstract class CSV2POST_View {
 
         // create class objects for use in the dashboard functions, they aren't loaded on dashboard in this classes construct
         $this->CSV2POST = CSV2POST::load_class( 'CSV2POST', 'class-csv2post.php', 'classes' );
-        $this->UI = CSV2POST::load_class( 'C2P_UI', 'class-ui.php', 'classes' ); 
-        $this->DB = CSV2POST::load_class( 'C2P_DB', 'class-wpdb.php', 'classes' );
-        $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
+        $this->UI = CSV2POST::load_class( 'CSV2POST_UI', 'class-ui.php', 'classes' ); 
+        $this->DB = CSV2POST::load_class( 'CSV2POST_DB', 'class-wpdb.php', 'classes' );
+        $this->PHP = CSV2POST::load_class( 'CSV2POST_PHP', 'class-phplibrary.php', 'classes' );
         $this->TabMenu = CSV2POST::load_class( 'C2P_TabMenu', 'class-pluginmenu.php', 'classes' );
                        
         // loop through array of meta boxes, which doubles as our array of dashboard widgets      

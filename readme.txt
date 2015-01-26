@@ -3,39 +3,40 @@ Contributors: WebTechGlobal
 Donate link: http://www.webtechglobal.co.uk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Tags: CSV 2 POST, csv2post,dataimport,importer,.csv,data,autoblogger,autoblogging,wpcsvimporter
+Tags: CSV 2 POST, csv2post,dataimport,importer,.csv,data,autoblogger,autoblogging,wpcsvimporter, spintax, text spinner, post updating,
 Requires at least: 3.8.0
 Tested up to: 4.0.0
 Stable tag: trunk
 
-Adaptable data import plugin for professionals. Pro edition used by Ryanair Ltd, Trevithick Society and many more.
+WordPress data import and autoblogger plugin. Unlimited creation and post updating. Tools include spintax, dynamic template
+selection and ability to put every form on the WP dashboard.  
 
 == Description ==
 
-Lets turn data into websites! CSV 2 POST for Wordpress can import any .csv file (properly formatted) then autoblog the data into hundreds or even thousands of well designed WP posts. My CSV importer plugin creates custom fields, categories and meta. If your new to Wordpress those are some of the elements that make up a web page in WP. CSV 2 POST is the first plugin to import data to a custom database table allowing the data to be prepared and other more advanced steps during the autoblogging procedure. Combine that with the power of Wordpress and there is no limit to how many high quality websites you can create using any data.
- 
+Unlimited autoblogging with abilities only pro plugins usually offer at a cost. Systematic post creation and updating is now free
+from WebTechGlobal. Refresh your content constantly with power that is worth money. Free support is available with small donations
+getting far quicker responses and new features added on demand for your generosity. That does not mean every request needs to come
+with a donation. All requests are added to the projects workflow so do not delay - contact me today. 
+
 = Main Links = 
 *   <a href="http://www.webtechglobal.co.uk/csv-2-post/" title="CSV 2 POST Website">Plugins Portal</a>
 *   <a href="http://forum.webtechglobal.co.uk/viewforum.php?f=8" title="CSV 2 POST Forum">Plugins Forum</a>
+*   <a href="http://www.webtechglobal.co.uk/category/wordpress/csv-2-post/" title="CSV 2 POST Blog Category">Plugins Blog</a>
 *   <a href="https://www.facebook.com/csv2post" title="CSV 2 POST Facebook Page">Plugins Facebook</a>
 *   <a href="http://www.twitter.com/CSV2POST" title="CSV 2 POST Twitter Tweets">Plugins Twitter</a>
-*   <a href="http://www.webtechglobal.co.uk/csv-2-post-demo/" title="CSV 2 POST Premium Software and Services Demo">Pro Edition Demo</a>
+*   <a href="http://www.youtube.com/playlist?list=PLMYhfJnWwPWA1aHGE28PVAF38xzhgKWdi" title="Official YouTube channel for CSV 2 POST">YouTube Playlist</a>
 
 = Why CSV 2 POST? = 
 
-You have a .csv file and you would like to see the contents turned into hundreds of posts. CSV 2 POST can do that for you. It will
-also help you manage your posts long after they are created. My Wordpress data importer inserts your .csv file contents to
-a custom database table first. CSV 2 POST was the first plugin to do this and it surprises many but there are many advantages
-to this approach i.e. integration with other software, sharing the table (raw data) and not the data in WP tables which the
-Wordpress core will change in many ways. Professionals need to keep an original, businesses need to do things in smaller steps
-and always have a backup. CSV 2 POST does that and by doing so avoids major mistakes i.e. the wrong rows in .csv file being applied
-to the wrong posts during updating. The pro edition of CSV 2 POST takes things even further and when donations come in I move
-premium features into the free edition to be fair to the Wordpress community.                                     
+CSV 2 POST offers more for free than any other importer. If you donate to this project you will not only encourage further
+updates of this project - but you'll be supporting the creation of more WordPress autoblogging and data import plugins. I'm
+confident you will be impressed at the hundreds of hours I've put into this plugin for you. If you cannot afford to donate - 
+a Facebook like, a review, a short video on YouTube or a Tweet will help just as much. Thank you for your support.                                     
 
 1. No autoblogging limits at all
 1. Create posts, pages and custom post types
 1. Systematic post updating or do it all at once
-1. Text-spinning to improve SEO
+1. Text-spinning (spintax)
 1. Merge multiple .csv files
 1. Functionality exists to change .csv file path during project
 1. Create hierarchical categories
@@ -44,7 +45,7 @@ premium features into the free edition to be fair to the Wordpress community.
 1. Free support from WebTechGlobal
 1. Design your content using WYSIWYG editor
 1. Import pre-made tags
-1. Import images to Wordpress media gallery
+1. Import images to WordPress media gallery
 1. Customize post titles
 1. Manage .csv files as long term data sources
 1. Adopt existing posts
@@ -65,23 +66,29 @@ premium features into the free edition to be fair to the Wordpress community.
  
 == Installation ==
 
-1. You can place the csv-2-post folder in the plugins directory using FTP
-1. You can also upload the plugin using Wordpress plugin screen (wp-admin/plugin-install.php)
-1. If your Wordpress installation is on a path that includes "csv2post" it will trigger debugging to activate. This is meant for localhost development and can be disabled.
-1. Your CSV file should be uploaded using FTP or Wordpress itself. Submit the path to CSV 2 POST, CSV 2 POST does not handle the upload. I have left this independent because there is security to consider for a lot of .csv files and the user should decide where best to store the file.
-1. Please ensure wherever your .csv file is stored that Wordpress has permission to access the folder and file. Permissions can be changed in your hosting control panel for a directory. Developer software such as PhpED also allows it.
+1. Please try to install CSV 2 POST from WordPress.org by going to Plugins --> Add New and searching "CSV 2 POST". This is safer and quicker than any other methods.
+1. If your WordPress installation is on a path that includes "csv2post" it will trigger debugging to activate. This is meant for localhost development and can be disabled.
+1. Your CSV file should be uploaded using FTP or WordPress itself. Submit the path to CSV 2 POST, CSV 2 POST does not handle the upload. I have left this independent because there is security to consider for a lot of .csv files and the user should decide where best to store the file.
+1. Please ensure wherever your .csv file is stored that WordPress has permission to access the folder and file. Permissions can be changed in your hosting control panel for a directory. Developer software such as PhpED also allows it.
 
 == Frequently Asked Questions ==
+
+= As a WebTechGlobal subscriber can I get higher priority support for this plugin? =
+Yes - subscribers are put ahead of my Free Workflow and will not only result in a quicker response for support
+but requests for new features are marked with higher priority.
+
+= Can I hire you to customize the plugin for me? =
+Yes - you can pay to improve the plugin to suit your needs. However many improvements will be done free.
+Please post your requirements on the plugins forum first before sending me Paypal or Bitcoins. If your request is acceptable
+within my plans it will always be added to the WTG Tasks Management plugin which is part of my workflow system. The tasks
+priority can be increased based on your WebTechGlobal subscription status, donations or contributions you have made.
 
 = Can I import CommissionJunction affiliate feeds? =
 Download .csv files from Commission Junction then upload them or paste a URL directly to a .csv file on any domain to import it that way.
 Commission Junction and all other affiliate networks are supported. 
 
 = Is there a limit to the number of posts I can create? =
-There are no limits others than what your server will allow you to do in a single request. There are also more features
-in CSV 2 POST free edition than most (possibly all) .csv importers. Things like features images and permalinks are withheld
-in other free editions to encourage premium sale. I rely on people purchasing CSV 2 POST pro to either show their gratitide for
-my hundreds of hours unpaid work on the project.
+There are no limits others than what your server will allow you to do in a single request.
 
 = Will CSV 2 POST help me with SEO? = 
 Yes CSV 2 POST allows the creation of post meta (custom fields) which are used by most SEO solutions. More support can be added on
@@ -89,7 +96,7 @@ request for free. The plugin also offers text-spinning without limits and there 
 
 = When was CSV 2 POST released? =
 The project started in 2009 and was quickly backed by large businesses including Ryanair Ltd. I created the plugin while technically still at University so
-it didn't take long for a re-development to happen. I found myself re-developing it again in 2014 with the aim of making more use of the Wordpress core. Version
+it didn't take long for a re-development to happen. I found myself re-developing it again in 2014 with the aim of making more use of the WordPress core. Version
 8.0.0 should be the last big update of this free plugin which has been designed based on years of feedback.
 
 == Screenshots ==
@@ -105,13 +112,36 @@ it didn't take long for a re-development to happen. I found myself re-developing
 
 == Languages ==
 
-Translators needed.
+Seeking translators. Your name, site link, Twitter and YouTube videos will be added to the plugins pages in return for your contribution.
 
 == Upgrade Notice ==
 
-Do not update without backing up your entire site both files and data. The nature of an import plugin requires great care.
+Please update this plugin using your WordPress Installed Plugins screen. Click on Update Now under this plugins details when an update is ready.
+This method is safer than using any other source for the files.
 
 == Changelog == 
+= 8.1.36 =
+* Feature Changes
+    * Beta area removed.
+    * Some views merged into the plugins own dashboard to give the dashboard more purpose. When creating a new data source or project return to the dashboard
+    * Project Data Sources view is now a single column due to it displaying a table. A task has been created to remove the accordian and make it a datatable view.
+    * Data Table view is now a proper WP datatable - search ability will be improved later for this view. 
+    * Update screen no longer has two columns.
+    * Update screen no longer displays the Quick Actions bar.
+    * Removed Update Screen - changes to installation will now be automatic, no user action required, quicker and simplier. 
+    * Default project settings will no longer be applied for ever new project - a cause of empty custom field rules.
+    * Removed any mention of pro or paid left over from premium edition but did add stronger encouragement for donations.
+    * Big update to class-forms.php (range of new methods added that make form development far quicker)
+    * New mass publish from draft form added - allows selection of current projects posts only, all projects posts or the entire blog (posts not created by CSV 2 POST).
+    * Every instance of hidden_form_values() replaced with form_start() - early tests indicate success. This change applies more security against hackers.
+    * Sample Data panel now has a list of .csv files for download from WebTechGlobal.
+* Technical Notes
+    * Class C2P_ImportTableInformation_Table has been moved from class-csv2post.php to table.php (a view file, the only one that uses the class)
+    * options_array.php removed (new options class coming and will be used to improve installation)
+* Known Issues
+    * Still no easy step by step approach like versions had two years ago. This is coming again soon.    
+    * Data Table view is not suitable as tables are too wide, column titles cannot be read
+    * Some forms are not suitable for being in the narrow sidebar by default, probably use that bar for quick tools and small information.
 
 = 8.1.35 =          
 * Feature Changes
@@ -135,6 +165,7 @@ Do not update without backing up your entire site both files and data. The natur
     * Data Table view is not suitable as tables are too wide, column titles cannot be read
     * Some forms are not suitable for being in the narrow sidebar by default, probably use that bar for quick tools and small information.
     * Occasionally clicking on "CSV 2 POST" media button above WYSIWYG editor shows an overlay but the content is not centered. Found this myself and has not been reported by a user.
+    * Two reports of "Are you sure you want to do that?" message appearing - not enough information provided to debug.
     
 = 8.1.34 =          
 * Feature Changes
@@ -143,7 +174,7 @@ Do not update without backing up your entire site both files and data. The natur
     * options_array.php removed (new options class coming and will be used to improve installation)
     * Most class no longer use extend
     * tableschema_array.php now only included when required (it will soon be deleted also)
-    * get_category_data_used() no longer creates new C2P_DB object
+    * get_category_data_used() no longer creates new CSV2POST_DB object
     * beginpluginupdate() function now loads
     * $c2p_installation_required removed 100%
     * Couple of bugs fixed
@@ -154,7 +185,7 @@ Do not update without backing up your entire site both files and data. The natur
 = 8.1.33 =
 * Feature Changes
     * Default content design no longer creates a new post or has option to do so, another form added to do that.
-    * New form added with WYSIWYG editor for creating new content templates from plugin pages, has more use in the pro edition with ability to setup rules etc but it may have other uses
+    * New form added with WYSIWYG editor for creating new content templates from plugin pages
     * Every existing form can now be added to the dashboard as a widget, security measures available
     * New UI setting to switched between WTG styled notices and WP core styled, this setting is temporary during a transition to WP core style
     * List of ShopperPress custom field names added to the Custom Fields page
@@ -204,7 +235,7 @@ Do not update without backing up your entire site both files and data. The natur
 = 8.1.31 =
 * Feature Changes
     * Boxes are now proper WP postboxes which can be: moved, hidden, closed
-    * Every view is now a registered Wordpress page
+    * Every view is now a registered WordPress page
     * More screens added for various purposes
     * Screen Options available for every page
     * Log screen custom search removed to make the log screen simple and look better
@@ -220,19 +251,40 @@ Do not update without backing up your entire site both files and data. The natur
 
 == Plugin Author == 
 
-Thank you for considering CSV 2 POST. I import data to Wordpress for a living. If your stuck, if you need another solution
+Thank you for considering CSV 2 POST. I import data to WordPress for a living. If your stuck, if you need another solution
 or help with any existing data importer. Please visit forum.webtechglobal.co.uk for free help.
 
-== Request Pro Edition Demo ==
+== Donators ==
+These donators have giving their permission to add their site to this list so that plugin authors can
+request their support for their own project. Please do not request donations but instead visit their site,
+show interest and tell them about your own plugin - you may get lucky. 
 
-A great way to try the pro edition of the CSV 2 POST plugin is to use a test/demo blog setup just for you. You can <a href="http://www.webtechglobal.co.uk/csv-2-post-demo/" title="CSV 2 POST Premium Software and Services Demo">request a pro demo</a> today for free. If you do decide to continue using the free edition, please consider a small donation to help support the plugins development and cover my time.
+* <a href="" title="">Ryan Bayne from WebTechGlobal</a>
+
+== Contributors: Translation ==
+These contributors helped to localize WTG Tasks Manager by translating my endless dialog text.
+
+* None Yet
+
+== Contributors: Code ==
+These contributers typed some PHP or HTML or CSS or JavaScript or Ajax for WTG Tasks Manager. Bunch of geeks really! 
+
+* None Yet
+
+== Contributors: Design ==
+These contributors created graphics for the plugin and are good with Photoshop. No doubt they spend their time merging different species together!
+
+* None Yet
+
+== Contributors: Video Tutorials ==
+These contributors published videos on YouTube or another video streaming website for the community to enjoy...and maybe to get some ad clicks.
+
+* None Yet
 
 == Version Numbers and Updating ==
 
 Explanation of versioning used by myself Ryan Bayne. The versioning scheme I use is called "Semantic Versioning 2.0.0" and more
 information about it can be found at http://semver.org/ 
-
-= Summary =
 
 These are the rules followed to increase the CSV 2 POST plugin version number. Given a version number MAJOR.MINOR.PATCH, increment the:
 
@@ -241,3 +293,11 @@ MINOR version when you add functionality in a backwards-compatible manner, and
 PATCH version when you make backwards-compatible bug fixes.
 Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.
 
+= When To Update = 
+
+Browse the changes log and decide if you need any recent changes. There is nothing wrong with skipping versions if changes do not
+help you - look for security related changes or new features that could really benefit you. If you do not see any you may want
+to avoid updating. If you decide to apply the new version - do so after you have backedup your entire WordPress installation 
+(files and data). Files only or data only is not a suitable backup. Every WordPress installation is different and creates a different
+environment for WTG Task Manager - possibly an environment that triggers faults with the new version of this software. This is common
+in software development and it is why we need to make preparations that allow reversal of major changes to our website.

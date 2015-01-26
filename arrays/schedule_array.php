@@ -7,7 +7,7 @@
  * @since 8.0.0
  */
 
-// load in Wordpress only
+// load in WordPress only
 defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 
 $c2p_schedule_array = array();

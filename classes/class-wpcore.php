@@ -1,26 +1,26 @@
 <?php
 /** 
- * Wordpress close to core class and functions i.e. WP functions slightly adapted or
+ * WordPress close to core class and functions i.e. WP functions slightly adapted or
  * functions which take global WP values and change them before using them
  * 
- * @package Opus
+ * @package CSV 2 POST
  * @author Ryan Bayne   
  * @since 0.0.1
  */
 
-// load in Wordpress only
+// load in WordPress only
 defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 
 /**
- * Wordpress close to core class and functions i.e. WP functions slightly adapted or
+ * WordPress close to core class and functions i.e. WP functions slightly adapted or
  * functions which take global WP values and change them before using them
 * 
 * @author Ryan R. Bayne
-* @package Opus
+* @package CSV 2 POST
 * @since 8.0.0
 * @version 1.0.0 
 */
-class C2P_WPCore {  
+class CSV2POST_WPCore {  
     /**
     * About
     * 

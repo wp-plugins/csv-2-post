@@ -69,9 +69,10 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
         
         // create class objects
         $this->CSV2POST = CSV2POST::load_class( 'CSV2POST', 'class-csv2post.php', 'classes' );
-        $this->UI = CSV2POST::load_class( 'C2P_UI', 'class-ui.php', 'classes' ); 
+        $this->UI = CSV2POST::load_class( 'CSV2POST_UI', 'class-ui.php', 'classes' ); 
         $this->Class_Categories = CSV2POST::load_class( 'C2P_Categories', 'class-categories.php', 'classes' );
-        $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
+        $this->PHP = CSV2POST::load_class( 'CSV2POST_PHP', 'class-phplibrary.php', 'classes' );
+        $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
                         
         // load the current project row and settings from that row
         if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
@@ -149,9 +150,9 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
     */
     public function postbox_categorycreation_categorycreation( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Once you have selected your category columns you can initiate category creation using this form.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']); 
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] ); 
         $this->UI->postbox_content_footer();
-    }    
+    }      
     
     /**
     * post box function for category updating
@@ -163,7 +164,7 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
     */
     public function postbox_categorycreation_setpostscategories( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Does not create categories. Submitting this form will put posts by CSV 2 POST into categories based on your category column settings.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']); 
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] ); 
         $this->UI->postbox_content_footer();
     }
         
@@ -178,7 +179,7 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
     */
     public function postbox_categorycreation_resetpostscategories( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Another user requested feature. This one removes all of the current projects posts from their categories. They will end up in your WP blogs default category.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']); 
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] ); 
         $this->UI->postbox_content_footer();
     }
  

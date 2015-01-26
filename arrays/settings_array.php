@@ -9,7 +9,7 @@
  * @version 1.0.7
  */
 
-// load in Wordpress only
+// load in WordPress only
 defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 
 // install main admin settings option record

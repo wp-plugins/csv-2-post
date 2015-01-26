@@ -72,9 +72,10 @@ class CSV2POST_Content_View extends CSV2POST_View {
         
         // create class objects
         $this->CSV2POST = CSV2POST::load_class( 'CSV2POST', 'class-csv2post.php', 'classes' );
-        $this->UI = CSV2POST::load_class( 'C2P_UI', 'class-ui.php', 'classes' ); 
-        $this->DB = CSV2POST::load_class( 'C2P_DB', 'class-wpdb.php', 'classes' );
-        $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
+        $this->UI = CSV2POST::load_class( 'CSV2POST_UI', 'class-ui.php', 'classes' ); 
+        $this->DB = CSV2POST::load_class( 'CSV2POST_DB', 'class-wpdb.php', 'classes' );
+        $this->PHP = CSV2POST::load_class( 'CSV2POST_PHP', 'class-phplibrary.php', 'classes' );
+        $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
                         
         // load the current project row and settings from that row
         if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
@@ -154,7 +155,9 @@ class CSV2POST_Content_View extends CSV2POST_View {
         global $wpdb,$c2p_settings;
         
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Enter Column Replacement Tokens to create a template. On submission an example will be created providing you have imported some of your .csv files rows.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
+        
+        $result = false;
         ?>  
                        
             <table class="form-table">                  
@@ -173,19 +176,22 @@ class CSV2POST_Content_View extends CSV2POST_View {
                 $tables_already_used = array();
 
                 // loop through source ID's
-                foreach( $sourceid_array as $key => $source_id ){
-
+                foreach( $sourceid_array as $key => $source_id )
+                {
                     // get the source row for the current ID
                     $row = $this->DB->selectrow( $wpdb->c2psources, 'sourceid = "' . $source_id . '"', 'tablename' );
 
-                    // avoid using same database table twice
-                    if( in_array( $row->tablename, $tables_already_used ) ){
-                        continue;
+                    // data source may have been deleted 
+                    if( $row )
+                    {
+                        // avoid using same database table twice
+                        if( in_array( $row->tablename, $tables_already_used ) ){
+                            continue;
+                        }
+                        
+                        $tables_already_used[] = $row->tablename;
+                        $result = $this->DB->selectorderby( $row->tablename, null, 'c2p_rowid', '*', 20, ARRAY_A );
                     }
-                    
-                    $tables_already_used[] = $row->tablename;
-                                   
-                    $result = $this->DB->selectorderby( $row->tablename, null, 'c2p_rowid', '*', 20, ARRAY_A );
                 }
                 
                 if( $result ) {
@@ -225,7 +231,7 @@ class CSV2POST_Content_View extends CSV2POST_View {
     */
     public function postbox_content_defaultcontenttemplate( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'This is the first editor you should used. If you do not plan to create multiple templates in a more advanced project, this is the only editor you need to use.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
             <div id="poststuff">
             
@@ -256,7 +262,7 @@ class CSV2POST_Content_View extends CSV2POST_View {
     */
     public function postbox_content_newcontenttemplate( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Use this form to create new content templates for dynamically switching between them based on rules. The WYSIWYG editor is automatically populated with your default design to aid in creating alternative but similar post content designs.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
 
             <div id="poststuff">
@@ -294,7 +300,7 @@ class CSV2POST_Content_View extends CSV2POST_View {
     */
     public function postbox_content_multipledesignsrules( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Apply different content templates depending on specific values in your data i.e. if each category requires a different layout, use of different images and styles.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
         global $c2p_settings;
         ?>  
@@ -334,8 +340,8 @@ class CSV2POST_Content_View extends CSV2POST_View {
     * @version 1.0.0
     */
     public function postbox_content_spintaxtest( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Test a spintax i.e. The best data import for Wordpress is {CSV 2 POST|Easy CSV Importer|Data Importer for Dummies}.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Test a spintax i.e. The best data import for WordPress is {CSV 2 POST|Easy CSV Importer|Data Importer for Dummies}.', 'csv2post' ), false );        
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
 
             <table class="form-table">
@@ -355,8 +361,8 @@ class CSV2POST_Content_View extends CSV2POST_View {
     * @version 1.0.0
     */
     public function postbox_content_groupimportlocalimages( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Do you have a folder of images on your server? We can import them to the Wordpress Media Library and use them as featured images. There are various approaches and your data does not need to include the full path to each image.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Do you have a folder of images on your server? We can import them to the WordPress Media Library and use them as featured images. There are various approaches and your data does not need to include the full path to each image.', 'csv2post' ), false );        
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
     
         global $c2p_settings;
         
@@ -404,9 +410,9 @@ class CSV2POST_Content_View extends CSV2POST_View {
     * @version 1.0.0
     */
     public function postbox_content_2000freehours() {
-        echo '<p>' . __( 'Over 2000 unpaid hours have gone into providing a free edition and 
-        providing free support. This is how a Wordpress developer like Ryan Bayne gives something 
-        back to the Wordpress community. However it needs your support in return. Everything from a Facebook
-        like to a short review will help me and this project.', 'csv2post' ) . '</p>';
+        echo '<p>' . __( "Over 2000 hours (and counting) have gone into providing a free edition and providing free support.
+        I have no income if users do not donate as I'm a full-time father of 3 children under six. You can imaging the juggling I done to make this
+        project happen. You do not need to donate to show your appreciation, just sharing the plugin is enough.
+        I look forward to working with anyone who feels this direct request and openess is fair.", 'csv2post' ) . '</p>';
     }      
 }?>

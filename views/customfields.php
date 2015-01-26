@@ -68,9 +68,10 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
         
         // create class objects
         $this->CSV2POST = CSV2POST::load_class( 'CSV2POST', 'class-csv2post.php', 'classes' );
-        $this->UI = CSV2POST::load_class( 'C2P_UI', 'class-ui.php', 'classes' );
-        $this->DB = CSV2POST::load_class( 'C2P_DB', 'class-wpdb.php', 'classes' );
-        $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
+        $this->UI = CSV2POST::load_class( 'CSV2POST_UI', 'class-ui.php', 'classes' );
+        $this->DB = CSV2POST::load_class( 'CSV2POST_DB', 'class-wpdb.php', 'classes' );
+        $this->PHP = CSV2POST::load_class( 'CSV2POST_PHP', 'class-phplibrary.php', 'classes' );
+        $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
                         
         // load the current project row and settings from that row
         if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
@@ -148,7 +149,7 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
     */
     public function postbox_customfields_newcustomfield( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Create a custom field template. Every post you create in this project will get that custom field and the value will be based on the template you create.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
 
             <table class="form-table"> 
@@ -181,13 +182,13 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
     */
     public function postbox_customfields_customfieldstable( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'This is a table of the custom fields you have setup. This will add meta data to every post you make in this project.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
 
         // ensure we have an array
         if(!isset( $this->current_project_settings['customfields']['cflist'] ) || !is_array( $this->current_project_settings['customfields']['cflist'] ) ){
             $this->current_project_settings['customfields']['cflist'] = array();
         }
-
+         var_dump( $this->current_project_settings['customfields']['cflist'] );
         $CFTable = new C2P_CustomFields_Table();
         $CFTable->prepare_items_further( $this->current_project_settings['customfields']['cflist'],100);
         ?>
@@ -230,4 +231,94 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
         echo '<li>type<li>';
         echo '</ul>';
     }    
-}?>
+}
+
+class C2P_CustomFields_Table extends WP_List_Table {
+
+    function __construct() {
+        global $status, $page;
+        
+        $this->CSV2POST = CSV2POST::load_class( 'CSV2POST', 'class-csv2post.php', 'classes' );
+             
+        //Set parent defaults
+        parent::__construct( array(
+            'singular'  => 'movie',     //singular name of the listed records
+            'plural'    => 'movies',    //plural name of the listed records
+            'ajax'      => false        //does this table support ajax?
+        ) );
+    }
+
+    function column_default( $item, $column_name){
+        switch( $column_name){
+            case 'delete':
+                return $this->CSV2POST->linkaction( $_GET['page'], 'deletecustomfieldrule', __( 'Delete this custom field rule' ), 'Delete', '&cfid='.$item['id'] );    
+                break;                                                                   
+            default:
+                return $item[$column_name];
+        }        
+    }
+
+    /*
+    function column_title( $item){
+
+    } */
+
+    function get_columns() {
+        return array(
+                'name' => 'Name/Key',
+                'unique' => 'Unique',
+                'updating' => 'Updating',
+                'value' => 'Template',
+                'delete' => 'Delete'
+             ); 
+    }
+
+    function get_sortable_columns() {
+        $sortable_columns = array(
+            //'post_title'     => array( 'post_title', false ),     //true means it's already sorted
+        );
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions() {
+        $actions = array(
+
+        );
+        return $actions;
+    }
+
+    function process_bulk_action() {
+        
+        //Detect when a bulk action is being triggered...
+        if( 'delete'===$this->current_action() ) {
+            wp_die( 'Items deleted (or they would be if we had items to delete)!' );
+        }
+    }
+
+    function prepare_items_further( $data, $per_page = 5 ) {
+        global $wpdb; //This is used only if making any database queries        
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array( $columns, $hidden, $sortable);
+
+        $this->process_bulk_action();
+
+        $current_page = $this->get_pagenum();
+
+        $total_items = count( $data);
+
+        $data = array_slice( $data,(( $current_page-1)*$per_page), $per_page);
+
+        $this->items = $data;
+
+        $this->set_pagination_args( array(
+            'total_items' => $total_items,                  //WE have to calculate the total number of items
+            'per_page'    => $per_page,                     //WE have to determine how many items to show on a page
+            'total_pages' => ceil( $total_items/$per_page)   //WE have to calculate the total number of pages
+        ) );
+    }
+}
+?>

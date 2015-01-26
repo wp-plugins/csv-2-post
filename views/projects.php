@@ -46,7 +46,7 @@ class CSV2POST_Projects_View extends CSV2POST_View {
         // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
         return $this->meta_boxes_array = array(
             // array( id, title, callback (usually parent, approach created by Ryan Bayne), context (position), priority, call back arguments array, add to dashboard (boolean), required capability
-            array( 'projects-newprojectandnewcsvfiles', __( 'Create New Project', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'newprojectandnewcsvfiles' ), true, 'activate_plugins' ),
+            array( 'projects-newprojectusingexistingsource', __( 'Create New Project', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'newprojectusingexistingsource' ), true, 'activate_plugins' ),
             array( 'projects-allprojectstable', __( 'All Projects Table', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'allprojectstable' ), true, 'activate_plugins' ),
             array( 'projects-deleteproject', __( 'Delete Project', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'deleteproject' ), true, 'activate_plugins' ),
             array( 'projects-setactiveproject', __( 'Set Currently Active Project', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'setactiveproject' ), true, 'activate_plugins' ),
@@ -69,9 +69,10 @@ class CSV2POST_Projects_View extends CSV2POST_View {
         
         // create class objects
         $this->CSV2POST = CSV2POST::load_class( 'CSV2POST', 'class-csv2post.php', 'classes' );
-        $this->UI = CSV2POST::load_class( 'C2P_UI', 'class-ui.php', 'classes' ); 
-        $this->DB = CSV2POST::load_class( 'C2P_DB', 'class-wpdb.php', 'classes' );
-        $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
+        $this->UI = CSV2POST::load_class( 'CSV2POST_UI', 'class-ui.php', 'classes' ); 
+        $this->DB = CSV2POST::load_class( 'CSV2POST_DB', 'class-wpdb.php', 'classes' );
+        $this->PHP = CSV2POST::load_class( 'CSV2POST_PHP', 'class-phplibrary.php', 'classes' );
+        $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
                               
         // set current project values
         if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {    
@@ -167,9 +168,9 @@ class CSV2POST_Projects_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.0.0
     */
-    public function postbox_projects_newprojectandnewcsvfiles( $data, $box ) {    
+    public function postbox_projects_newprojectusingexistingsource( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'A project holds the settings that configure the posts you wish to create. We can make multiple projects, even using the same imported data, but each creating different posts in different ways.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
 
             <table class="form-table">
@@ -194,7 +195,7 @@ class CSV2POST_Projects_View extends CSV2POST_View {
     */
     public function postbox_projects_deleteproject( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Delete a project. This will not delete posts created by a project or effect the data source the project is using.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
                    
             <table class="form-table">
@@ -221,7 +222,7 @@ class CSV2POST_Projects_View extends CSV2POST_View {
     public function postbox_projects_setactiveproject( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], 
         __( 'Most of this plugins pages display the settings for a single project. This is called the Current Project. Enter a projects ID here to set it as the Current Project.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
                    
             <table class="form-table">

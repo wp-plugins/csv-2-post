@@ -15,7 +15,7 @@
  * @version 8.1.2
  */
 
-// load in Wordpress only
+// load in WordPress only
 defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
  
  

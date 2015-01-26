@@ -74,10 +74,11 @@ class CSV2POST_Datasources_View extends CSV2POST_View {
         
         // create class objects
         $this->CSV2POST = CSV2POST::load_class( 'CSV2POST', 'class-csv2post.php', 'classes' );
-        $this->UI = CSV2POST::load_class( 'C2P_UI', 'class-ui.php', 'classes' ); 
-        $this->DB = CSV2POST::load_class( 'C2P_DB', 'class-wpdb.php', 'classes' );
-        $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
-
+        $this->UI = CSV2POST::load_class( 'CSV2POST_UI', 'class-ui.php', 'classes' ); 
+        $this->DB = CSV2POST::load_class( 'CSV2POST_DB', 'class-wpdb.php', 'classes' );
+        $this->PHP = CSV2POST::load_class( 'CSV2POST_PHP', 'class-phplibrary.php', 'classes' );
+        $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
+        
         // set current project values
         if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
             $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] ); 
@@ -186,7 +187,7 @@ class CSV2POST_Datasources_View extends CSV2POST_View {
     public function postbox_datasources_createurlcsvdatasource( $data, $box ) { 
         $intro = __( 'Transfer your .csv file to your server using a URL. This also creates a Data Source which holds your .csv files configuration. Try my test file http://www.webtechglobal.co.uk/public/wordpress/csv2post/ComputersMain.csv', 'csv2post' );
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], $intro, false, true );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
 
             <table class="form-table">
@@ -220,7 +221,7 @@ class CSV2POST_Datasources_View extends CSV2POST_View {
     public function postbox_datasources_createservercsvdatasource( $data, $box ) { 
         $intro = __( 'Use a .csv file already uploaded to your server.', 'csv2post' );
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], $intro, false, true );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
 
             <table class="form-table">
@@ -261,7 +262,7 @@ class CSV2POST_Datasources_View extends CSV2POST_View {
     public function postbox_datasources_createdirectorycsvdatasource( $data, $box ) { 
         $intro = __( 'Process all .csv in a folder. One file is made a parent for all other files. The parent files configuration is used to create the database table which all files will be imported into. It means all files must have the same configuration.', 'csv2post' );
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], $intro, false, true );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
 
             <table class="form-table">
@@ -301,7 +302,7 @@ class CSV2POST_Datasources_View extends CSV2POST_View {
         }
           
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], $intro, false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
 
         <?php if( $query_results){?>
@@ -328,7 +329,7 @@ class CSV2POST_Datasources_View extends CSV2POST_View {
     public function postbox_datasources_rechecksourcedirectory( $data, $box ) { 
         $intro = __( 'Manual re-check of source directory will make the plugin switch to newer .csv files.', 'csv2post' );
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], $intro, false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
 
             <table class="form-table">
@@ -350,7 +351,7 @@ class CSV2POST_Datasources_View extends CSV2POST_View {
     public function postbox_datasources_urlimporttoexistingsource( $data, $box ) { 
         $intro = __( 'Import a .csv file via URL to an existing data source directory to add newer data.', 'csv2post' );
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], $intro, false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
 
             <table class="form-table">
@@ -377,7 +378,7 @@ class CSV2POST_Datasources_View extends CSV2POST_View {
     public function postbox_datasources_uploadfiletodatasource( $data, $box ) { 
         $intro = __( 'Upload a .csv file to an existing data source directory for adding newer data.', 'csv2post' );
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], $intro, false, true );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
 
             <table class="form-table">
@@ -421,7 +422,7 @@ class CSV2POST_Datasources_View extends CSV2POST_View {
     */
     public function postbox_datasources_deletedatasource( $data, $box ) {
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], '', false, true );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
 
             <table class="form-table">

@@ -66,10 +66,11 @@ class CSV2POST_Defaultglobalpostsettings_View extends CSV2POST_View {
         
         // create class objects
         $this->CSV2POST = CSV2POST::load_class( 'CSV2POST', 'class-csv2post.php', 'classes' );
-        $this->UI = CSV2POST::load_class( 'C2P_UI', 'class-ui.php', 'classes' ); 
-        $this->DB = CSV2POST::load_class( 'C2P_DB', 'class-wpdb.php', 'classes' );
-        $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
-
+        $this->UI = CSV2POST::load_class( 'CSV2POST_UI', 'class-ui.php', 'classes' ); 
+        $this->DB = CSV2POST::load_class( 'CSV2POST_DB', 'class-wpdb.php', 'classes' );
+        $this->PHP = CSV2POST::load_class( 'CSV2POST_PHP', 'class-phplibrary.php', 'classes' );
+        $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
+        
         // set current project values
         if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {        
             $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] ); 
@@ -142,7 +143,7 @@ class CSV2POST_Defaultglobalpostsettings_View extends CSV2POST_View {
     */
     public function postbox_defaultglobalpostsettings_defaultglobalpostsettings( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'The basic post settings and all optional. Posts will use your blogs defaults if you do not submit this form.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
         global $c2p_settings;?>  
         
@@ -291,7 +292,7 @@ class CSV2POST_Defaultglobalpostsettings_View extends CSV2POST_View {
 
                 <?php
                 // date settings
-                $this->UI->option_radiogroup( 'Date Method', 'publishdatemethod', 'publishdatemethod', array( 'wordpress' => 'Wordpress', 'data' => 'Imported Dates', 'incremental' => 'Incremental', 'random' => 'Random' ), $c2p_settings['projectdefaults']['dates']['publishdatemethod'] );
+                $this->UI->option_radiogroup( 'Date Method', 'publishdatemethod', 'publishdatemethod', array( 'wordpress' => 'WordPress', 'data' => 'Imported Dates', 'incremental' => 'Incremental', 'random' => 'Random' ), $c2p_settings['projectdefaults']['dates']['publishdatemethod'] );
                 
                 // imported dates
                 $this->UI->option_subline( 'imported dates configuration' );

@@ -69,9 +69,10 @@ class CSV2POST_Postsettings_View extends CSV2POST_View {
         
         // create class objects
         $this->CSV2POST = CSV2POST::load_class( 'CSV2POST', 'class-csv2post.php', 'classes' );
-        $this->UI = CSV2POST::load_class( 'C2P_UI', 'class-ui.php', 'classes' ); 
-        $this->DB = CSV2POST::load_class( 'C2P_DB', 'class-wpdb.php', 'classes' );
-        $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
+        $this->UI = CSV2POST::load_class( 'CSV2POST_UI', 'class-ui.php', 'classes' ); 
+        $this->DB = CSV2POST::load_class( 'CSV2POST_DB', 'class-wpdb.php', 'classes' );
+        $this->PHP = CSV2POST::load_class( 'CSV2POST_PHP', 'class-phplibrary.php', 'classes' );
+        $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
                         
         // load the current project row and settings from that row
         if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
@@ -148,8 +149,8 @@ class CSV2POST_Postsettings_View extends CSV2POST_View {
     * @version 1.0.0
     */
     public function postbox_postsettings_basicpostoptions( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Basic options all posts have. If you do not submit this form all posts will use your blogs own defaults. So feel free to make use of Wordpress own core settings instead.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Basic options all posts have. If you do not submit this form all posts will use your blogs own defaults. So feel free to make use of WordPress own core settings instead.', 'csv2post' ), false );        
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         ?>  
 
             <table class="form-table">  
@@ -205,7 +206,7 @@ class CSV2POST_Postsettings_View extends CSV2POST_View {
     */
     public function postbox_postsettings_databasedoptions( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'More very common post options but these require specific data. They are also optional. Ignore this form if your unsure.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
         global $c2p_settings;?>  
 
@@ -255,7 +256,7 @@ class CSV2POST_Postsettings_View extends CSV2POST_View {
     */
     public function postbox_postsettings_authoroptions( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'If you have email address and usernames in your data. You can create users who will be applied as authors to the posts they share a row with.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
         global $c2p_settings;
         ?>  
@@ -294,7 +295,7 @@ class CSV2POST_Postsettings_View extends CSV2POST_View {
     */
     public function postbox_postsettings_defaulttagrules( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Import pre-made tags or generate them.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title']);
+        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
         global $c2p_settings;
         ?>  

@@ -69,10 +69,11 @@ class CSV2POST_Datasourceslist_View extends CSV2POST_View {
         
         // create class objects
         $this->CSV2POST = CSV2POST::load_class( 'CSV2POST', 'class-csv2post.php', 'classes' );
-        $this->UI = CSV2POST::load_class( 'C2P_UI', 'class-ui.php', 'classes' ); 
-        $this->DB = CSV2POST::load_class( 'C2P_DB', 'class-wpdb.php', 'classes' );
-        $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' );
-
+        $this->UI = CSV2POST::load_class( 'CSV2POST_UI', 'class-ui.php', 'classes' ); 
+        $this->DB = CSV2POST::load_class( 'CSV2POST_DB', 'class-wpdb.php', 'classes' );
+        $this->PHP = CSV2POST::load_class( 'CSV2POST_PHP', 'class-phplibrary.php', 'classes' );
+        $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
+        
         // set current project values
         if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
             $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] ); 
@@ -154,7 +155,7 @@ class CSV2POST_Datasourceslist_View extends CSV2POST_View {
     * Displays one or more tables of data at the top of the page before post boxes
     * 
     * @author Ryan R. Bayne
-    * @package Wordpress Plugin Framework Pro
+    * @package WordPress Plugin Framework Pro
     * @since 0.0.1
     * @version 1.0
     */

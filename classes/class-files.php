@@ -7,7 +7,7 @@
  * @since 8.0.0
  */
 
-// load in Wordpress only
+// load in WordPress only
 defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 
 /** 
@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 class C2P_Files { 
     
     public function __construct() {
-        $this->PHP = CSV2POST::load_class( 'C2P_PHP', 'class-phplibrary.php', 'classes' ); # php library by Ryan R. Bayne  
+        $this->PHP = CSV2POST::load_class( 'CSV2POST_PHP', 'class-phplibrary.php', 'classes' ); # php library by Ryan R. Bayne  
     }
     
     /**
@@ -207,7 +207,7 @@ class C2P_Files {
             ob_end_clean();  // turn output buffering back off
         }
     
-        // if $uploads is empty use Wordpress default uploads directory function wp_upload_dir()       
+        // if $uploads is empty use WordPress default uploads directory function wp_upload_dir()       
         if ( empty( $uploads ) ) {
             $uploads = wp_upload_dir();
         }
@@ -223,7 +223,7 @@ class C2P_Files {
 
         // if WP error return $result array and error
         if ( false !== $uploads['error'] ) {
-            $result['message'] = __( 'Wordpress wp_upload_dir() returned an error.', 'csv2post' );
+            $result['message'] = __( 'WordPress wp_upload_dir() returned an error.', 'csv2post' );
             $result['error'] = $uploads['error'];
             return $result;    
         } 

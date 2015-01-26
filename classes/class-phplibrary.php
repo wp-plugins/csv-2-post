@@ -9,11 +9,11 @@
  * @since 8.0.0
  */
 
-// load in Wordpress only
+// load in WordPress only
 defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
  
-//class C2P_PHP extends C2P_Flags { commented 14092014
-class C2P_PHP {  
+//class CSV2POST_PHP extends C2P_Flags { commented 14092014
+class CSV2POST_PHP {  
     /**
     * Performs a var_dump if debug_mode active (debug_mode is only active when on installation blog unless manually activated)
     */
@@ -158,7 +158,7 @@ class C2P_PHP {
     * @package CSV 2 POST
     * @since 8.0.0  
     */
-    public function clean_numeric( $string) {
+    public function clean_numeric( $string ) {
         $string = str_replace( ' ', '', $string);
         return trim( $string);
     }    
@@ -393,8 +393,8 @@ class C2P_PHP {
     * @param mixed $version
     */
     public function arrayinfo_set( $array, $line, $function, $file ){
-        global $c2p_currentversion;
-        $array['arrayinfo']['version'] = $c2p_currentversion;
+        global $csv2post_filesversion;
+        $array['arrayinfo']['version'] = $csv2post_filesversion;
         $array['arrayinfo']['line'] = $line;
         $array['arrayinfo']['function'] = $function;
         $array['arrayinfo']['file'] = $file;
@@ -745,5 +745,5 @@ class C2P_PHP {
         return strtolower ( $string );        
     }  
         
-}// end class C2P_PHP
+}// end class CSV2POST_PHP
 ?>

@@ -79,7 +79,7 @@ class C2P_Help {
     /**
     * Array of help content. First entry is an example using functions that help with manual entry.
     * The rest of the array is generated using data stored on the WebTechGlobal website and using
-    * a Wordpress plugin created by WTG for the mangement of documentation.
+    * a WordPress plugin created by WTG for the mangement of documentation.
     * 
     * @author Ryan Bayne
     * @package CSV 2 POST
@@ -90,17 +90,17 @@ class C2P_Help {
         $h = array();
       
         // PAGE: main
-        $h[ 'main' ][ 'pageinfo' ] = self::enterpage( __( 'Welcome', 'csv2post' ), __( 'My name Ryan and I can help. If your not new to CSV 2 POST you may notice a lot of help text in version 8 has been removed from the interface already. Do not worry it is only temporary. I decided that it was best for everyone if the help text was typed and published on WebTechGlobal then imported to the plugin using a clever system. That clever system is being made right now and involves a Wordpress plugin plus SOAP web services. I refer to it as documentation handling. Such a system has never been seen in any Wordpress plugin. In short it will deliver help content from the plugins website too the plugins interface.', 'csv2post' ), 'www.webtechglobal.co.uk', 'www.youtube.com/WebTechGlobal' );
+        $h[ 'main' ][ 'pageinfo' ] = self::enterpage( __( 'Welcome', 'csv2post' ), __( 'My name Ryan and I can help. If your not new to CSV 2 POST you may notice a lot of help text in version 8 has been removed from the interface already. Do not worry it is only temporary. I decided that it was best for everyone if the help text was typed and published on WebTechGlobal then imported to the plugin using a clever system. That clever system is being made right now and involves a WordPress plugin plus SOAP web services. I refer to it as documentation handling. Such a system has never been seen in any WordPress plugin. In short it will deliver help content from the plugins website too the plugins interface.', 'csv2post' ), 'www.webtechglobal.co.uk', 'www.youtube.com/WebTechGlobal' );
 
         // PAGE: generalsettings (EXAMPLE ONLY THIS PAGE DOES NOT EXIST)      
         $h[ 'generalsettings' ][ 'pageinfo' ][ 'pagetitle' ]       = __( 'General Post Settings', 'csv2post' ); 
-        $h[ 'generalsettings' ][ 'pageinfo' ][ 'pageabout' ]       = __( 'Beta Testing: These settings reflect what Wordpress already has to offer. You will find these settings on the Edit Post screen and in most other .csv import plugins.', 'csv2post' );    
+        $h[ 'generalsettings' ][ 'pageinfo' ][ 'pageabout' ]       = __( 'Beta Testing: These settings reflect what WordPress already has to offer. You will find these settings on the Edit Post screen and in most other .csv import plugins.', 'csv2post' );    
         $h[ 'generalsettings' ][ 'pageinfo' ][ 'pagereadmoreurl' ] = 'https://codex.wordpress.org/Post_Status';
         $h[ 'generalsettings' ][ 'pageinfo' ][ 'pagevideourl' ]    = 'http://www.youtube.com/2UQfk1PLj2s?t=2m';
         $h[ 'generalsettings' ][ 'pageinfo' ][ 'pagediscussurl' ]  = 'http://forum.webtechglobal.co.uk';
         //                                 FORM: basicpostoptions
         $h[ 'generalsettings' ][ 'forms' ][ 'basicpostoptions' ][ 'formtitle' ]       = __( 'Basic Post Options' );
-        $h[ 'generalsettings' ][ 'forms' ][ 'basicpostoptions' ][ 'formabout' ]       = __( 'Beta Testing: These are the first and most commonly used options when creating posts in Wordpress. The selections you make here will only apply to posts created by this plugin. If you want to read more about each setting you should use the Wordpress.org codex.' );
+        $h[ 'generalsettings' ][ 'forms' ][ 'basicpostoptions' ][ 'formabout' ]       = __( 'Beta Testing: These are the first and most commonly used options when creating posts in WordPress. The selections you make here will only apply to posts created by this plugin. If you want to read more about each setting you should use the WordPress.org codex.' );
         $h[ 'generalsettings' ][ 'forms' ][ 'basicpostoptions' ][ 'formreadmoreurl' ] = 'https://codex.wordpress.org/Post_Status';
         $h[ 'generalsettings' ][ 'forms' ][ 'basicpostoptions' ][ 'formvideourl' ]    = 'http://www.youtube.com/2UQfk1PLj2s?t=2m';
         $h[ 'generalsettings' ][ 'forms' ][ 'basicpostoptions' ][ 'formdiscussurl' ]  = 'http://forum.webtechglobal.co.uk';
@@ -118,7 +118,7 @@ class C2P_Help {
         // PAGES: betatest1
         $h[ 'betatest1' ][ 'pageinfo' ] = self::enterpage( 'Testers', 'Beta Testing: About testers area about text intro text help text etc', 'www.webtechglobal.co.uk', 'www.youtube.com', 'discussurl' );
         // FORM: postbox_betatest1_t1
-        $h[ 'betatest1' ][ 'forms' ][ 'postbox_betatest1_t1' ] = self::enterform( __( 'New Project & New CSV Files', 'csv2post' ), __( 'Beta Testing: After uploading your .csv file/s using Wordpress, FTP or another plugin. Enter the path/s into the form then submit. The plugin will do various checks to ensure your file/s can be used and end with creating one or more database tables.', 'csv2post' ), false, false, false);
+        $h[ 'betatest1' ][ 'forms' ][ 'postbox_betatest1_t1' ] = self::enterform( __( 'New Project & New CSV Files', 'csv2post' ), __( 'Beta Testing: After uploading your .csv file/s using WordPress, FTP or another plugin. Enter the path/s into the form then submit. The plugin will do various checks to ensure your file/s can be used and end with creating one or more database tables.', 'csv2post' ), false, false, false);
         // OPTIONS for FORM postbox_betatest1_t1
         $h[ 'betatest1' ][ 'forms' ][ 'postbox_betatest1_t1' ][ 'options' ][ 'csvfile1' ] = self::enteroption( 'CSV File 1', 'Beta Testing: Enter the local path to your .csv file. If multiple fields are available for your version of the plugin. You may enter paths to multiple .csv file. CSV 2 POST will merge the data and can do so using various methods. Premium purchase is recommended for professional projects especially if data updated will be required.', false, false );
               

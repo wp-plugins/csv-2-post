@@ -125,7 +125,7 @@ msgstr ""
 #. translators: plugin header field 'Description'
 #: csv-2-post.php:0
 #@ csv2post
-msgid "CSV 2 POST data importer for Wordpress by Ryan Bayne @WebTechGlobal."
+msgid "CSV 2 POST data importer for WordPress by Ryan Bayne @WebTechGlobal."
 msgstr ""
 
 #. translators: plugin header field 'Author'
@@ -577,7 +577,7 @@ msgstr ""
 
 #: functions/class/requests.php:205
 #@ default
-msgid "You do not have the required permissions to un-install CSV 2 POST. The Wordpress role required is delete_plugins, usually granted to Administrators."
+msgid "You do not have the required permissions to un-install CSV 2 POST. The WordPress role required is delete_plugins, usually granted to Administrators."
 msgstr ""
 
 #: functions/class/requests.php:215
@@ -1047,7 +1047,7 @@ msgstr ""
 #: functions/class/requests.php:1721
 #@ default
 msgid ""
-"Images will be imported during post creation to the Wordpress media library and inserted to\n"
+"Images will be imported during post creation to the WordPress media library and inserted to\n"
 "        content as a list if you are using the #localimagelist# token."
 msgstr ""
 
@@ -1171,11 +1171,6 @@ msgstr ""
 #: functions/class/wpmain.php:491
 #@ csv2post
 msgid "Development Insight"
-msgstr ""
-
-#: functions/class/wpmain.php:503
-#@ default
-msgid "Pledge £9.99 to the CSV 2 POST project for 50% discount on the premium edition."
 msgstr ""
 
 #: functions/class/wpmain.php:544
@@ -1805,21 +1800,6 @@ msgstr ""
 msgid "Computer Sample Data"
 msgstr ""
 
-#: views/main/about.php:21
-#@ default
-msgid ""
-"I've saved information from PC World to make a sample file. The file is stored on Google Docs and is public. Feel free\n"
-"        to download and test the plugin using my sample data. You will see this data in screenshots and\n"
-"        video tutorials for both free and premium editions of the plugin."
-msgstr ""
-
-#: views/main/about.php:32
-#@ default
-msgid ""
-"To push the plugin I've saved information from PC World, split into three separate files.\n"
-"        This will be used to test multi-file projects and the data engine within CSV 2 POST."
-msgstr ""
-
 #: views/main/about.php:38
 #@ default
 msgid "View Original Spreadsheets"
@@ -1909,47 +1889,15 @@ msgstr ""
 msgid "Support"
 msgstr ""
 
-#: views/main/about.php:106
-#@ csv2post
-msgid ""
-"All users (free and premium) are invited to use the WebTechGlobal <a href=\"http://forum.webtechglobal.co.uk/viewforum.php?f=8\" title=\"CSV 2 POST Forum\" target=\"_blank\">Forum</a>. Simply <a href=\"http://www.webtechglobal.co.uk/wp-login.php?action=register\" title=\"Forum\" target=\"_blank\">register</a> on our\n"
-"        Wordpress blog, <a href=\"http://www.webtechglobal.co.uk/wp-login.php\" title=\"WebTechGlobal Log-In\" target=\"_blank\">log into</a> your WTG WP account, active your account by answering the anti-spam question\n"
-"        and then your phpBB forum account will be automatically created. You can read more <a href=\"http://forum.webtechglobal.co.uk/viewtopic.php?f=18&t=8\" title=\"How To Register\" target=\"_blank\">detailed instructions</a> here\n"
-"        with details about our WP to phpBB bridge."
-msgstr ""
-
 #: views/main/about.php:113
 #@ csv2post
 msgid "ADA Compliant Videos"
-msgstr ""
-
-#: views/main/about.php:117
-#@ csv2post
-msgid ""
-"I have witnessed little support for those who are hearing impaired among Wordpress tutorials. Do\n"
-"        people use their own methods to obtain suitable text and tutorials for learning Wordpress? Whatever the answer\n"
-"        I would like to know if anyone requires ADA compliant videos for CSV 2 POST. I have considering mailing a CD\n"
-"        of HD tutorials with SAMI and SRT files. Please discuss this on the <a href=\"http://forum.webtechglobal.co.uk\" title=\"Discuss videos for the hearing impaired\" target=\"_blank\">WebTechGlobal forum</a>."
 msgstr ""
 
 #: views/main/about.php:128
 #@ csv2post
 msgid "Please Like CSV 2 POST"
 msgstr "Like CSV 2 POST on Facebook"
-
-#: views/main/about.php:136
-#@ csv2post
-msgid "Win Premium Beta Plugins"
-msgstr ""
-
-#: views/main/about.php:140
-#@ csv2post
-msgid ""
-"Even a Beta software can be valuable software and anyone can win a limited number of free downloads. What I get in\n"
-"        return is extra testing before selling the software to people who need a reliable plugin. These competitions apply\n"
-"        to every premium Wordpress plugin developed by WebTechGlobal. There are multiple draws aimed at rewarding frequent visitors to www.webtechglobal.co.uk\n"
-"        and giving back to the Wordpress community."
-msgstr ""
 
 #: views/main/about.php:151
 #@ csv2post
@@ -1959,16 +1907,6 @@ msgstr ""
 #: views/main/about.php:155
 #@ csv2post
 msgid "My name is Ryan Bayne and I developed this plugin..."
-msgstr ""
-
-#: views/main/about.php:157
-#@ csv2post
-msgid ""
-"I live in a town named Dysart in Scotland. It is an old fishing town of folk just getting by but it has a view of\n"
-"        Edinburgh to help keep us proud. As I type this we are talking about Independence. With CSV 2 POST being such a big\n"
-"        project I find myself wondering if it is the product to get me and my family through hard times or will independence be a\n"
-"        walk in the park!? Either way I will not be taking any chances and I am very determined to make CSV 2 POST work for WebTechGlobal\n"
-"        and for you."
 msgstr ""
 
 #: views/main/generalsettings.php:21
@@ -2360,22 +2298,22 @@ msgstr ""
 
 #: views/main/install.php:220
 #@ default
-msgid "Wordpress Configuration"
+msgid "WordPress Configuration"
 msgstr ""
 
 #: views/main/install.php:223
 #@ default
-msgid "Wordpress settings which effect how this plugin operates..."
+msgid "WordPress settings which effect how this plugin operates..."
 msgstr ""
 
 #: views/main/install.php:226
 #@ csv2post
-msgid "Wordpress Database Charset:"
+msgid "WordPress Database Charset:"
 msgstr ""
 
 #: views/main/install.php:227
 #@ csv2post
-msgid "Wordpress Blog Charset:"
+msgid "WordPress Blog Charset:"
 msgstr ""
 
 #: views/main/log.php:241
@@ -2438,7 +2376,7 @@ msgstr ""
 
 #: views/main/log.php:401
 #@ csv2post
-msgid "Wordpress Erro"
+msgid "WordPress Erro"
 msgstr ""
 
 #: views/main/log.php:403
@@ -2551,7 +2489,7 @@ msgstr ""
 
 #: views/main/projectsettings.php:30
 #@ default
-msgid "Wordpress Post Settings (global)"
+msgid "WordPress Post Settings (global)"
 msgstr ""
 
 #: views/main/projectsettings.php:45
@@ -2561,7 +2499,7 @@ msgstr ""
 
 #: views/main/projectsettings.php:55
 #@ default
-msgid "Wordpress Post Settings (specific source)"
+msgid "WordPress Post Settings (specific source)"
 msgstr ""
 
 #: views/main/projectsettings.php:61
@@ -2672,7 +2610,7 @@ msgstr ""
 
 #: views/menu_array.php:55
 #@ default
-msgid "After uploading your .csv file/s using Wordpress, FTP or another plugin. Enter the path/s into the form then submit. The plugin will do various checks to ensure your file/s can be used and end with creating one or more database tables."
+msgid "After uploading your .csv file/s using WordPress, FTP or another plugin. Enter the path/s into the form then submit. The plugin will do various checks to ensure your file/s can be used and end with creating one or more database tables."
 msgstr ""
 
 #: views/menu_array.php:56
@@ -2902,7 +2840,7 @@ msgstr ""
 
 #: views/menu_array.php:117
 #@ default
-msgid "A list of the plugins database tables required for correct operation. You may this to cleanup if you wish to uninstall the plugin 100% as the tables will not be automatically reinstalled. Core (none project or custom) tables will be reinstalled if you disabled and activate the plugin again in Wordpress."
+msgid "A list of the plugins database tables required for correct operation. You may this to cleanup if you wish to uninstall the plugin 100% as the tables will not be automatically reinstalled. Core (none project or custom) tables will be reinstalled if you disabled and activate the plugin again in WordPress."
 msgstr ""
 
 #: views/menu_array.php:118
@@ -3050,14 +2988,9 @@ msgstr ""
 msgid "If the term has a parent, this column displays the terms ID (category ID)."
 msgstr ""
 
-#: views/menu_array.php:235
-#@ default
-msgid "Created multiple levels of categories (five levels in premium edition). Only use category creation features on this screen when you are confident that categories have been configured correctly."
-msgstr ""
-
 #: views/menu_array.php:256
 #@ default
-msgid "Custom Fields can be found on the Edit Post screen and are a type of meta. This meta is usually used to populate theme values. If you plan to spend a lot of time using Wordpress I recommend reading the official codex page for this topic."
+msgid "Custom Fields can be found on the Edit Post screen and are a type of meta. This meta is usually used to populate theme values. If you plan to spend a lot of time using WordPress I recommend reading the official codex page for this topic."
 msgstr ""
 
 #: views/menu_array.php:257
@@ -3102,7 +3035,7 @@ msgstr ""
 
 #: views/menu_array.php:290
 #@ default
-msgid "These are the first and most commonly used options when creating posts in Wordpress. The selections you make here will only apply to posts created by this plugin. If you want to read more about each setting you should use the Wordpress.org codex."
+msgid "These are the first and most commonly used options when creating posts in WordPress. The selections you make here will only apply to posts created by this plugin. If you want to read more about each setting you should use the WordPress.org codex."
 msgstr ""
 
 #: views/menu_array.php:291
@@ -3217,7 +3150,7 @@ msgstr ""
 
 #: views/menu_array.php:328
 #@ default
-msgid "This feature imports groups of images per post, using a single term per row of data. All images with the matched term, in a selected column of data, will be imported to the Wordpress media library. My sample data includes \"empire\", \"predator\" and \"revolution\" for three groups of images. The images are provided in the CSV 2 POST.zip in \"samples/imagegroups\". CSV 2 POST will automatically locate all images in a group if the data is created properly. The new media is also attached to the post being created as this all happens during post creation. Please keep in mind that a procedure like this gives Wordpress a lot to do per post so try not to make too many images in one event."
+msgid "This feature imports groups of images per post, using a single term per row of data. All images with the matched term, in a selected column of data, will be imported to the WordPress media library. My sample data includes \"empire\", \"predator\" and \"revolution\" for three groups of images. The images are provided in the CSV 2 POST.zip in \"samples/imagegroups\". CSV 2 POST will automatically locate all images in a group if the data is created properly. The new media is also attached to the post being created as this all happens during post creation. Please keep in mind that a procedure like this gives WordPress a lot to do per post so try not to make too many images in one event."
 msgstr ""
 
 #: views/menu_array.php:329
@@ -3227,7 +3160,7 @@ msgstr ""
 
 #: views/menu_array.php:329
 #@ default
-msgid "Select the column that contains terms that can be found in your image names. My data terms are \"empire\", \"predator\" and \"revolution\". All images with \"empire\" in their name would be imported and assigned to that row/post as new attachments. The images would also be found in the Wordpress media library."
+msgid "Select the column that contains terms that can be found in your image names. My data terms are \"empire\", \"predator\" and \"revolution\". All images with \"empire\" in their name would be imported and assigned to that row/post as new attachments. The images would also be found in the WordPress media library."
 msgstr ""
 
 #: views/menu_array.php:330

@@ -10,11 +10,10 @@
 * @since 8.0.0
 */
 
-// load in Wordpress only
+// load in WordPress only
 defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 
-//class C2P_UpdatePlugin extends C2P_PHP{ commented 14092014
-class C2P_UpdatePlugin {  
+class CSV2POST_UpdatePlugin {  
     public function patch_800( $action_requested = 'update' ){
         $update_array = array();
         $update_array['info']['modificationrequired'] = true;
@@ -55,7 +54,7 @@ class C2P_UpdatePlugin {
         }
     }    
     public function nextversion_clean() {
-        global $c2p_currentversion;
+        global $csv2post_filesversion;
         
         $installed_version = CSV2POST::get_installed_version();
         
@@ -64,7 +63,7 @@ class C2P_UpdatePlugin {
         return $installed_version_cleaned + 1;       
     }
     public function changelist( $scope = 'next' ){
-        global $c2p_currentversion;
+        global $csv2post_filesversion;
         
         // standard messages for change types
         $added = __( 'New features added to the plugin, be sure to configure them to suit your needs.', 'csv2post' );

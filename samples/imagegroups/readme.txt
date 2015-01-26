@@ -9,4 +9,4 @@ panel. CSV 2 POST will then import groups of images per post. It does this
 by matching each unique term (one per row) with the filenames. 
 
 If you do all of this using my test data. You will create 3 posts, each
-with some images attached and resulting in new Wordpress media.
+with some images attached and resulting in new WordPress media.

@@ -1,13 +1,13 @@
 <?php
 /** 
-* Wordpress database interaction covering common queries
+* WordPress database interaction covering common queries
 * 
 * @package CSV 2 POST
 * @author Ryan Bayne   
 * @since 8.0.0
 */
 
-// load in Wordpress only
+// load in WordPress only
 defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 
 /**
@@ -18,8 +18,7 @@ defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 * @since 8.0.0
 * @version 1.0.4 
 */
-//class C2P_DB extends C2P_UpdatePlugin { commented 14092014
-class C2P_DB {     
+class CSV2POST_DB {     
     /**
     * select a single row from a single table
     * 
@@ -368,7 +367,7 @@ class C2P_DB {
     }
     
     /**
-    * Returns SQL query result of all option records in Wordpress options table that begin with the giving 
+    * Returns SQL query result of all option records in WordPress options table that begin with the giving 
     * 
     * @author Ryan R. Bayne
     * @package CSV 2 POST
@@ -407,7 +406,7 @@ class C2P_DB {
     
     /**
      * Checks if a database table name exists or not
-     * 1. One issue with this function is that Wordpress treats the lack of tables existence as an error
+     * 1. One issue with this function is that WordPress treats the lack of tables existence as an error
      * 2. Another approach is using csv2post_WP_SQL_get_tables() and checking the array for the table, this is error free
      * 
      * @author Ryan R. Bayne
@@ -444,7 +443,7 @@ class C2P_DB {
     }
     
     /**
-    * Returns array of tables from the Wordpress database
+    * Returns array of tables from the WordPress database
     * 
     * @author Ryan R. Bayne
     * @package CSV 2 POST
@@ -727,5 +726,5 @@ class C2P_DB {
         return $wpdb->get_var( "SELECT $column FROM $tablename ORDER BY $column DESC LIMIT 1" );        
     }
     
-}// end class C2P_DB
+}// end class CSV2POST_DB
 ?>
