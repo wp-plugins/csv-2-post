@@ -38,7 +38,7 @@ class CSV2POST {
      *
      * @const string
      */
-    const version = '8.1.33';
+    const version = '8.1.37';
     
     /**
      * CSV2POST version
@@ -872,7 +872,7 @@ class CSV2POST {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 0.0.1
-    * @version 1.0
+    * @version 1.1
     */
     public function complete_plugin_update() {
         // determine if manual update required or not 
@@ -880,17 +880,20 @@ class CSV2POST {
         $manual_update_require = false;
         $this->UpdatePlugin = self::load_class( 'CSV2POST_UpdatePlugin', 'class-updates.php', 'classes' );        
        
-        // does new version have an update method
-        if( method_exists( $this->UpdatePlugin, eval( 'patch_' . str_replace( '.', '', self::version ) ) ) )
-        { 
-            // run the new packages update method - these methods can take a command for special situations
-            eval( '$update_result_array = $this->Updates->patch_' . self::version .'( "update");' );
-            
-            // update stored version
-            if( $update_result_array['failed'] !== true){           
-                global $csv2post_filesversion;        
-                update_option( 'csv2post_installedversion', $csv2post_filesversion);        
-            }                                                                                        
+        if( !$package_version_cleaned )
+        {
+            // does new version have an update method
+            if( method_exists( $this->UpdatePlugin, 'patch_' . str_replace( '.', '', self::version ) ) )
+            { 
+                // run the new packages update method - these methods can take a command for special situations
+                eval( '$update_result_array = $this->Updates->patch_' . self::version .'( "update" );' );
+                
+                // update stored version
+                if( $update_result_array['failed'] !== true){           
+                    global $csv2post_filesversion;        
+                    update_option( 'csv2post_installedversion', $csv2post_filesversion);        
+                }                                                                                        
+            }
         }
     }
     

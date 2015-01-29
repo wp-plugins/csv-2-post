@@ -120,6 +120,9 @@ Please update this plugin using your WordPress Installed Plugins screen. Click o
 This method is safer than using any other source for the files.
 
 == Changelog == 
+= 8.1.37 =
+Fix - complete_plugin_update() was using an eval where not required! 
+
 = 8.1.36 =
 * Feature Changes
     * Beta area removed.
