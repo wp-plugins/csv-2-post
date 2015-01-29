@@ -5,7 +5,7 @@ License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: CSV 2 POST, csv2post,dataimport,importer,.csv,data,autoblogger,autoblogging,wpcsvimporter, spintax, text spinner, post updating,
 Requires at least: 3.8.0
-Tested up to: 4.0.0
+Tested up to: 4.1.0
 Stable tag: trunk
 
 WordPress data import and autoblogger plugin. Unlimited creation and post updating. Tools include spintax, dynamic template
