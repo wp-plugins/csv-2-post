@@ -40,7 +40,7 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function meta_box_array() {
         // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
@@ -61,7 +61,7 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
      * @param array $data Data for this view
      */
     public function setup( $action, array $data ) {
-        global $c2p_settings;
+        global $csv2post_settings;
         
         // create constant for view name
         if(!defined( "WTG_CSV2POST_VIEWNAME") ){define( "WTG_CSV2POST_VIEWNAME", $this->view_name );}
@@ -74,9 +74,9 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
         $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
                         
         // load the current project row and settings from that row
-        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
+        if( isset( $csv2post_settings['currentproject'] ) && $csv2post_settings['currentproject'] !== false ) {
             
-            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] ); 
+            $this->project_object = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] ); 
             if( !$this->project_object ) {
                 $this->current_project_settings = false;
             } else {
@@ -104,7 +104,7 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 0.0.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function metaboxes() {
         parent::register_metaboxes( self::meta_box_array() );     
@@ -119,7 +119,7 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 0.0.2
-    * @version 1.0.0
+    * @version 1.1
     */
     public function dashboard() { 
         parent::dashboard_widgets( self::meta_box_array() );  
@@ -145,7 +145,7 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_customfields_newcustomfield( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Create a custom field template. Every post you create in this project will get that custom field and the value will be based on the template you create.', 'csv2post' ), false );        
@@ -178,7 +178,7 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_customfields_customfieldstable( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'This is a table of the custom fields you have setup. This will add meta data to every post you make in this project.', 'csv2post' ), false );        
@@ -188,7 +188,7 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
         if(!isset( $this->current_project_settings['customfields']['cflist'] ) || !is_array( $this->current_project_settings['customfields']['cflist'] ) ){
             $this->current_project_settings['customfields']['cflist'] = array();
         }
-         var_dump( $this->current_project_settings['customfields']['cflist'] );
+       
         $CFTable = new C2P_CustomFields_Table();
         $CFTable->prepare_items_further( $this->current_project_settings['customfields']['cflist'],100);
         ?>
@@ -208,7 +208,7 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_customfields_shopperpresscustomfieldkeys( $data, $box ) {     
         echo '<p>' . __( 'A list of the custom field names (meta keys) for the ShopperPress theme.', 'csv2post' ) . '</p>';
@@ -248,10 +248,10 @@ class C2P_CustomFields_Table extends WP_List_Table {
         ) );
     }
 
-    function column_default( $item, $column_name){
+    function column_default( $item, $column_name ){
         switch( $column_name){
             case 'delete':
-                return $this->CSV2POST->linkaction( $_GET['page'], 'deletecustomfieldrule', __( 'Delete this custom field rule' ), 'Delete', '&cfid='.$item['id'] );    
+                return '<a href="'. wp_nonce_url( admin_url() . 'admin.php?page=' . $_GET['page'] . '&csv2postaction=deletecustomfieldrule&cfid=' . $item['id'], 'deletecustomfieldrule' ) . '" title="Delete" class="button c2pbutton">Delete</a>';
                 break;                                                                   
             default:
                 return $item[$column_name];

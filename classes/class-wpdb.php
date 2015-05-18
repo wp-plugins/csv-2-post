@@ -25,7 +25,7 @@ class CSV2POST_DB {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function selectrow( $tablename, $condition, $select = '*' ){
         global $wpdb;
@@ -120,7 +120,7 @@ class CSV2POST_DB {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function update( $tablename, $condition, $fields ){
         global $wpdb;
@@ -142,7 +142,7 @@ class CSV2POST_DB {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0
+    * @version 1.1
     */
     public function delete( $tablename, $condition ){
         global $wpdb;
@@ -155,7 +155,7 @@ class CSV2POST_DB {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0
+    * @version 1.1
     */
     public function count_rows( $tablename, $where = '' ){
         global $wpdb;      
@@ -168,7 +168,7 @@ class CSV2POST_DB {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0
+    * @version 1.1
     */
     public function get_value( $columns, $tablename, $conditions ){
         global $wpdb;
@@ -181,7 +181,7 @@ class CSV2POST_DB {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0 
+    * @version 1.1 
     * 
     * @param mixed $meta_key
     * @param mixed $meta_value
@@ -219,7 +219,7 @@ class CSV2POST_DB {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0 
+    * @version 1.1 
     * 
     * @access private
     */
@@ -244,7 +244,7 @@ class CSV2POST_DB {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0 
+    * @version 1.1 
     * 
     * Idea for this from Ikonboard
     * Possible query values: INSERT, INSERT_SELECT, UPDATE, SELECT
@@ -295,7 +295,7 @@ class CSV2POST_DB {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0 
+    * @version 1.1 
     */
     public function customfield_keys_distinct() {
         global $wpdb;
@@ -320,7 +320,7 @@ class CSV2POST_DB {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0 
+    * @version 1.1 
     */
     public function metakeys_distinct() {
         global $wpdb;
@@ -345,7 +345,7 @@ class CSV2POST_DB {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0
+    * @version 1.1
     *  
     * @return 0 on fail or no records or the number of records in table
     */
@@ -372,7 +372,7 @@ class CSV2POST_DB {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0 
+    * @version 1.1 
     */
     public function options_beginning_with( $prependvalue){    
         global $wpdb;
@@ -397,7 +397,7 @@ class CSV2POST_DB {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0
+    * @version 1.1
     */
     public function post_exist_byid( $id){
         global $wpdb;
@@ -412,7 +412,7 @@ class CSV2POST_DB {
      * @author Ryan R. Bayne
      * @package CSV 2 POST
      * @since 7.0.0
-     * @version 1.0.0
+     * @version 1.1
      * 
      * @global array $wpdb
      * @param string $table_name
@@ -429,7 +429,7 @@ class CSV2POST_DB {
      * @author Ryan R. Bayne
      * @package CSV 2 POST
      * @since 7.0.0
-     * @version 1.0.0 
+     * @version 1.1 
      * 
      * @param string $table_name (possible database table name)
      */
@@ -448,7 +448,7 @@ class CSV2POST_DB {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0 
+    * @version 1.1 
     * 
     * @returns array $tables_array
     */
@@ -469,7 +469,7 @@ class CSV2POST_DB {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0 
+    * @version 1.1 
     * 
     * @param mixed $return_array [false] = mysql result [true] = array of the result
     * @param mixed $columns_only true will not return column information
@@ -513,7 +513,7 @@ class CSV2POST_DB {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0 
+    * @version 1.1 
     * 
     * @param mixed $table_name
     * @returns boolean
@@ -534,7 +534,7 @@ class CSV2POST_DB {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0 
+    * @version 1.1 
     *  
     * @param mixed $old_key
     * @param mixed $new_key
@@ -557,7 +557,7 @@ class CSV2POST_DB {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0 
+    * @version 1.1 
     */
     public function log_queryactions() {
         global $wpdb;    
@@ -593,7 +593,7 @@ class CSV2POST_DB {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function get_duplicate_keys( $table_name, $column ) {
          $rows_with_duplicates = array();
@@ -719,7 +719,7 @@ class CSV2POST_DB {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.34
-    * @version 1.0.0
+    * @version 1.1
     */
     public function max_value( $column, $tablename ) {
         global $wpdb;        

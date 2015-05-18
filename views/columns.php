@@ -13,14 +13,6 @@
 // Prohibit direct script loading
 defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 
-/**
- * Category column selection [class] 
- * 
- * @package CSV 2 POST
- * @subpackage Views
- * @author Ryan Bayne
- * @since 8.1.3
- */
 class CSV2POST_Columns_View extends CSV2POST_View {
 
     /**
@@ -42,7 +34,7 @@ class CSV2POST_Columns_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function meta_box_array() {
         // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
@@ -62,7 +54,7 @@ class CSV2POST_Columns_View extends CSV2POST_View {
      * @param array $data Data for this view
      */
     public function setup( $action, array $data ) {
-        global $c2p_settings;
+        global $csv2post_settings;
 
         // create constant for view name
         if(!defined( "WTG_CSV2POST_VIEWNAME") ){define( "WTG_CSV2POST_VIEWNAME", $this->view_name );}
@@ -75,9 +67,9 @@ class CSV2POST_Columns_View extends CSV2POST_View {
         $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
                         
         // load the current project row and settings from that row
-        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
+        if( isset( $csv2post_settings['currentproject'] ) && $csv2post_settings['currentproject'] !== false ) {
                 
-            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] ); 
+            $this->project_object = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] ); 
             if( !$this->project_object ) {
                 $this->current_project_settings = false;
             } else {
@@ -110,7 +102,7 @@ class CSV2POST_Columns_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function metaboxes() {
         parent::register_metaboxes( self::meta_box_array() );     
@@ -125,7 +117,7 @@ class CSV2POST_Columns_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.0
     */
     public function dashboard() { 
         parent::dashboard_widgets( self::meta_box_array() );  
@@ -139,7 +131,7 @@ class CSV2POST_Columns_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.32
-    * @version 1.0.1
+    * @version 1.1
     */
     function parent( $data, $box ) {
         eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
@@ -151,13 +143,13 @@ class CSV2POST_Columns_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.0
     */
     public function postbox_columns_categorydata( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Select your columns of categories (term data) in order that your categories need to be in as a hierarchy.', 'csv2post' ), false );        
         $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
-        global $c2p_settings;
+        global $csv2post_settings;
         ?>  
 
             <table class="form-table">
@@ -170,7 +162,7 @@ class CSV2POST_Columns_View extends CSV2POST_View {
                     $default_column = $this->current_project_settings['categories']['data'][$i]['column'];                
                 }
                 $level_label = $i + 1;
-                $this->UI->option_projectcolumns_categoriesmenu( __( "Level $level_label"), $c2p_settings['currentproject'], "categorylevel$i", "categorylevel$i", $default_table, $default_column, 'notselected', 'Not Selected' );
+                $this->UI->option_projectcolumns_categoriesmenu( __( "Level $level_label"), $csv2post_settings['currentproject'], "categorylevel$i", "categorylevel$i", $default_table, $default_column, 'notselected', 'Not Selected' );
             }
             
             ?>
@@ -181,18 +173,18 @@ class CSV2POST_Columns_View extends CSV2POST_View {
     }    
     
     /**
-    * post box function for testing
+    * Category description template setup.
     * 
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.0
     */
     public function postbox_columns_categorydescriptions( $data, $box ) {    
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Enter column replacement tokens to generate unique category descriptions. One of many optional features, do not use if you do not require category descriptions.', 'csv2post' ), false );        
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Paste one or more column replacement tokens to build a category descriptions template.', 'csv2post' ), false );        
         $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );     
         
-        global $c2p_settings;
+        global $csv2post_settings;
 
         if(empty( $this->current_project_settings['categories']['data'] ) ){
             _e( 'Please select category data columns.', 'csv2post' );    
@@ -202,20 +194,14 @@ class CSV2POST_Columns_View extends CSV2POST_View {
             <table class="form-table">
             <?php
             foreach( $this->current_project_settings['categories']['data'] as $key => $catarray ){
-           
-                // use description data
-                $default_table = false;
-                $default_column = false;
-                if( isset( $this->current_project_settings['categories']['data'][$key] ) ){
-                    $default_table = $this->current_project_settings['categories']['descriptiondata'][$key]['table'];
-                    $default_column = $this->current_project_settings['categories']['descriptiondata'][$key]['column'];                
-                }
-                $level_label = $key + 1;
-                $this->UI->option_projectcolumns_categoriesmenu( __( "Level $level_label"), $c2p_settings['currentproject'], "categorylevel$key", "categorylevel$key", $default_table, $default_column, 'notselected', 'Not Selected' );
-     
+
                 // or create a template
                 $current_value = '';
-                if( isset( $this->current_project_settings['categories']['descriptiontemplates'][$key] ) ){$current_value = $this->current_project_settings['categories']['descriptiontemplates'][$key];} 
+
+                if( isset( $this->current_project_settings['categories']['meta'][$key] ) ){
+                    $current_value = $this->current_project_settings['categories']['meta'][$key]['description'];
+                }
+                 
                 $level_label = $key + 1;
                 $this->UI->option_textarea( "Level $level_label Description", 'level'.$key.'description', 'level'.$key.'description',10,30, $current_value); 
             }
@@ -229,12 +215,12 @@ class CSV2POST_Columns_View extends CSV2POST_View {
     }    
     
     /**
-    * post box function for testing
+    * Form for selecting a pre-set level one category.
     * 
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.0
     */
     public function postbox_columns_presetlevelonecategory( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Select a category to be the parent over all of the categories you plan to create. Only use if all of our imported records belong under that main category.', 'csv2post' ), false );        
@@ -256,15 +242,14 @@ class CSV2POST_Columns_View extends CSV2POST_View {
         <?php 
         $this->UI->postbox_content_footer();
     }
-
-    
+ 
     /**
-    * post box function for testing
+    * Category pairing form
     * 
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.0
     */
     public function postbox_columns_categorypairing( $data, $box ) {    
         if(!isset( $this->current_project_settings['categories']['data'] ) ){
@@ -284,7 +269,13 @@ class CSV2POST_Columns_View extends CSV2POST_View {
                     $table = $catarray['table'];
                     $current_category_id = 'nocurrentcategoryid';
                                         
-                    $distinct_result = $wpdb->get_results( "SELECT DISTINCT $column FROM $table",ARRAY_A);
+                    $distinct_result = $wpdb->get_results( 
+                        
+                        "SELECT DISTINCT $column
+                        FROM $table"
+                        
+                    ,ARRAY_A);
+                    
                     foreach( $distinct_result as $key => $value ){
                         $distinctval_cleaned = $this->PHP->clean_string( $value[$column] );
                         $nameandid = 'distinct'.$table.$column.$distinctval_cleaned;

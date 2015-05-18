@@ -25,50 +25,117 @@ class C2P_TabMenu {
 
         ######################################################
         #                                                    #
+        #                   DATA SOURCES                     #
+        #                                                    #
+        ###################################################### 
+        // datatools 
+        $menu_array['datatools']['groupname'] = 'datasources';
+        $menu_array['datatools']['slug'] = 'csv2post_datatools'; 
+        $menu_array['datatools']['menu'] = __( 'Data Sources', 'csv2post' );
+        $menu_array['datatools']['pluginmenu'] = __( 'Data Tools', 'csv2post' );
+        $menu_array['datatools']['name'] = "datatools";
+        $menu_array['datatools']['title'] = __( 'Data Tools', 'csv2post' ); 
+        $menu_array['datatools']['parent'] = 'parent'; 
+        $menu_array['datatools']['tabmenu'] = true;
+                
+        // csvfiles
+        $menu_array['csvfiles']['groupname'] = 'datasources';
+        $menu_array['csvfiles']['slug'] = 'csv2post_csvfiles'; 
+        $menu_array['csvfiles']['menu'] = __( 'Data Sources', 'csv2post' );
+        $menu_array['csvfiles']['pluginmenu'] = __( 'CSV Files', 'csv2post' );
+        $menu_array['csvfiles']['name'] = "csvfilelist";
+        $menu_array['csvfiles']['title'] = __( 'CSV Files', 'csv2post' ); 
+        $menu_array['csvfiles']['parent'] = 'datatools'; 
+        $menu_array['csvfiles']['tabmenu'] = true;
+                
+        // directorysources
+        $menu_array['directorysources']['groupname'] = 'datasources';
+        $menu_array['directorysources']['slug'] = 'csv2post_directorysources'; 
+        $menu_array['directorysources']['menu'] = __( 'Directory Sources', 'csv2post' );
+        $menu_array['directorysources']['pluginmenu'] = __( 'Directory Sources', 'csv2post' );
+        $menu_array['directorysources']['name'] = "directorysources";
+        $menu_array['directorysources']['title'] = __( 'Directory Sources', 'csv2post' ); 
+        $menu_array['directorysources']['parent'] = 'datatools'; 
+        $menu_array['directorysources']['tabmenu'] = true;                
+        
+        // datahistory
+        $menu_array['datahistory']['groupname'] = 'datasources';
+        $menu_array['datahistory']['slug'] = 'csv2post_datahistory'; 
+        $menu_array['datahistory']['menu'] = __( 'Data History', 'csv2post' );
+        $menu_array['datahistory']['pluginmenu'] = __( 'Data History', 'csv2post' );
+        $menu_array['datahistory']['name'] = "datahistory";
+        $menu_array['datahistory']['title'] = __( 'Data History', 'csv2post' ); 
+        $menu_array['datahistory']['parent'] = 'datatools'; 
+        $menu_array['datahistory']['tabmenu'] = true;       
+
+        ######################################################
+        #                                                    #
         #                    PROJECTS                        #
         #                                                    #
         ###################################################### 
-        
-        // datasources  
-        $menu_array['datasources']['groupname'] = 'projects';
-        $menu_array['datasources']['slug'] = 'csv2post_datasources'; 
-        $menu_array['datasources']['menu'] = __( '1. Manage Projects', 'csv2post' );
-        $menu_array['datasources']['pluginmenu'] = __( 'Data Sources', 'csv2post' );
-        $menu_array['datasources']['name'] = "datasources";
-        $menu_array['datasources']['title'] = __( 'Data Sources', 'csv2post' ); 
-        $menu_array['datasources']['parent'] = 'parent'; 
-        $menu_array['datasources']['tabmenu'] = true; 
-
-        // datasourceslist (global) 
-        $menu_array['datasourceslist']['groupname'] = 'projects';
-        $menu_array['datasourceslist']['slug'] = 'csv2post_datasourceslist'; 
-        $menu_array['datasourceslist']['menu'] = __( 'Data Import', 'csv2post' );
-        $menu_array['datasourceslist']['pluginmenu'] = __( 'Global CSV List', 'csv2post' );
-        $menu_array['datasourceslist']['name'] = "datasourceslist";
-        $menu_array['datasourceslist']['title'] = __( 'Global CSV List', 'csv2post' ); 
-        $menu_array['datasourceslist']['parent'] = 'datasources'; 
-        $menu_array['datasourceslist']['tabmenu'] = true;
-                       
-        // projects  
-        $menu_array['projects']['groupname'] = 'projects';
-        $menu_array['projects']['slug'] = 'csv2post_projects'; 
-        $menu_array['projects']['menu'] = __( 'Projects', 'csv2post' );
-        $menu_array['projects']['pluginmenu'] = __( 'Projects', 'csv2post' );
-        $menu_array['projects']['name'] = "projects";
-        $menu_array['projects']['title'] = __( 'Projects', 'csv2post' ); 
-        $menu_array['projects']['parent'] = 'datasources'; 
-        $menu_array['projects']['tabmenu'] = true;
+    
+        // allprojectstools 
+        $menu_array['allprojectstools']['groupname'] = 'manageprojects';
+        $menu_array['allprojectstools']['slug'] = 'csv2post_allprojectstools'; 
+        $menu_array['allprojectstools']['menu'] = __( 'All Projects', 'csv2post' );
+        $menu_array['allprojectstools']['pluginmenu'] = __( 'Tools, Reports and Statistics', 'csv2post' );
+        $menu_array['allprojectstools']['name'] = "allprojectstools";
+        $menu_array['allprojectstools']['title'] = __( 'Tools, Reports and Statistics for ALL Projects', 'csv2post' ); 
+        $menu_array['allprojectstools']['parent'] = 'parent'; 
+        $menu_array['allprojectstools']['tabmenu'] = true;
+    
+        // projectstable  
+        $menu_array['projectstable']['groupname'] = 'manageprojects';
+        $menu_array['projectstable']['slug'] = 'csv2post_projectstable'; 
+        $menu_array['projectstable']['menu'] = __( 'Projects Table', 'csv2post' );
+        $menu_array['projectstable']['pluginmenu'] = __( 'Projects Table', 'csv2post' );
+        $menu_array['projectstable']['name'] = "projectstable";
+        $menu_array['projectstable']['title'] = __( 'Projects Table', 'csv2post' ); 
+        $menu_array['projectstable']['parent'] = 'allprojectstools'; 
+        $menu_array['projectstable']['tabmenu'] = true;
                 
+        // recent changes for all projects
+        $menu_array['allprojectshistory']['groupname'] = 'manageprojects';
+        $menu_array['allprojectshistory']['slug'] = 'csv2post_allprojectshistory'; 
+        $menu_array['allprojectshistory']['menu'] = __( 'All Projects History', 'csv2post' );
+        $menu_array['allprojectshistory']['pluginmenu'] = __( 'All Projects History', 'csv2post' );
+        $menu_array['allprojectshistory']['name'] = "allprojectshistory";
+        $menu_array['allprojectshistory']['title'] = __( 'All Projects History', 'csv2post' ); 
+        $menu_array['allprojectshistory']['parent'] = 'allprojectstools'; 
+        $menu_array['allprojectshistory']['tabmenu'] = true;
+        
+    
+        //last post based on all projects 
+        
+        
+        //defaultglobalpostsettings.php (one large form)       
+        
         ######################################################
         #                                                    #
-        #                      DATA                          #
+        #                  CURRENT PROJECT                   #
+        #                                                    #
+        ###################################################### 
+    
+        // projectchecklist  
+        $menu_array['projectchecklist']['groupname'] = 'currentprojectmanagement';
+        $menu_array['projectchecklist']['slug'] = 'csv2post_projectchecklist'; 
+        $menu_array['projectchecklist']['menu'] = __( 'Current Project', 'csv2post' );
+        $menu_array['projectchecklist']['pluginmenu'] = __( 'Checklist', 'csv2post' );
+        $menu_array['projectchecklist']['name'] = "projectchecklist";
+        $menu_array['projectchecklist']['title'] = __( 'Checklist', 'csv2post' ); 
+        $menu_array['projectchecklist']['parent'] = 'parent'; 
+        $menu_array['projectchecklist']['tabmenu'] = false;
+                         
+        ######################################################
+        #                                                    #
+        #                   PROJECT DATA                     #
         #                                                    #
         ###################################################### 
                 
         // rules  
         $menu_array['rules']['groupname'] = 'import';
         $menu_array['rules']['slug'] = 'csv2post_rules'; 
-        $menu_array['rules']['menu'] = __( '2. Project Data', 'csv2post' );
+        $menu_array['rules']['menu'] = __( '1. Project Data', 'csv2post' );
         $menu_array['rules']['pluginmenu'] = __( 'Rules', 'csv2post' );
         $menu_array['rules']['name'] = "rules";
         $menu_array['rules']['title'] = __( 'Projects Data Rules', 'csv2post' ); 
@@ -95,15 +162,15 @@ class C2P_TabMenu {
         $menu_array['sources']['parent'] = 'rules';  
         $menu_array['sources']['tabmenu'] = true;      
         
-        // table  
-        $menu_array['table']['groupname'] = 'import';
-        $menu_array['table']['slug'] = 'csv2post_table'; 
-        $menu_array['table']['menu'] = __( 'Data Table', 'csv2post' );
-        $menu_array['table']['pluginmenu'] = __( 'Data Table', 'csv2post' );
-        $menu_array['table']['name'] = "table";
-        $menu_array['table']['title'] = __( 'Data Table', 'csv2post' ); 
-        $menu_array['table']['parent'] = 'rules';
-        $menu_array['table']['tabmenu'] = true;
+        // projectsdata  
+        $menu_array['projectsdata']['groupname'] = 'import';
+        $menu_array['projectsdata']['slug'] = 'csv2post_projectsdata'; 
+        $menu_array['projectsdata']['menu'] = __( 'Data Table', 'csv2post' );
+        $menu_array['projectsdata']['pluginmenu'] = __( 'Data Table', 'csv2post' );
+        $menu_array['projectsdata']['name'] = "projectsdata";
+        $menu_array['projectsdata']['title'] = __( 'Data Table', 'csv2post' ); 
+        $menu_array['projectsdata']['parent'] = 'rules';
+        $menu_array['projectsdata']['tabmenu'] = true;
 
         ######################################################
         #                                                    #
@@ -114,7 +181,7 @@ class C2P_TabMenu {
         // columns  
         $menu_array['columns']['groupname'] = 'categories';
         $menu_array['columns']['slug'] = 'csv2post_columns'; 
-        $menu_array['columns']['menu'] = __( '3. Categories', 'csv2post' );
+        $menu_array['columns']['menu'] = __( '2. Categories', 'csv2post' );
         $menu_array['columns']['pluginmenu'] = __( 'Columns', 'csv2post' );
         $menu_array['columns']['name'] = "columns";
         $menu_array['columns']['title'] = __( 'Columns', 'csv2post' ); 
@@ -140,7 +207,7 @@ class C2P_TabMenu {
         // postsettings  
         $menu_array['postsettings']['groupname'] = 'design';
         $menu_array['postsettings']['slug'] = 'csv2post_postsettings'; 
-        $menu_array['postsettings']['menu'] = __( '4. Design', 'csv2post' );
+        $menu_array['postsettings']['menu'] = __( '3. Design', 'csv2post' );
         $menu_array['postsettings']['pluginmenu'] = __( 'Post Settings', 'csv2post' );
         $menu_array['postsettings']['name'] = "postsettings";
         $menu_array['postsettings']['title'] = __( 'Post Settings', 'csv2post' ); 
@@ -195,7 +262,7 @@ class C2P_TabMenu {
         // customfields
         $menu_array['customfields']['groupname'] = 'meta'; 
         $menu_array['customfields']['slug'] = 'csv2post_customfields';// home page slug set in main file
-        $menu_array['customfields']['menu'] = '5. Meta';// main menu title
+        $menu_array['customfields']['menu'] = '4. Meta';// main menu title
         $menu_array['customfields']['pluginmenu'] = 'Custom Fields';// main menu title        
         $menu_array['customfields']['name'] = "customfields";// name of page (slug) and unique
         $menu_array['customfields']['title'] = 'Custom Fields';// page title seen once page is opened
@@ -217,15 +284,15 @@ class C2P_TabMenu {
         #                   POST CREATION                    #
         #                                                    #
         ######################################################
-        // tools
-        $menu_array['tools']['groupname'] = 'postcreation'; 
-        $menu_array['tools']['slug'] = 'csv2post_tools';// home page slug set in main file
-        $menu_array['tools']['menu'] = '6. Post Creation';// main menu title
-        $menu_array['tools']['pluginmenu'] = 'Tools';// main menu title        
-        $menu_array['tools']['name'] = "tools";// name of page (slug) and unique
-        $menu_array['tools']['title'] = 'Post Creation Tools';// page title seen once page is opened
-        $menu_array['tools']['parent'] = 'parent';// either "parent" or the name of the parent - used for building tab menu    
-        $menu_array['tools']['tabmenu'] = true;
+        // postcreation
+        $menu_array['postcreation']['groupname'] = 'postcreation'; 
+        $menu_array['postcreation']['slug'] = 'csv2post_postcreation';// home page slug set in main file
+        $menu_array['postcreation']['menu'] = '5. Create';// main menu title
+        $menu_array['postcreation']['pluginmenu'] = 'Creation Tools';// main menu title        
+        $menu_array['postcreation']['name'] = "postcreation";// name of page (slug) and unique
+        $menu_array['postcreation']['title'] = 'Creation Tools';// page title seen once page is opened
+        $menu_array['postcreation']['parent'] = 'parent';// either "parent" or the name of the parent - used for building tab menu    
+        $menu_array['postcreation']['tabmenu'] = true;
         
         // lastpost
         $menu_array['lastpost']['groupname'] = 'postcreation';
@@ -234,7 +301,7 @@ class C2P_TabMenu {
         $menu_array['lastpost']['pluginmenu'] = __( 'Last Post', 'csv2post' );// main menu title
         $menu_array['lastpost']['name'] = "lastpost";// name of page (slug) and unique
         $menu_array['lastpost']['title'] = __( 'Last Post Created', 'csv2post' );// page title seen once page is opened 
-        $menu_array['lastpost']['parent'] = 'tools';// either "parent" or the name of the parent - used for building tab menu   
+        $menu_array['lastpost']['parent'] = 'postcreation';// either "parent" or the name of the parent - used for building tab menu   
         $menu_array['lastpost']['tabmenu'] = true;
                           
         return $menu_array;

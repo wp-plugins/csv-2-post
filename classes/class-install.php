@@ -136,7 +136,7 @@ class C2P_Install {
         // postcontent (serialized array ) - array of content designs linked to project and applicable settings/rules per design
 
         // c2psources
-        $sql_create_table = "CREATE TABLE {$wpdb->c2psources} (sourceid bigint(20) unsigned NOT NULL AUTO_INCREMENT,projectid int(5) unsigned DEFAULT 0,name varchar(250) DEFAULT NULL,sourcetype varchar(45) DEFAULT NULL,progress int(12) DEFAULT 0,filesarray text DEFAULT NULL,timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,path varchar(500) DEFAULT NULL,directory varchar(500) DEFAULT NULL,idcolumn varchar(50) DEFAULT NULL,monitorchange tinyint(1) unsigned DEFAULT 1,changecounter int(8) unsigned DEFAULT '0',datatreatment varchar (50) NOT NULL DEFAULT 'single',parentfileid int(5) unsigned DEFAULT 0,tablename varchar (50) NOT NULL DEFAULT '0',rules longtext DEFAULT NULL,thesep varchar(1) DEFAULT NULL,theconfig text DEFAULT NULL,PRIMARY KEY (sourceid)) $charset_collate; ";
+        $sql_create_table = "CREATE TABLE {$wpdb->c2psources} (sourceid bigint(20) unsigned NOT NULL AUTO_INCREMENT,projectid int(5) unsigned DEFAULT 0,name varchar(250) DEFAULT NULL,sourcetype varchar(45) DEFAULT NULL,progress int(12) DEFAULT 0,filesarray text DEFAULT NULL,timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,path varchar(500) DEFAULT NULL,directory varchar(500) DEFAULT NULL,idcolumn varchar(50) DEFAULT NULL,monitorfilechange tinyint(1) unsigned DEFAULT 1, changecounter int(8) unsigned DEFAULT '0',datatreatment varchar (50) NOT NULL DEFAULT 'single',parentfileid int(5) unsigned DEFAULT 0,tablename varchar (50) NOT NULL DEFAULT '0',rules longtext DEFAULT NULL,thesep varchar(1) DEFAULT NULL,theconfig text DEFAULT NULL,PRIMARY KEY (sourceid)) $charset_collate; ";
         dbDelta( $sql_create_table );  
    
         // sourceid
@@ -147,7 +147,7 @@ class C2P_Install {
         // timestamp
         // path - path to current file, can change this manually or automatically to use new file
         // idcolumn - required for updating
-        // monitorchange (0|1) - true(1) will make the plugin monitor changes i.e. new .csv file, then re-import in response
+        // monitorfilechange (0|1) - detect changes to e
         // changecounter (numeric) - each time plugin detects newer source file, changecounter is increased telling us how many times source has been update but this is also used in each row to indicate the update status
         // datatreatment (single | append | join | individual) - single means a one file project, all others are multi-file project treatments
         // parentfileid - 0 indicates the source is a parent (may not be part of a group), otherwise a value indicates source is part of a group (not always merged into one table)                                       
@@ -206,7 +206,7 @@ class C2P_Install {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     function deactivate_plugin() {
         

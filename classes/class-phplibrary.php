@@ -728,7 +728,7 @@ class CSV2POST_PHP {
     /**
     * Removes special characters and converts to lowercase (very strict)
     */
-    public function clean_string( $string){ 
+    public function clean_string( $string ){ 
         $string = preg_replace( "/[^a-zA-Z0-9s]/", "", $string);
         return strtolower ( $string );
     }

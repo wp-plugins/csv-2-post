@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 * @author Ryan R. Bayne
 * @package CSV 2 POST
 * @since 8.0.0
-* @version 1.0.0 
+* @version 1.1 
 */
 class CSV2POST_WPCore {  
     /**
@@ -27,7 +27,7 @@ class CSV2POST_WPCore {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 0.0.1
-    * @version 1.0.0
+    * @version 1.1
     */
     public function capabilities() {
         global $wp_roles; 

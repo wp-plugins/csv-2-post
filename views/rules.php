@@ -11,14 +11,6 @@
 // Prohibit direct script loading
 defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 
-/**
- * Rules [page] 
- * 
- * @package CSV 2 POST
- * @subpackage Views
- * @author Ryan Bayne
- * @since 8.1.3
- */
 class CSV2POST_Rules_View extends CSV2POST_View {
 
     /**
@@ -40,7 +32,7 @@ class CSV2POST_Rules_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function meta_box_array() {
         // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
@@ -49,7 +41,7 @@ class CSV2POST_Rules_View extends CSV2POST_View {
             array( 'rules-setexpecteddatatypes', __( 'Set Expected Data Types', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'setexpecteddatatypes' ), true, 'activate_plugins' ),
             array( 'rules-datasplitter', __( 'Data Splitter', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'datasplitter' ), true, 'activate_plugins' ),
             array( 'rules-roundnumberup', __( 'Round Number Up', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'roundnumberup' ), true, 'activate_plugins' ),
-            array( 'rules-roundnumber', __( 'Round Number', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'roundnumber' ), true, 'activate_plugins' ),
+            //array( 'rules-roundnumber', __( 'Round Number', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'roundnumber' ), true, 'activate_plugins' ),
             array( 'rules-captalizefirstletter', __( 'Capitalize First Letter', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'captalizefirstletter' ), true, 'activate_plugins' ),
             array( 'rules-lowercaseall', __( 'All Lower Case', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'lowercaseall' ), true, 'activate_plugins' ),
             array( 'rules-uppercaseall', __( 'All Upper Case', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'uppercaseall' ), true, 'activate_plugins' ),
@@ -66,7 +58,7 @@ class CSV2POST_Rules_View extends CSV2POST_View {
      * @param array $data Data for this view
      */
     public function setup( $action, array $data ) {
-        global $c2p_settings;
+        global $csv2post_settings;
         
         // create constant for view name
         if(!defined( "WTG_CSV2POST_VIEWNAME") ){define( "WTG_CSV2POST_VIEWNAME", $this->view_name );}
@@ -79,9 +71,9 @@ class CSV2POST_Rules_View extends CSV2POST_View {
         $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
                         
         // set current project values
-        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
+        if( isset( $csv2post_settings['currentproject'] ) && $csv2post_settings['currentproject'] !== false ) {
             
-            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] ); 
+            $this->project_object = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] ); 
             if( !$this->project_object ) {
                 $this->current_project_settings = false;
             } else {
@@ -109,7 +101,7 @@ class CSV2POST_Rules_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 0.0.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function metaboxes() {
         parent::register_metaboxes( self::meta_box_array() );     
@@ -124,7 +116,7 @@ class CSV2POST_Rules_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 0.0.2
-    * @version 1.0.0
+    * @version 1.1
     */
     public function dashboard() { 
         parent::dashboard_widgets( self::meta_box_array() );  
@@ -150,18 +142,18 @@ class CSV2POST_Rules_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_rules_setexpecteddatatypes( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'An optional form and in early use. The intention is to tell the plugin what should be in our columns and handle any discrepancies based on that information.', 'csv2post' ), false );        
         $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
-        global $c2p_settings;
+        global $csv2post_settings;
         ?>  
 
             <table class="form-table">
             <?php
-            $this->UI->option_column_datatypes( $c2p_settings['currentproject'], 'datatypescolumns', 'datatypescolumns' ); 
+            $this->UI->option_column_datatypes( $csv2post_settings['currentproject'], 'datatypescolumns', 'datatypescolumns' ); 
             ?>
             </table>
         
@@ -175,20 +167,20 @@ class CSV2POST_Rules_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_rules_datasplitter( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Some affiliate networks provide multiple values of data in a single column, each value separated by a slash.', 'csv2post' ), false );        
         $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
-        global $c2p_settings,$wpdb;
+        global $csv2post_settings,$wpdb;
         ?>  
 
             <table class="form-table">
             <?php
             // check if main table has splitter rule, if not check the next and so on
             // if splitter rule found use it to populate this form else show default and empty values
-            $sourceid_array = $this->CSV2POST->get_project_sourcesid( $c2p_settings['currentproject'] );
+            $sourceid_array = $this->CSV2POST->get_project_sourcesid( $csv2post_settings['currentproject'] );
             foreach( $sourceid_array as $key => $sourceid){
                 $rules_array = $this->DB->selectrow( $wpdb->c2psources, "sourceid = $sourceid", 'rules' );
                 $rules_array = maybe_unserialize( $rules_array->rules);
@@ -208,7 +200,7 @@ class CSV2POST_Rules_View extends CSV2POST_View {
             if( isset( $rules_array['splitter']['datasplitertable'] ) && isset( $rules_array['splitter']['datasplitercolumn'] ) ){
                 $currentsplittercolumn = array( $rules_array['splitter']['datasplitertable'], $rules_array['splitter']['datasplitercolumn'] );    
             }
-            $this->UI->option_projectcolumns_splittermenu( 'Column', $c2p_settings['currentproject'], 'datasplitercolumn', 'datasplittercolumn', $currentsplittercolumn);
+            $this->UI->option_projectcolumns_splittermenu( 'Column', $csv2post_settings['currentproject'], 'datasplitercolumn', 'datasplittercolumn', $currentsplittercolumn);
             
             // columns that data will be inserted too
             for( $i=1;$i<=5;$i++){
@@ -241,18 +233,18 @@ class CSV2POST_Rules_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_rules_roundnumberup( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Replace decimal numbers by rounding them up on one or more columns.', 'csv2post' ), false );        
         $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
-        global $c2p_settings;
+        global $csv2post_settings;
         ?>  
 
             <table class="form-table">
             <?php
-            $this->UI->option_project_headers_checkboxes( $c2p_settings['currentproject'], 'roundnumberupcolumns' );
+            $this->UI->option_project_headers_checkboxes( $csv2post_settings['currentproject'], 'roundnumberupcolumns' );
             ?>
             </table>
         
@@ -266,18 +258,18 @@ class CSV2POST_Rules_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_rules_roundnumber( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( '', 'csv2post' ), false );        
         $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
-        global $c2p_settings;
+        global $csv2post_settings;
         ?>  
 
             <table class="form-table">
             <?php
-            $this->UI->option_project_headers_checkboxes( $c2p_settings['currentproject'], 'roundnumbercolumns' );
+            $this->UI->option_project_headers_checkboxes( $csv2post_settings['currentproject'], 'roundnumbercolumns' );
             ?>
             </table>
         
@@ -291,18 +283,18 @@ class CSV2POST_Rules_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_rules_captalizefirstletter( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( '', 'csv2post' ), false );        
         $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
-        global $c2p_settings;
+        global $csv2post_settings;
         ?>  
 
             <table class="form-table">
             <?php
-            $this->UI->option_project_headers_checkboxes( $c2p_settings['currentproject'], 'captalizefirstlettercolumns' );
+            $this->UI->option_project_headers_checkboxes( $csv2post_settings['currentproject'], 'captalizefirstlettercolumns' );
             ?>
             </table>
         
@@ -316,18 +308,18 @@ class CSV2POST_Rules_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_rules_lowercaseall( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( '', 'csv2post' ), false );        
         $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
-        global $c2p_settings;
+        global $csv2post_settings;
         ?>  
 
             <table class="form-table">
             <?php
-            $this->UI->option_project_headers_checkboxes( $c2p_settings['currentproject'], 'lowercaseallcolumns' );
+            $this->UI->option_project_headers_checkboxes( $csv2post_settings['currentproject'], 'lowercaseallcolumns' );
             ?>
             </table>
         
@@ -341,18 +333,18 @@ class CSV2POST_Rules_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_rules_uppercaseall( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Transform all letters to uppercase in the selected colums.', 'csv2post' ), false );        
         $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
-        global $c2p_settings;
+        global $csv2post_settings;
         ?>  
             
             <table class="form-table">
             <?php
-            $this->UI->option_project_headers_checkboxes( $c2p_settings['currentproject'], 'uppercaseallcolumns' );
+            $this->UI->option_project_headers_checkboxes( $csv2post_settings['currentproject'], 'uppercaseallcolumns' );
             ?>
             </table>
             

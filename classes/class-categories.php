@@ -5,7 +5,7 @@
  * @package CSV 2 POST
  * @author Ryan Bayne   
  * @since 8.0.0
- * @version 1.0.0
+ * @version 1.1
  */
 
 // load in WordPress only
@@ -22,7 +22,7 @@ defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
  * @author Ryan R. Bayne
  * @package CSV 2 POST
  * @since 8.1.3
- * @version 1.0.0
+ * @version 1.1
  */
 class C2P_Categories {
 
@@ -36,7 +36,7 @@ class C2P_Categories {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function level( $category_id ) {
         $parents = get_category_parents( $category_id, false, '/' );
@@ -65,7 +65,7 @@ class C2P_Categories {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     * 
     * @returns false if no term exists else returns existing term (category) id
     * 
@@ -117,7 +117,7 @@ class C2P_Categories {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function get_related_categories( $category_id ){
         
@@ -149,7 +149,7 @@ class C2P_Categories {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     * 
     * @param integer $category_id
     * @param array $category_parents_array we do not normally use this, it is used by this function itself
@@ -180,7 +180,7 @@ class C2P_Categories {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     * 
     * @param array $new_categories_array the term names (not slugs or ID's and do not pass a pre-set parent)
     * @param array $preset_parent pass the pre-set parent term name and ID as it should exist, but this function will create it as a top level parent if it doesnt.
@@ -268,7 +268,7 @@ class C2P_Categories {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     * 
     * @param array $posts_array i.e. array( '123' => array( 'Category One', 'Category Two', 'Category Three' ) )
     * @param integer $preset_parent - determine if Pre-Set Category setting in use and pass it to this function

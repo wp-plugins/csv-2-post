@@ -25,10 +25,10 @@ defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 */
 class C2P_Flags {
     public function newflag() {
-        global $c2p_settings;
+        global $csv2post_settings;
         
         // stop if user has not activted the flag system
-        if( !isset( $c2p_settings['flagsystem']['status'] ) || $c2p_settings['flagsystem']['status'] !== 'enabled' ) {
+        if( !isset( $csv2post_settings['flagsystem']['status'] ) || $csv2post_settings['flagsystem']['status'] !== 'enabled' ) {
             return;    
         }
         

@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 * @author Ryan R. Bayne
 * @package CSV 2 POST
 * @since 7.0.0
-* @version 1.0.0 
+* @version 1.0 
 */
 class CSV2POST_UI extends CSV2POST {     
     
@@ -37,13 +37,13 @@ class CSV2POST_UI extends CSV2POST {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.32
-    * @version 1.0.0
+    * @version 1.1
     */
     public function add_dashboard_widgets() {
-        global $c2p_settings;
+        global $csv2post_settings;
                      
         // if dashboard widgets switch not enabled or does not exist return now and avoid registering widgets
-        if( !isset( $c2p_settings['widgetsettings']['dashboardwidgetsswitch'] ) || $c2p_settings['widgetsettings']['dashboardwidgetsswitch'] !== 'enabled' ) {
+        if( !isset( $csv2post_settings['widgetsettings']['dashboardwidgetsswitch'] ) || $csv2post_settings['widgetsettings']['dashboardwidgetsswitch'] !== 'enabled' ) {
             return;    
         }
                 
@@ -70,18 +70,18 @@ class CSV2POST_UI extends CSV2POST {
         foreach( $menu_array as $key => $section_array ) {
             
             // has the current view been activated for dashboard widgets, if not continue to the next view
-            if( !isset( $c2p_settings['widgetsettings'][ $section_array['name'] . 'dashboardwidgetsswitch'] ) ) {       
+            if( !isset( $csv2post_settings['widgetsettings'][ $section_array['name'] . 'dashboardwidgetsswitch'] ) ) {       
                 continue;    
-            } elseif( $c2p_settings['widgetsettings'][ $section_array['name'] . 'dashboardwidgetsswitch'] !== 'enabled' ) {    
+            } elseif( $csv2post_settings['widgetsettings'][ $section_array['name'] . 'dashboardwidgetsswitch'] !== 'enabled' ) {    
                 continue;    
             }
             
             // does current user have the wp capability (permission) to access any forms on the current admin page? 
             // this is not per page/view capability checking which is for accessing the view itself, this only applies to
             // the group of meta boxes on THIS current page
-            if( !isset( $c2p_settings['widgetsettings'][ $section_array['name'] . 'widgetscapability'] ) ) {      
+            if( !isset( $csv2post_settings['widgetsettings'][ $section_array['name'] . 'widgetscapability'] ) ) {      
                 continue;
-            } elseif( !current_user_can( $c2p_settings['widgetsettings'][ $section_array['name'] . 'widgetscapability'] ) ) {    
+            } elseif( !current_user_can( $csv2post_settings['widgetsettings'][ $section_array['name'] . 'widgetscapability'] ) ) {    
                 continue;// user does not have required capability
             }
             
@@ -173,7 +173,7 @@ class CSV2POST_UI extends CSV2POST {
     }
     
     public function screenintro( $c2p_page_name, $text, $progress_array ){
-        global $c2p_settings;
+        global $csv2post_settings;
         
         echo '
         <div class="csv2post_screenintro_container">
@@ -506,7 +506,7 @@ class CSV2POST_UI extends CSV2POST {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     * 
     * @param mixed $title
     * @param mixed $name
@@ -848,7 +848,7 @@ class CSV2POST_UI extends CSV2POST {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.32
-    * @version 1.0.0
+    * @version 1.1
     * 
     * @param mixed $project_id
     * @param mixed $name
@@ -1097,7 +1097,7 @@ class CSV2POST_UI extends CSV2POST {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     * 
     * @param string $title
     * @param string $name
@@ -1199,17 +1199,17 @@ class CSV2POST_UI extends CSV2POST {
     * displays the current project and a row of quick action buttons (actually links) 
     */
     public function display_current_project() {
-        global $c2p_settings, $CSV2POST, $wpdb;
+        global $csv2post_settings, $CSV2POST, $wpdb;
         
         // set default values
         $current = 'No Projects'; 
         $projectid = 'N/A';              
         
-        if( isset( $c2p_settings['currentproject'] ) && is_numeric( $c2p_settings['currentproject'] ) ){
+        if( isset( $csv2post_settings['currentproject'] ) && is_numeric( $csv2post_settings['currentproject'] ) ){
         
-            $current = $CSV2POST->get_project_name( $c2p_settings['currentproject'] );
+            $current = $CSV2POST->get_project_name( $csv2post_settings['currentproject'] );
         
-            $projectid = $c2p_settings['currentproject'];    
+            $projectid = $csv2post_settings['currentproject'];    
         
         }else{
             
@@ -1223,9 +1223,9 @@ class CSV2POST_UI extends CSV2POST {
                
                 // set the found project as the current one
                 if( isset( $row->projectid ) && is_numeric( $row->projectid ) ){
-                    $c2p_settings['currentproject'] = $row->projectid;
+                    $csv2post_settings['currentproject'] = $row->projectid;
                     $projectid = $row->projectid;
-                    $CSV2POST->update_settings( $c2p_settings );
+                    $CSV2POST->update_settings( $csv2post_settings );
                 } 
 
                 $current = $row->projectname;
@@ -1273,7 +1273,7 @@ class CSV2POST_UI extends CSV2POST {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function get_admin_page_name() {
         if( !isset( $_GET['page'] ) ){
@@ -1401,7 +1401,7 @@ class CSV2POST_UI extends CSV2POST {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_content_header( $form_title, $form_id, $introduction = false, $trash_icon = false, $uploader = false ) {?>
         <p>
@@ -1626,11 +1626,11 @@ class CSV2POST_UI extends CSV2POST {
     * @param mixed $helpurl
     */
     public function notice_return( $type, $size, $title = false, $message = 'no message has been set', $helpurl = false, $forcewtgstyle = false ){
-        global $c2p_settings;
+        global $csv2post_settings;
         
         // Is WordPress core style to be returned? 
         if( $forcewtgstyle === false ) {
-            if( isset( $c2p_settings['noticesettings']['wpcorestyle'] ) && $c2p_settings['noticesettings']['wpcorestyle'] == 'enabled' ) {
+            if( isset( $csv2post_settings['noticesettings']['wpcorestyle'] ) && $csv2post_settings['noticesettings']['wpcorestyle'] == 'enabled' ) {
        
                 // force style to updated if $type is not a wp style (WTG styles are passed to $type)
                 $wp_notice_classes = array( 'updated', 'error', 'update-nag' );
@@ -1752,7 +1752,7 @@ class CSV2POST_UI extends CSV2POST {
     }
     
     public function display_users_notices() {
-        global $c2p_notice_array, $current_user, $c2p_settings;
+        global $c2p_notice_array, $current_user, $csv2post_settings;
         
         $c2p_notice_array = $this->get_notice_array();
         
@@ -2110,7 +2110,7 @@ class CSV2POST_UI extends CSV2POST {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.32
-    * @version 1.0.0
+    * @version 1.1
     */
     public function register_input_validation( $input_title, $input_name, $input_id, $input_validation ) {
                            
@@ -2153,7 +2153,7 @@ class CSV2POST_UI extends CSV2POST {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.32
-    * @version 1.0.0
+    * @version 1.1
     */
     public function get_input_validation_methods( $name, $return = 'validation' ) {
         
@@ -2183,7 +2183,7 @@ class CSV2POST_UI extends CSV2POST {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.32
-    * @version 1.0.0
+    * @version 1.1
     */
     public function metabox_nocurrentproject() {
         echo '<p>';
@@ -2205,7 +2205,7 @@ class CSV2POST_UI extends CSV2POST {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     * 
     * @deprecated use class-forms.php
     */
@@ -2244,7 +2244,7 @@ class CSV2POST_UI extends CSV2POST {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     * 
     * @deprecated use class-forms.php
     */
@@ -2270,7 +2270,7 @@ class CSV2POST_UI extends CSV2POST {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     * 
     * @deprecated use class-forms.php
     */
@@ -2295,7 +2295,7 @@ class CSV2POST_UI extends CSV2POST {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     * 
     * @deprecated use class-forms.php
     */
@@ -2349,7 +2349,7 @@ class CSV2POST_UI extends CSV2POST {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function collapse_box_for_user( $userid, $page, $boxid ) {
         $optionName = "closedpostboxes_$page";
@@ -2369,7 +2369,7 @@ class CSV2POST_UI extends CSV2POST {
 * @author Ryan R. Bayne
 * @package CSV 2 POST
 * @since 8.1.3
-* @version 1.0.0
+* @version 1.1
 */
 class C2P_Pointers {
     public function __construct( $htmlid1, $pointerid1, $title1, $description1  ) {

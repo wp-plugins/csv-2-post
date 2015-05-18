@@ -6,7 +6,7 @@
  * @package CSV 2 POST
  * @author Ryan Bayne   
  * @since 8.1.3
- * @version 1.0.0
+ * @version 1.1
  */  
 
 /** 
@@ -15,7 +15,7 @@
 * @package CSV 2 POST
 * @author Ryan Bayne   
 * @since 8.1.3
-* @version 1.0.0
+* @version 1.1
 */
 class C2P_Help {
 
@@ -25,7 +25,7 @@ class C2P_Help {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function enterpage( $view_title, $view_about, $view_readmoreurl = false, $view_videourl = false, $view_discussurl = false ){
         return array( 'pagetitle'       => $view_title,
@@ -49,7 +49,7 @@ class C2P_Help {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function enterform(  $form_title = false, $aboutform = 'No form introduction sorry.', $readmoreurl = false, $videourl = false, $discussurl = false ){
         return array(          
@@ -67,7 +67,7 @@ class C2P_Help {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function enteroption( $optiontitle, $optiontext, $optionurl = false, $optionvideourl = false ) {
         return array( 'optiontitle' => $optiontitle, 
@@ -84,7 +84,7 @@ class C2P_Help {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function get_help_array() {   
         $h = array();

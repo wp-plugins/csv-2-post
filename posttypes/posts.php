@@ -55,9 +55,9 @@ function csv2post_init_posttype_contentdesigns() {
 * Adds meta boxes for post posts type 
 */
 function csv2post_add_meta_boxes_post() {
-    //global $c2p_settings;
+    //global $csv2post_settings;
     // author adsense (allows WordPress authors or users with publish_posts ability to add their own adsense snippet)
-    //if( $c2p_settings['monetizesection']['adsense']['authoradsense']['switch'] == 'enabled' && current_user_can( 'publish_posts' ) ){
+    //if( $csv2post_settings['monetizesection']['adsense']['authoradsense']['switch'] == 'enabled' && current_user_can( 'publish_posts' ) ){
     //    add_meta_box(
     //        'posts-meta-authoradsense',
     //        esc_html__( 'Author AdSense' ),
@@ -82,7 +82,7 @@ function csv2post_metabox_authoradsense( $object, $box ) {
 * Save meta box's for post posts type
 */
 function csv2post_save_meta_boxes_post( $post_id, $post ) {    
-    global $wpdb, $c2p_settings;
+    global $wpdb, $csv2post_settings;
     
     $flagmeta_array = array(
         'authoradsense'

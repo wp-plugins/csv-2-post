@@ -40,7 +40,7 @@ class CSV2POST_Dates_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function meta_box_array() {
         // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
@@ -59,7 +59,7 @@ class CSV2POST_Dates_View extends CSV2POST_View {
      * @param array $data Data for this view
      */
     public function setup( $action, array $data ) {
-        global $c2p_settings;
+        global $csv2post_settings;
         
         // create constant for view name
         if(!defined( "WTG_CSV2POST_VIEWNAME") ){define( "WTG_CSV2POST_VIEWNAME", $this->view_name );}
@@ -72,9 +72,9 @@ class CSV2POST_Dates_View extends CSV2POST_View {
         $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
                         
         // load the current project row and settings from that row
-        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
+        if( isset( $csv2post_settings['currentproject'] ) && $csv2post_settings['currentproject'] !== false ) {
            
-            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] ); 
+            $this->project_object = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] ); 
             if( !$this->project_object ) {
                 $this->current_project_settings = false;
             } else {
@@ -102,7 +102,7 @@ class CSV2POST_Dates_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function metaboxes() {
         parent::register_metaboxes( self::meta_box_array() );     
@@ -117,7 +117,7 @@ class CSV2POST_Dates_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function dashboard() { 
         parent::dashboard_widgets( self::meta_box_array() );  
@@ -143,13 +143,13 @@ class CSV2POST_Dates_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_dates_defaultpublishdates( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( "Rather than let WordPress set the date and time for a post as it would when creating them manually. We can import dates or generate them in a way that looks more natural to visitors.", 'csv2post' ), false );        
         $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
-        global $c2p_settings;
+        global $csv2post_settings;
         ?>  
 
             <table class="form-table">
@@ -164,7 +164,7 @@ class CSV2POST_Dates_View extends CSV2POST_View {
                 $datescolumn_column = '';
                 if( isset( $this->current_project_settings['dates']['datescolumn']['table'] ) ){$datescolumn_table = $this->current_project_settings['dates']['datescolumn']['table'];}
                 if( isset( $this->current_project_settings['dates']['datescolumn']['column'] ) ){$datescolumn_column = $this->current_project_settings['dates']['datescolumn']['column'];}             
-                $this->UI->option_projectcolumns( __( 'Pre-Made Dates' ), $c2p_settings['currentproject'], 'datescolumn', 'datescolumn', $datescolumn_table, $datescolumn_column, 'notrequired', 'Not Required' );?>
+                $this->UI->option_projectcolumns( __( 'Pre-Made Dates' ), $csv2post_settings['currentproject'], 'datescolumn', 'datescolumn', $datescolumn_table, $datescolumn_column, 'notrequired', 'Not Required' );?>
                 
                 <!-- Option Start -->
                 <tr valign="top">

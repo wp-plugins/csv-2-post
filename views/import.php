@@ -11,14 +11,6 @@
 // Prohibit direct script loading
 defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 
-/**
- * View class for Data Import [page] 
- * 
- * @package CSV 2 POST
- * @subpackage Views
- * @author Ryan Bayne
- * @since 8.1.3
- */
 class CSV2POST_Import_View extends CSV2POST_View {
 
     /**
@@ -40,7 +32,7 @@ class CSV2POST_Import_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function meta_box_array() {
         // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
@@ -60,7 +52,7 @@ class CSV2POST_Import_View extends CSV2POST_View {
      * @param array $data Data for this view
      */
     public function setup( $action, array $data ) {
-        global $c2p_settings;
+        global $csv2post_settings;
         
         // create constant for view name
         if(!defined( "WTG_CSV2POST_VIEWNAME") ){define( "WTG_CSV2POST_VIEWNAME", $this->view_name );}
@@ -73,9 +65,9 @@ class CSV2POST_Import_View extends CSV2POST_View {
         $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
                         
         // load the current project row and settings from that row
-        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
+        if( isset( $csv2post_settings['currentproject'] ) && $csv2post_settings['currentproject'] !== false ) {
             
-            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] ); 
+            $this->project_object = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] ); 
             if( !$this->project_object ) {
                 $this->current_project_settings = false;
             } else {
@@ -103,7 +95,7 @@ class CSV2POST_Import_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function metaboxes() {
         parent::register_metaboxes( self::meta_box_array() );     
@@ -118,7 +110,7 @@ class CSV2POST_Import_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function dashboard() { 
         parent::dashboard_widgets( self::meta_box_array() );  
@@ -144,12 +136,12 @@ class CSV2POST_Import_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_import_importsources( $data, $box ) {                      
-        global $c2p_settings, $wpdb;      
+        global $csv2post_settings, $wpdb;      
 
-        $sourceid_array = $this->CSV2POST->get_project_sourcesid( $c2p_settings['currentproject'] );
+        $sourceid_array = $this->CSV2POST->get_project_sourcesid( $csv2post_settings['currentproject'] );
         
         foreach( $sourceid_array as $key => $source_id){
             
@@ -163,11 +155,17 @@ class CSV2POST_Import_View extends CSV2POST_View {
 
             <p class="csv2post_boxes_introtext">This action will attempt to import data from all files. If your working with a bath of files, it could really push CSV 2 POST and your WordPress. Your server may not allow the amount of processing involved. Feel free to visit the WebTechGlobal forum to discuss how best to manage your project.</p>
             
+            <?php
+            // register this form
+            $this->FORMS->register_form( $form_id );    
+            ?>
+            
             <form method="post" name="<?php echo $form_id;?>" action="<?php echo get_admin_url() . 'admin.php?page=' . $_GET['page']; ?>">
                 <?php $this->UI->hidden_form_values( $form_id, $postbox_title);?>
 
                 <input type="hidden" name="tablename" value="<?php echo $row->tablename;?>">
                 <input type="hidden" name="sourceid" value="<?php echo $source_id;?>">             
+                
                 <table class="form-table">
                 <?php    
                 $this->UI->option_subline( $wpdb->get_var( "SELECT COUNT(*) FROM $row->tablename"), 'Imported' );
@@ -176,6 +174,7 @@ class CSV2POST_Import_View extends CSV2POST_View {
                 // to determine how many rows are outdated we need to get the wp_c2psources changecounter value which tells us the total 
                 // number of times the source has been updated, records with a lower changecounter have not been updated yet
                 $changecount = $wpdb->get_var( "SELECT changecounter FROM $wpdb->c2psources");
+                
                 // now query all imported rows that have a lower value than $changecount
                 $outdated = $wpdb->get_var( "SELECT COUNT(*) FROM $row->tablename WHERE c2p_changecounter < $changecount");
                 $this->UI->option_subline( $outdated, 'Outdated' );
@@ -191,6 +190,7 @@ class CSV2POST_Import_View extends CSV2POST_View {
                 // display the total number of duplicate rows based on unique key column only
                 $this->duplicate_keys = array();
                 $this->idcolumn = false;
+                
                 if( isset( $this->current_project_settings['idcolumn'] ) && !empty($this->current_project_settings['idcolumn']) ){
                     
                     $this->idcolumn = $this->current_project_settings['idcolumn'];    
@@ -199,10 +199,13 @@ class CSV2POST_Import_View extends CSV2POST_View {
                     $this->duplicate_keys = $this->DB->get_duplicate_keys( $row->tablename, $this->idcolumn );
                 
                 }
+                
                 $this->UI->option_subline( count( $this->duplicate_keys ), 'Duplicate Keys' );
                 ?>
                 </table>
+                
                 <input class="button" type="submit" value="Submit" />
+                
             </form>                    
 
         <?php 
@@ -215,7 +218,7 @@ class CSV2POST_Import_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_import_deleteduplicaterowsandposts( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'If you have a unique ID column (keys) CSV 2 POST will detect duplicates for you.', 'csv2post' ), false );        

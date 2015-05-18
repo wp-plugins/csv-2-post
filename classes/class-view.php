@@ -190,7 +190,7 @@ abstract class CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     *
     * @param int|bool Current value of the user option
     * @return int New value for the user option
@@ -212,7 +212,7 @@ abstract class CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 0.0.1
-    * @version 1.0.0
+    * @version 1.1
     *
     * @param string $action Action for this view
     * @param array $data Data for this view
@@ -240,7 +240,7 @@ abstract class CSV2POST_View {
      * @author Ryan R. Bayne
      * @package CSV 2 POST
      * @since 8.1.33
-     * @version 1.0.0
+     * @version 1.1
      */
      public function register_metaboxes( $meta_box_array ) {
         // using array register many meta boxes
@@ -259,13 +259,13 @@ abstract class CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function dashboard_widgets( $meta_box_array ) { 
-        global $c2p_settings;
+        global $csv2post_settings;
         
         // if dashboard widgets switch not enabled we do nothing, this check should really be done earlier also
-        if( !isset( $c2p_settings['widgetsettings']['dashboardwidgetsswitch'] ) || $c2p_settings['widgetsettings']['dashboardwidgetsswitch'] !== 'enabled' ) {
+        if( !isset( $csv2post_settings['widgetsettings']['dashboardwidgetsswitch'] ) || $csv2post_settings['widgetsettings']['dashboardwidgetsswitch'] !== 'enabled' ) {
             return;    
         }
 
@@ -304,7 +304,7 @@ abstract class CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0
+    * @version 1.1
     *
     * @param string $text Text for the header message
     * @param string $class (optional) Additional CSS class for the header message
@@ -319,7 +319,7 @@ abstract class CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0
+    * @version 1.1
     *
     * @param array $action_messages Action messages for the screen
     */
@@ -336,7 +336,7 @@ abstract class CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0
+    * @version 1.1
     *
     * @param string $id Unique HTML ID for the text box container (only visible with $wrap = true)
     * @param string $callback Callback that prints the contents of the text box
@@ -364,7 +364,7 @@ abstract class CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0
+    * @version 1.1
     * 
     * @uses add_meta_box()
     *
@@ -387,7 +387,7 @@ abstract class CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0 
+    * @version 1.1 
     * 
     * @since 8.1.3
     *
@@ -415,7 +415,7 @@ abstract class CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0 
+    * @version 1.1 
     * 
     * @since 8.1.3
     * @uses do_meta_boxes()
@@ -435,9 +435,7 @@ abstract class CSV2POST_View {
     *
     * @author Ryan R. Bayne
     * @package CSV 2 POST
-    * @since 7.0.0
-    * @version 1.0.0 
-    * 
+    * @version 1.0
     * @since 8.1.3
     * @uses wp_nonce_field()
     *
@@ -458,7 +456,7 @@ abstract class CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0 
+    * @version 1.1 
     * 
     * @since 8.1.3
     * @uses wp_nonce_field()
@@ -476,7 +474,7 @@ abstract class CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0 
+    * @version 1.1 
     * 
     * @since 8.1.3
     *
@@ -506,6 +504,24 @@ abstract class CSV2POST_View {
         if( $admin_page === 'csv2post' ){
             $admin_page = 'main';
         }   
+        
+        $current_user = get_currentuserinfo();
+        
+        // log users visit to page
+        $atts = array(
+            'outcome' => 1,
+            'line' => __LINE__, 
+            'function' => __FUNCTION__,
+            'file' => __FILE__, 
+            'userid' => get_current_user_id(),          
+            'type' => 'trace',// using trace allows these log entries to be hidden easier
+            'category' => 'usertrace',
+            'action' => __( "User named $current_user visited admin page named " . $this->menu_array[ $admin_page ]['title'], 'csv2post' ),
+            'priority' => 'low',                        
+            'triga' => 'manualrequest'
+        );
+        
+        $this->CSV2POST->newlog( $atts );
          
         // view header - includes notices output and some admin side automation such as conflict prevention
         $this->CSV2POST->pageheader( $this->menu_array[ $admin_page ]['title'], 0);
@@ -558,7 +574,7 @@ abstract class CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0
+    * @version 1.1
     *
     * @param array $data Data for this screen
     * @param array $box Information about the text box
@@ -578,7 +594,7 @@ abstract class CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 7.0.0
-    * @version 1.0.0
+    * @version 1.1
     */
     protected function help_tab_content() {
         // Has to be implemented for every view that is visible in the WP Dashboard!

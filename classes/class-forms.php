@@ -210,7 +210,7 @@ class CSV2POST_Forms extends CSV2POST_UI {
     public function register_form( $form_id ) {
         
         // initiate array if need to
-        if( !is_array( $this->form_val_arr )  ) {
+        if( !is_array( $this->form_val_arr )  ) {   
             $this->form_val_arr = array();
         }
         
@@ -228,14 +228,14 @@ class CSV2POST_Forms extends CSV2POST_UI {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 0.0.1
-    * @version 1.0
+    * @version 1.2
     */
     public function deregister_form( $form_id ) {
         $user_ID = get_current_user_id();
         if( isset( $this->form_val_arr[ $user_ID ][ $form_id ] ) ) {
             unset( $this->form_val_arr[ $user_ID ][ $form_id ] );    
         }
-        update_option( 'csv2post_formvalidation', array() );
+        update_option( 'csv2post_formvalidation', $this->form_val_arr );
     }
     
     /**
@@ -302,7 +302,11 @@ class CSV2POST_Forms extends CSV2POST_UI {
         $result = true;
         
         $user_ID = get_current_user_id();
-
+        
+        if( !isset( $this->form_val_arr[ $user_ID ][ $formid ] ) ) {
+            return $result;
+        }
+        
         // if no validation array return a true result now to avoid failure
         if( !$this->form_val_arr || !$this->form_val_arr[ $user_ID ][ $formid ] ) {
             return $result;

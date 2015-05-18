@@ -40,7 +40,7 @@ class CSV2POST_Content_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function meta_box_array() {
         // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
@@ -65,7 +65,7 @@ class CSV2POST_Content_View extends CSV2POST_View {
      * @param array $data Data for this view
      */
     public function setup( $action, array $data ) {
-        global $c2p_settings;
+        global $csv2post_settings;
         
         // create constant for view name
         if(!defined( "WTG_CSV2POST_VIEWNAME") ){define( "WTG_CSV2POST_VIEWNAME", $this->view_name );}
@@ -78,9 +78,9 @@ class CSV2POST_Content_View extends CSV2POST_View {
         $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
                         
         // load the current project row and settings from that row
-        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
+        if( isset( $csv2post_settings['currentproject'] ) && $csv2post_settings['currentproject'] !== false ) {
                   
-            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] ); 
+            $this->project_object = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] ); 
             if( !$this->project_object ) {
                 $this->current_project_settings = false;
             } else {
@@ -108,7 +108,7 @@ class CSV2POST_Content_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function metaboxes() {
         parent::register_metaboxes( self::meta_box_array() );     
@@ -123,7 +123,7 @@ class CSV2POST_Content_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function dashboard() { 
         parent::dashboard_widgets( self::meta_box_array() );  
@@ -149,10 +149,10 @@ class CSV2POST_Content_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_content_defaulttitletemplate( $data, $box ) {    
-        global $wpdb,$c2p_settings;
+        global $wpdb,$csv2post_settings;
         
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Enter Column Replacement Tokens to create a template. On submission an example will be created providing you have imported some of your .csv files rows.', 'csv2post' ), false );        
         $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
@@ -170,7 +170,7 @@ class CSV2POST_Content_View extends CSV2POST_View {
                 $generated_title = $titletemplate;
                 
                 // build example title - need to get projects source ID's
-                $sourceid_array = $this->CSV2POST->get_project_sourcesid( $c2p_settings['currentproject'] );
+                $sourceid_array = $this->CSV2POST->get_project_sourcesid( $csv2post_settings['currentproject'] );
 
                 // for multiple table sources, track which tables have been queried
                 $tables_already_used = array();
@@ -197,7 +197,7 @@ class CSV2POST_Content_View extends CSV2POST_View {
                 if( $result ) {
                     $rand_max = count( $result ) - 1;
                     
-                    $projectcolumns = $this->CSV2POST->get_project_columns_from_db( $c2p_settings['currentproject'] );
+                    $projectcolumns = $this->CSV2POST->get_project_columns_from_db( $csv2post_settings['currentproject'] );
                     
                     foreach( $result[ rand( 1, $rand_max ) ] as $a_column => $imported_data_value ){  
                         foreach( $projectcolumns as $table_name => $columnfromdb ){            
@@ -227,7 +227,7 @@ class CSV2POST_Content_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_content_defaultcontenttemplate( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'This is the first editor you should used. If you do not plan to create multiple templates in a more advanced project, this is the only editor you need to use.', 'csv2post' ), false );        
@@ -258,7 +258,7 @@ class CSV2POST_Content_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.34
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_content_newcontenttemplate( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Use this form to create new content templates for dynamically switching between them based on rules. The WYSIWYG editor is automatically populated with your default design to aid in creating alternative but similar post content designs.', 'csv2post' ), false );        
@@ -296,13 +296,13 @@ class CSV2POST_Content_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_content_multipledesignsrules( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Apply different content templates depending on specific values in your data i.e. if each category requires a different layout, use of different images and styles.', 'csv2post' ), false );        
         $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
         
-        global $c2p_settings;
+        global $csv2post_settings;
         ?>  
 
             <table class="form-table">
@@ -314,7 +314,7 @@ class CSV2POST_Content_View extends CSV2POST_View {
                 $designrulecolumn_column = '';
                 if( isset( $this->current_project_settings['content']["designrulecolumn$i"]['table'] ) ){$designrulecolumn_table = $this->current_project_settings['content']["designrulecolumn$i"]['table'];}
                 if( isset( $this->current_project_settings['content']["designrulecolumn$i"]['column'] ) ){$designrulecolumn_column = $this->current_project_settings['content']["designrulecolumn$i"]['column'];}             
-                $this->UI->option_projectcolumns( __( 'Data' ), $c2p_settings['currentproject'], "designrulecolumn$i", "designrulecolumn$i", $designrulecolumn_table, $designrulecolumn_column, 'notrequired', 'Not Required' );
+                $this->UI->option_projectcolumns( __( 'Data' ), $csv2post_settings['currentproject'], "designrulecolumn$i", "designrulecolumn$i", $designrulecolumn_table, $designrulecolumn_column, 'notrequired', 'Not Required' );
     
                 $designrulecolumn = ''; 
                 if( isset( $this->current_project_settings['content']["designruletrigger$i"] ) ){$designrulecolumn = $this->current_project_settings['content']["designruletrigger$i"];}            
@@ -337,7 +337,7 @@ class CSV2POST_Content_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_content_spintaxtest( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Test a spintax i.e. The best data import for WordPress is {CSV 2 POST|Easy CSV Importer|Data Importer for Dummies}.', 'csv2post' ), false );        
@@ -358,13 +358,13 @@ class CSV2POST_Content_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_content_groupimportlocalimages( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Do you have a folder of images on your server? We can import them to the WordPress Media Library and use them as featured images. There are various approaches and your data does not need to include the full path to each image.', 'csv2post' ), false );        
         $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
     
-        global $c2p_settings;
+        global $csv2post_settings;
         
         if(!isset( $this->current_project_settings['content']['groupedimagesdir'] ) || !file_exists(ABSPATH . $this->current_project_settings['content']['groupedimagesdir'] ) ){
             echo $this->UI->notice_return( 'warning', 'Small', __( 'Grouped Image Directory Does Not Exist' ), __( 'Please create or change the path to your image directory where groups of images are stored.' ), null, true );
@@ -383,7 +383,7 @@ class CSV2POST_Content_View extends CSV2POST_View {
             $localimages_column = '';
             if( isset( $this->current_project_settings['content']["localimages"]['table'] ) ){$localimages_table = $this->current_project_settings['content']["localimages"]['table'];}
             if( isset( $this->current_project_settings['content']["localimages"]['column'] ) ){$localimages_column = $this->current_project_settings['content']["localimages"]['column'];}                 
-            $this->UI->option_projectcolumns( 'Filename Data', $c2p_settings['currentproject'], 'localimagesdata', 'localimagesdata', $localimages_table, $localimages_column);
+            $this->UI->option_projectcolumns( 'Filename Data', $csv2post_settings['currentproject'], 'localimagesdata', 'localimagesdata', $localimages_table, $localimages_column);
                             
             // search for increment
             $incrementalimages = 'enabled';
@@ -407,7 +407,7 @@ class CSV2POST_Content_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_content_2000freehours() {
         echo '<p>' . __( "Over 2000 hours (and counting) have gone into providing a free edition and providing free support.

@@ -49,7 +49,7 @@ class C2P_Files {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function singlefile_uploader( $file_array, $uploads = false, $test_size = true, $test_type = false, $overwrite = false ) {
         $result_array = array( 'outcome' => false,
@@ -170,7 +170,7 @@ class C2P_Files {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     * 
     * @param string $url
     * @param array $uploads - array( 'path' => 'thepath/forfile/tobeput', 'url' => $url, 'subdir' => '', 'error' => false );
@@ -302,7 +302,7 @@ class C2P_Files {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function write( $path, $data ) {
         
@@ -330,7 +330,7 @@ class C2P_Files {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function compare_csv_files( $filepath_one, $filepath_two ) {
         $result_array = array( 'outcome' => false,
@@ -379,6 +379,8 @@ class C2P_Files {
     
     /**
     * Counts separator characters per row, compares total over all rows counted to determine probably Separator
+    * 
+    * Does not confirm file, assumes path already confirmed.
     * 
     * @param mixed $filepath
     * 
@@ -450,7 +452,7 @@ class C2P_Files {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function directories_newest_file( $dir, $extension = false ) {
             
@@ -487,7 +489,7 @@ class C2P_Files {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function directories_lastedited_file( $dir, $extension = false ) {
             

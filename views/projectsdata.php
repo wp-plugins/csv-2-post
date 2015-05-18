@@ -1,6 +1,6 @@
 <?php
 /**
- * Table [page]   
+ * Table of projects imported data for monitoring and samples.   
  *
  * @package CSV 2 POST
  * @subpackage Views
@@ -11,15 +11,8 @@
 // Prohibit direct script loading
 defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 
-/**
- * Table [page] 
- * 
- * @package CSV 2 POST
- * @subpackage Views
- * @author Ryan Bayne
- * @since 8.1.3
- */
-class CSV2POST_Table_View extends CSV2POST_View {
+
+class CSV2POST_Projectsdata_View extends CSV2POST_View {
 
     /**
      * Number of screen columns for post boxes on this screen
@@ -30,7 +23,7 @@ class CSV2POST_Table_View extends CSV2POST_View {
      */
     protected $screen_columns = 1;
     
-    protected $view_name = 'table';
+    protected $view_name = 'projectsdata';
     
     public $purpose = 'normal';// normal, dashboard
 
@@ -40,7 +33,7 @@ class CSV2POST_Table_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function meta_box_array() {
         // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
@@ -59,7 +52,7 @@ class CSV2POST_Table_View extends CSV2POST_View {
      * @param array $data Data for this view
      */
     public function setup( $action, array $data ) {
-        global $c2p_settings;
+        global $csv2post_settings;
         
         // create constant for view name
         if(!defined( "WTG_CSV2POST_VIEWNAME") ){define( "WTG_CSV2POST_VIEWNAME", $this->view_name );}
@@ -72,9 +65,9 @@ class CSV2POST_Table_View extends CSV2POST_View {
         $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
                         
         // load the current project row and settings from that row
-        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
+        if( isset( $csv2post_settings['currentproject'] ) && $csv2post_settings['currentproject'] !== false ) {
             
-            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] ); 
+            $this->project_object = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] ); 
             if( !$this->project_object ) {
                 $this->current_project_settings = false;
             } else {
@@ -95,7 +88,7 @@ class CSV2POST_Table_View extends CSV2POST_View {
             }        
         
         } else {
-            $this->add_meta_box( 'rules-nocurrentproject', __( 'No Current Project', 'csv2post' ), array( $this->UI, 'metabox_nocurrentproject' ), 'normal','default',array( 'formid' => 'nocurrentproject' ) );      
+            $this->add_meta_box( 'projectsdata-nocurrentproject', __( 'No Current Project', 'csv2post' ), array( $this->UI, 'metabox_nocurrentproject' ), 'normal','default',array( 'formid' => 'nocurrentproject' ) );      
         }    
     }
     
@@ -105,7 +98,7 @@ class CSV2POST_Table_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 0.0.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function metaboxes() {
         parent::register_metaboxes( self::meta_box_array() );     
@@ -120,7 +113,7 @@ class CSV2POST_Table_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 0.0.2
-    * @version 1.0.0
+    * @version 1.1
     */
     public function dashboard() { 
         parent::dashboard_widgets( self::meta_box_array() );  
@@ -146,21 +139,21 @@ class CSV2POST_Table_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
-    public function postbox_table_datatable( $data, $box ) { 
+    public function postbox_projectsdata_datatable( $data, $box ) { 
     
     }
     
     public function datatables( $data, $box ) {
-        global $wpdb, $c2p_settings, $wpdb;
+        global $wpdb, $csv2post_settings, $wpdb;
 
-        if(!isset( $c2p_settings['currentproject'] ) || !is_numeric( $c2p_settings['currentproject'] ) ){
+        if(!isset( $csv2post_settings['currentproject'] ) || !is_numeric( $csv2post_settings['currentproject'] ) ){
             echo "<p class=\"csv2post_boxes_introtext\">". __( 'You have not created a project or somehow a Current Project has not been set.' ) ."</p>";
             return;
         }
 
-        $sourceid_array = $this->CSV2POST->get_project_sourcesid( $c2p_settings['currentproject'] );
+        $sourceid_array = $this->CSV2POST->get_project_sourcesid( $csv2post_settings['currentproject'] );
 
         $tables_already_displayed = array();
 
@@ -177,17 +170,8 @@ class CSV2POST_Table_View extends CSV2POST_View {
             $tables_already_displayed[] = $row->tablename;
             
             $importedrows = $this->DB->selectwherearray( $row->tablename );
-            
-            $projecttable_columns = $this->DB->get_tablecolumns( $row->tablename, true, true );
-            $excluded_array = array( 'c2p_rowid', 'c2p_postid', 'c2p_use', 'c2p_updated', 'c2p_applied', 'c2p_categories', 'c2p_changecounter' );
-            foreach( $excluded_array as $key => $excluded_column){
-                if(in_array( $excluded_column, $projecttable_columns) ){
-                    unset( $projecttable_columns[$key] );
-                }
-            }
 
             $ReceivingTable = new C2P_ImportTableInformation_Table();
-            $ReceivingTable->columnarray = $projecttable_columns;
             $ReceivingTable->prepare_items_further( $importedrows,10);    
             ?>
 
@@ -203,11 +187,6 @@ class CSV2POST_Table_View extends CSV2POST_View {
                 <input type="hidden" name="sourceid" value="<?php echo $source_id;?>">
                             
                 <input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
-                
-                <?php
-                // add search field
-                $ReceivingTable->search_box( 'search', 'importeddatasearch' );
-                ?>
                                 
                 <?php $ReceivingTable->display() ?>
                 
@@ -237,19 +216,18 @@ class C2P_ImportTableInformation_Table extends WP_List_Table {
         return $item[$column_name];
     }
 
-    /*
-    function column_title( $item){
-
-    } */
-
     function get_columns() {
         
-        $columns = array();
+        $columns = array(
+            'c2p_rowid' => __( 'Row ID', 'csv2post' ),
+            'c2p_postid' => __( 'Post ID', 'csv2post' ),
+            'c2p_use' => __( 'Used Status', 'csv2post' ),
+            'c2p_updated' => __( 'Last Update', 'csv2post' ),
+            'c2p_applied' => __( 'Applied', 'csv2post' ), 
+            'c2p_changecounter' => __( 'Times Altered', 'csv2post' ),
+        );
+       
         
-        foreach( $this->columnarray as $key => $column){
-            $columns[$column] = $column;
-        }
-
         return $columns;
     }
 

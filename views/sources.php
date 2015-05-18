@@ -40,7 +40,7 @@ class CSV2POST_Sources_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function meta_box_array() {
         // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
@@ -59,7 +59,7 @@ class CSV2POST_Sources_View extends CSV2POST_View {
      * @param array $data Data for this view
      */
     public function setup( $action, array $data ) {
-        global $c2p_settings;
+        global $csv2post_settings;
         
         // create constant for view name
         if(!defined( "WTG_CSV2POST_VIEWNAME") ){define( "WTG_CSV2POST_VIEWNAME", $this->view_name );}
@@ -72,9 +72,9 @@ class CSV2POST_Sources_View extends CSV2POST_View {
         $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
         
         // set current project values
-        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
+        if( isset( $csv2post_settings['currentproject'] ) && $csv2post_settings['currentproject'] !== false ) {
             
-            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] ); 
+            $this->project_object = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] ); 
             if( !$this->project_object ) {
                 $this->current_project_settings = false;
             } else {
@@ -102,7 +102,7 @@ class CSV2POST_Sources_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 0.0.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function metaboxes() {
         parent::register_metaboxes( self::meta_box_array() );     
@@ -117,7 +117,7 @@ class CSV2POST_Sources_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 0.0.2
-    * @version 1.0.0
+    * @version 1.1
     */
     public function dashboard() { 
         parent::dashboard_widgets( self::meta_box_array() );  
@@ -143,17 +143,17 @@ class CSV2POST_Sources_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_sources_datasources( $data, $box ) {    
-        global $wpdb, $c2p_settings;
+        global $wpdb, $csv2post_settings;
 
-        if(!isset( $c2p_settings['currentproject'] ) || !is_numeric( $c2p_settings['currentproject'] ) ){
+        if(!isset( $csv2post_settings['currentproject'] ) || !is_numeric( $csv2post_settings['currentproject'] ) ){
             echo "<p class=\"csv2post_boxes_introtext\">". __( 'You have not created a project or somehow a Current Project has not been set.' ) ."</p>";
             return;
         }
 
-        $query_results = $this->DB->selectwherearray( $wpdb->c2psources, 'projectid = ' . $c2p_settings['currentproject'], 'sourceid', '*' );
+        $query_results = $this->DB->selectwherearray( $wpdb->c2psources, 'projectid = ' . $csv2post_settings['currentproject'], 'sourceid', '*' );
         $SourcesTable = new C2P_ProjectDataSources_Table();
         $SourcesTable->prepare_items_further( $query_results,10);
         ?>

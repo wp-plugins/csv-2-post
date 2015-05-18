@@ -1,39 +1,28 @@
 <?php
 /**
- * Data Sources List [page]  
+ * History of changes for all projects.
  * 
- * Tools to manage data sources. 
- *
  * @package CSV 2 POST
  * @subpackage Views
  * @author Ryan Bayne   
- * @since 8.1.3
+ * @since 8.2.0
  */
 
 // Prohibit direct script loading
 defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 
-/**
- * View class for Data Sources List [page] 
- * 
- * @package CSV 2 POST
- * @subpackage Views
- * @author Ryan Bayne
- * @since 8.1.3
- * @version 1.0
- */
-class CSV2POST_Datasourceslist_View extends CSV2POST_View {
+class CSV2POST_Allprojectshistory_View extends CSV2POST_View {
 
     /**
      * Number of screen columns for post boxes on this screen
-     *
+     *                
      * @since 8.1.3
      *
      * @var int
      */
     protected $screen_columns = 1;
     
-    protected $view_name = 'datasourceslist';
+    protected $view_name = 'allprojectshistory';
     
     public $purpose = 'normal';// normal, dashboard
 
@@ -43,7 +32,7 @@ class CSV2POST_Datasourceslist_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function meta_box_array() {
         // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
@@ -62,7 +51,7 @@ class CSV2POST_Datasourceslist_View extends CSV2POST_View {
      * @param array $data Data for this view
      */
     public function setup( $action, array $data ) {
-        global $c2p_settings;
+        global $csv2post_settings;
         
         // create constant for view name
         if(!defined( "WTG_CSV2POST_VIEWNAME") ){define( "WTG_CSV2POST_VIEWNAME", $this->view_name );}
@@ -75,8 +64,8 @@ class CSV2POST_Datasourceslist_View extends CSV2POST_View {
         $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
         
         // set current project values
-        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
-            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] ); 
+        if( isset( $csv2post_settings['currentproject'] ) && $csv2post_settings['currentproject'] !== false ) {
+            $this->project_object = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] ); 
             if( !$this->project_object ) {
                 $this->current_project_settings = false;
             } else {
@@ -104,7 +93,7 @@ class CSV2POST_Datasourceslist_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 0.0.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function metaboxes() {
         parent::register_metaboxes( self::meta_box_array() );     
@@ -119,7 +108,7 @@ class CSV2POST_Datasourceslist_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 0.0.2
-    * @version 1.0.0
+    * @version 1.0
     */
     public function dashboard() { 
         parent::dashboard_widgets( self::meta_box_array() );  
@@ -133,45 +122,34 @@ class CSV2POST_Datasourceslist_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.32
-    * @version 1.0.1
+    * @version 1.0
     */
     function parent( $data, $box ) {
         eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
     } 
 
     /**
-    * post box function for testing
-    * 
-    * @author Ryan Bayne
-    * @package CSV 2 POST
-    * @since 8.1.3
-    * @version 1.0.0
-    */
-    public function postbox_datasourceslist_datasourcestable( $data, $box ) { 
-
-    }     
-
-    /**
     * Displays one or more tables of data at the top of the page before post boxes
     * 
     * @author Ryan R. Bayne
-    * @package WordPress Plugin Framework Pro
+    * @package CSV 2 POST
     * @since 0.0.1
     * @version 1.0
     */
     public function datatables( $data, $box ) { 
         global $wpdb;
-        $query_results = $this->DB->selectwherearray( $wpdb->c2psources, 'sourceid = sourceid', 'sourceid', '*' );    
-               
-        $WPTableObject = new C2P_DataSources_Table();
-        $WPTableObject->prepare_items_further( $query_results, 20 );
+        
+        $query_results = $this->CSV2POST->getlog( '*', 'category = "projectchange"' );
+                     
+        $WPTableObject = new C2P_Allprojectshistory_Table();
+        $WPTableObject->prepare_items_further( $query_results, 500 );
         ?>
 
         <form method="get">
             <input type="hidden" name="page" value="<?php echo $_REQUEST['page']; ?>" />
             <?php             
             // add search field
-            $WPTableObject->search_box( 'search', 'theidhere' ); 
+            //$WPTableObject->search_box( 'search', 'theidhere' ); 
             
             // display the table
             $WPTableObject->display();
@@ -182,7 +160,7 @@ class CSV2POST_Datasourceslist_View extends CSV2POST_View {
     }   
 }
 
-class C2P_DataSources_Table extends WP_List_Table {
+class C2P_Allprojectshistory_Table extends WP_List_Table {
 
     function __construct() {
         global $status, $page;
@@ -200,57 +178,38 @@ class C2P_DataSources_Table extends WP_List_Table {
              
         $attributes = "class=\"$column_name column-$column_name\"";
                 
-        switch( $column_name){
-            
-            case 'sourceid':
-                return $item['sourceid'];    
+        switch( $column_name ){
+
+            case 'outcome':
+                return $item['outcome'];    
                 break;            
-            case 'projectid':
-                if( $item['projectid'] == 0){return 'Unknown';}
-                return $item['projectid'];    
-                break;
-            case 'sourcetype':
-                return $item['sourcetype'];    
-                break;
-            case 'progress':
-                return $item['progress'];
+    
+            case 'userid':
+                return $item['userid'];    
+                break;                                
+
+            case 'action':
+                return $item['action'];    
                 break;            
-            case 'timestamp':
-                return $item['timestamp'];    
-                break;   
-            case 'path':
-                return $item['path'];    
-                break;           
-            //case 'directory':
-                //return $item['directory'];    
-                //break;
-            case 'idcolumn':
-                return $item['idcolumn'];
-                break;               
-            case 'monitorchange':
-                if( isset( $item['monitorchange'] ) && $item['monitorchange'] != false ) { return __( 'On', 'csv2post' ); };
-                return __( 'Off', 'csv2post' );
-                break;
-            case 'changecounter':
-                return $item['changecounter'];
-                break;
-            case 'datatreatment':
-                return $item['datatreatment'];
-                break;
-            case 'parentfileid':
-                return $item['parentfileid'];
-                break;
-            case 'tablename':
-                return $item['tablename'];
-                break;
-            case 'rules':
-                if( isset( $item['rules'] ) && !empty( $item['rules'] ) ) { return __( 'Yes', 'csv2post' ); }
-                return __( 'No', 'csv2post' );
-                break;
-            //case 'thesep':
-                //return $item['thesep'];
-                //break; 
-                                                                      
+
+            case 'triga':
+                
+                if( $item['triga'] == 'manualrequest' ) {
+                    return __( 'Manual Request', 'csv2post' );
+                } 
+                                
+                if( $item['triga'] == 'automatic' ) {
+                    return __( 'Automatic', 'csv2post' );
+                } 
+                                
+                if( $item['triga'] == 'schedule' ) {
+                    return __( 'Scheduled', 'csv2post' );
+                } 
+                                
+                return __( 'Unknown', 'csv2post' );
+
+                break;            
+                                                                    
             default:
                 return 'No column function or default setup in switch statement';
         }
@@ -263,22 +222,10 @@ class C2P_DataSources_Table extends WP_List_Table {
 
     function get_columns() {
         $columns = array(
-            'sourceid' => __( 'ID', 'csv2post' ),
-            'projectid' => __( 'Project', 'csv2post' ),
-            'sourcetype' => __( 'Type', 'csv2post' ),
-            'progress' => __( 'Progress', 'csv2post' ),
-            'timestamp' => __( 'Timestamp', 'csv2post' ),            
-            'path' => __( 'Path', 'csv2post' ),
-            //'directory' => __( 'Directory', 'csv2post' ),
-            'idcolumn' => __( 'ID Column', 'csv2post' ),
-            'monitorchange' => __( 'Monitoring', 'csv2post' ),
-            'changecounter' => __( 'Changed Counter', 'csv2post' ),
-            'datatreatment' => __( 'Data Treatment', 'csv2post' ),
-            'parentfileid' => __( 'Parent File', 'csv2post' ),
-            'tablename' => __( 'Table', 'csv2post' ),
-            'rules' => __( 'Rules', 'csv2post' ),
-            //'thesep' => __( 'Separator', 'csv2post' )
-
+            'outcome' => __( 'Outcome', 'csv2post' ),
+            'userid' => __( 'User ID', 'csv2post' ),
+            'action' => __( 'Action', 'csv2post' ),
+            'triga' => __( 'Trigger', 'csv2post' )
         );
                 
         return $columns;
@@ -346,9 +293,9 @@ class C2P_DataSources_Table extends WP_List_Table {
         $this->items = $data;
 
         $this->set_pagination_args( array(
-            'total_items' => $total_items,                  //WE have to calculate the total number of items
-            'per_page'    => $per_page,                     //WE have to determine how many items to show on a page
-            'total_pages' => ceil( $total_items/$per_page)   //WE have to calculate the total number of pages
+            'total_items' => $total_items,                 
+            'per_page'    => $per_page,                    
+            'total_pages' => ceil( $total_items/$per_page) 
         ) );
     }
 }

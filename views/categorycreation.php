@@ -11,14 +11,6 @@
 // Prohibit direct script loading
 defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 
-/**
- * View class for Beta Testing [page] 
- * 
- * @package CSV 2 POST
- * @subpackage Views
- * @author Ryan Bayne
- * @since 8.1.3
- */
 class CSV2POST_Categorycreation_View extends CSV2POST_View {
 
     /**
@@ -40,7 +32,7 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function meta_box_array() {
         // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
@@ -48,7 +40,7 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
             // array( id, title, callback (usually parent, approach created by Ryan Bayne), context (position), priority, call back arguments array, add to dashboard (boolean), required capability
             array( $this->view_name . '-categorycreation', __( 'Category Creation', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'categorycreation' ), true, 'activate_plugins' ),
             array( $this->view_name . '-setpostscategories', __( 'Set Posts Categories', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'setpostscategories' ), true, 'activate_plugins' ),
-            array( $this->view_name . '-resetpostscategories', __( 'Re-Set Posts Categories', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'resetpostscategories' ), true, 'activate_plugins' ),
+            //array( $this->view_name . '-resetpostscategories', __( 'Re-Set Posts Categories', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'resetpostscategories' ), true, 'activate_plugins' ),
             array( $this->view_name . '-uncategorisedpoststable', __( 'Uncategorised Posts Table', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'uncategorisedpoststable' ), true, 'activate_plugins' ),
         );    
     }
@@ -62,7 +54,7 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
      * @param array $data Data for this view
      */
     public function setup( $action, array $data ) {
-        global $c2p_settings;
+        global $csv2post_settings;
         
         // create constant for view name
         if(!defined( "WTG_CSV2POST_VIEWNAME") ){define( "WTG_CSV2POST_VIEWNAME", $this->view_name );}
@@ -75,9 +67,9 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
         $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
                         
         // load the current project row and settings from that row
-        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {
+        if( isset( $csv2post_settings['currentproject'] ) && $csv2post_settings['currentproject'] !== false ) {
             
-            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] ); 
+            $this->project_object = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] ); 
             if( !$this->project_object ) {
                 $this->current_project_settings = false;
             } else {
@@ -105,7 +97,7 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function metaboxes() {
         parent::register_metaboxes( self::meta_box_array() );     
@@ -120,7 +112,7 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function dashboard() { 
         parent::dashboard_widgets( self::meta_box_array() );  
@@ -146,7 +138,7 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_categorycreation_categorycreation( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Once you have selected your category columns you can initiate category creation using this form.', 'csv2post' ), false );        
@@ -160,7 +152,7 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_categorycreation_setpostscategories( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Does not create categories. Submitting this form will put posts by CSV 2 POST into categories based on your category column settings.', 'csv2post' ), false );        
@@ -175,7 +167,7 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_categorycreation_resetpostscategories( $data, $box ) {    
         $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Another user requested feature. This one removes all of the current projects posts from their categories. They will end up in your WP blogs default category.', 'csv2post' ), false );        
@@ -191,10 +183,10 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function postbox_categorycreation_uncategorisedpoststable( $data, $box ) {    
-        global $c2p_settings, $wpdb;
+        global $csv2post_settings, $wpdb;
         
         // load uncategorised posts table class
         //$table = CSV2POST::load_class( 'CSV2POST_UncatPosts_Table', 'class-uncategorisedpoststable.php', 'classes' );
@@ -204,7 +196,7 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
             'category'         => '1',
             'order'            => 'DESC',
             'meta_key'         => 'c2p_project',
-            'meta_value'       => $c2p_settings['currentproject'],
+            'meta_value'       => $csv2post_settings['currentproject'],
             'post_type'        => 'post',
             'post_status'      => 'any' );       
         $uncatposts = get_posts( $args );

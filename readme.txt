@@ -3,17 +3,17 @@ Contributors: WebTechGlobal
 Donate link: http://www.webtechglobal.co.uk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Tags: CSV 2 POST, csv2post,dataimport,importer,.csv,data,autoblogger,autoblogging,wpcsvimporter, spintax, text spinner, post updating,
+Tags: CSV 2 POST,csv2post,dataimport,importer,.csv,data,autoblogger,autoblogging,wpcsvimporter, spintax, text spinner, post updating,
 Requires at least: 3.8.0
-Tested up to: 4.1.0
-Stable tag: trunk
+Tested up to: 4.2.2
+Stable tag: 8.2.0
 
 WordPress data import and autoblogger plugin. Unlimited creation and post updating. Tools include spintax, dynamic template
-selection and ability to put every form on the WP dashboard.  
+selection and lots more.  
 
 == Description ==
 
-Unlimited autoblogging with abilities only pro plugins usually offer at a cost. Systematic post creation and updating is now free
+Unlimited autoblogging with abilities pro plugins offer at a cost. Systematic post creation and updating is now free
 from WebTechGlobal. Refresh your content constantly with power that is worth money. Free support is available with small donations
 getting far quicker responses and new features added on demand for your generosity. That does not mean every request needs to come
 with a donation. All requests are added to the projects workflow so do not delay - contact me today. 
@@ -32,7 +32,7 @@ CSV 2 POST offers more for free than any other importer. If you donate to this p
 updates of this project - but you'll be supporting the creation of more WordPress autoblogging and data import plugins. I'm
 confident you will be impressed at the hundreds of hours I've put into this plugin for you. If you cannot afford to donate - 
 a Facebook like, a review, a short video on YouTube or a Tweet will help just as much. Thank you for your support.                                     
-
+            
 1. No autoblogging limits at all
 1. Create posts, pages and custom post types
 1. Systematic post updating or do it all at once
@@ -96,8 +96,7 @@ request for free. The plugin also offers text-spinning without limits and there 
 
 = When was CSV 2 POST released? =
 The project started in 2009 and was quickly backed by large businesses including Ryanair Ltd. I created the plugin while technically still at University so
-it didn't take long for a re-development to happen. I found myself re-developing it again in 2014 with the aim of making more use of the WordPress core. Version
-8.0.0 should be the last big update of this free plugin which has been designed based on years of feedback.
+it didn't take long for a re-development to happen. I found myself re-developing it again in 2014 with the aim of making more use of the WordPress core.
 
 == Screenshots ==
 
@@ -120,6 +119,23 @@ Please update this plugin using your WordPress Installed Plugins screen. Click o
 This method is safer than using any other source for the files.
 
 == Changelog == 
+= 8.2.0 =
+* Feature Changes
+    * New Directory Sources screen lists directories intended for providing multiple .csv files.
+    * New Data History view focuses on data import events, file changes, new file detection.
+    * New Data Alerts view displays newly detected files that require manual import (auto import not active). 
+    * Separate areas added for management of all projects and management of the current active projects.
+    * Plugins main page (plugin dashboard) has gone in reverse, with forms being moved again, we found it never had the usefullness intended
+    * Due to variations in .csv files. The project data view only has the default columns. Data displayed will help us monitor the plugins precise activities. That is important if we are to decide if and when the plugin is hyper or not doing enough automation.
+    * Menus removed from category descriptions form. User must always enter one or more tokens.
+* Technical Notes
+    * Submission of directory source form now adds another entry to the sources database table with source type "localdirectory"
+    * Form registration (WTG security system) has been changed to keep registered form data longer. It no longer resets if a second tab is opened.  
+* Known Issues
+    * Still no easy step by step approach like versions had two years ago. This is coming again soon.    
+    * Data Table view is not suitable as tables are too wide, column titles cannot be read
+    * Some forms are not suitable for being in the narrow sidebar by default, probably use that bar for quick tools and small information.
+
 = 8.1.37 =
 Fix - complete_plugin_update() was using an eval where not required! 
 

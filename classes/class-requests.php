@@ -31,7 +31,7 @@ defined( 'ABSPATH' ) || die( 'No direct script access allowed!' );
 */
 class C2P_Requests {  
     public function __construct() {
-        global $c2p_settings;
+        global $csv2post_settings;
     
         // create class objects
         $this->CSV2POST = CSV2POST::load_class( 'CSV2POST', 'class-csv2post.php', 'classes' ); # plugin specific functions
@@ -44,8 +44,8 @@ class C2P_Requests {
         $this->TabMenu = $this->CSV2POST->load_class( "C2P_TabMenu", "class-pluginmenu.php", 'classes','pluginmenu' ); 
                       
         // set current project values
-        if( isset( $c2p_settings['currentproject'] ) && $c2p_settings['currentproject'] !== false ) {    
-            $this->project_object = $this->CSV2POST->get_project( $c2p_settings['currentproject'] ); 
+        if( isset( $csv2post_settings['currentproject'] ) && $csv2post_settings['currentproject'] !== false ) {    
+            $this->project_object = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] ); 
             if( !$this->project_object ) {
                 $this->current_project_settings = false;
             } else {
@@ -122,13 +122,47 @@ class C2P_Requests {
             $this->Forms->deregister_form( $_POST['csv2post_form_formid'] );
                     
             // if $overall_result includes a single failure then there is no need to call the final function
-            if( $post_result === false ) {        
+            if( $post_result === false ) { 
+            
+                // log
+                $atts = array(
+                    'outcome' => 1,
+                    'line' => __LINE__, 
+                    'function' => __FUNCTION__,
+                    'file' => __FILE__, 
+                    'userid' => get_current_user_id(),          
+                    'type' => 'trace',
+                    'category' => 'usertrace',
+                    'action' => __( 'Form submit request rejected after security and validation applied for form ID ' . $_POST['csv2post_form_formid'], 'csv2post' ),
+                    'priority' => 'normal',                        
+                    'triga' => 'manualrequest'
+                );
+                
+                $this->CSV2POST->newlog( $atts );
+
                 return false;
             }
         }
         
         // handle a situation where the submitted form requests a function that does not exist
         if( !method_exists( $this, $function_name ) ){
+            
+            // log
+            $atts = array(
+                'outcome' => 1,
+                'line' => __LINE__, 
+                'function' => __FUNCTION__,
+                'file' => __FILE__, 
+                'userid' => get_current_user_id(),          
+                'type' => 'error',// using error is enough to attract attention to the problem
+                'category' => 'usertrace',// still use usertrace so that the negative event the user witnessed can be considered when communicating with the user
+                'action' => __( 'Requested function/method could not be found. This should be reported to WebTechGlobal.', 'csv2post' ),
+                'priority' => 'high',                        
+                'triga' => 'manualrequest'
+            );
+            
+            $this->CSV2POST->newlog( $atts );
+                
             wp_die( sprintf( __( "The method for processing your request was not found. This can usually be resolved quickly. Please report method %s does not exist. <a href='https://www.youtube.com/watch?v=vAImGQJdO_k' target='_blank'>Watch a video</a> explaining this problem.", 'wtgpluginframework' ), 
             $function_name) ); 
             return false;// should not be required with wp_die() but it helps to add clarity when browsing code and is a precaution.   
@@ -173,51 +207,51 @@ class C2P_Requests {
     * @version 1.0.1
     */    
     public function logsettings() {
-        global $c2p_settings;
-        $c2p_settings['globalsettings']['uselog'] = $_POST['csv2post_radiogroup_logstatus'];
-        $c2p_settings['globalsettings']['loglimit'] = $_POST['csv2post_loglimit'];
+        global $csv2post_settings;
+        $csv2post_settings['globalsettings']['uselog'] = $_POST['csv2post_radiogroup_logstatus'];
+        $csv2post_settings['globalsettings']['loglimit'] = $_POST['csv2post_loglimit'];
                                                    
         ##################################################
         #           LOG SEARCH CRITERIA                  #
         ##################################################
         
         // first unset all criteria
-        if( isset( $c2p_settings['logsettings']['logscreen'] ) ){
-            unset( $c2p_settings['logsettings']['logscreen'] );
+        if( isset( $csv2post_settings['logsettings']['logscreen'] ) ){
+            unset( $csv2post_settings['logsettings']['logscreen'] );
         }
                                                            
         // if a column is set in the array, it indicates that it is to be displayed, we unset those not to be set, we dont set them to false
         if( isset( $_POST['csv2post_logfields'] ) ){
             foreach( $_POST['csv2post_logfields'] as $column){
-                $c2p_settings['logsettings']['logscreen']['displayedcolumns'][$column] = true;                   
+                $csv2post_settings['logsettings']['logscreen']['displayedcolumns'][$column] = true;                   
             }
         }
                                                                                  
         // outcome criteria
         if( isset( $_POST['csv2post_log_outcome'] ) ){    
             foreach( $_POST['csv2post_log_outcome'] as $outcomecriteria){
-                $c2p_settings['logsettings']['logscreen']['outcomecriteria'][$outcomecriteria] = true;                   
+                $csv2post_settings['logsettings']['logscreen']['outcomecriteria'][$outcomecriteria] = true;                   
             }            
         } 
         
         // type criteria
         if( isset( $_POST['csv2post_log_type'] ) ){
             foreach( $_POST['csv2post_log_type'] as $typecriteria){
-                $c2p_settings['logsettings']['logscreen']['typecriteria'][$typecriteria] = true;                   
+                $csv2post_settings['logsettings']['logscreen']['typecriteria'][$typecriteria] = true;                   
             }            
         }         
 
         // category criteria
         if( isset( $_POST['csv2post_log_category'] ) ){
             foreach( $_POST['csv2post_log_category'] as $categorycriteria){
-                $c2p_settings['logsettings']['logscreen']['categorycriteria'][$categorycriteria] = true;                   
+                $csv2post_settings['logsettings']['logscreen']['categorycriteria'][$categorycriteria] = true;                   
             }            
         }         
 
         // priority criteria
         if( isset( $_POST['csv2post_log_priority'] ) ){
             foreach( $_POST['csv2post_log_priority'] as $prioritycriteria){
-                $c2p_settings['logsettings']['logscreen']['prioritycriteria'][$prioritycriteria] = true;                   
+                $csv2post_settings['logsettings']['logscreen']['prioritycriteria'][$prioritycriteria] = true;                   
             }            
         }         
 
@@ -226,42 +260,42 @@ class C2P_Requests {
         ############################################################
         // page
         if( isset( $_POST['csv2post_pluginpages_logsearch'] ) && $_POST['csv2post_pluginpages_logsearch'] != 'notselected' ){
-            $c2p_settings['logsettings']['logscreen']['page'] = $_POST['csv2post_pluginpages_logsearch'];
+            $csv2post_settings['logsettings']['logscreen']['page'] = $_POST['csv2post_pluginpages_logsearch'];
         }   
         // action
         if( isset( $_POST['csv2pos_logactions_logsearch'] ) && $_POST['csv2pos_logactions_logsearch'] != 'notselected' ){
-            $c2p_settings['logsettings']['logscreen']['action'] = $_POST['csv2pos_logactions_logsearch'];
+            $csv2post_settings['logsettings']['logscreen']['action'] = $_POST['csv2pos_logactions_logsearch'];
         }   
         // screen
         if( isset( $_POST['csv2post_pluginscreens_logsearch'] ) && $_POST['csv2post_pluginscreens_logsearch'] != 'notselected' ){
-            $c2p_settings['logsettings']['logscreen']['screen'] = $_POST['csv2post_pluginscreens_logsearch'];
+            $csv2post_settings['logsettings']['logscreen']['screen'] = $_POST['csv2post_pluginscreens_logsearch'];
         }  
         // line
         if( isset( $_POST['csv2post_logcriteria_phpline'] ) ){
-            $c2p_settings['logsettings']['logscreen']['line'] = $_POST['csv2post_logcriteria_phpline'];
+            $csv2post_settings['logsettings']['logscreen']['line'] = $_POST['csv2post_logcriteria_phpline'];
         }  
         // file
         if( isset( $_POST['csv2post_logcriteria_phpfile'] ) ){
-            $c2p_settings['logsettings']['logscreen']['file'] = $_POST['csv2post_logcriteria_phpfile'];
+            $csv2post_settings['logsettings']['logscreen']['file'] = $_POST['csv2post_logcriteria_phpfile'];
         }          
         // function
         if( isset( $_POST['csv2post_logcriteria_phpfunction'] ) ){
-            $c2p_settings['logsettings']['logscreen']['function'] = $_POST['csv2post_logcriteria_phpfunction'];
+            $csv2post_settings['logsettings']['logscreen']['function'] = $_POST['csv2post_logcriteria_phpfunction'];
         }
         // panel name
         if( isset( $_POST['csv2post_logcriteria_panelname'] ) ){
-            $c2p_settings['logsettings']['logscreen']['panelname'] = $_POST['csv2post_logcriteria_panelname'];
+            $csv2post_settings['logsettings']['logscreen']['panelname'] = $_POST['csv2post_logcriteria_panelname'];
         }
         // IP address
         if( isset( $_POST['csv2post_logcriteria_ipaddress'] ) ){
-            $c2p_settings['logsettings']['logscreen']['ipaddress'] = $_POST['csv2post_logcriteria_ipaddress'];
+            $csv2post_settings['logsettings']['logscreen']['ipaddress'] = $_POST['csv2post_logcriteria_ipaddress'];
         }
         // user id
         if( isset( $_POST['csv2post_logcriteria_userid'] ) ){
-            $c2p_settings['logsettings']['logscreen']['userid'] = $_POST['csv2post_logcriteria_userid'];
+            $csv2post_settings['logsettings']['logscreen']['userid'] = $_POST['csv2post_logcriteria_userid'];
         }
         
-        $this->CSV2POST->update_settings( $c2p_settings );
+        $this->CSV2POST->update_settings( $csv2post_settings );
         $this->UI->n_postresult_depreciated( 'success', __( 'Log Settings Saved', 'csv2post' ), __( 'It may take sometime for new log entries to be created depending on your websites activity.', 'csv2post' ) );  
     }  
     
@@ -279,13 +313,13 @@ class C2P_Requests {
     * Data panel one settings
     */
     public function panelone() {
-        global $c2p_settings;
-        $c2p_settings['globalsettings']['encoding']['type'] = $_POST['csv2post_radiogroup_encoding'];
-        $c2p_settings['globalsettings']['admintriggers']['newcsvfiles']['status'] = $_POST['csv2post_radiogroup_detectnewcsvfiles'];
-        $c2p_settings['globalsettings']['admintriggers']['newcsvfiles']['display'] = $_POST['csv2post_radiogroup_detectnewcsvfiles_display'];
-        $c2p_settings['globalsettings']['postfilter']['status'] = $_POST['csv2post_radiogroup_postfilter'];          
-        $c2p_settings['globalsettings']['postfilter']['tokenrespin']['status'] = $_POST['csv2post_radiogroup_spinnertokenrespin'];        
-        $this->CSV2POST->update_settings( $c2p_settings );
+        global $csv2post_settings;
+        $csv2post_settings['globalsettings']['encoding']['type'] = $_POST['csv2post_radiogroup_encoding'];
+        $csv2post_settings['globalsettings']['admintriggers']['newcsvfiles']['status'] = $_POST['csv2post_radiogroup_detectnewcsvfiles'];
+        $csv2post_settings['globalsettings']['admintriggers']['newcsvfiles']['display'] = $_POST['csv2post_radiogroup_detectnewcsvfiles_display'];
+        $csv2post_settings['globalsettings']['postfilter']['status'] = $_POST['csv2post_radiogroup_postfilter'];          
+        $csv2post_settings['globalsettings']['postfilter']['tokenrespin']['status'] = $_POST['csv2post_radiogroup_spinnertokenrespin'];        
+        $this->CSV2POST->update_settings( $csv2post_settings );
         $this->UI->n_postresult_depreciated( 'success', __( 'Data Related Settings Saved', 'csv2post' ), __( 'We recommend that you monitor the plugin for a short time and ensure your new settings are as expected.', 'csv2post' ) );
     }
 
@@ -298,7 +332,7 @@ class C2P_Requests {
     * @version 1.0.1
     */ 
     public function globaldatasettings () {
-        global $c2p_settings;
+        global $csv2post_settings;
         
         if(!is_numeric( $_POST['importlimit'] ) ){
             $this->UI->create_notice( 'You must enter a numeric value for the maximum number of records to be imported and inserted to the database per event.
@@ -311,8 +345,8 @@ class C2P_Requests {
             $value = 1;
         }
         
-        $c2p_settings['datasettings']['insertlimit'] = $_POST['importlimit'];
-        $this->CSV2POST->update_settings( $c2p_settings );
+        $csv2post_settings['datasettings']['insertlimit'] = $_POST['importlimit'];
+        $this->CSV2POST->update_settings( $csv2post_settings );
         $this->UI->create_notice( __( 'Your data options have been saved.', 'csv2post' ), 'success', 'Small', __( 'Global Data Settings Saved', 'csv2post' ) );        
     } 
     
@@ -393,7 +427,7 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function logsearchoptions() {
         $this->UI->n_postresult_depreciated( 'success', __( 'Log Search Settings Saved', 'csv2post' ), __( 'Your selections have an instant effect. Please browse the Log screen for the results of your new search.', 'csv2post' ) );                   
@@ -405,10 +439,10 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function deleteproject() {
-        global $wpdb, $c2p_settings;
+        global $wpdb, $csv2post_settings;
         
         if(empty( $_POST['confirmcode'] ) ){
             $this->UI->create_notice( __( 'Please re-enter the confirmation code.' ), 'error', 'Small', __( 'Confirmation Code Required' ) );
@@ -434,9 +468,25 @@ class C2P_Requests {
         $this->DB->delete( $wpdb->c2pprojects, "projectid = '" . $_POST['projectid'] . "'");
                
         // unset current project setting
-        unset( $c2p_settings['currentproject'] );
-        $this->CSV2POST->update_settings( $c2p_settings );
+        unset( $csv2post_settings['currentproject'] );
+        $this->CSV2POST->update_settings( $csv2post_settings );
         
+        // log
+        $atts = array(
+            'outcome' => 1,
+            'line' => __LINE__, 
+            'function' => __FUNCTION__,
+            'file' => __FILE__, 
+            'userid' => get_current_user_id(),          
+            'type' => 'general',
+            'category' => 'projectchange',
+            'action' => sprintf( __( 'Project deleted. The projects ID is %d.', 'csv2post' ), $_POST['projectid'] ),
+            'priority' => 'high',                        
+            'triga' => 'manualrequest'
+        );
+        
+        $this->CSV2POST->newlog( $atts );
+                
         $this->UI->create_notice( __( 'Your project was deleted.' ), 'success', 'Small', __( 'Success' ) );
     } 
 
@@ -446,16 +496,16 @@ class C2P_Requests {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function currentprojectnext() {
-        global $wpdb, $c2p_settings;
+        global $wpdb, $csv2post_settings;
         $projects_array = $this->DB->selectwherearray( $wpdb->c2pprojects, 'projectid = projectid', 'timestamp', '*', ARRAY_A, 'ASC' );
         
         // get array key for current project
         $active_array_key = false;
         foreach( $projects_array as $key => $project ) {
-            if( $project['projectid'] === $c2p_settings['currentproject'] ) {
+            if( $project['projectid'] === $csv2post_settings['currentproject'] ) {
                 $active_array_key = $key; 
                 break;       
             }    
@@ -468,13 +518,13 @@ class C2P_Requests {
 
         if( $active_array_key == $last_key ) {
             // current project is also the last in the array, set the first as the current project
-            $c2p_settings['currentproject'] = $projects_array[ 0 ]['projectid'];        
+            $csv2post_settings['currentproject'] = $projects_array[ 0 ]['projectid'];        
         } else {
             $new_active_key = $active_array_key + 1;
-            $c2p_settings['currentproject'] = $projects_array[ $new_active_key ]['projectid'];    
+            $csv2post_settings['currentproject'] = $projects_array[ $new_active_key ]['projectid'];    
         }
    
-        $this->CSV2POST->update_settings( $c2p_settings );    
+        $this->CSV2POST->update_settings( $csv2post_settings );    
     }    
     
     /**
@@ -483,16 +533,16 @@ class C2P_Requests {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function currentprojectprevious() {
-        global $wpdb, $c2p_settings;
+        global $wpdb, $csv2post_settings;
         $projects_array = $this->DB->selectwherearray( $wpdb->c2pprojects, 'projectid = projectid', 'timestamp', '*', ARRAY_A, 'ASC' );
         
         // get array key for current project
         $active_array_key = false;
         foreach( $projects_array as $key => $project ) {
-            if( $project['projectid'] === $c2p_settings['currentproject'] ) {
+            if( $project['projectid'] === $csv2post_settings['currentproject'] ) {
                 $active_array_key = $key;        
             }    
         }
@@ -500,13 +550,13 @@ class C2P_Requests {
         // if $active_array_key is 1 or 0 or accidental -1 set the last item in array as next
         if( $active_array_key < 2 ) {
             $new_active_key = count( $projects_array ) - 1;
-            $c2p_settings['currentproject'] = $projects_array[ $new_active_key ]['projectid'];        
+            $csv2post_settings['currentproject'] = $projects_array[ $new_active_key ]['projectid'];        
         } else {
             $new_active_key = $active_array_key - 1;
-            $c2p_settings['currentproject'] = $projects_array[ $new_active_key ]['projectid'];    
+            $csv2post_settings['currentproject'] = $projects_array[ $new_active_key ]['projectid'];    
         }
    
-        $this->CSV2POST->update_settings( $c2p_settings );
+        $this->CSV2POST->update_settings( $csv2post_settings );
     }
        
     /**
@@ -515,12 +565,12 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function setexpecteddatatypes() {
-        global $c2p_settings, $wpdb;
+        global $csv2post_settings, $wpdb;
         
-        $project_columns_array = $this->CSV2POST->get_project_columns_from_db( $c2p_settings['currentproject'], true);
+        $project_columns_array = $this->CSV2POST->get_project_columns_from_db( $csv2post_settings['currentproject'], true);
 
         // all columns are in one array but the key are the tables, each table needs its own update query 
         foreach( $project_columns_array as $source_table => $columns_array ){
@@ -548,12 +598,12 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function roundnumberup () {
-        global $c2p_settings;
+        global $csv2post_settings;
         
-        $project_columns_array = $this->CSV2POST->get_project_columns_from_db( $c2p_settings['currentproject'], true);
+        $project_columns_array = $this->CSV2POST->get_project_columns_from_db( $csv2post_settings['currentproject'], true);
  
         // all columns are in one array but the key are the tables, each table needs its own update query 
         foreach( $project_columns_array as $source_table => $columns_array ){
@@ -581,12 +631,12 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function roundnumberdown() {
-        global $c2p_settings;
+        global $csv2post_settings;
         
-        $project_columns_array = $this->CSV2POST->get_project_columns_from_db( $c2p_settings['currentproject'], true);
+        $project_columns_array = $this->CSV2POST->get_project_columns_from_db( $csv2post_settings['currentproject'], true);
  
         // all columns are in one array but the key are the tables, each table needs its own update query 
         foreach( $project_columns_array as $source_table => $columns_array ){
@@ -614,12 +664,12 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function captalizefirstletter() {
-        global $c2p_settings;
+        global $csv2post_settings;
         
-        $project_columns_array = $this->CSV2POST->get_project_columns_from_db( $c2p_settings['currentproject'], true);
+        $project_columns_array = $this->CSV2POST->get_project_columns_from_db( $csv2post_settings['currentproject'], true);
  
         // all columns are in one array but the key are the tables, each table needs its own update query 
         foreach( $project_columns_array as $source_table => $columns_array ){
@@ -647,12 +697,12 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function lowercaseall() {
-        global $c2p_settings;
+        global $csv2post_settings;
         
-        $project_columns_array = $this->CSV2POST->get_project_columns_from_db( $c2p_settings['currentproject'], true);
+        $project_columns_array = $this->CSV2POST->get_project_columns_from_db( $csv2post_settings['currentproject'], true);
  
         // all columns are in one array but the key are the tables, each table needs its own update query 
         foreach( $project_columns_array as $source_table => $columns_array ){
@@ -680,12 +730,12 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function uppercaseall() {
-        global $c2p_settings;
+        global $csv2post_settings;
         
-        $project_columns_array = $this->CSV2POST->get_project_columns_from_db( $c2p_settings['currentproject'], true);
+        $project_columns_array = $this->CSV2POST->get_project_columns_from_db( $csv2post_settings['currentproject'], true);
  
         // all columns are in one array but the key are the tables, each table needs its own update query 
         foreach( $project_columns_array as $source_table => $columns_array ){
@@ -721,16 +771,16 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */             
     public function datasplitter() {
-        global $wpdb, $c2p_settings;
+        global $wpdb, $csv2post_settings;
         
         // column to be splitted makes its source the primary/head in this procedure and the lead is taking from that during import
         $explode_splitter_column = explode( '#', $_POST['datasplitercolumn'] );
         
         // we need the source id that the splitter rules applies to
-        $sourceid = $this->DB->selectrow( $wpdb->c2psources, 'projectid = ' . $c2p_settings['currentproject'] .' AND tablename = "' . $explode_splitter_column[0] .'"', 'sourceid' );
+        $sourceid = $this->DB->selectrow( $wpdb->c2psources, 'projectid = ' . $csv2post_settings['currentproject'] .' AND tablename = "' . $explode_splitter_column[0] .'"', 'sourceid' );
 
         // now query the rules column in the established source
         $rules_array = $this->CSV2POST->get_data_rules_source( $sourceid->sourceid);# returns array no matter what so we can just get working with it
@@ -778,11 +828,11 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function importdata0() {
-        global $c2p_settings;
-        $this->CSV2POST->import_from_csv_file( $_POST['sourceid'], $c2p_settings['currentproject'] );
+        global $csv2post_settings;
+        $this->CSV2POST->import_from_csv_file( $_POST['sourceid'], $csv2post_settings['currentproject'] );
     }
      
     /**
@@ -791,11 +841,11 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */      
     public function importdata1() {
-        global $c2p_settings;
-        $this->CSV2POST->import_from_csv_file( $_POST['sourceid'], $c2p_settings['currentproject'] );   
+        global $csv2post_settings;
+        $this->CSV2POST->import_from_csv_file( $_POST['sourceid'], $csv2post_settings['currentproject'] );   
     }
     
     /**
@@ -804,11 +854,11 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function importdata2() {
-        global $c2p_settings;
-        $this->CSV2POST->import_from_csv_file( $_POST['sourceid'], $c2p_settings['currentproject'] );    
+        global $csv2post_settings;
+        $this->CSV2POST->import_from_csv_file( $_POST['sourceid'], $csv2post_settings['currentproject'] );    
     }
     
     /**
@@ -817,11 +867,11 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function importdata3() {
-        global $c2p_settings;
-        $this->CSV2POST->import_from_csv_file( $_POST['sourceid'], $c2p_settings['currentproject'] );    
+        global $csv2post_settings;
+        $this->CSV2POST->import_from_csv_file( $_POST['sourceid'], $csv2post_settings['currentproject'] );    
     }
     
     /**
@@ -830,23 +880,23 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function importdata4() {
-        global $c2p_settings;
-        $this->CSV2POST->import_from_csv_file( $_POST['sourceid'], $c2p_settings['currentproject'] );    
+        global $csv2post_settings;
+        $this->CSV2POST->import_from_csv_file( $_POST['sourceid'], $csv2post_settings['currentproject'] );    
     }
     
     /**
     * quick action data import request
     */
     public function importdatecurrentproject() {
-        global $c2p_settings;
+        global $csv2post_settings;
         
         // import records from all sources for curret project
-        $sourceid_array = $this->CSV2POST->get_project_sourcesid( $c2p_settings['currentproject'] );
+        $sourceid_array = $this->CSV2POST->get_project_sourcesid( $csv2post_settings['currentproject'] );
         foreach( $sourceid_array as $key => $source_id ){
-            $this->CSV2POST->import_from_csv_file( $source_id, $c2p_settings['currentproject'], 'import',2 );
+            $this->CSV2POST->import_from_csv_file( $source_id, $csv2post_settings['currentproject'], 'import',2 );
         }        
     }
     
@@ -856,15 +906,15 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function updatedatacurrentproject() {
-        global $c2p_settings;
+        global $csv2post_settings;
         
         // import records from all sources for curret project
-        $sourceid_array = $this->CSV2POST->get_project_sourcesid( $c2p_settings['currentproject'] );
+        $sourceid_array = $this->CSV2POST->get_project_sourcesid( $csv2post_settings['currentproject'] );
         foreach( $sourceid_array as $key => $source_id){
-            $this->CSV2POST->import_from_csv_file( $source_id, $c2p_settings['currentproject'], 'update' );
+            $this->CSV2POST->import_from_csv_file( $source_id, $csv2post_settings['currentproject'], 'update' );
         }  
     }
     
@@ -874,11 +924,11 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function categorydata() {
-        global $c2p_settings;
-        $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
+        global $csv2post_settings;
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );
         $project_settings = maybe_unserialize( $project_array->projectsettings );
         if(!is_array( $project_settings ) ){$project_settings = array();}
         
@@ -918,7 +968,7 @@ class C2P_Requests {
             }
         }
 
-        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_settings ) ), true);
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_settings ) ), true);
         $this->UI->create_notice( __( "Your category options have been saved."), 'success', 'Small', __( 'Categories Saved' ) );
     }
      
@@ -928,21 +978,24 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */      
     public function categorydescriptions() {
-        global $c2p_settings;
-        $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
-        $categories_array = maybe_unserialize( $project_array->projectsettings);
-        if(!is_array( $categories_array ) ){$categories_array = array();}
-
+        global $csv2post_settings;
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );
+        $categories_array = maybe_unserialize( $project_array->projectsettings );
+        
+        if( !is_array( $categories_array ) ){
+            $categories_array = array();
+        }
+        
         for( $i=0;$i<=4;$i++){
             if( isset( $_POST['level'.$i.'description'] ) ){
                 $categories_array['categories']['meta'][$i]['description'] = $_POST['level'.$i.'description'];
             }           
         }
          
-        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $categories_array ) ), true);
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $categories_array ) ), true);
         $this->UI->create_notice( __( "Your category descriptons have been saved."), 'success', 'Small', __( 'Category Descriptions Saved' ) );        
     }
     
@@ -952,11 +1005,11 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function categorypairing() {
-        global $wpdb, $c2p_settings;
-        $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
+        global $wpdb, $csv2post_settings;
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );
         $categories_array = maybe_unserialize( $project_array->projectsettings);
         
         // remove all existing mapping
@@ -971,7 +1024,7 @@ class C2P_Requests {
             $distinct_result = $wpdb->get_results( "SELECT DISTINCT $column FROM $table",ARRAY_A);
             foreach( $distinct_result as $key => $value ){
                 
-                $distinctval_cleaned = $this->CSV2POST->clean_string( $value[$column] );
+                $distinctval_cleaned = $this->PHP->clean_string( $value[$column] );
                 $nameandid = 'distinct'.$table.$column.$distinctval_cleaned;
                 
                 if( isset( $_POST[$column .'#'. $table .'#'. $distinctval_cleaned] ) ){
@@ -986,7 +1039,7 @@ class C2P_Requests {
             }
         }
                          
-        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $categories_array ) ), true);
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $categories_array ) ), true);
         $this->UI->create_notice( __( "Your category mapping has been saved."), 'success', 'Small', __( 'Category Map Saved' ) );
     }
     
@@ -997,11 +1050,11 @@ class C2P_Requests {
     * the general procedure is the same as used on the projection screen but it has been adapted
     */          
     public function categorycreation() {
-        global $c2p_settings;    
+        global $csv2post_settings;    
         
         $projection_array = array();
 
-        $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );
         
         $projectsettings = maybe_unserialize( $project_array->projectsettings);
           
@@ -1097,11 +1150,11 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function newcustomfield() {
-        global $c2p_settings;    
-        $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );      
+        global $csv2post_settings;    
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
         $customfields_array = maybe_unserialize( $project_array->projectsettings);
         
         // clean the cf name and if the cleaned string differs then the original is not suitable
@@ -1137,7 +1190,7 @@ class C2P_Requests {
         $customfields_array['customfields']['cflist'][$next_key]['updating'] = $_POST['customfieldupdating'];
         $customfields_array['customfields']['cflist'][$next_key]['value'] = $_POST['customfielddefaultcontent'];
         
-        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $customfields_array ) ), true);
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $customfields_array ) ), true);
         $this->UI->create_notice( __( "Your custom field has been added to the list."), 'success', 'Small', __( 'New Custom Field Created' ) );
     }
     
@@ -1147,11 +1200,11 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function deletecustomfieldrule() {
-        global $c2p_settings;    
-        $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );      
+        global $csv2post_settings;    
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
         $customfields_array = maybe_unserialize( $project_array->projectsettings);
         
         if(!isset( $_GET['cfid'] ) ){
@@ -1166,7 +1219,7 @@ class C2P_Requests {
         
         unset( $customfields_array['cflist'][$_GET['cfid']] );
         
-        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $customfields_array ) ), true );
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $customfields_array ) ), true );
         $this->UI->create_notice( __( "Your custom field has been added to the list."), 'success', 'Small', __( 'New Custom Field Created' ) );        
     }
     
@@ -1176,11 +1229,11 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function singletaxonomies() {
-        global $c2p_settings;    
-        $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );      
+        global $csv2post_settings;    
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
         $taxonomies_array = maybe_unserialize( $project_array->projectsettings);
         if(!is_array( $taxonomies_array ) ){$taxonomies_array = array();}
 
@@ -1195,7 +1248,7 @@ class C2P_Requests {
             }
         }
 
-        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $taxonomies_array ) ), true);
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $taxonomies_array ) ), true);
         $this->UI->create_notice( __( "Your taxonomy setup has been updated."), 'success', 'Small', __( 'Taxonomies Updated' ) );                
     }
     
@@ -1205,11 +1258,11 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function basicpostoptions () {
-        global $c2p_settings;    
-        $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );      
+        global $csv2post_settings;    
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
         $project_array = maybe_unserialize( $project_array->projectsettings); 
                
         $project_array['basicsettings']['poststatus'] = $_POST['poststatus'];
@@ -1220,7 +1273,7 @@ class C2P_Requests {
         $project_array['basicsettings']['defaultposttype'] = $_POST['defaultposttype'];
         $project_array['basicsettings']['defaultpostformat'] = $_POST['defaultpostformat'];
         
-        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true);
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true);
         $this->UI->create_notice( __( "Your basic post options have been saved."), 'success', 'Small', __( 'Basic Post Options Saved' ) );        
     }
     
@@ -1230,11 +1283,11 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function databasedoptions () {
-        global $c2p_settings;    
-        $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );      
+        global $csv2post_settings;    
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
         $project_array = maybe_unserialize( $project_array->projectsettings); 
 
         if( $_POST['tags'] !== 'notrequired' ) {
@@ -1261,7 +1314,7 @@ class C2P_Requests {
             $project_array['urlcloak1']['column'] = $exploded[1];
         }
         
-        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true );
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true );
         $this->UI->create_notice( __( "Your data based post options have been saved."), 'success', 'Small', __( 'Data Based Post Options Saved' ) );    
     }
     
@@ -1271,11 +1324,11 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function authoroptions () {
-        global $c2p_settings;    
-        $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );      
+        global $csv2post_settings;    
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
         $project_array = maybe_unserialize( $project_array->projectsettings); 
 
         if( $_POST['email'] !== 'notrequired' ) {
@@ -1290,7 +1343,7 @@ class C2P_Requests {
             $project_array['authors']['username']['column'] = $exploded[1];
         }
         
-        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true );
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true );
         $this->UI->create_notice( __( "Your selected author options have been saved. It is recommended that you run a small test on the new settings before mass creating posts/users."), 'success', 'Small', __( 'Author Options Saved' ) );    
     }    
     
@@ -1300,11 +1353,11 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function defaulttagrules () {
-        global $c2p_settings;    
-        $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );      
+        global $csv2post_settings;    
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
         $project_array = maybe_unserialize( $project_array->projectsettings); 
 
         if( $_POST['generatetags'] !== 'notrequired' ) {
@@ -1319,7 +1372,7 @@ class C2P_Requests {
         $project_array['tags']['maximumtags'] = $_POST['maximumtags'];
         $project_array['tags']['excludedtags'] = $_POST['excludedtags'];
 
-        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true);
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true);
         $this->UI->create_notice( __( "You may want to test these settings before mass creating posts and generating a lot of tags."), 'success', 'Small', __( 'Tag Rules Saved' ) );    
     }
     
@@ -1329,11 +1382,11 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function defaultpublishdates () {
-        global $c2p_settings;    
-        $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );      
+        global $csv2post_settings;    
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
         $project_array = maybe_unserialize( $project_array->projectsettings); 
 
         $project_array['dates']['publishdatemethod'] = $_POST['publishdatemethod'];
@@ -1351,7 +1404,7 @@ class C2P_Requests {
         $project_array['dates']['randomdateearliest'] = $_POST['randomdateearliest'];
         $project_array['dates']['randomdatelatest'] = $_POST['randomdatelatest'];
 
-        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ) );
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ) );
         $this->UI->create_notice( __( "You m a lot of tags."), 'success', 'Small', __( 'Post Dates Settings Saved' ) );    
     } 
     
@@ -1361,14 +1414,14 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */          
     public function defaulttitletemplate () {
-        global $c2p_settings;    
-        $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );      
+        global $csv2post_settings;    
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
         $project_array = maybe_unserialize( $project_array->projectsettings); 
         $project_array['titles']['defaulttitletemplate'] = $_POST['defaulttitletemplate'];
-        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true );
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true );
         $this->UI->create_notice( __( "Your title template design has been saved to your project settings."), 'success', 'Small', __( 'Title Template Updated' ) );    
     }  
 
@@ -1378,11 +1431,11 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */        
     public function defaultcontenttemplate () {
-        global $c2p_settings;    
-        $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );      
+        global $csv2post_settings;    
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
         $project_settings_array = maybe_unserialize( $project_array->projectsettings ); 
         
         // store the content as default value
@@ -1390,7 +1443,7 @@ class C2P_Requests {
 
         $this->UI->create_notice( __( 'Your default content template was saved. This is a basic template, other advanced options are available by using CSV 2 POST Templates - a custom post type for managing multiple designs.' ), 'success', 'Small', __( 'Default Content Template Updated' ) );    
 
-        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_settings_array ) ), true);     
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_settings_array ) ), true);     
     }
         
     /**
@@ -1399,10 +1452,10 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */        
     public function newcontenttemplate () {
-        global $c2p_settings;    
+        global $csv2post_settings;    
 
         if( !isset( $_POST['contenttemplatetitle2'] ) || empty( $_POST['contenttemplatetitle2'] ) ) {
             $this->UI->create_notice( __( 'Please enter a name for your content template.' ), 'error', 'Small', __( 'Name Required' ) );
@@ -1430,11 +1483,11 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */           
     public function multipledesignsrules () {
-        global $c2p_settings;    
-        $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );      
+        global $csv2post_settings;    
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
         $project_array = maybe_unserialize( $project_array->projectsettings);
         
         if( $_POST['designrulecolumn1'] !== 'notrequired' ) {
@@ -1461,7 +1514,7 @@ class C2P_Requests {
             $project_array['content']['designtemplate3'] = $_POST['designtemplate3'];
         }
         
-        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true );
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true );
         $this->UI->create_notice( __( "Design template rules have been updated."), 'success', 'Small', __( 'Content Design Rules Saved' ) );    
     }
     
@@ -1471,14 +1524,14 @@ class C2P_Requests {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function refreshallposts() {
-        global $c2p_settings;    
-        $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );      
+        global $csv2post_settings;    
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
         $project_array = maybe_unserialize( $project_array->projectsettings);
         $project_array['lastrefreshtime'] = time();         
-        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true );
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true );
         $this->UI->create_notice( __( "Please ensure the Systematic Post Updating switch has been set to Enabled. That will allow CSV 2 POST to update posts as they are visited."), 'success', 'Small', __( 'Refresh Initiated', 'csv2post' ) );     
     }
     
@@ -1488,11 +1541,11 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function defaultposttyperules () {
-        global $c2p_settings;    
-        $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );      
+        global $csv2post_settings;    
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
         $project_array = maybe_unserialize( $project_array->projectsettings);
         
         if( $_POST['posttyperule1'] !== 'notrequired' ) {    
@@ -1519,7 +1572,7 @@ class C2P_Requests {
             $project_array['posttypes']['posttyperuleposttype3'] = $_POST['posttyperuleposttype3'];
         }
         
-        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ) );
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ) );
         $this->UI->create_notice( __( "Your post type rules have been updated."), 'success', 'Small', __( 'Post Type Rules Saved' ) );    
     }
     
@@ -1529,11 +1582,11 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function applydefaultprojectsettings () {
-        global $c2p_settings;
-        $this->CSV2POST->apply_project_defaults( $c2p_settings['currentproject'] );
+        global $csv2post_settings;
+        $this->CSV2POST->apply_project_defaults( $csv2post_settings['currentproject'] );
         $this->UI->create_notice( __( "Your current active projects settings have been set using your configured defaults."), 'success', 'Small', __( 'Project Settings Updated' ) );           
     }
     
@@ -1543,17 +1596,17 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function resetdefaultprojectsettings () {
-        global $c2p_settings;
+        global $csv2post_settings;
         
         // put users stored settings into another variable
-        $active_settings = $c2p_settings;
+        $active_settings = $csv2post_settings;
         
         // include the settings array to get the original array of defaultproject settings
         require_once( WTG_CSV2POST_ABSPATH . 'arrays/settings_array.php' );
-        $active_settings['projectdefaults'] = $c2p_settings['projectdefaults'];
+        $active_settings['projectdefaults'] = $csv2post_settings['projectdefaults'];
         
         $this->CSV2POST->option( 'csv2post_settings', 'update', $active_settings);
         
@@ -1567,118 +1620,118 @@ class C2P_Requests {
     * 
     */
     public function defaultglobalpostsettings () {
-        global $c2p_settings;
+        global $csv2post_settings;
         
-        $default_table = $this->CSV2POST->get_project_main_table( $c2p_settings['currentproject'] );
+        $default_table = $this->CSV2POST->get_project_main_table( $csv2post_settings['currentproject'] );
         
-        $c2p_settings['projectdefaults'] = array();
+        $csv2post_settings['projectdefaults'] = array();
         
         // the default settings will go into basicsettings as it is the main and most commonly used array     
-        $c2p_settings['projectdefaults']['basicsettings']['poststatus'] = $_POST['poststatus'];
-        $c2p_settings['projectdefaults']['basicsettings']['pingstatus'] = $_POST['pingstatus'];
-        $c2p_settings['projectdefaults']['basicsettings']['commentstatus'] = $_POST['commentstatus'];
-        $c2p_settings['projectdefaults']['basicsettings']['defaultauthor'] = $_POST['defaultauthor'];
-        $c2p_settings['projectdefaults']['basicsettings']['defaultcategory'] = $_POST['defaultcategory'];
-        $c2p_settings['projectdefaults']['basicsettings']['defaultposttype'] = $_POST['defaultposttype'];
-        $c2p_settings['projectdefaults']['basicsettings']['defaultpostformat'] = $_POST['defaultpostformat'];
-        $c2p_settings['projectdefaults']['basicsettings']['categoryassignment'] = $_POST['categoryassignment'];
+        $csv2post_settings['projectdefaults']['basicsettings']['poststatus'] = $_POST['poststatus'];
+        $csv2post_settings['projectdefaults']['basicsettings']['pingstatus'] = $_POST['pingstatus'];
+        $csv2post_settings['projectdefaults']['basicsettings']['commentstatus'] = $_POST['commentstatus'];
+        $csv2post_settings['projectdefaults']['basicsettings']['defaultauthor'] = $_POST['defaultauthor'];
+        $csv2post_settings['projectdefaults']['basicsettings']['defaultcategory'] = $_POST['defaultcategory'];
+        $csv2post_settings['projectdefaults']['basicsettings']['defaultposttype'] = $_POST['defaultposttype'];
+        $csv2post_settings['projectdefaults']['basicsettings']['defaultpostformat'] = $_POST['defaultpostformat'];
+        $csv2post_settings['projectdefaults']['basicsettings']['categoryassignment'] = $_POST['categoryassignment'];
         
         // wordpress post settings requiring data - right now only column is entered on UI        
-        $c2p_settings['projectdefaults']['images']['featuredimage']['table'] = $default_table;
-        $c2p_settings['projectdefaults']['images']['featuredimage']['column'] = $_POST['featuredimage'];
-        $c2p_settings['projectdefaults']['permalinks']['table'] = $default_table;
-        $c2p_settings['projectdefaults']['permalinks']['column'] = $_POST['permalink'];
-        $c2p_settings['projectdefaults']['cloaking']['urlcloak1']['table'] = $default_table;
-        $c2p_settings['projectdefaults']['cloaking']['urlcloak1']['column'] = $_POST['urlcloak1'];
+        $csv2post_settings['projectdefaults']['images']['featuredimage']['table'] = $default_table;
+        $csv2post_settings['projectdefaults']['images']['featuredimage']['column'] = $_POST['featuredimage'];
+        $csv2post_settings['projectdefaults']['permalinks']['table'] = $default_table;
+        $csv2post_settings['projectdefaults']['permalinks']['column'] = $_POST['permalink'];
+        $csv2post_settings['projectdefaults']['cloaking']['urlcloak1']['table'] = $default_table;
+        $csv2post_settings['projectdefaults']['cloaking']['urlcloak1']['column'] = $_POST['urlcloak1'];
         
         // authors
-        $c2p_settings['projectdefaults']['authors']['email']['table'] = $default_table;
-        $c2p_settings['projectdefaults']['authors']['email']['column'] = $_POST['email'];
-        $c2p_settings['projectdefaults']['authors']['username']['table'] = $default_table;
-        $c2p_settings['projectdefaults']['authors']['username']['column'] = $_POST['username'];
+        $csv2post_settings['projectdefaults']['authors']['email']['table'] = $default_table;
+        $csv2post_settings['projectdefaults']['authors']['email']['column'] = $_POST['email'];
+        $csv2post_settings['projectdefaults']['authors']['username']['table'] = $default_table;
+        $csv2post_settings['projectdefaults']['authors']['username']['column'] = $_POST['username'];
                 
         // title template
-        $c2p_settings['projectdefaults']['titles']['defaulttitletemplate'] = $_POST['defaulttitletemplate'];
+        $csv2post_settings['projectdefaults']['titles']['defaulttitletemplate'] = $_POST['defaulttitletemplate'];
         
         // main content
-        $c2p_settings['projectdefaults']['content']['wysiwygdefaultcontent'] = $_POST['wysiwygdefaultcontent'];
+        $csv2post_settings['projectdefaults']['content']['wysiwygdefaultcontent'] = $_POST['wysiwygdefaultcontent'];
         
         // custom fields specifically for seo plugins
-        $c2p_settings['projectdefaults']['customfields']['seotitletemplate'] = $_POST['seotitletemplate'];        
-        $c2p_settings['projectdefaults']['customfields']['seotitlekey'] = $_POST['seotitlekey']; 
-        $c2p_settings['projectdefaults']['customfields']['seodescriptionkey'] = $_POST['seodescriptionkey'];
-        $c2p_settings['projectdefaults']['customfields']['seodescriptiontemplate'] = $_POST['seodescriptiontemplate'];
-        $c2p_settings['projectdefaults']['customfields']['seokeywordskey'] = $_POST['seokeywordskey'];
-        $c2p_settings['projectdefaults']['customfields']['seokeywordstemplate'] = $_POST['seokeywordstemplate'];
+        $csv2post_settings['projectdefaults']['customfields']['seotitletemplate'] = $_POST['seotitletemplate'];        
+        $csv2post_settings['projectdefaults']['customfields']['seotitlekey'] = $_POST['seotitlekey']; 
+        $csv2post_settings['projectdefaults']['customfields']['seodescriptionkey'] = $_POST['seodescriptionkey'];
+        $csv2post_settings['projectdefaults']['customfields']['seodescriptiontemplate'] = $_POST['seodescriptiontemplate'];
+        $csv2post_settings['projectdefaults']['customfields']['seokeywordskey'] = $_POST['seokeywordskey'];
+        $csv2post_settings['projectdefaults']['customfields']['seokeywordstemplate'] = $_POST['seokeywordstemplate'];
         
         // custom fields
         if( !empty( $_POST['cfkey1'] ) && $_POST['cfkey1'] != '' && !empty( $_POST['cftemplate1'] ) ){
-            $c2p_settings['projectdefaults']['customfields']['cflist'][0]['id'] = 0;// used in WP_Table class to pass what is actually the key, use they key though where unique value is required
-            $c2p_settings['projectdefaults']['customfields']['cflist'][0]['name'] = $_POST['cfkey1'];// the key
-            $c2p_settings['projectdefaults']['customfields']['cflist'][0]['value'] = $_POST['cftemplate1'];// on UI it is a template 
-            $c2p_settings['projectdefaults']['customfields']['cflist'][0]['unique'] = '';
-            $c2p_settings['projectdefaults']['customfields']['cflist'][0]['updating'] = '';
+            $csv2post_settings['projectdefaults']['customfields']['cflist'][0]['id'] = 0;// used in WP_Table class to pass what is actually the key, use they key though where unique value is required
+            $csv2post_settings['projectdefaults']['customfields']['cflist'][0]['name'] = $_POST['cfkey1'];// the key
+            $csv2post_settings['projectdefaults']['customfields']['cflist'][0]['value'] = $_POST['cftemplate1'];// on UI it is a template 
+            $csv2post_settings['projectdefaults']['customfields']['cflist'][0]['unique'] = '';
+            $csv2post_settings['projectdefaults']['customfields']['cflist'][0]['updating'] = '';
         }
         
         if(!empty( $_POST['cfkey2'] ) && $_POST['cfkey2'] != '' && !empty( $_POST['cftemplate2'] ) ){
-            $c2p_settings['projectdefaults']['customfields']['cflist'][1]['id'] = 1;
-            $c2p_settings['projectdefaults']['customfields']['cflist'][1]['name'] = $_POST['cfkey2'];
-            $c2p_settings['projectdefaults']['customfields']['cflist'][1]['value'] = $_POST['cftemplate2'];
-            $c2p_settings['projectdefaults']['customfields']['cflist'][1]['unique'] = '';
-            $c2p_settings['projectdefaults']['customfields']['cflist'][1]['updating'] = '';
+            $csv2post_settings['projectdefaults']['customfields']['cflist'][1]['id'] = 1;
+            $csv2post_settings['projectdefaults']['customfields']['cflist'][1]['name'] = $_POST['cfkey2'];
+            $csv2post_settings['projectdefaults']['customfields']['cflist'][1]['value'] = $_POST['cftemplate2'];
+            $csv2post_settings['projectdefaults']['customfields']['cflist'][1]['unique'] = '';
+            $csv2post_settings['projectdefaults']['customfields']['cflist'][1]['updating'] = '';
         }
         
         if(!empty( $_POST['cfkey3'] ) && $_POST['cfkey3'] != '' && !empty( $_POST['cftemplate3'] ) ){
-            $c2p_settings['projectdefaults']['customfields']['cflist'][2]['id'] = 2;
-            $c2p_settings['projectdefaults']['customfields']['cflist'][2]['name'] = $_POST['cfkey3'];
-            $c2p_settings['projectdefaults']['customfields']['cflist'][2]['value'] = $_POST['cftemplate3'];
-            $c2p_settings['projectdefaults']['customfields']['cflist'][2]['unique'] = '';
-            $c2p_settings['projectdefaults']['customfields']['cflist'][2]['updating'] = '';
+            $csv2post_settings['projectdefaults']['customfields']['cflist'][2]['id'] = 2;
+            $csv2post_settings['projectdefaults']['customfields']['cflist'][2]['name'] = $_POST['cfkey3'];
+            $csv2post_settings['projectdefaults']['customfields']['cflist'][2]['value'] = $_POST['cftemplate3'];
+            $csv2post_settings['projectdefaults']['customfields']['cflist'][2]['unique'] = '';
+            $csv2post_settings['projectdefaults']['customfields']['cflist'][2]['updating'] = '';
         }
         
         // template design rules
-        $c2p_settings['projectdefaults']['content']['designrule1']['table'] = $default_table;
-        $c2p_settings['projectdefaults']['content']['designrule1']['column'] = $_POST['designrule1'];
-        $c2p_settings['projectdefaults']['content']['designruletrigger1'] = $_POST['designruletrigger1'];
-        $c2p_settings['projectdefaults']['content']['designtemplate1'] = $_POST['designtemplate1'];
-        $c2p_settings['projectdefaults']['content']['designrule2']['table'] = $default_table;
-        $c2p_settings['projectdefaults']['content']['designrule2']['column'] = $_POST['designrule2'];
-        $c2p_settings['projectdefaults']['content']['designruletrigger2'] = $_POST['designruletrigger2'];
-        $c2p_settings['projectdefaults']['content']['designtemplate2'] = $_POST['designtemplate2'];
-        $c2p_settings['projectdefaults']['content']['designrule3']['table'] = $default_table;
-        $c2p_settings['projectdefaults']['content']['designrule3']['column'] = $_POST['designrule3'];
-        $c2p_settings['projectdefaults']['content']['designruletrigger3'] = $_POST['designruletrigger3'];
-        $c2p_settings['projectdefaults']['content']['designtemplate3'] = $_POST['designtemplate3'];
+        $csv2post_settings['projectdefaults']['content']['designrule1']['table'] = $default_table;
+        $csv2post_settings['projectdefaults']['content']['designrule1']['column'] = $_POST['designrule1'];
+        $csv2post_settings['projectdefaults']['content']['designruletrigger1'] = $_POST['designruletrigger1'];
+        $csv2post_settings['projectdefaults']['content']['designtemplate1'] = $_POST['designtemplate1'];
+        $csv2post_settings['projectdefaults']['content']['designrule2']['table'] = $default_table;
+        $csv2post_settings['projectdefaults']['content']['designrule2']['column'] = $_POST['designrule2'];
+        $csv2post_settings['projectdefaults']['content']['designruletrigger2'] = $_POST['designruletrigger2'];
+        $csv2post_settings['projectdefaults']['content']['designtemplate2'] = $_POST['designtemplate2'];
+        $csv2post_settings['projectdefaults']['content']['designrule3']['table'] = $default_table;
+        $csv2post_settings['projectdefaults']['content']['designrule3']['column'] = $_POST['designrule3'];
+        $csv2post_settings['projectdefaults']['content']['designruletrigger3'] = $_POST['designruletrigger3'];
+        $csv2post_settings['projectdefaults']['content']['designtemplate3'] = $_POST['designtemplate3'];
 
         // images and media requireing token or shortcode to be entered to post content
-        $c2p_settings['projectdefaults']['content']['enablegroupedimageimport'] = $_POST['enablegroupedimageimport'];
-        $c2p_settings['projectdefaults']['content']["localimages"]['table'] = $default_table;
-        $c2p_settings['projectdefaults']['content']["localimages"]['column'] = $_POST['localimagesdatacolumn'];
-        $c2p_settings['projectdefaults']['content']['incrementalimages'] = $_POST['incrementalimages'];
-        $c2p_settings['projectdefaults']['content']['groupedimagesdir'] = 
+        $csv2post_settings['projectdefaults']['content']['enablegroupedimageimport'] = $_POST['enablegroupedimageimport'];
+        $csv2post_settings['projectdefaults']['content']["localimages"]['table'] = $default_table;
+        $csv2post_settings['projectdefaults']['content']["localimages"]['column'] = $_POST['localimagesdatacolumn'];
+        $csv2post_settings['projectdefaults']['content']['incrementalimages'] = $_POST['incrementalimages'];
+        $csv2post_settings['projectdefaults']['content']['groupedimagesdir'] = 
         // pre-set level one category
-        $c2p_settings['projectdefaults']['categories']['presetcategoryid'] = false;// change to a category ID
+        $csv2post_settings['projectdefaults']['categories']['presetcategoryid'] = false;// change to a category ID
         
         // category columns
         if(!empty( $_POST['categorylevel1'] ) ){
-            $c2p_settings['projectdefaults']['categories']['data'][0]['table'] = $default_table;
-            $c2p_settings['projectdefaults']['categories']['data'][0]['column'] = $_POST['categorylevel1'];
+            $csv2post_settings['projectdefaults']['categories']['data'][0]['table'] = $default_table;
+            $csv2post_settings['projectdefaults']['categories']['data'][0]['column'] = $_POST['categorylevel1'];
         
             if(!empty( $_POST['categorylevel2'] ) ){
-                $c2p_settings['projectdefaults']['categories']['data'][1]['table'] = $default_table;
-                $c2p_settings['projectdefaults']['categories']['data'][1]['column'] = $_POST['categorylevel2'];
+                $csv2post_settings['projectdefaults']['categories']['data'][1]['table'] = $default_table;
+                $csv2post_settings['projectdefaults']['categories']['data'][1]['column'] = $_POST['categorylevel2'];
             
                 if(!empty( $_POST['categorylevel3'] ) ){
-                    $c2p_settings['projectdefaults']['categories']['data'][2]['table'] = $default_table;
-                    $c2p_settings['projectdefaults']['categories']['data'][2]['column'] = $_POST['categorylevel3'];
+                    $csv2post_settings['projectdefaults']['categories']['data'][2]['table'] = $default_table;
+                    $csv2post_settings['projectdefaults']['categories']['data'][2]['column'] = $_POST['categorylevel3'];
                 
                     if(!empty( $_POST['categorylevel4'] ) ){
-                        $c2p_settings['projectdefaults']['categories']['data'][3]['table'] = $default_table;
-                        $c2p_settings['projectdefaults']['categories']['data'][3]['column'] = $_POST['categorylevel4'];
+                        $csv2post_settings['projectdefaults']['categories']['data'][3]['table'] = $default_table;
+                        $csv2post_settings['projectdefaults']['categories']['data'][3]['column'] = $_POST['categorylevel4'];
                         
                         if(!empty( $_POST['categorylevel5'] ) ){
-                            $c2p_settings['projectdefaults']['categories']['data'][4]['table'] = $default_table;
-                            $c2p_settings['projectdefaults']['categories']['data'][4]['column'] = $_POST['categorylevel5'];
+                            $csv2post_settings['projectdefaults']['categories']['data'][4]['table'] = $default_table;
+                            $csv2post_settings['projectdefaults']['categories']['data'][4]['column'] = $_POST['categorylevel5'];
                         }                    
                     }                                
                 }          
@@ -1687,49 +1740,49 @@ class C2P_Requests {
                        
         // category descriptions
         for( $i=0;$i<=4;$i++){                      
-            $c2p_settings['projectdefaults']['categories']["descriptiondata"][$i]['table'] = $default_table;
-            $c2p_settings['projectdefaults']['categories']["descriptiondata"][$i]['column'] = $_POST["categorydescription$i"];
-            $c2p_settings['projectdefaults']['categories']["descriptiontemplates"][$i] = $_POST["categorydescriptiontemplate$i"];
+            $csv2post_settings['projectdefaults']['categories']["descriptiondata"][$i]['table'] = $default_table;
+            $csv2post_settings['projectdefaults']['categories']["descriptiondata"][$i]['column'] = $_POST["categorydescription$i"];
+            $csv2post_settings['projectdefaults']['categories']["descriptiontemplates"][$i] = $_POST["categorydescriptiontemplate$i"];
         }
         
         // adoption
-        $c2p_settings['projectdefaults']['adoption']['adoptionmethod'] = $_POST['adoptionmethod'];
-        $c2p_settings['projectdefaults']['adoption']['allowedchanges'] = $_POST['allowedchanges'];
-        $c2p_settings['projectdefaults']['adoption']['adoptionmetakey'] = $_POST['adoptionmetakey'];
-        $c2p_settings['projectdefaults']['adoption']['adoptionmeta']['table'] = $default_table;
-        $c2p_settings['projectdefaults']['adoption']['adoptionmeta']['column'] = $_POST['adoptionmeta'];
+        $csv2post_settings['projectdefaults']['adoption']['adoptionmethod'] = $_POST['adoptionmethod'];
+        $csv2post_settings['projectdefaults']['adoption']['allowedchanges'] = $_POST['allowedchanges'];
+        $csv2post_settings['projectdefaults']['adoption']['adoptionmetakey'] = $_POST['adoptionmetakey'];
+        $csv2post_settings['projectdefaults']['adoption']['adoptionmeta']['table'] = $default_table;
+        $csv2post_settings['projectdefaults']['adoption']['adoptionmeta']['column'] = $_POST['adoptionmeta'];
         
         // tags
-        $c2p_settings['projectdefaults']['tags']['column'] = $_POST['tags'];// ready made tags
-        $c2p_settings['projectdefaults']['tags']['textdata']['table'] = $default_table;// generate tags from text
-        $c2p_settings['projectdefaults']['tags']['textdata']['column'] = $_POST['textdata'];// generate tags from text
-        $c2p_settings['projectdefaults']['tags']['defaultnumerics'] = $_POST['defaultnumerics'];
-        $c2p_settings['projectdefaults']['tags']['tagstringlength'] = $_POST['tagstringlength'];
-        $c2p_settings['projectdefaults']['tags']['maximumtags'] = $_POST['maximumtags'];
-        $c2p_settings['projectdefaults']['tags']['excludedtags'] = $_POST['excludedtags'];
+        $csv2post_settings['projectdefaults']['tags']['column'] = $_POST['tags'];// ready made tags
+        $csv2post_settings['projectdefaults']['tags']['textdata']['table'] = $default_table;// generate tags from text
+        $csv2post_settings['projectdefaults']['tags']['textdata']['column'] = $_POST['textdata'];// generate tags from text
+        $csv2post_settings['projectdefaults']['tags']['defaultnumerics'] = $_POST['defaultnumerics'];
+        $csv2post_settings['projectdefaults']['tags']['tagstringlength'] = $_POST['tagstringlength'];
+        $csv2post_settings['projectdefaults']['tags']['maximumtags'] = $_POST['maximumtags'];
+        $csv2post_settings['projectdefaults']['tags']['excludedtags'] = $_POST['excludedtags'];
         
         // post type rules
         for( $i=1;$i<=3;$i++){
-            $c2p_settings['projectdefaults']['posttypes']["posttyperule$i"]['table'] = $default_table;
-            $c2p_settings['projectdefaults']['posttypes']["posttyperule$i"]['column'] = $_POST["posttyperule$i"];
-            $c2p_settings['projectdefaults']['posttypes']["posttyperuletrigger$i"] = $_POST["posttyperuletrigger$i"];
-            $c2p_settings['projectdefaults']['posttypes']["posttyperuleposttype$i"] = $_POST["posttyperuleposttype$i"];
+            $csv2post_settings['projectdefaults']['posttypes']["posttyperule$i"]['table'] = $default_table;
+            $csv2post_settings['projectdefaults']['posttypes']["posttyperule$i"]['column'] = $_POST["posttyperule$i"];
+            $csv2post_settings['projectdefaults']['posttypes']["posttyperuletrigger$i"] = $_POST["posttyperuletrigger$i"];
+            $csv2post_settings['projectdefaults']['posttypes']["posttyperuleposttype$i"] = $_POST["posttyperuleposttype$i"];
         }
         
         // publish dates
-        $c2p_settings['projectdefaults']['dates']['publishdatemethod'] = $_POST['publishdatemethod'];
-        $c2p_settings['projectdefaults']['dates']['column'] = $_POST['dates'];
-        $c2p_settings['projectdefaults']['dates']['dateformat'] = $_POST['dateformat'];
-        $c2p_settings['projectdefaults']['dates']['incrementalstartdate'] = $_POST['incrementalstartdate'];
-        $c2p_settings['projectdefaults']['dates']['naturalvariationlow'] = $_POST['naturalvariationlow'];
-        $c2p_settings['projectdefaults']['dates']['naturalvariationhigh'] = $_POST['naturalvariationhigh'];
-        $c2p_settings['projectdefaults']['dates']['randomdateearliest'] = $_POST['randomdateearliest'];
-        $c2p_settings['projectdefaults']['dates']['randomdatelatest'] = $_POST['randomdatelatest'];
+        $csv2post_settings['projectdefaults']['dates']['publishdatemethod'] = $_POST['publishdatemethod'];
+        $csv2post_settings['projectdefaults']['dates']['column'] = $_POST['dates'];
+        $csv2post_settings['projectdefaults']['dates']['dateformat'] = $_POST['dateformat'];
+        $csv2post_settings['projectdefaults']['dates']['incrementalstartdate'] = $_POST['incrementalstartdate'];
+        $csv2post_settings['projectdefaults']['dates']['naturalvariationlow'] = $_POST['naturalvariationlow'];
+        $csv2post_settings['projectdefaults']['dates']['naturalvariationhigh'] = $_POST['naturalvariationhigh'];
+        $csv2post_settings['projectdefaults']['dates']['randomdateearliest'] = $_POST['randomdateearliest'];
+        $csv2post_settings['projectdefaults']['dates']['randomdatelatest'] = $_POST['randomdatelatest'];
         
         // post updating
-        $c2p_settings['projectdefaults']['updating']['updatepostonviewing'] = $_POST['updatepostonviewing'];     
+        $csv2post_settings['projectdefaults']['updating']['updatepostonviewing'] = $_POST['updatepostonviewing'];     
         
-        $this->CSV2POST->update_settings( $c2p_settings );
+        $this->CSV2POST->update_settings( $csv2post_settings );
         $this->UI->create_notice( __( 'Your default project settings have been stored. Many of the setting will only work with multiple different
         projects if each projects datasource has the same format/configuration. Please configure projects individually where required and do not
         rely on these defaults if working with various different sources.', 'csv2post' ), 'success', 'Small', __( 'Default Project Options Stored Successfully', 'csv2post' ) );
@@ -1739,7 +1792,7 @@ class C2P_Requests {
     * creates posts manually from tools with manual insert of parameters
     */
     public function createpostsbasic() {
-        global $c2p_settings;
+        global $csv2post_settings;
         
         // set total posts to be created
         $total = 1;
@@ -1748,8 +1801,24 @@ class C2P_Requests {
             $total = $_POST['totalposts'];
         }        
                  
-        $this->CSV2POST->create_posts( $c2p_settings['currentproject'], $total ); 
-         
+        $this->CSV2POST->create_posts( $csv2post_settings['currentproject'], $total ); 
+        
+        // log
+        $atts = array(
+            'outcome' => 1,
+            'line' => __LINE__, 
+            'function' => __FUNCTION__,
+            'file' => __FILE__, 
+            'userid' => get_current_user_id(),          
+            'type' => 'general',
+            'category' => 'projectchange',
+            'action' => sprintf( __( 'User requested %s posts to be created.', 'csv2post' ), $total ),
+            'priority' => 'normal',                        
+            'triga' => 'manualrequest'
+        );
+        
+        $this->CSV2POST->newlog( $atts );
+                 
         $this->UI->create_notice( __( 'Post creation procedure has finished. This notice marks the end of the procedure whatever the outcome.', 'csv2post' ),  'success', 'Small', __( 'Post Creation Ended', 'csv2post' ) );   
     }
     
@@ -1757,15 +1826,32 @@ class C2P_Requests {
     * creates posts manually from quick actions and uses pre-set parameters
     */    
     public function createpostscurrentproject() {
-        global $c2p_settings;
-        $this->CSV2POST->create_posts( $c2p_settings['currentproject'],1);    
+        global $csv2post_settings;
+
+        // log
+        $atts = array(
+            'outcome' => 1,
+            'line' => __LINE__, 
+            'function' => __FUNCTION__,
+            'file' => __FILE__, 
+            'userid' => get_current_user_id(),          
+            'type' => 'general',
+            'category' => 'projectchange',
+            'action' => sprintf( __( 'User requested %s posts to be made.', 'csv2post' ), $total),
+            'priority' => 'normal',                        
+            'triga' => 'manualrequest'
+        );
+        
+        $this->CSV2POST->newlog( $atts );
+                
+        $this->CSV2POST->create_posts( $csv2post_settings['currentproject'],1);    
     } 
     
     /**
     * updates posts manually from tools with manual insert of parameters
     */
     public function updatepostsbasic() {
-        global $c2p_settings; 
+        global $csv2post_settings; 
            
         // set total posts to be created
         $total = 1;
@@ -1774,7 +1860,7 @@ class C2P_Requests {
             $total = $_POST['totalposts'];
         }
         
-        $this->CSV2POST->update_posts( $c2p_settings['currentproject'], $total);    
+        $this->CSV2POST->update_posts( $csv2post_settings['currentproject'], $total);    
     }
     
     /**
@@ -1783,23 +1869,23 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function updatepostsbasicnewdataonly() {
-        global $c2p_settings;
+        global $csv2post_settings;
         
         // set total posts to be created
         $total = 1;
         if( isset( $_POST['totalposts'] ) && is_numeric( $_POST['totalposts'] ) ){$total = $_POST['totalposts'];}
             
         // query for rows of data that have been updated
-        $rows = $this->CSV2POST->get_updated_rows( $c2p_settings['currentproject'], $total, $this->CSV2POST->get_project_idcolumn( $c2p_settings['currentproject'] ) );
+        $rows = $this->CSV2POST->get_updated_rows( $csv2post_settings['currentproject'], $total, $this->CSV2POST->get_project_idcolumn( $csv2post_settings['currentproject'] ) );
         if(!$rows){
             $this->UI->create_notice( __( 'None of your imported rows have been updated since their original import.' ), 'info', 'Small', 'No Posts Updated' );
             return;            
         }
      
-        $this->CSV2POST->update_posts( $c2p_settings['currentproject'], $total, false, array( 'rows' => $rows) );    
+        $this->CSV2POST->update_posts( $csv2post_settings['currentproject'], $total, false, array( 'rows' => $rows) );    
     }   
     
     /**
@@ -1808,24 +1894,24 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */        
     public function updatepostsbasicprojectchangesonly() {
-        global $c2p_settings;
+        global $csv2post_settings;
                                                   
         // set total posts to be created
         $total = 1;
         if( isset( $_POST['totalposts'] ) && is_numeric( $_POST['totalposts'] ) ){$total = $_POST['totalposts'];}
 
         // query for rows that have not been applied since the project configuration changed
-        $rows = $this->CSV2POST->get_outdatedpost_rows( $c2p_settings['currentproject'], $total);
+        $rows = $this->CSV2POST->get_outdatedpost_rows( $csv2post_settings['currentproject'], $total);
         
         if(!$rows){        
             $this->UI->create_notice( __( 'No posts appear to need updating. All applied dates are later than when you changed your projects settings.' ), 'info', 'Small', 'No Posts Require Updating' );
             return;            
         }
                   
-        $this->CSV2POST->update_posts( $c2p_settings['currentproject'], $total, false, array( 'rows' => $rows) );    
+        $this->CSV2POST->update_posts( $csv2post_settings['currentproject'], $total, false, array( 'rows' => $rows) );    
     }  
     
     /**
@@ -1834,10 +1920,10 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */         
     public function updatespecificpost() {
-        global $c2p_settings;
+        global $csv2post_settings;
         
         // set total posts to be created
         $total = 1;
@@ -1851,7 +1937,7 @@ class C2P_Requests {
             return;    
         }                                   
 
-        $this->CSV2POST->update_posts( $c2p_settings['currentproject'], $total, $_POST['updatespecificpostid'] ); 
+        $this->CSV2POST->update_posts( $csv2post_settings['currentproject'], $total, $_POST['updatespecificpostid'] ); 
          
         $this->UI->create_notice( __( 'Your update request for post with ID '. $_POST['updatespecificpostid'] .' has finished. The results should be displayed in another notice.' ), 'success', 'Small', __( 'Post Update Request Complete' ) );            
     }
@@ -1860,8 +1946,8 @@ class C2P_Requests {
     * updates posts manually from quick actions and uses pre-set parameters
     */    
     public function updatepostscurrentproject() {
-        global $c2p_settings;
-        $this->CSV2POST->update_posts( $c2p_settings['currentproject'],1);    
+        global $csv2post_settings;
+        $this->CSV2POST->update_posts( $csv2post_settings['currentproject'],1);    
     }
     
     /**
@@ -1884,7 +1970,7 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function groupimportlocalimages () {  
         if(!isset( $_POST['groupimportdir'] ) || empty( $_POST['groupimportdir'] ) ){
@@ -1892,8 +1978,8 @@ class C2P_Requests {
             return;
         }
                       
-        global $c2p_settings;    
-        $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );      
+        global $csv2post_settings;    
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
         $project_array = maybe_unserialize( $project_array->projectsettings);
 
         $project_array['content']['enablegroupedimageimport'] = $_POST['enablegroupedimageimport'];
@@ -1906,7 +1992,7 @@ class C2P_Requests {
         $project_array['content']["incrementalimages"] = $_POST['incrementalimages'];
         $project_array['content']["groupedimagesdir"] = $_POST['groupimportdir'];
         
-        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true);
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true);
         $this->UI->create_notice( __( "Images will be imported during post creation to the WordPress media library and inserted to
         content as a list if you are using the #localimagelist# token."), 'success', 'Small', __( 'Grouped Image Import Settings Saved' ) );                        
     }
@@ -1917,13 +2003,12 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function reinstalldatabasetables() {
         $installation = new C2P_Install();
         $installation->reinstalldatabasetables();
-        $this->UI->create_notice( 'All tables were re-installed. Please double check the database status list to
-        ensure this is correct before using the plugin.', 'success', 'Small', 'Tables Re-Installed' );
+        $this->UI->create_notice( 'All tables were re-installed. Please double check the database status list to ensure this is correct before using the plugin.', 'success', 'Small', 'Tables Re-Installed' );
     }
     
     /**
@@ -1932,11 +2017,11 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.0
     */       
-    public function presetlevelonecategory() {
-        global $c2p_settings;    
-        $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );      
+    public function presetlevelonecategory() {           
+        global $csv2post_settings;    
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
         $project_array = maybe_unserialize( $project_array->projectsettings);
             
         if(!is_numeric( $_POST['presetcategoryid'] ) ){
@@ -1946,7 +2031,7 @@ class C2P_Requests {
         
         $project_array['categories']['presetcategoryid'] = $_POST['presetcategoryid'];
         
-        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true );
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true );
         $this->UI->create_notice( __( "You have setup a pre-set level one category. Any categories CSV 2 POST creates will be level two
         or lower and will be children of the parent with ID " . $project_array['categories']['presetcategoryid'] ), 'success', 'Small', __( 'Pre-Set Level One Category' ) );   
     }  
@@ -1957,16 +2042,16 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */          
     public function globalswitches() {
-        global $c2p_settings;
-        $c2p_settings['noticesettings']['wpcorestyle'] = $_POST['uinoticestyle'];        
-        $c2p_settings['standardsettings']['textspinrespinning'] = $_POST['textspinrespinning'];
-        $c2p_settings['standardsettings']['systematicpostupdating'] = $_POST['systematicpostupdating'];
-        $c2p_settings['flagsystem']['status'] = $_POST['flagsystemstatus'];
-        $c2p_settings['widgetsettings']['dashboardwidgetsswitch'] = $_POST['dashboardwidgetsswitch'];
-        $this->CSV2POST->update_settings( $c2p_settings ); 
+        global $csv2post_settings;
+        $csv2post_settings['noticesettings']['wpcorestyle'] = $_POST['uinoticestyle'];        
+        $csv2post_settings['standardsettings']['textspinrespinning'] = $_POST['textspinrespinning'];
+        $csv2post_settings['standardsettings']['systematicpostupdating'] = $_POST['systematicpostupdating'];
+        $csv2post_settings['flagsystem']['status'] = $_POST['flagsystemstatus'];
+        $csv2post_settings['widgetsettings']['dashboardwidgetsswitch'] = $_POST['dashboardwidgetsswitch'];
+        $this->CSV2POST->update_settings( $csv2post_settings ); 
         $this->UI->create_notice( __( 'Global switches have been updated. These switches can initiate the use of 
         advanced systems. Please monitor your blog and ensure the plugin operates as you expected it to. If
         anything does not appear to work in the way you require please let WebTechGlobal know.' ),
@@ -1979,11 +2064,11 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */         
     public function replacevaluerules() {
-        global $c2p_settings;    
-        $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );      
+        global $csv2post_settings;    
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
         $project_array = maybe_unserialize( $project_array->projectsettings);
 
         // set next array key value
@@ -2001,7 +2086,7 @@ class C2P_Requests {
         $project_array['content']['valuerules'][$next_key]['vrvdatavalue'] = $_POST['vrvdatavalue'];
         $project_array['content']['valuerules'][$next_key]['vrvreplacementvalue'] = $_POST['vrvreplacementvalue'];
   
-        $this->CSV2POST->update_project( $c2p_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true );
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $project_array ) ), true );
         $this->UI->create_notice( __( 'A new value replacement rule has been stored. Please test your new rule.' ), 'success', 'Small',
         __( 'Replace Value Rule Created' ) );   
     }
@@ -2012,12 +2097,12 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function displayprojectsummary() {
-        global $c2p_settings;
+        global $csv2post_settings;
         $message = '';
-        $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );
         $project_settings = maybe_unserialize( $project_array->projectsettings);
 
         $message .= '<table class="form-table">';        
@@ -2101,11 +2186,11 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */         
     public function displaysourcesummary() {
-        global $c2p_settings;
-        $project_array = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );
+        global $csv2post_settings;
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );
         $source = $this->CSV2POST->get_source( $project_array->source1 ); 
         $config = maybe_unserialize( $source->theconfig );
         if( $source ){
@@ -2169,37 +2254,37 @@ class C2P_Requests {
             
             $message .= '<tr valign="top">';
             $message .= '<th scope="row">Monitor Change</th>';
-            $message .= '<td>'.$source->monitorchange.'</td>';
-            $message .= '</tr>';
+            $message .= '<td>' . $source->monitorfilechange . '</td>';
+            $message .= '</tr>';      
             
             $message .= '<tr valign="top">';
             $message .= '<th scope="row">Change Counter</th>';
-            $message .= '<td>'.$source->changecounter.'</td>';
+            $message .= '<td>' . $source->changecounter . '</td>';
             $message .= '</tr>';
             
             $message .= '<tr valign="top">';
             $message .= '<th scope="row">Data Treatment</th>';
-            $message .= '<td>'.$source->datatreatment.'</td>';
+            $message .= '<td>' . $source->datatreatment . '</td>';
             $message .= '</tr>';
             
             $message .= '<tr valign="top">';
             $message .= '<th scope="row">Parent File ID</th>';
-            $message .= '<td>'.$source->parentfileid.'</td>';
+            $message .= '<td>' . $source->parentfileid . '</td>';
             $message .= '</tr>';
             
             $message .= '<tr valign="top">';
             $message .= '<th scope="row">Database Table</th>';
-            $message .= '<td>'.$source->tablename.'</td>';
+            $message .= '<td>' . $source->tablename . '</td>';
             $message .= '</tr>';
             
             $message .= '<tr valign="top">';
             $message .= '<th scope="row">Rules</th>';
-            $message .= '<td>'.$source->rules.'</td>';
+            $message .= '<td>' . $source->rules . '</td>';
             $message .= '</tr>';
             
             $message .= '<tr valign="top">';
             $message .= '<th scope="row">Separator</th>';
-            $message .= '<td>'.$source->thesep.'</td>';
+            $message .= '<td>' . $source->thesep . '</td>';
             $message .= '</tr>';
 
             $message .= '</table>';            
@@ -2299,10 +2384,10 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */         
     public function undoprojectposts() {
-        global $c2p_settings, $wpdb;
+        global $csv2post_settings, $wpdb;
         if(!current_user_can( 'delete_posts' ) ){
             $this->UI->create_notice( __( 'You do not have permission to delete posts.' ), 'error', 'Small', __( 'Not Permitted' ) );
             return;
@@ -2318,7 +2403,7 @@ class C2P_Requests {
         $result = $wpdb->get_results( 'SELECT post_id
         FROM '.$wpdb->postmeta.' 
         WHERE meta_key = "c2p_project" 
-        AND meta_value = "'.$c2p_settings['currentproject'].'"
+        AND meta_value = "'.$csv2post_settings['currentproject'].'"
         LIMIT ' . $limit,ARRAY_A );
          
         if(!$result){
@@ -2329,12 +2414,28 @@ class C2P_Requests {
                 $forcedelete = false;
                 if( isset( $_POST['forcedelete'] ) ){$forcedelete = true;}
                 wp_delete_post( $postid['post_id'], $forcedelete );
-                $wpdb->query( 'UPDATE `'.$this->CSV2POST->get_project_main_table( $c2p_settings['currentproject'] ).'` SET `c2p_postid` = 0 WHERE `c2p_postid` = ' . $postid['post_id'] );
+                $wpdb->query( 'UPDATE `'.$this->CSV2POST->get_project_main_table( $csv2post_settings['currentproject'] ).'` SET `c2p_postid` = 0 WHERE `c2p_postid` = ' . $postid['post_id'] );
                 ++$posts_deleted;
             }
             $this->UI->create_notice( __( "A total of $posts_deleted posts were deleted. All
             post ID have been removed from the projects database table so that you can re-create the posts."), 'success', 'Small', __( 'Posts Deleted' ) );
         }
+        
+        // log
+        $atts = array(
+            'outcome' => 1,
+            'line' => __LINE__, 
+            'function' => __FUNCTION__,
+            'file' => __FILE__, 
+            'userid' => get_current_user_id(),          
+            'type' => 'general',
+            'category' => 'projectchange',
+            'action' => sprintf( __( 'User requested %s posts to be deleted.', 'csv2post' ), $limit ),
+            'priority' => 'normal',                        
+            'triga' => 'manualrequest'
+        );
+        
+        $this->CSV2POST->newlog( $atts );
     }    
     
     /**
@@ -2343,11 +2444,29 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function resetimportedrows() {
-        global $wpdb, $c2p_settings;
-        $result = $wpdb->query( 'UPDATE `'.$this->CSV2POST->get_project_main_table( $c2p_settings['currentproject'] ).'` SET `c2p_postid` = 0' );
+        global $wpdb, $csv2post_settings;
+        $result = $wpdb->query( 'UPDATE `'.$this->CSV2POST->get_project_main_table( $csv2post_settings['currentproject'] ).'` SET `c2p_postid` = 0' );        
+        
+        // log
+        $atts = array(
+            'outcome' => 1,
+            'line' => __LINE__, 
+            'function' => __FUNCTION__,
+            'file' => __FILE__, 
+            'userid' => get_current_user_id(),          
+            'type' => 'general',
+            'category' => 'dataevent',
+            'action' => sprintf( __( 'Imported data reset for project ID %s and ready to use again.', 'csv2post' ), $csv2post_settings['currentproject'] ),
+            'priority' => 'normal',                        
+            'triga' => 'manualrequest',
+            'dump' => $result,
+        );
+        
+        $this->CSV2POST->newlog( $atts );
+                
         $this->UI->create_notice( "The plugin removed all post ID's from a total of $result rows in your imported data for the current project.", 'success', 'Small', __( 'Result Rows Results' ) );
     }
     
@@ -2357,7 +2476,7 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */       
     public function newprojectusingexistingsource() {
         $sourceid_array = array();// increment string key: source1,source2,source3 (not sure why I done this but stick with it for now)
@@ -2381,8 +2500,7 @@ class C2P_Requests {
 
         // ensure we have valid $projectid and set it as the current project
         if( !is_numeric( $projectid ) ){
-            $this->UI->create_notice( __( 'The plugin could not finish inserting your new project to the database. This should never happen,
-            please report it.' ), 'success', 'Small', __( 'Problem Detected When Creating Project' ) );                    
+            $this->UI->create_notice( __( 'The plugin could not finish inserting your new project to the database. This should never happen, please report it.' ), 'error', 'Small', __( 'Problem Detected When Creating Project' ) );                    
             return false;
         } 
          
@@ -2405,9 +2523,9 @@ class C2P_Requests {
         $this->CSV2POST->update_project( $projectid, array( 'projectsettings' => maybe_serialize( $project_settings_array ) ), false );
 
         // set the current project
-        global $c2p_settings;
-        $c2p_settings['currentproject'] = $projectid;
-        $this->CSV2POST->update_settings( $c2p_settings );
+        global $csv2post_settings;
+        $csv2post_settings['currentproject'] = $projectid;
+        $this->CSV2POST->update_settings( $csv2post_settings );
 
         // update source rows with project id
         // this is not required, I intend for multiple projects to use a single source, but in a simple setup
@@ -2415,10 +2533,26 @@ class C2P_Requests {
         $this->CSV2POST->update_sources_withprojects( $projectid, $sourceid_array );
             
         $this->UI->create_notice( 'Your project has been created and the ID is ' . $projectid . '. The default project name is ' . $project_name . ' which you can change using project settings.', 'success', 'Small', __( 'Project Created' ) );                    
+
+        // log
+        $atts = array(
+            'outcome' => 1,
+            'line' => __LINE__, 
+            'function' => __FUNCTION__,
+            'file' => __FILE__, 
+            'userid' => get_current_user_id(),          
+            'type' => 'general',
+            'category' => 'projectchange',
+            'action' => sprintf( __( 'New project created with ID %s.', 'csv2post' ), $projectid ),
+            'priority' => 'normal',                        
+            'triga' => 'manualrequest'
+        );
+        
+        $this->CSV2POST->newlog( $atts );    
     }  
 
     public function a_table_was_created( $table_name){
-        $this->UI->create_notice( 'CSV 2 POST created a new database table named ' . $table_name .' for your data being imported to, before posts are made.', 'success', 'Small', 'Table Created Named ' . $table_name);
+        $this->UI->create_notice( 'CSV 2 POST created a new database table named ' . $table_name .'. Your data will be imported into this table where it can be prepared (optional) then used to create posts.', 'success', 'Small', 'Table Created Named ' . $table_name);
     }
               
     /**
@@ -2427,10 +2561,10 @@ class C2P_Requests {
     * @author Ryan Bayne
     * @package CSV 2 POST
     * @since 8.0.0
-    * @version 1.0.0
+    * @version 1.1
     */            
     public function changecsvfilepath() {
-        global $c2p_settings, $wpdb;
+        global $csv2post_settings, $wpdb;
         if(!isset( $_POST['newpath'] ) || empty( $_POST['newpath'] ) ){
             $this->UI->create_notice( __( 'Please enter the path to the .csv file that is replacing your sources existing file.' ), 'error', 'Small', __( 'New File Path Required' ) );
             return;
@@ -2471,10 +2605,10 @@ class C2P_Requests {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function setpostscategories() {
-        global $c2p_settings;
+        global $csv2post_settings;
        
         // load categories class
         $this->CSV2POST->load_class( 'C2P_Categories', 'class-categories.php', 'classes',array( 'noreturn' ) );
@@ -2487,7 +2621,7 @@ class C2P_Requests {
         }
 
         // get rows used to create posts, this function will add post ID's as array key for use in mass_update_posts_categories() 
-        $used_category_data = $this->CSV2POST->get_category_data_used( $c2p_settings['currentproject'], 5, true );   
+        $used_category_data = $this->CSV2POST->get_category_data_used( $csv2post_settings['currentproject'], 5, true );   
                
         // run a posts category update, it includes creating categories to apply any 
         // changes and updating posts to reflect any category changes
@@ -2501,10 +2635,10 @@ class C2P_Requests {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function resetpostscategories() {
-        # mass category plugin does this, check how it does it and establish the best way using the wp core
+        
     }
     
     /**
@@ -2516,10 +2650,10 @@ class C2P_Requests {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.3
-    * @version 1.0.0
+    * @version 1.1
     */
     public function deleteduplicaterowsandposts() {
-        global $c2p_settings;
+        global $csv2post_settings;
 
         // if no idcolumn set this operation can be executed
         if( !isset( $this->current_project_settings['idcolumn'] ) ){
@@ -2529,7 +2663,7 @@ class C2P_Requests {
             return false;  
         }                                                                                                           
         
-        $table_name = $this->CSV2POST->get_project_main_table( $c2p_settings['currentproject'] );
+        $table_name = $this->CSV2POST->get_project_main_table( $csv2post_settings['currentproject'] );
         
         // get an array of the keys which have duplicates (not every duplicate just an array of keys that have 2 or more)
         $duplicate_keys = $this->DB->get_duplicate_keys( $table_name, $this->current_project_settings['idcolumn'] );
@@ -2605,7 +2739,7 @@ class C2P_Requests {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.32
-    * @version 1.0.0
+    * @version 1.1
     */
     public function pagecapabilitysettings() {
         
@@ -2639,7 +2773,7 @@ class C2P_Requests {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function rechecksourcedirectory() {
         // validation
@@ -2675,7 +2809,7 @@ class C2P_Requests {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function urlimporttoexistingsource() {
         // perform sanitization
@@ -2724,7 +2858,7 @@ class C2P_Requests {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function uploadfiletodatasource() {
         // get data source - directory value only
@@ -2756,10 +2890,10 @@ class C2P_Requests {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function createurlcsvdatasource() {
-       global $wpdb, $c2p_settings;
+       global $wpdb, $csv2post_settings;
         $CSV2POST_Files = CSV2POST::load_class( 'C2P_Files', 'class-files.php', 'classes' );
 
         // URL is a required field 
@@ -2853,13 +2987,13 @@ class C2P_Requests {
             if( isset( $_POST['deleteexistingtablecode1'] ) && $_POST['deleteexistingtable1'] == $_POST['deleteexistingtablecode1'] ){   
                 $this->DB->drop_table( $files_array[1]['tablename'] );           
             }else{                
-                $this->UI->create_notice( 'A database table already exists named ' . $files_array[1]['tablename'] . '. Please delete the existing table if it is not in use or change the name of your .csv file a little.', 'error', 'Small', 'Table Exists Already' );
+                $this->UI->create_notice( 'A database table already exists named ' . $files_array[1]['tablename'] . '. Please delete the existing table if it is not in use or change the name of your .csv file a little.', 'error', 'Small', __( 'Table Exists Already', 'csv2post' ) );
                 return;  
             } 
         }
         
         // make entry in the c2psources table
-        $files_array[1]['sourceid'] = $this->CSV2POST->insert_data_source( $file_import_result['filepath'], 0, $files_array[1]['tablename'], 'localcsv', $files_array[1], $cleanedidcolumn );
+        $files_array[1]['sourceid'] = $this->CSV2POST->insert_data_source( $file_import_result['filepath'], 0, $files_array[1]['tablename'], 'localcsv', $files_array[1], $cleanedidcolumn, $_POST['detectfilechanges'] );
         
         // create database table for importing data into, this is where we prepare it 
         $sqlheaders_array = array();
@@ -2869,8 +3003,24 @@ class C2P_Requests {
 
         $this->CSV2POST->create_project_table( $files_array[1]['tablename'], $sqlheaders_array ); 
         self::a_table_was_created( $files_array[1]['tablename'] );                                                              
-                    
-        $this->UI->create_notice( __( 'Your new source of data has been setup. You can now create a project using this source. The source ID is ' . $files_array[1]['sourceid'], 'csv2post' ), 'success', 'Small', __( 'Data Source Ready' ) );  
+
+        // log
+        $atts = array(
+            'outcome' => 1,
+            'line' => __LINE__, 
+            'function' => __FUNCTION__,
+            'file' => __FILE__, 
+            'userid' => get_current_user_id(),          
+            'type' => 'general',
+            'category' => 'dataevent',
+            'action' => __( 'Created URL .csv data source.', 'csv2post' ),
+            'priority' => 'normal',                        
+            'triga' => 'manualrequest'
+        );
+        
+        $this->CSV2POST->newlog( $atts );
+                       
+        $this->UI->create_notice( sprintf( __( 'Your new source of data has been setup. You can now create a project using this source. The source ID is %s.', 'csv2post' ), $files_array[1]['sourceid'] ), 'success', 'Small', __( 'Data Source Ready' ) );  
     }
     
     /**
@@ -2879,7 +3029,7 @@ class C2P_Requests {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function createuploadcsvdatasource() {
         global $wpdb;
@@ -2968,9 +3118,9 @@ class C2P_Requests {
                 return;  
             } 
         }
-        
-        // make entry in the c2psources table
-        $files_array[1]['sourceid'] = $this->CSV2POST->insert_data_source( $file_import_result['filepath'], 0, $files_array[1]['tablename'], 'localcsv', $files_array[1], $cleanedidcolumn );
+               
+        // make entry in the c2psources table                                                                                                                                                     
+        $files_array[1]['sourceid'] = $this->CSV2POST->insert_data_source( $file_import_result['filepath'], 0, $files_array[1]['tablename'], 'localcsv', $files_array[1], $cleanedidcolumn, $_POST['detectfilechanges3'] );
         
         // create database table for importing data into, this is where we prepare it 
         $sqlheaders_array = array();
@@ -2980,7 +3130,23 @@ class C2P_Requests {
 
         $this->CSV2POST->create_project_table( $files_array[1]['tablename'], $sqlheaders_array ); 
         self::a_table_was_created( $files_array[1]['tablename'] );                                                              
-                    
+
+        // log
+        $atts = array(
+            'outcome' => 1,
+            'line' => __LINE__, 
+            'function' => __FUNCTION__,
+            'file' => __FILE__, 
+            'userid' => get_current_user_id(),          
+            'type' => 'general',
+            'category' => 'dataevent',
+            'action' => __( 'Created data source using uploaded .csv file.', 'csv2post' ),
+            'priority' => 'normal',                        
+            'triga' => 'manualrequest'
+        );
+        
+        $this->CSV2POST->newlog( $atts );
+                            
         $this->UI->create_notice( __( 'Your new source of data has been setup. You can now create a project using this source. The source ID is ' . $files_array[1]['sourceid'], 'csv2post' ), 'success', 'Small', __( 'Data Source Ready' ) );  
     }
     
@@ -2990,10 +3156,10 @@ class C2P_Requests {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.34
-    * @version 1.0.0
+    * @version 1.1
     */
     public function createservercsvdatasource() {
-       global $wpdb, $c2p_settings;
+       global $wpdb, $csv2post_settings;
         $CSV2POST_Files = CSV2POST::load_class( 'C2P_Files', 'class-files.php', 'classes' );
 
         // path is a required field 
@@ -3076,7 +3242,7 @@ class C2P_Requests {
         }
         
         // make entry in the c2psources table
-        $files_array[1]['sourceid'] = $this->CSV2POST->insert_data_source( $files_array[1]['fullpath'], 0, $files_array[1]['tablename'], 'localcsv', $files_array[1], $cleanedidcolumn );
+        $files_array[1]['sourceid'] = $this->CSV2POST->insert_data_source( $files_array[1]['fullpath'], 0, $files_array[1]['tablename'], 'localcsv', $files_array[1], $cleanedidcolumn, $_POST['monitorfilechange2'] );
         
         // create database table for importing data into, this is where we prepare it 
         $sqlheaders_array = array();
@@ -3086,7 +3252,23 @@ class C2P_Requests {
 
         $this->CSV2POST->create_project_table( $files_array[1]['tablename'], $sqlheaders_array ); 
         self::a_table_was_created( $files_array[1]['tablename'] );                                                              
-                    
+         
+        // log
+        $atts = array(
+            'outcome' => 1,
+            'line' => __LINE__, 
+            'function' => __FUNCTION__,
+            'file' => __FILE__, 
+            'userid' => get_current_user_id(),          
+            'type' => 'general',
+            'category' => 'dataevent',
+            'action' => __( 'Created data-source using local file that was already on the server.', 'csv2post' ),
+            'priority' => 'normal',                        
+            'triga' => 'manualrequest'
+        );
+        
+        $this->CSV2POST->newlog( $atts );
+                   
         $this->UI->create_notice( __( 'Your new source of data has been setup. You can now create a project using this source. The source ID is ' . $files_array[1]['sourceid'], 'csv2post' ), 'success', 'Small', __( 'Data Source Ready' ) );  
     }
     
@@ -3100,10 +3282,10 @@ class C2P_Requests {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.35
-    * @version 1.0
+    * @version 1.1
     */
     public function createdirectorycsvdatasource() {
-        global $wpdb, $c2p_settings;
+        global $wpdb, $csv2post_settings;
         
         // count the number of .csv files used to create a datasource
         $total_new_datasources = 0;
@@ -3123,9 +3305,10 @@ class C2P_Requests {
             return;
         }
         
-        // sanitize path
+        //sanitize path
         $path = sanitize_text_field( $_POST['newdirectorysource'] );
         $path = stripslashes_deep( $path );
+        $path = rtrim($path, '/') . '/';// ensure trailing slash
                 
         // treat the first file different
         $is_first_file = true;
@@ -3194,13 +3377,6 @@ class C2P_Requests {
                         if( $table_name === false ) {
                             $table_name = $files_array[1]['tablename'];    
                         }
-                               
-                        // set project name
-                        if( empty( $_POST['newprojectname'] ) ){
-                            $files_array['projectname'] = basename( $files_array[1]['fullpath'] );
-                        }else{
-                            $files_array['projectname'] = $_POST['newprojectname'];
-                        }
                         
                         // does planned database table name exist                       
                         $table_exists_result = $this->DB->does_table_exist( $table_name );
@@ -3225,7 +3401,7 @@ class C2P_Requests {
                     }   
                                         
                     // make entry in the c2psources table
-                    $files_array[1]['sourceid'] = $this->CSV2POST->insert_data_source( $files_array[1]['fullpath'], $parent_source_id, $table_name, 'localcsv', $files_array[1], $cleanedidcolumn );
+                    $files_array[1]['sourceid'] = $this->CSV2POST->insert_data_source( $files_array[1]['fullpath'], $parent_source_id, $table_name, 'localcsv', $files_array[1], $cleanedidcolumn, $_POST['detectfilechanges1'], $_POST['detectnewfiles1'] );
                     
                     // keep parent ID for adding to all source records
                     if( $parent_source_id === 0 ) {
@@ -3237,7 +3413,34 @@ class C2P_Requests {
             }
         }  
        
-        $this->UI->create_notice( __( 'All done! A total of '.$total_new_datasources.' data-sources have been setup. The parent source ID is ' . $parent_source_id . ' and that is the one you should work with when creating a project to use the data you import from all files.', 'csv2post' ), 'success', 'Small', __( 'Data Source Ready' ) );  
+        if( !$parent_source_id ) {
+ 	         $this->UI->create_notice( __( 'No new .csv file data sources have been setup because the directory you submitted does not contain a .csv file or one that is properly formatted. The directory must contain one or more .csv files, one will be selected as a parent and used to configure the plugin further.', 'csv2post' ), 'error', 'Small', __( 'No Source of Data' ) );  	
+        		return;	
+        }     
+        
+        // set path as a new directory source - I will use the path to get data from the sources table i.e. total .csv files setup as data sources, compare that to a total of .csv files in the directory
+        $csv2post_settings['directorysources'][$path]['monitor'] = true;
+        $csv2post_settings['directorysources'][$path]['name'] = $_POST['newsourcename1'];    
+        $this->CSV2POST->update_settings( $csv2post_settings );
+
+        // make log entry under dataevent category
+        $atts = array(
+            'outcome' => 1,
+            'line' => __LINE__, 
+            'function' => __FUNCTION__,
+            'file' => __FILE__, 
+            'userid' => get_current_user_id(),          
+            'general' => 'general',
+            'category' => 'dataevent',
+            'action' => __( 'Directory data source created.', 'csv2post' ),
+            'priority' => 'normal',                        
+            'triga' => 'manualrequest'
+        );
+        
+        $this->CSV2POST->newlog( $atts );        
+        
+        // finishing notice            
+        $this->UI->create_notice( __( 'All done! A total of ' . $total_new_datasources . ' data-sources have been setup. The parent source ID is ' . $parent_source_id . ' and that is the one you should work with when creating a project to use the data you import from all files.', 'csv2post' ), 'success', 'Small', __( 'Data Source Ready' ) );  
     }
     
     /**
@@ -3246,17 +3449,17 @@ class C2P_Requests {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function setactiveproject() {
-        global $wpdb, $c2p_settings;
+        global $wpdb, $csv2post_settings;
         $projects_array = $this->DB->selectwherearray( $wpdb->c2pprojects, 'projectid = projectid', 'timestamp', '*', ARRAY_A, 'ASC' );
                
         $valid_project_id = false;
         foreach( $projects_array as $key => $project ) {
             if( $project['projectid'] === $_POST['setprojectid'] ) {
-                $c2p_settings['currentproject'] = $_POST['setprojectid']; 
-                $this->CSV2POST->update_settings( $c2p_settings );
+                $csv2post_settings['currentproject'] = $_POST['setprojectid']; 
+                $this->CSV2POST->update_settings( $csv2post_settings );
                 $valid_project_id = true;
                 break;       
             }    
@@ -3275,10 +3478,10 @@ class C2P_Requests {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function dashboardwidgetsettings() {
-        global $c2p_settings;
+        global $csv2post_settings;
         
         // loop through pages
         $CSV2POST_TabMenu = CSV2POST::load_class( 'C2P_TabMenu', 'class-pluginmenu.php', 'classes' );
@@ -3286,16 +3489,16 @@ class C2P_Requests {
         foreach( $menu_array as $key => $section_array ) {
 
             if( isset( $_POST[ $section_array['name'] . 'dashboardwidgetsswitch' ] ) ) {
-                $c2p_settings['widgetsettings'][ $section_array['name'] . 'dashboardwidgetsswitch'] = $_POST[ $section_array['name'] . 'dashboardwidgetsswitch' ];    
+                $csv2post_settings['widgetsettings'][ $section_array['name'] . 'dashboardwidgetsswitch'] = $_POST[ $section_array['name'] . 'dashboardwidgetsswitch' ];    
             }
             
             if( isset( $_POST[ $section_array['name'] . 'widgetscapability' ] ) ) {
-                $c2p_settings['widgetsettings'][ $section_array['name'] . 'widgetscapability'] = $_POST[ $section_array['name'] . 'widgetscapability' ];    
+                $csv2post_settings['widgetsettings'][ $section_array['name'] . 'widgetscapability'] = $_POST[ $section_array['name'] . 'widgetscapability' ];    
             }
 
         }
 
-        $this->CSV2POST->update_settings( $c2p_settings );    
+        $this->CSV2POST->update_settings( $csv2post_settings );    
         $this->UI->create_notice( __( 'Your dashboard widget settings have been saved. Please check your dashboard to ensure it is configured as required per role.', 'csv2post' ), 'success', 'Small', __( 'Settings Saved', 'csv2post' ) );         
     }
     
@@ -3305,7 +3508,7 @@ class C2P_Requests {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function deletedatasource () {
     
@@ -3335,12 +3538,12 @@ class C2P_Requests {
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.1.33
-    * @version 1.0.0
+    * @version 1.1
     */
     public function recreatemissingposts() {
-        global $c2p_settings;
+        global $csv2post_settings;
                        
-        $table_name = $this->CSV2POST->get_project_main_table( $c2p_settings['currentproject'] );
+        $table_name = $this->CSV2POST->get_project_main_table( $csv2post_settings['currentproject'] );
 
         $select = 'c2p_rowid, c2p_postid';
 
@@ -3355,15 +3558,15 @@ class C2P_Requests {
         if( $result ){
             
             $autoblog = new CSV2POST_InsertPost();
-            $autoblog->settings = $c2p_settings;
-            $autoblog->currentproject = $c2p_settings['currentproject'];
-            $autoblog->project = $this->CSV2POST->get_project( $c2p_settings['currentproject'] );// gets project row, includes sources and settings
-            $autoblog->projectid = $c2p_settings['currentproject'];
-            $autoblog->maintable = $this->CSV2POST->get_project_main_table( $c2p_settings['currentproject'] );// main table holds post_id and progress statistics
+            $autoblog->settings = $csv2post_settings;
+            $autoblog->currentproject = $csv2post_settings['currentproject'];
+            $autoblog->project = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );// gets project row, includes sources and settings
+            $autoblog->projectid = $csv2post_settings['currentproject'];
+            $autoblog->maintable = $this->CSV2POST->get_project_main_table( $csv2post_settings['currentproject'] );// main table holds post_id and progress statistics
             $autoblog->projectsettings = maybe_unserialize( $autoblog->project->projectsettings );// unserialize settings
-            $autoblog->projectcolumns = $this->CSV2POST->get_project_columns_from_db( $c2p_settings['currentproject'] );
+            $autoblog->projectcolumns = $this->CSV2POST->get_project_columns_from_db( $csv2post_settings['currentproject'] );
             $autoblog->requestmethod = 'manual';
-            $sourceid_array = $this->CSV2POST->get_project_sourcesid( $c2p_settings['currentproject'] );
+            $sourceid_array = $this->CSV2POST->get_project_sourcesid( $csv2post_settings['currentproject'] );
             $autoblog->mainsourceid = $sourceid_array[0];// update the main source database table per post with new post ID
             unset( $autoblog->project->projectsettings );// just simplifying the project object by removing the project settings
 
@@ -3422,7 +3625,7 @@ class C2P_Requests {
     * @version 1.0
     */
     public function masspublishposts() {
-        global $c2p_settings;
+        global $csv2post_settings;
         
         $meta_key = '';
         $meta_value = '';
@@ -3432,7 +3635,7 @@ class C2P_Requests {
            case 'currentproject':
                 // get drafts for the current project only
                 $meta_key = 'c2p_project';
-                $meta_value = $c2p_settings['currentproject'];             
+                $meta_value = $csv2post_settings['currentproject'];             
              break;
            case 'allprojects':
                 // get drafts for all CSV 2 POST projects
