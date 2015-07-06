@@ -1,12 +1,12 @@
 <?php         
 /*
 Plugin Name: CSV 2 POST
-Version: 8.2.0
+Version: 8.2.1
 Plugin URI: http://www.webtechglobal.co.uk/csv-2-post
 Description: CSV 2 POST data importer for WordPress by Ryan Bayne @WebTechGlobal.
 Author: WebTechGlobal
 Author URI: http://www.webtechglobal.co.uk/
-Last Updated: May 2015
+Last Updated: July 2015
 Text Domain: csv2post
 Domain Path: /languages
 
@@ -25,11 +25,6 @@ and we do not promise it is ready for any one persons specific needs.
 See the GNU General Public License for more details.
 
 See <http://www.gnu.org/licenses/>.
-
-1. shortcode for adding values to any page
-2. data history
-3. data alerts
-4. Current Project: checklist of features in-use or not in use, 
 */           
   
 // Prohibit direct script loading
@@ -43,7 +38,7 @@ if ( ( 'wp-login.php' === basename( $_SERVER['SCRIPT_FILENAME'] ) ) // Login scr
 }
               
 // package variables
-$csv2post_filesversion = '8.2.0';# to be removed, version is now in the CSV2POST() class 
+$csv2post_filesversion = '8.2.1';# to be removed, version is now in the CSV2POST() class 
 $c2p_debug_mode = false;# to be phased out, going to use environment variables (both WP and php.ini instead)
 
 // go into dev mode if on test installation               

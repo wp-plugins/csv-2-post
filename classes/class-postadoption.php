@@ -38,6 +38,12 @@ class CSV2POST_PostAdoption {
     // setting - 
     var $rebuild_title = false;
     
+    // used for an early exit
+    var $post_adopted = false;
+    
+    // ignore records in first result, count those actually processed
+    var $records_processed = 0;
+      
     public function __construct() {
         global $csv2post_settings;
     
@@ -69,7 +75,7 @@ class CSV2POST_PostAdoption {
     * 
     * @todo total posts to be processed requires a setting for user control
     */
-    public function AdoptPosts() {
+    public function StartAdoptPosts() {
         global $csv2post_settings;
         
         // if project array not set then nothing can be done
@@ -169,10 +175,21 @@ class CSV2POST_PostAdoption {
             // loop through methods
             if( !empty( $this->active_methods ) ) {
                 foreach( $this->active_methods as $key => $method ) {
-                    eval( 'self::' . $method . '();' );    
+                    if( method_exists( $this,$method ) ) {
+                        eval( 'self::' . $method . '();' );    
+                    }
+                    
+                    // discontinue applying methods to current record if post was adopted
+                    if( $this->post_adopted ) {
+                        break;
+                    }
                 }     
             }
+            
+            ++$this->records_processed;
         }
+        
+        $this->EndAdoptPosts();
     }
                 
     /**
@@ -224,65 +241,63 @@ class CSV2POST_PostAdoption {
        
        if( is_array( $this->pro_set['adoption']['pairmeta'] ) ) {
            
-           // count meta matches to be made - 100% required by default
-           $total_meta = count( $this->pro_set['adoption']['pairmeta'] );
-           
-           // in loop use data to create values, column replacement tokens allowed
+           // begin array of meta_query args, loop will add more array
+           $args = array(
+                'meta_query' => array()
+           );
+   
+           // add all meta keys and values to query
            $i = 0;
            $found_post_id = false;
            foreach( $this->pro_set['adoption']['pairmeta'] as $cfname => $cfvalue ) {
-               $possible_meta_value = $this->CSV2POST->replace_tokens( $cfvalue, $this->current_unused_row, $this->project_columns );    
-
-                // if first does not match a post then break loop
-                global $wpdb;
-                $results = $wpdb->get_results( "SELECT post_id
-                                                FROM $wpdb->postmeta 
-                                                WHERE meta_value = '" . $possible_meta_value . "'
-                                                AND meta_key = '" . $cfname . "'", ARRAY_A ); 
                
-                // if no post found OR already found post does not
-                // have the current meta then break, no adoption
-                if( !$results || $my_posts[0]->ID !== $found_post_id ) {
-                    break;    
-                }
-                
-               ++$i;
+               // generate value (should be a template)
+               $possible_meta_value = $this->CSV2POST->replace_tokens( $cfvalue, $this->current_unused_row, $this->project_columns );    
+               
+               // add key and value to argument array
+               $args['meta_query'][] = array(
+                    'key' => $cfname,
+                    'value' => $possible_meta_value,
+                    'compare' => 'EQUALS'
+               );
+               
            }
+                      
+           $result = query_posts( $args );
+           
+           if( $result ) {
+                $this->adopt( $this->current_unused_row['c2p_rowid'], $result[0]->ID );    
+           }            
        }    
     }                
         
     /**
-    * Match string within string (post content)
+    * Match string within string (post content).
+    * 
+    * Requires querying all post contents then checking for string in string
+    * one by one.
     * 
     * @author Ryan R. Bayne
     * @package CSV 2 POST
     * @since 8.2.1
-    * @version 1.0
+    * @version 1.0         
+    * 
+    * @todo add ability for user to avoid adoption if two or more posts are a match       
     */
     public function valueincontent() {
-        global $csv2post_settings;
+        global $wpdb,$csv2post_settings;
+  
+        $possible_meta_value = $this->CSV2POST->replace_tokens( $this->pro_set['adoption']['valueincontent'], $this->current_unused_row, $this->project_columns );    
+ 
+        $result = $wpdb->get_results( "SELECT * 
+                                       FROM $wpdb->posts 
+                                       WHERE post_content LIKE '%" . $possible_meta_value . "%'" );
         
-        //$this->current_unused_row
-         //    $this->pro_set['adoption']['valueincontent'] = $_POST['valueincontentstructure'];
-         //
-
+        // if more than one post the first will be adopted by default                                         
+        if ($result){
+            $this->adopt( $this->current_unused_row['c2p_rowid'], $result[0]->ID );
+        }
     }        
-        
-    /**
-    * Match a meta value (any key), probably not accurate in most blogs.
-    * 
-    * @author Ryan R. Bayne
-    * @package CSV 2 POST
-    * @since 8.2.1
-    * @version 1.0
-    */
-    public function valueinanymeta() {
-        global $csv2post_settings;
-        
-       // $this->current_unused_row
-       // $this->pro_set['adoption']['valueinanymeta'] = $_POST['anypostmetastructure'];
-     
-    }
         
     /**
     * Match a single value with a specific meta key.
@@ -293,14 +308,30 @@ class CSV2POST_PostAdoption {
     * @version 1.0
     */
     public function valueinspecificmeta() {
-        global $csv2post_settings;
-        
-       // $this->current_unused_row
-        
-       //  $this->pro_set['adoption']['valueinspecificmeta']['structure'] = $_POST['specificmetavaluestructure'];
-       // $this->pro_set['adoption']['valueinspecificmeta']['key'] = $_POST['specificmetakey'];
-    
-    }        
+       global $csv2post_settings;
+       
+       if( is_array( $this->pro_set['adoption']['pairmeta'] ) ) {
+
+           // generate value (should be a template)
+           $possible_meta_value = $this->CSV2POST->replace_tokens( $this->pro_set['adoption']['valueinspecificmeta']['structure'], $this->current_unused_row, $this->project_columns );    
+
+           // begin array of meta_query args, loop will add more array
+           $args = array(
+                'meta_query' => array(
+                    array(
+                        'key' => $this->pro_set['adoption']['valueinspecificmeta']['key'],
+                        'value' => $possible_meta_value,
+                        'compare' => 'EQUALS'
+                    ))
+           );
+           
+           $result = query_posts( $args );
+           
+           if( $result ) {
+                $this->adopt( $this->current_unused_row['c2p_rowid'], $result[0]->ID );    
+           }            
+       }
+    }
               
     /**
     * Match post title.
@@ -312,13 +343,15 @@ class CSV2POST_PostAdoption {
     */
     public function posttitlematch() {
         global $csv2post_settings;
-        
-       // $this->current_unused_row
-        
-        
-      //  $this->pro_set['adoption']['posttitlematch']['structure'] = $_POST['posttittlestructure'];
-    
 
+        // generate value (should be a template)
+        $page_title = $this->CSV2POST->replace_tokens( $this->pro_set['adoption']['posttitlematch']['structure'], $this->current_unused_row, $this->project_columns );    
+        
+        $result = get_page_by_title( $page_title );
+        
+        if( $result ) {
+            $this->adopt( $this->current_unused_row['c2p_rowid'], $result[0]->ID );    
+        }        
     }   
    
     /**
@@ -331,11 +364,41 @@ class CSV2POST_PostAdoption {
     */
     public function adopt( $record_ID, $post_ID ) {
         global $csv2post_settings;
+        
+        $project_table = $this->CSV2POST->get_project_main_table( $csv2post_settings['currentproject'] );
+        
+        $this->CSV2POST->pair_record_with_post( $project_table, $record_ID, $post_ID );
 
-        // remember to jump to next record and not continue methods
-        
-      //  $this->current_unused_row
-    }        
-        
+        $this->post_adopted = true;
+
+        // log
+        if( isset( $this->pro_set['adoption']['settings']['logadoption']) 
+            && $this->pro_set['adoption']['settings']['logadoption'] == 'enabled' ) {
+            
+                $this->CSV2POST->newlog( array(
+                    'outcome' => 1,
+                    'line' => __LINE__, 
+                    'function' => __FUNCTION__,
+                    'file' => __FILE__,          
+                    'type' => 'general',
+                    'category' => 'postevent',
+                    'action' => __( "Post ID $post_ID was adopted by record ID $record_ID", 'csv2post' ),
+                    'priority' => 'normal',                        
+                    'triga' => 'manualrequest'
+                ) );        
+        }
+    } 
+    
+    /**
+    * Description
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
+    */
+    public function EndAdoptPosts() {
+        $this->UI->create_notice( sprintf( __( "Post adoption has finished. A total of %s records were processed and %s posts were adopted." ), $this->records_processed ,$this->total_adoptions ), 'info', 'Small', __( 'Post Adoption Result', 'csv2post' ) );               
+    }              
 }  
 ?>

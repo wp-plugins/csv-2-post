@@ -10,6 +10,9 @@
  * @author Ryan Bayne   
  * @since 8.1.3
  * 
+ * @todo Find string in multiple post elements not just in post content - good example query here...
+ * https://wordpress.org/support/topic/show-search-results-from-either-contenttitles-or-tags
+ * 
  * @todo multiple meta adoption uses projects meta keys - require a form that allows user to enter the keys
  * @todo add diagnostic tool - establish what records would apply to more than one post - establish what posts would apply to more than one record
  * @todo add the ability to force a required combo of rules, by default it's one rule at a time, adoption on success of a single rule
@@ -49,9 +52,8 @@ class CSV2POST_Adoption_View extends CSV2POST_View {
             array( $this->view_name . '-postnamematch', __( 'Post Name Match', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'postnamematch' ), true, 'activate_plugins' ),
             array( $this->view_name . '-posttitlematch', __( 'Post Title Match', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'posttitlematch' ), true, 'activate_plugins' ),
             array( $this->view_name . '-valueincontent', __( 'Match Value In Content', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'valueincontent' ), true, 'activate_plugins' ),
-            array( $this->view_name . '-valueinanymeta', __( 'Match Value In Any Meta', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'valueinanymeta' ), true, 'activate_plugins' ),
             array( $this->view_name . '-valueinspecificmeta', __( 'Match Value In Specific Meta', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'valueinspecificmeta' ), true, 'activate_plugins' ),
-            array( $this->view_name . '-pairmeta', __( 'Pair Meta', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'pairmeta' ), true, 'activate_plugins' ),
+            array( $this->view_name . '-pairmeta', __( 'Pair Projects Meta', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'pairmeta' ), true, 'activate_plugins' ),
             array( $this->view_name . '-initiateadoption', __( 'Initiate Adoption', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'initiateadoption' ), true, 'activate_plugins' )
         );    
     }
@@ -294,38 +296,7 @@ class CSV2POST_Adoption_View extends CSV2POST_View {
         <?php       
         $this->UI->postbox_content_footer();    
     }
-    
-     
-    /**
-    * Match value in ANY custom field and adopt.
-    * 
-    * @author Ryan R. Bayne
-    * @package CSV 2 POST
-    * @since 0.0.1
-    * @version 1.0
-    */
-    public function postbox_adoption_valueinanymeta( $data, $box ) {
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Attempt to pair a single or structured value with ANY post meta. This might not have the desired results as it is hard to know every post meta value in the database.', 'csv2post' ), false );        
-        $this->UI->hidden_form_values( $box['args']['formid'], $box['title'] ); 
-        $fid = $box['args']['formid'];
-        ?>
-
-            <table class="form-table">
-
-                <?php
-                $current_value = '';
-                if( isset( $this->current_project_settings['adoption']['valueinanymeta'] ) ) {
-                    $current_value = $this->current_project_settings['adoption']['valueinanymeta'];
-                }
-                $this->FORMS->textarea_basic( $fid, 'anypostmetastructure', 'anypostmetastructure', __( 'Any Meta Value Structure', 'csv2post' ), $current_value, true, 5, 30, array() );
-                ?>
-                                                            
-            </table>
         
-        <?php       
-        $this->UI->postbox_content_footer();    
-    } 
-    
     /**
     * Match value for a specific meta key.
     * 
@@ -371,7 +342,7 @@ class CSV2POST_Adoption_View extends CSV2POST_View {
     * @version 1.0
     */
     public function postbox_adoption_pairmeta( $data, $box ) {
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Adopt by matching multiple meta values with existing meta values. Tell CSV 2 POST what meta keys to check even if the keys are originally created by CSV 2 POST. All meta values will need to match for an adoption to occur. Leave a field blank if you do not want to pair the post meta key displayed, to one already used in your blog. Note that this process could be demanding on your server. If you require a similar process that does not check keys and matches a group of values on a per post basis. That can be provided but it will only be a little less demanding.', 'csv2post' ), false );        
+        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], __( 'Adopt by matching multiple meta values with existing meta values but strictly within meta keys that are setup as part of your current project. Tell CSV 2 POST what meta keys to check even if the keys are originally created by CSV 2 POST. All meta values will need to match for an adoption to occur. Leave a field blank if you do not want to pair the post meta key displayed, to one already used in your blog. Note that this process could be demanding on your server. If you require a similar process that does not check keys and matches a group of values on a per post basis. That can be provided but it will only be a little less demanding.', 'csv2post' ), false );        
         $this->UI->hidden_form_values( $box['args']['formid'], $box['title'] ); 
         $fid = $box['args']['formid'];
         ?>

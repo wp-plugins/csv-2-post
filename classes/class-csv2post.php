@@ -4113,7 +4113,27 @@ class CSV2POST {
             }    
         }         
         return $subject;
-    }           
+    }   
+    
+    /**
+    * Updates projects main table with post ID - creating
+    * a relationship with post and record that can be used
+    * in future for reliable post updating.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.2.1
+    * @version 1.0
+    */
+    public function pair_record_with_post( $table, $post_id, $row_id ) {        
+        global $wpdb;
+        
+        $query = "UPDATE " . $table; 
+        $query .= " SET c2p_postid = " . $post_id . ", " . "c2p_applied = '" . current_time( 'mysql' ) . "'";
+        $query .= " WHERE c2p_rowid = " . $row_id;
+        return $wpdb->query( $query ); 
+    }
+                
 }// end CSV2POST class 
 
 if(!class_exists( 'WP_List_Table' ) ){
@@ -4747,15 +4767,17 @@ class CSV2POST_InsertPost{
     
     /**
     * updates the users data row, add post ID to create a relationship between imported row and the new post 
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.2
     */
     public function update_row() {      
         global $wpdb;
         
-        $query = "UPDATE " . $this->maintable; 
-        $query .= " SET c2p_postid = " . $this->my_post['ID'] . ", " . "c2p_applied = '" . current_time( 'mysql' ) . "'";
-        $query .= " WHERE c2p_rowid = " . $this->row['c2p_rowid'];
-        $wpdb->query( $query );         
-        
+        $this->CSV2POST->pair_record_with_post( $this->maintable, $this->my_post['ID'], $this->row['c2p_rowid'] );
+
         // call next method
         $this->output();        
     }
@@ -4774,14 +4796,7 @@ class CSV2POST_InsertPost{
 /**
 * Use to update a post created by or adopted by CSV 2 POST, class systematically calls all methods one after the other building the $my_post 
 * and making changes to meta or media
-* 
-* 1. methods/functions are in alphabetical order
-* 2. each method calls the next one in the list
-* 3. eventually a method updates apost using the $my_post object built along the way
-* 4. $my_post is used to store then update meta, thumbnail/featured image and other attachments
-* 5. many methods check for their target value to exist in $my_post already and instead alter it (meaning we can re-call the class on an object)
-* 6. some methods check for values in the $my_post object and perform procedures based on the values found or not found
-* 
+
 * $this->requestmethod - systematic|manual|schedule
 * 
 * Systematic: this method happens while posts are being opened, it means the post object
@@ -4789,7 +4804,7 @@ class CSV2POST_InsertPost{
 * @author Ryan Bayne
 * @package CSV 2 POST
 * @since 8.0.0
-* @version 1.2.32
+* @version 2.0 - removed method update_row() I see no reason to update the record in the way it was
 */
 class CSV2POST_UpdatePost{
     public $my_post = array();
@@ -4998,26 +5013,6 @@ class CSV2POST_UpdatePost{
     public function then_update_project() {
         $this->CSV2POST->update_project( $this->projectid, array( 'projectsettings' => maybe_serialize( $this->projectsettings) ) );
         
-        // call next method
-        $this->update_row();        
-    }
-    
-    /**
-    * updates the users data row, add post ID to create a relationship between imported row and the new post 
-    * 
-    * @author Ryan R. Bayne
-    * @package CSV 2 POST
-    * @since 8.0.0
-    * @version 1.0.2
-    */
-    public function update_row() {     
-        global $wpdb;
-        
-        $query = "UPDATE " . $this->maintable; 
-        $query .= " SET c2p_postid = " . $this->my_post['ID'] . ", " . "c2p_applied = '" . current_time( 'mysql' ) . "'";
-        $query .= " WHERE c2p_rowid = " . $this->row['c2p_rowid'];
-        $wpdb->query( $query );
-               
         // call next method
         $this->output();        
     }

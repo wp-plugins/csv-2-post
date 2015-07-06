@@ -2356,7 +2356,7 @@ class C2P_Requests {
         // get one of two ID's where post content is perfect match  
         /*                        
         $result = $wpdb->get_results( 'SELECT COUNT(*) as c, GROUP_CONCAT(ID) AS ids
-                                        FROM wp_posts
+                                        FROM $wpdb->posts
                                         GROUP BY post_content
                                         HAVING c > 1' );
                                         
@@ -3939,7 +3939,7 @@ class C2P_Requests {
         }
         
         // fire adoption
-        $this->Adoption->AdoptPosts();
+        $this->Adoption->StartAdoptPosts();
       
         // update project
         $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $projectsettings ) ), true );

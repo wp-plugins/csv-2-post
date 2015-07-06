@@ -48,7 +48,7 @@ class CSV2POST_Main_View extends CSV2POST_View {
         // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
         $this->meta_boxes_array = array(
             // array( id, title, callback (usually parent, approach created by Ryan Bayne), context (position), priority, call back arguments array, add to dashboard (boolean), required capability
-            array( $this->view_name . '-welcome', __( 'Start Here', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'welcome' ), true, 'activate_plugins' ),
+            array( $this->view_name . '-welcome', __( 'Easy Start', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'easystart' ), true, 'activate_plugins' ),
             array( $this->view_name . '-computersampledata', __( 'Computer Sample Data', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'computersampledata' ), true, 'activate_plugins' ),
             array( $this->view_name . '-twitterupdates', __( 'Twitter Updates', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'twitterupdates' ), true, 'activate_plugins' ),
             array( $this->view_name . '-facebook', __( 'Facebook', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'facebook' ), true, 'activate_plugins' ),       
@@ -171,7 +171,7 @@ class CSV2POST_Main_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.1
     */
-    public function postbox_main_welcome( $data, $box ) {    
+    public function postbox_main_easystart( $data, $box ) {    
         echo '<p>' . __( "Please begin by configuring this plugin dashboard view. The Screen Options tab
         top-right corner allows forms to be hidden. Let me make a couple of suggestions that will help you to get started.
         <ol>
