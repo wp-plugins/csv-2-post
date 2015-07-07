@@ -76,7 +76,10 @@ class CSV2POST_Content_View extends CSV2POST_View {
         $this->DB = CSV2POST::load_class( 'CSV2POST_DB', 'class-wpdb.php', 'classes' );
         $this->PHP = CSV2POST::load_class( 'CSV2POST_PHP', 'class-phplibrary.php', 'classes' );
         $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
-                        
+
+        // add view introduction
+        $this->add_text_box( 'viewintroduction-datatools', array( $this, 'viewintroduction' ), 'normal' );
+                                
         // load the current project row and settings from that row
         if( isset( $csv2post_settings['currentproject'] ) && $csv2post_settings['currentproject'] !== false ) {
                   
@@ -142,7 +145,24 @@ class CSV2POST_Content_View extends CSV2POST_View {
     function parent( $data, $box ) {
         eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
     }
-     
+
+    /**
+    * This views dismissable introduction.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
+    */
+    public function viewintroduction() {
+        $main_title = __( 'PAGEHERE Introduction', 'csv2post' );
+        $intro = __( 'INTRODUCTIONHERE', 'csv2post' );
+        $title = __( 'Further Training', 'csv2post' );
+        $info = __( '<ol><li>Tutorials Coming Soon</li></ol>', 'csv2post' );
+        $foot = __( 'Get your tutorial link added to this list. Video, blog, forum and PDF documents accepted.', 'csv2post' );
+        $this->UI->intro_box_dismissible( 'PAGEHERE-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
+    }
+         
     /**
     * post box function for testing
     * 

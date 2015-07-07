@@ -881,7 +881,7 @@ class CSV2POST {
         $manual_update_require = false;
         $this->UpdatePlugin = self::load_class( 'CSV2POST_UpdatePlugin', 'class-updates.php', 'classes' );        
        
-        if( !$package_version_cleaned )
+        if( isset( $package_version_cleaned ) && !$package_version_cleaned )
         {
             // does new version have an update method
             if( method_exists( $this->UpdatePlugin, 'patch_' . str_replace( '.', '', self::version ) ) )

@@ -124,9 +124,11 @@ This method is safer than using any other source for the files.
     * New Adoption view offers advanced settings to convert existing posts to CSV 2 POST controlled posts - this is a delicate operation that requires backup.
     * New Current Project view
     * New button on Quick Actions (only shows on Current Project view) displays a list of column replacement tokens
+    * Dismissable view introductions added
 * Technical Notes
     * No longer an error when using quick action for Create Posts - related to a variable required for the notice.  
     * Moved some classes from class-csv2post.php into class-ui.php as they are only used when on admin side.
+    * Bug regarding $package_version_cleaned fixed (related to update system which is still a work in progress)
 * Known Issues
     * Data Table view is not suitable as tables are too wide, column titles cannot be read
     * Some forms are not suitable for being in the narrow sidebar by default, probably use that bar for quick tools and small information.

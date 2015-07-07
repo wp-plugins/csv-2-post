@@ -22,7 +22,7 @@ class C2P_TabMenu {
         $menu_array['main']['title'] = 'Dashboard';// title at the top of the admin page
         $menu_array['main']['parent'] = 'parent';// either "parent" or the name of the parent - used for building tab menu         
         $menu_array['main']['tabmenu'] = false;// boolean - true indicates multiple pages in section, false will hide tab menu and show one page 
-
+                                  
         ######################################################
         #                                                    #
         #                   DATA SOURCES                     #

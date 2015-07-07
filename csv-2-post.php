@@ -42,7 +42,7 @@ $csv2post_filesversion = '8.2.1';# to be removed, version is now in the CSV2POST
 $c2p_debug_mode = false;# to be phased out, going to use environment variables (both WP and php.ini instead)
 
 // go into dev mode if on test installation               
-if( strstr( ABSPATH, 'CSV2POST' ) ){
+if( strstr( ABSPATH, 'offCSV2POST' ) ){
     $c2p_debug_mode = true;     
 }               
 

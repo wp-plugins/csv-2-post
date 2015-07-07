@@ -171,30 +171,155 @@ class CSV2POST_UI extends CSV2POST {
             }
         }    
     }
-    
-    public function screenintro( $c2p_page_name, $text, $progress_array ){
-        global $csv2post_settings;
+     
+    /**
+    * Layout and styling perfect for presenting key information and status/progress of something.
+    * 
+    * Default box contains HTML5 for progress bars.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 3.0.0
+    * @version 1.1
+    */    
+    public function status_box( $title, $intro, $progress_array = array() ){
+        global $youtubesidebar_settings;
         
         echo '
-        <div class="csv2post_screenintro_container">
+        <div class="csv2post_status_box_container">
             <div class="welcome-panel">
             
-                <h3>'. ucfirst( $c2p_page_name) . ' ' . __( 'Development Insight', 'csv2post' ) .'</h3>
+                <h3>' . ucfirst( $title ) .'</h3>
                 
                 <div class="welcome-panel-content">
-                    <p class="about-description">'. ucfirst( $text) .'...</p>
+                    <p class="about-description">' . ucfirst( $intro ) . '...</p>
                     
                     <h4>Section Development Progress</h4>
  
                     '.        self::info_area( '', '                    
-                    Support Content: <progress max="100" value="'.$progress_array['support'].'"></progress> <br>
-                    Translation: <progress max="100" value="'.$progress_array['translation'].'"></progress>' ) .'
-                    <p>'.__( 'Please donate to help progress.' ).'</p>                                                     
+                    Free Edition: <progress max="100" value="24"></progress> <br>
+                    Premium Edition: <progress max="100" value="36"></progress> <br>
+                    Support Content: <progress max="100" value="67"></progress> <br>
+                    Translation: <progress max="100" value="87"></progress>' ) .'
+                    <p>'.__( 'Pledge £9.99 to the YouTube Sidebar project for 50% discount on the premium edition.' ).'</p>                                                     
                 </div>
 
             </div> 
         </div>';  
-    }  
+    }    
+
+  /**
+    * Layout and styling perfect for a view intro.
+    * 
+    * No dismissible and so can be further enhanced for permanent view header features.   
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
+    */    
+    public function intro_box( $title, $intro, $info_area = false, $info_area_title = '', $info_area_content = '', $footer = false ){
+        global $multitool_settings;
+        
+        // highlighted area within the larger box
+        $highlighted_info = '';
+        if( $info_area == true && is_string( $info_area_title ) ) {
+            $highlighted_info = '<h4>' . $info_area_title . '</h4>';
+            $highlighted_info .= self::info_area( false, $info_area_content );
+        }
+        
+        // footer text within the larger box, smaller text, good for contact info or a link
+        $footer_text = '';
+        if( $footer ) {
+            $footer_text = '<p>' . $footer . '</p>';    
+        }
+        
+        echo '
+        <div class="csv2post_status_box_container">
+            <div class="welcome-panel">
+            
+                <h3>' . ucfirst( $title ) .'</h3>
+                
+                <div class="welcome-panel-content">
+                    <p class="about-description">' . ucfirst( $intro ) . '...</p>
+ 
+                    ' . $highlighted_info . '
+                    
+                    ' . $footer_text . '
+ 
+                </div>
+
+            </div> 
+        </div>';  
+    }
+        
+    /**
+    * Dismissable introduction. 
+    * 
+    * Information and/or user call-to-action only. 
+    * 
+    * User the none dismissable introduction if you need to add permanent features/controls.   
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.2.1
+    * @version 1.0
+    */    
+    public function intro_box_dismissible( $dismissable_id, $main_title, $intro, $info_area = false, $info_area_title = '', $info_area_content = '', $footer = false ){
+        global $csv2post_settings, $current_user;
+   
+        /* If user clicks to ignore the notice, add that to their user meta */
+        if ( isset($_GET[ $dismissable_id ]) && 'dismiss' == $_GET[ $dismissable_id ] ) {
+            
+            add_user_meta($current_user->ID, $dismissable_id, 'true', true);
+            
+            /* Gets where the user came from after they click Hide Notice */
+            if ( wp_get_referer() ) {
+                /* Redirects user to where they were before */
+                wp_safe_redirect( wp_get_referer() );
+            } else {
+                /* This will never happen, I can almost gurantee it, but we should still have it just in case*/
+                wp_safe_redirect( home_url() );
+            }
+        }
+
+        // return before displaying anything if user already dismissed the intro
+        if ( get_user_meta( $current_user->ID, $dismissable_id ) ) {
+            return;
+        }
+        
+        // highlighted area within the larger box
+        $highlighted_info = '';
+        if( $info_area == true && is_string( $info_area_title ) ) {
+            $highlighted_info = '<h4>' . $info_area_title . '</h4>';
+            $highlighted_info .= self::info_area( false, $info_area_content );
+        }
+        
+        // footer text within the larger box, smaller text, good for contact info or a link
+        $footer_text = '';
+        if( $footer ) {
+            $footer_text = '<p>' . $footer . '</p>';    
+        }
+        
+        echo '
+        <div class="csv2post_status_box_container">
+            <div class="welcome-panel">
+            
+                <div class="welcome-panel-content">
+                    
+                    <h1>' . $main_title . sprintf( ' <a href="%s&%s=dismiss" class="button button-primary"> Dismiss </a>', $_SERVER['REQUEST_URI'], $dismissable_id ) . '</h1>
+                    
+                    <p class="about-description">' . ucfirst( $intro ) . '...</p>
+ 
+                    ' . $highlighted_info . '
+                    
+                    ' . $footer_text . '   
+                    
+                </div>
+
+            </div> 
+        </div>';  
+    }    
     
     /**
     * table row with two choice radio group styled by WordPress and used for switch type settings
@@ -1746,16 +1871,55 @@ class CSV2POST_UI extends CSV2POST {
     }
     
     /**
-    * Prompts are sticky by default, requiring a users action, they will only be deleted when too many exist
-    * or there is an expiry. 
+    * Create an admin notice that requires user to dismiss.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0                           
+    */
+    public function sticky_notice( $notice_name, $message, $type = 'info', $size = 'Small', $title = false, $sensitive = false, $helpurl = false ) {
+        global $current_user ;
+
+        /* If user clicks to ignore the notice, add that to their user meta */
+        if ( isset($_GET[ $notice_name ]) && 'dismiss' == $_GET[ $notice_name ] ) {
+            
+            add_user_meta($current_user->ID, $notice_name, 'true', true);
+            
+            /* Gets where the user came from after they click Hide Notice */
+            if ( wp_get_referer() ) {
+                /* Redirects user to where they were before */
+                wp_safe_redirect( wp_get_referer() );
+            } else {
+                /* This will never happen, I can almost gurantee it, but we should still have it just in case*/
+                wp_safe_redirect( home_url() );
+            }
+        }
+
+        if ( !get_user_meta( $current_user->ID, $notice_name ) ) {
+            self::create_notice( $message . sprintf( ' <a href="%s&%s=dismiss"> Dismiss </a>', $_SERVER['REQUEST_URI'], $notice_name), $type, $size, $title, $sensitive, $helpurl );
+        }               
+    }
+    
+    /**
+    * Use to request action, a decision or quickly change a setting.
+    * 
+    * Acts like a dismissable notice but is dismissed on selection of a number of options.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
     */
     public function create_prompt() {
         ## $c2p_notice_array['prompts'][$owner][$key]['message'] = $message;    
     }
     
     /**
-    * Send a message in the form of a notice, to a specific user. May evolve into part of a messaging system/class.
+    * User specific - force messages to show rather than using an inbox.
     * 
+    * Send a message in the form of a notice, to a specific user. 
+
     * a) admin actions can cause a message to be created so subscribers are notified the moment they login
     * b) client actions within their account i.e. invoice request, can create a message for the lead developer of clients project 
     */
@@ -1793,7 +1957,65 @@ class CSV2POST_UI extends CSV2POST {
                                        
         $this->update_notice_array( $c2p_notice_array );            
     }
-        
+    
+    /**
+    * Notice template with 3 columns, list, dismiss button etc.
+    * 
+    * Copy this function do not edit it.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
+    */
+    public function notice_template_3columns() { ?>
+            <div class="updated">
+            
+                <table>
+                    <tr valign="top">
+                        <td style="width: 33%;">
+                            <h3>Two Lists:</h3>
+                            <h4>Smaller Title</h4>
+                            <ol>
+                                <li>An Item</li>
+                            </ol>
+                            <h4>Smaller Title</h4>
+                            <ol>
+                                <li>An Item </li>
+                                <li>An Item</li>
+                            </ol>
+                        </td>
+                        <td style="width: 43%; ">
+                            <h3>Subscribe and Promote</h3>
+                            <ol>
+                                <li><a href='https://www.webtechglobal.co.uk' target='_blank'>Promotion Link</a></li>
+                                <li><a href='https://www.webtechglobal.co.uk' target='_blank'>Subscribe Link</a></li>
+                                <li><a href='https://www.webtechglobal.co.uk' target='_blank'>Coupon Link</li>
+                                <li><a href='https://www.webtechglobal.co.uk' target='_blank'>Donation Link</li>
+                            </ol>
+                            <a class='button-primary' target='_blank' href='http://www.webtechglobal.co.uk'>Subscribe to support this project »</a>
+                        </td>
+                        <td>
+                            <h3>Latest Subscriber Websites</h3>
+                            <ol>
+                                <li><a href='https://www.webtechglobal.co.uk' target='_blank'>Users Link</li>
+                                <li><a href='https://www.webtechglobal.co.uk' target='_blank'>Users Link</li>
+                                <li><a href='https://www.webtechglobal.co.uk' target='_blank'>Users Link</li>
+                                <li><a href='https://www.webtechglobal.co.uk' target='_blank'>Users Link</li>
+                            </ol>
+                            
+                            <a class="button" href="<?php echo $_SERVER['REQUEST_URI']; ?>&unique_dismiss_id=true"><?php _e( 'Dismiss', 'csv2post' ); ?></a>
+                        </td>
+                    </tr>
+                    
+                </table>
+                
+            </div>
+            
+            <link rel="canonical" href="http://www.theportlandcompany.com/product/custom-pointers-plugin-for-wordpress/">
+        <?php                
+    }
+            
     /**
     * Returns notification HTML.
     * This function has the html and css to make all notifications standard.
