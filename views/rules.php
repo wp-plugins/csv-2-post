@@ -69,7 +69,10 @@ class CSV2POST_Rules_View extends CSV2POST_View {
         $this->DB = CSV2POST::load_class( 'CSV2POST_DB', 'class-wpdb.php', 'classes' );
         $this->PHP = CSV2POST::load_class( 'CSV2POST_PHP', 'class-phplibrary.php', 'classes' );
         $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
-                        
+
+        // add view introduction
+        $this->add_text_box( 'viewintroduction', array( $this, 'viewintroduction' ), 'normal' );
+                                
         // set current project values
         if( isset( $csv2post_settings['currentproject'] ) && $csv2post_settings['currentproject'] !== false ) {
             
@@ -135,7 +138,24 @@ class CSV2POST_Rules_View extends CSV2POST_View {
     function parent( $data, $box ) {
         eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
     }
-     
+
+    /**
+    * This views dismissable introduction.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
+    */
+    public function viewintroduction() {
+        $main_title = __( 'Rules Introduction', 'csv2post' );
+        $intro = __( 'Use these forms to create rules for your data. Change specific words or numbers that fall into a range to something more suited to your needs. These rules are usually applied during import and because the idea is to make the change as soon as possible. Then be left with our working set of data in the projects database table (the temporary table data is stored in before creating posts). One of the tools available include the Data Splitter which splits values already separated with a slash or other character. Some affiliate networks provide category data in a single column. Basic autoblogger plugins will use it as it is but CSV 2 POST has advanced features which require preparation first. I can easily add more forms to this view. We can decrease price values by a specific percentage, change stock counts, change SOLD to Sold Out and the possibilities go on. ', 'csv2post' );
+        $title = __( 'More Information', 'csv2post' );
+        $info = __( '<ol><li>Tutorials Coming Soon</li></ol>', 'csv2post' );
+        $foot = __( 'Get your tutorial link added to this list. Video, blog, forum and PDF documents accepted.', 'csv2post' );
+        $this->UI->intro_box_dismissible( 'rules-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
+    }
+         
     /**
     * post box function for testing
     * 

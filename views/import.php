@@ -63,7 +63,10 @@ class CSV2POST_Import_View extends CSV2POST_View {
         $this->DB = CSV2POST::load_class( 'CSV2POST_DB', 'class-wpdb.php', 'classes' );
         $this->PHP = CSV2POST::load_class( 'CSV2POST_PHP', 'class-phplibrary.php', 'classes' );
         $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
-                        
+
+        // add view introduction
+        $this->add_text_box( 'viewintroduction', array( $this, 'viewintroduction' ), 'normal' );
+                                
         // load the current project row and settings from that row
         if( isset( $csv2post_settings['currentproject'] ) && $csv2post_settings['currentproject'] !== false ) {
             
@@ -129,7 +132,24 @@ class CSV2POST_Import_View extends CSV2POST_View {
     function parent( $data, $box ) {
         eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
     }
-     
+
+    /**
+    * This views dismissable introduction.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
+    */
+    public function viewintroduction() {
+        $main_title = __( 'Data Import Introduction', 'csv2post' );
+        $intro = __( 'Manually import data and manage it from .csv file into a special database table created to hold then manage your data. No other autoblogger that I have used takes this approach and in my opinion it is more professional (some have paid over $100 for this feature alone). We are storing data away from the main WP tables until we are ready to use it and opening up other abilities that continue to leave the core tables as they are. There are endless possibiliies for new tools here. If your not 100% happy with your data, even if your issue is something small. Please go to the WebTechGlobal forum and explain why so I can consider how to help you. A tool can be added to this view that will aid you in perfecting your website. Note that WTG subscriber requests get made priority. No estimated completion is giving for requested features but they are added to a task list.', 'csv2post' );
+        $title = false;//__( 'More Information', 'csv2post' );
+        $info = false;//__( '<ol><li>Tutorials Coming Soon</li></ol>', 'csv2post' );
+        $foot = false;//__( 'Get your tutorial link added to this list. Video, blog, forum and PDF documents accepted.', 'csv2post' );
+        $this->UI->intro_box_dismissible( 'dataimport-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
+    }
+        
     /**
     * post box function for testing
     * 

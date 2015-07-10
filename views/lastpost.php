@@ -63,7 +63,10 @@ class CSV2POST_Lastpost_View extends CSV2POST_View {
         $this->DB = CSV2POST::load_class( 'CSV2POST_DB', 'class-wpdb.php', 'classes' );
         $this->PHP = CSV2POST::load_class( 'CSV2POST_PHP', 'class-phplibrary.php', 'classes' );
         $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
-                        
+
+        // add view introduction
+        $this->add_text_box( 'viewintroduction', array( $this, 'viewintroduction' ), 'normal' );
+                                
         // load the current project row and settings from that row
         if( isset( $csv2post_settings['currentproject'] ) && $csv2post_settings['currentproject'] !== false ) {
             
@@ -131,7 +134,24 @@ class CSV2POST_Lastpost_View extends CSV2POST_View {
     function parent( $data, $box ) {
         eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
     }
-    
+
+    /**
+    * This views dismissable introduction.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
+    */
+    public function viewintroduction() {
+        $main_title = __( 'Last Post Introduction', 'csv2post' );
+        $intro = __( 'This is another method of monitoring a project. It is a very basic display of data from the last post created. I would like to see this view offer more eventually i.e. offer setting to have a post emailed to the admin daily and help assure them that things are working. This view may become the Monitor Project view and the general idea is to pick up on any new problems quickly. Any number of things can go wrong in WordPress over weeks or months (some users have projects running years, a post a day with thousands of records).', 'csv2post' );
+        $title = false;//__( 'More Information', 'csv2post' );
+        $info = false;//__( '<ol><li>Tutorials Coming Soon</li></ol>', 'csv2post' );
+        $foot = false;//__( 'Get your tutorial link added to this list. Video, blog, forum and PDF documents accepted.', 'csv2post' );
+        $this->UI->intro_box_dismissible( 'lastpost-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
+    }
+       
     /**
     * post box function
     * 

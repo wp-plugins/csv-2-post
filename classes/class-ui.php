@@ -171,30 +171,147 @@ class CSV2POST_UI extends CSV2POST {
             }
         }    
     }
-    
-    public function screenintro( $c2p_page_name, $text, $progress_array ){
-        global $csv2post_settings;
+     
+    /**
+    * Layout and styling perfect for presenting key information and status/progress of something.
+    * 
+    * Default box contains HTML5 for progress bars.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 3.0.0
+    * @version 1.1
+    */    
+    public function status_box( $title, $intro, $progress_array = array() ){
+        global $youtubesidebar_settings;
         
         echo '
-        <div class="csv2post_screenintro_container">
+        <div class="csv2post_status_box_container">
             <div class="welcome-panel">
             
-                <h3>'. ucfirst( $c2p_page_name) . ' ' . __( 'Development Insight', 'csv2post' ) .'</h3>
+                <h3>' . ucfirst( $title ) .'</h3>
                 
                 <div class="welcome-panel-content">
-                    <p class="about-description">'. ucfirst( $text) .'...</p>
+                    <p class="about-description">' . ucfirst( $intro ) . '...</p>
                     
                     <h4>Section Development Progress</h4>
  
                     '.        self::info_area( '', '                    
-                    Support Content: <progress max="100" value="'.$progress_array['support'].'"></progress> <br>
-                    Translation: <progress max="100" value="'.$progress_array['translation'].'"></progress>' ) .'
-                    <p>'.__( 'Please donate to help progress.' ).'</p>                                                     
+                    Free Edition: <progress max="100" value="24"></progress> <br>
+                    Premium Edition: <progress max="100" value="36"></progress> <br>
+                    Support Content: <progress max="100" value="67"></progress> <br>
+                    Translation: <progress max="100" value="87"></progress>' ) .'
+                    <p>'.__( 'Pledge £9.99 to the YouTube Sidebar project for 50% discount on the premium edition.' ).'</p>                                                     
                 </div>
 
             </div> 
         </div>';  
-    }  
+    }    
+
+  /**
+    * Layout and styling perfect for a view intro.
+    * 
+    * No dismissible and so can be further enhanced for permanent view header features.   
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
+    */    
+    public function intro_box( $title, $intro, $info_area = false, $info_area_title = '', $info_area_content = '', $footer = false ){
+        global $multitool_settings;
+        
+        // highlighted area within the larger box
+        $highlighted_info = '';
+        if( $info_area == true && is_string( $info_area_title ) ) {
+            $highlighted_info = '<h4>' . $info_area_title . '</h4>';
+            $highlighted_info .= self::info_area( false, $info_area_content );
+        }
+        
+        // footer text within the larger box, smaller text, good for contact info or a link
+        $footer_text = '';
+        if( $footer ) {
+            $footer_text = '<p>' . $footer . '</p>';    
+        }
+        
+        echo '
+        <div class="csv2post_status_box_container">
+            <div class="welcome-panel">
+            
+                <h3>' . ucfirst( $title ) .'</h3>
+                
+                <div class="welcome-panel-content">
+                    <p class="about-description">' . ucfirst( $intro ) . '...</p>
+ 
+                    ' . $highlighted_info . '
+                    
+                    ' . $footer_text . '
+ 
+                </div>
+                
+            </div> 
+        </div>';  
+    }
+        
+    /**
+    * Dismissable introduction. 
+    * 
+    * Information and/or user call-to-action only. 
+    * 
+    * User the none dismissable introduction if you need to add permanent features/controls.   
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.2.1
+    * @version 1.0
+    */    
+    public function intro_box_dismissible( $dismissable_id, $main_title, $intro, $info_area = false, $info_area_title = '', $info_area_content = '', $footer = false ){
+        global $csv2post_settings, $current_user;
+   
+        /* If user clicks to ignore the notice, add that to their user meta */
+        if ( isset($_GET[ $dismissable_id ]) && 'dismiss' == $_GET[ $dismissable_id ] ) {
+            
+            add_user_meta($current_user->ID, $dismissable_id, 'true', true);
+
+        }
+
+        // return before displaying anything if user already dismissed the intro
+        if ( get_user_meta( $current_user->ID, $dismissable_id ) ) {
+            return;
+        }
+        
+        // highlighted area within the larger box
+        $highlighted_info = '';
+        if( $info_area == true && is_string( $info_area_title ) ) {
+            $highlighted_info = '<h4>' . $info_area_title . '</h4>';
+            $highlighted_info .= self::info_area( false, $info_area_content );
+        }
+        
+        // footer text within the larger box, smaller text, good for contact info or a link
+        $footer_text = '<br /><br />';
+        if( $footer ) {
+            $footer_text = '<p>' . $footer . '</p>';    
+        }
+        
+        echo '
+        <div class="csv2post_status_box_container">
+            <div class="welcome-panel">
+            
+                <div class="welcome-panel-content">
+                    
+                    <h1>' . $main_title . sprintf( ' <a href="%s&%s=dismiss" class="button button-primary"> Dismiss </a>', $_SERVER['REQUEST_URI'], $dismissable_id ) . '</h1>
+                    
+                    <p class="about-description">' . ucfirst( $intro ) . '...</p>
+ 
+                    ' . $highlighted_info . '
+                    
+                    ' . $footer_text . '   
+                    
+                </div>
+
+            </div> 
+        </div>';  
+    }    
     
     /**
     * table row with two choice radio group styled by WordPress and used for switch type settings
@@ -1254,14 +1371,30 @@ class CSV2POST_UI extends CSV2POST {
             }            
             
             $quick_actions .= $project_message;
+            
             $quick_actions .= $CSV2POST->linkaction( $_GET['page'], 'createpostscurrentproject', __( 'Create posts using the current project' ), __( 'Create Posts' ), '' ); 
+            
             $quick_actions .= $CSV2POST->linkaction( $_GET['page'], 'updatepostscurrentproject', __( 'Update posts originally created by the current project' ), __( 'Update Posts' ), '' );
+            
             $quick_actions .= $CSV2POST->linkaction( $_GET['page'], 'importdatecurrentproject', __( 'Import data for the current project' ), __( 'Import Data' ), '' );
+            
             $quick_actions .= $CSV2POST->linkaction( $_GET['page'], 'updatedatacurrentproject', __( 'Update the current projects data' ), __( 'Update Data' ), '' ); 
+            
             $quick_actions .= $CSV2POST->linkaction( $_GET['page'], 'displayprojectsummary', __( 'Display the current projects summary' ), 'Project ID: ' . $projectid, '' );      
+            
             $quick_actions .= $CSV2POST->linkaction( $_GET['page'], 'displaysourcesummary', __( 'Display information about the projects sources' ), 'Source ID: ' . $source_array[0], '' );       
-            $quick_actions .= $CSV2POST->linkaction( $_GET['page'], 'currentprojectprevious', __( 'Change the current active project to an earlier one', 'csv2post' ), __( 'Previous Project', 'csv2post' ), '' );
-            $quick_actions .= $CSV2POST->linkaction( $_GET['page'], 'currentprojectnext', __( 'Change the current active project to a later one', 'csv2post' ), __( 'Next Project', 'csv2post' ), '' );
+            
+            $quick_actions .= $CSV2POST->linkaction( $_GET['page'], 'currentprojectprevious', __( 'Open the previous project and make it the curren active project', 'csv2post' ), __( 'Previous Project', 'csv2post' ), '' );
+            
+            $quick_actions .= $CSV2POST->linkaction( $_GET['page'], 'currentprojectnext', __( 'Open the next project and make it the current active one', 'csv2post' ), __( 'Next Project', 'csv2post' ), '' );
+        
+
+            if( $_GET['page'] == 'csv2post_projectchecklist' ){
+
+                $quick_actions .= $CSV2POST->linkaction( $_GET['page'], 'columnreplacementtokens', __( 'View a list of the current projects column replacement tokens', 'csv2post' ), __( 'Column Replacement Tokens', 'csv2post' ), '' );
+
+            }
+            
         }
         
         echo self::info_area( 'Current Project: ' . $current, $quick_actions );
@@ -1730,16 +1863,55 @@ class CSV2POST_UI extends CSV2POST {
     }
     
     /**
-    * Prompts are sticky by default, requiring a users action, they will only be deleted when too many exist
-    * or there is an expiry. 
+    * Create an admin notice that requires user to dismiss.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0                           
+    */
+    public function sticky_notice( $notice_name, $message, $type = 'info', $size = 'Small', $title = false, $sensitive = false, $helpurl = false ) {
+        global $current_user ;
+
+        /* If user clicks to ignore the notice, add that to their user meta */
+        if ( isset($_GET[ $notice_name ]) && 'dismiss' == $_GET[ $notice_name ] ) {
+            
+            add_user_meta($current_user->ID, $notice_name, 'true', true);
+            
+            /* Gets where the user came from after they click Hide Notice */
+            if ( wp_get_referer() ) {
+                /* Redirects user to where they were before */
+                wp_safe_redirect( wp_get_referer() );
+            } else {
+                /* This will never happen, I can almost gurantee it, but we should still have it just in case*/
+                wp_safe_redirect( home_url() );
+            }
+        }
+
+        if ( !get_user_meta( $current_user->ID, $notice_name ) ) {
+            self::create_notice( $message . sprintf( ' <a href="%s&%s=dismiss"> Dismiss </a>', $_SERVER['REQUEST_URI'], $notice_name), $type, $size, $title, $sensitive, $helpurl );
+        }               
+    }
+    
+    /**
+    * Use to request action, a decision or quickly change a setting.
+    * 
+    * Acts like a dismissable notice but is dismissed on selection of a number of options.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
     */
     public function create_prompt() {
         ## $c2p_notice_array['prompts'][$owner][$key]['message'] = $message;    
     }
     
     /**
-    * Send a message in the form of a notice, to a specific user. May evolve into part of a messaging system/class.
+    * User specific - force messages to show rather than using an inbox.
     * 
+    * Send a message in the form of a notice, to a specific user. 
+
     * a) admin actions can cause a message to be created so subscribers are notified the moment they login
     * b) client actions within their account i.e. invoice request, can create a message for the lead developer of clients project 
     */
@@ -1777,7 +1949,65 @@ class CSV2POST_UI extends CSV2POST {
                                        
         $this->update_notice_array( $c2p_notice_array );            
     }
-        
+    
+    /**
+    * Notice template with 3 columns, list, dismiss button etc.
+    * 
+    * Copy this function do not edit it.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
+    */
+    public function notice_template_3columns() { ?>
+            <div class="updated">
+            
+                <table>
+                    <tr valign="top">
+                        <td style="width: 33%;">
+                            <h3>Two Lists:</h3>
+                            <h4>Smaller Title</h4>
+                            <ol>
+                                <li>An Item</li>
+                            </ol>
+                            <h4>Smaller Title</h4>
+                            <ol>
+                                <li>An Item </li>
+                                <li>An Item</li>
+                            </ol>
+                        </td>
+                        <td style="width: 43%; ">
+                            <h3>Subscribe and Promote</h3>
+                            <ol>
+                                <li><a href='https://www.webtechglobal.co.uk' target='_blank'>Promotion Link</a></li>
+                                <li><a href='https://www.webtechglobal.co.uk' target='_blank'>Subscribe Link</a></li>
+                                <li><a href='https://www.webtechglobal.co.uk' target='_blank'>Coupon Link</li>
+                                <li><a href='https://www.webtechglobal.co.uk' target='_blank'>Donation Link</li>
+                            </ol>
+                            <a class='button-primary' target='_blank' href='http://www.webtechglobal.co.uk'>Subscribe to support this project »</a>
+                        </td>
+                        <td>
+                            <h3>Latest Subscriber Websites</h3>
+                            <ol>
+                                <li><a href='https://www.webtechglobal.co.uk' target='_blank'>Users Link</li>
+                                <li><a href='https://www.webtechglobal.co.uk' target='_blank'>Users Link</li>
+                                <li><a href='https://www.webtechglobal.co.uk' target='_blank'>Users Link</li>
+                                <li><a href='https://www.webtechglobal.co.uk' target='_blank'>Users Link</li>
+                            </ol>
+                            
+                            <a class="button" href="<?php echo $_SERVER['REQUEST_URI']; ?>&unique_dismiss_id=true"><?php _e( 'Dismiss', 'csv2post' ); ?></a>
+                        </td>
+                    </tr>
+                    
+                </table>
+                
+            </div>
+            
+            <link rel="canonical" href="http://www.theportlandcompany.com/product/custom-pointers-plugin-for-wordpress/">
+        <?php                
+    }
+            
     /**
     * Returns notification HTML.
     * This function has the html and css to make all notifications standard.
@@ -2416,5 +2646,1029 @@ class C2P_Pointers {
         // ]]></script>
         <?php
     }
+}
+
+/**
+* Lists tickets post type using standard WordPress list table
+*/
+class C2P_Log_Table extends WP_List_Table {
+    
+    /** ************************************************************************
+     * REQUIRED. Set up a constructor that references the parent constructor. We 
+     * use the parent reference to set some default configs.
+     ***************************************************************************/
+    function __construct() {
+        global $status, $page;
+             
+        //Set parent defaults
+        parent::__construct( array(
+            'singular'  => 'movie',     //singular name of the listed records
+            'plural'    => 'movies',    //plural name of the listed records
+            'ajax'      => false        //does this table support ajax?
+        ) );
+        
+    }
+    
+    /** ************************************************************************
+     * Recommended. This method is called when the parent class can't find a method
+     * specifically build for a given column. Generally, it's recommended to include
+     * one method for each column you want to render, keeping your package class
+     * neat and organized. For example, if the class needs to process a column
+     * named 'title', it would first see if a method named $this->column_title() 
+     * exists - if it does, that method will be used. If it doesn't, this one will
+     * be used. Generally, you should try to use custom column methods as much as 
+     * possible. 
+     * 
+     * Since we have defined a column_title() method later on, this method doesn't
+     * need to concern itself with any column with a name of 'title'. Instead, it
+     * needs to handle everything else.
+     * 
+     * For more detailed insight into how columns are handled, take a look at 
+     * WP_List_Table::single_row_columns()
+     * 
+     * @param array $item A singular item (one full row's worth of data)
+     * @param array $column_name The name/slug of the column to be processed
+     * @return string Text or HTML to be placed inside the column <td>
+     **************************************************************************/
+    function column_default( $item, $column_name){
+             
+        $attributes = "class=\"$column_name column-$column_name\"";
+                
+        switch( $column_name){
+            case 'row_id':
+                return $item['row_id'];    
+                break;
+            case 'timestamp':
+                return $item['timestamp'];    
+                break;                
+            case 'outcome':
+                return $item['outcome'];
+                break;
+            case 'category':
+                echo $item['category'];  
+                break;
+            case 'action':
+                echo $item['action'];  
+                break;  
+            case 'line':
+                echo $item['line'];  
+                break;                 
+            case 'file':
+                echo $item['file'];  
+                break;                  
+            case 'function':
+                echo $item['function'];  
+                break;                  
+            case 'sqlresult':
+                echo $item['sqlresult'];  
+                break;       
+            case 'sqlquery':
+                echo $item['sqlquery'];  
+                break; 
+            case 'sqlerror':
+                echo $item['sqlerror'];  
+                break;       
+            case 'wordpresserror':
+                echo $item['wordpresserror'];  
+                break;       
+            case 'screenshoturl':
+                echo $item['screenshoturl'];  
+                break;       
+            case 'userscomment':
+                echo $item['userscomment'];  
+                break;  
+            case 'page':
+                echo $item['page'];  
+                break;
+            case 'version':
+                echo $item['version'];  
+                break;
+            case 'panelname':
+                echo $item['panelname'];  
+                break; 
+            case 'tabscreenname':
+                echo $item['tabscreenname'];  
+                break;
+            case 'dump':
+                echo $item['dump'];  
+                break; 
+            case 'ipaddress':
+                echo $item['ipaddress'];  
+                break; 
+            case 'userid':
+                echo $item['userid'];  
+                break; 
+            case 'comment':
+                echo $item['comment'];  
+                break;
+            case 'type':
+                echo $item['type'];  
+                break; 
+            case 'priority':
+                echo $item['priority'];  
+                break;  
+            case 'thetrigger':
+                echo $item['thetrigger'];  
+                break; 
+                                        
+            default:
+                return 'No column function or default setup in switch statement';
+        }
+    }
+                    
+    /** ************************************************************************
+    * Recommended. This is a custom column method and is responsible for what
+    * is rendered in any column with a name/slug of 'title'. Every time the class
+    * needs to render a column, it first looks for a method named 
+    * column_{$column_title} - if it exists, that method is run. If it doesn't
+    * exist, column_default() is called instead.
+    * 
+    * This example also illustrates how to implement rollover actions. Actions
+    * should be an associative array formatted as 'slug'=>'link html' - and you
+    * will need to generate the URLs yourself. You could even ensure the links
+    * 
+    * 
+    * @see WP_List_Table::::single_row_columns()
+    * @param array $item A singular item (one full row's worth of data)
+    * @return string Text to be placed inside the column <td> (movie title only )
+    **************************************************************************/
+    /*
+    function column_title( $item){
+
+    } */
+    
+    /** ************************************************************************
+     * REQUIRED! This method dictates the table's columns and titles. This should
+     * return an array where the key is the column slug (and class) and the value 
+     * is the column's title text. If you need a checkbox for bulk actions, refer
+     * to the $columns array below.
+     * 
+     * The 'cb' column is treated differently than the rest. If including a checkbox
+     * column in your table you must create a column_cb() method. If you don't need
+     * bulk actions or checkboxes, simply leave the 'cb' entry out of your array.
+     * 
+     * @see WP_List_Table::::single_row_columns()
+     * @return array An associative array containing column information: 'slugs'=>'Visible Titles'
+     **************************************************************************/
+    function get_columns() {
+        $columns = array(
+            'row_id' => 'Row ID',
+            'timestamp' => 'Timestamp',
+            'category'     => 'Category'
+        );
+        
+        if( isset( $this->action ) ){
+            $columns['action'] = 'Action';
+        }                                       
+           
+        if( isset( $this->line ) ){
+            $columns['line'] = 'Line';
+        } 
+                     
+        if( isset( $this->file ) ){
+            $columns['file'] = 'File';
+        }
+                
+        if( isset( $this->function ) ){
+            $columns['function'] = 'Function';
+        }        
+  
+        if( isset( $this->sqlresult ) ){
+            $columns['sqlresult'] = 'SQL Result';
+        }
+
+        if( isset( $this->sqlquery ) ){
+            $columns['sqlquery'] = 'SQL Query';
+        }
+ 
+        if( isset( $this->sqlerror ) ){
+            $columns['sqlerror'] = 'SQL Error';
+        }
+          
+        if( isset( $this->wordpresserror ) ){
+            $columns['wordpresserror'] = 'WP Error';
+        }
+
+        if( isset( $this->screenshoturl ) ){
+            $columns['screenshoturl'] = 'Screenshot';
+        }
+        
+        if( isset( $this->userscomment ) ){
+            $columns['userscomment'] = 'Users Comment';
+        }
+ 
+        if( isset( $this->columns_array->page ) ){
+            $columns['page'] = 'Page';
+        }
+
+        if( isset( $this->version ) ){
+            $columns['version'] = 'Version';
+        }
+ 
+        if( isset( $this->panelname ) ){
+            $columns['panelname'] = 'Panel Name';
+        }
+  
+        if( isset( $this->tabscreenid ) ){
+            $columns['tabscreenid'] = 'Screen ID';
+        }
+
+        if( isset( $this->tabscreenname ) ){
+            $columns['tabscreenname'] = 'Screen Name';
+        }
+
+        if( isset( $this->dump ) ){
+            $columns['dump'] = 'Dump';
+        }
+
+        if( isset( $this->ipaddress) ){
+            $columns['ipaddress'] = 'IP Address';
+        }
+
+        if( isset( $this->userid ) ){
+            $columns['userid'] = 'User ID';
+        }
+
+        if( isset( $this->comment ) ){
+            $columns['comment'] = 'Comment';
+        }
+
+        if( isset( $this->type ) ){
+            $columns['type'] = 'Type';
+        }
+                                    
+        if( isset( $this->priority ) ){
+            $columns['priority'] = 'Priority';
+        }
+       
+        if( isset( $this->thetrigger ) ){
+            $columns['thetrigger'] = 'Trigger';
+        }
+
+        return $columns;
+    }
+    
+    /** ************************************************************************
+     * Optional. If you want one or more columns to be sortable (ASC/DESC toggle), 
+     * you will need to register it here. This should return an array where the 
+     * key is the column that needs to be sortable, and the value is db column to 
+     * sort by. Often, the key and value will be the same, but this is not always
+     * the case (as the value is a column name from the database, not the list table).
+     * 
+     * This method merely defines which columns should be sortable and makes them
+     * clickable - it does not handle the actual sorting. You still need to detect
+     * the ORDERBY and ORDER querystring variables within prepare_items_further() and sort
+     * your data accordingly (usually by modifying your query ).
+     * 
+     * @return array An associative array containing all the columns that should be sortable: 'slugs'=>array( 'data_values',bool)
+     **************************************************************************/
+    function get_sortable_columns() {
+        $sortable_columns = array(
+            //'post_title'     => array( 'post_title', false ),     //true means it's already sorted
+        );
+        return $sortable_columns;
+    }
+    
+    /** ************************************************************************
+     * Optional. If you need to include bulk actions in your list table, this is
+     * the place to define them. Bulk actions are an associative array in the format
+     * 'slug'=>'Visible Title'
+     * 
+     * If this method returns an empty value, no bulk action will be rendered. If
+     * you specify any bulk actions, the bulk actions box will be rendered with
+     * the table automatically on display().
+     * 
+     * Also note that list tables are not automatically wrapped in <form> elements,
+     * so you will need to create those manually in order for bulk actions to function.
+     * 
+     * @return array An associative array containing all the bulk actions: 'slugs'=>'Visible Titles'
+     **************************************************************************/
+    function get_bulk_actions() {
+        $actions = array(
+
+        );
+        return $actions;
+    }
+    
+    /** ************************************************************************
+     * Optional. You can handle your bulk actions anywhere or anyhow you prefer.
+     * For this example package, we will handle it in the class to keep things
+     * clean and organized.
+     * 
+     * @see $this->prepare_items_further()
+     **************************************************************************/
+    function process_bulk_action() {
+        
+        //Detect when a bulk action is being triggered...
+        if( 'delete'===$this->current_action() ) {
+            wp_die( 'Items deleted (or they would be if we had items to delete)!' );
+        }
+        
+    }
+    
+    /** ************************************************************************
+     * REQUIRED! This is where you prepare your data for display. This method will
+     * usually be used to query the database, sort and filter the data, and generally
+     * get it ready to be displayed. At a minimum, we should set $this->items and
+     * $this->set_pagination_args(), although the following properties and methods
+     * are frequently interacted with here...
+     * 
+     * @global WPDB $wpdb
+     * @uses $this->_column_headers
+     * @uses $this->items
+     * @uses $this->get_columns()
+     * @uses $this->get_sortable_columns()
+     * @uses $this->get_pagenum()
+     * @uses $this->set_pagination_args()
+     **************************************************************************/
+    function prepare_items_further( $data, $per_page = 5) {
+        global $wpdb; //This is used only if making any database queries        
+        
+        /**
+         * REQUIRED. Now we need to define our column headers. This includes a complete
+         * array of columns to be displayed (slugs & titles), a list of columns
+         * to keep hidden, and a list of columns that are sortable. Each of these
+         * can be defined in another method (as we've done here) before being
+         * used to build the value for our _column_headers property.
+         */
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+        
+        /**
+         * REQUIRED. Finally, we build an array to be used by the class for column 
+         * headers. The $this->_column_headers property takes an array which contains
+         * 3 other arrays. One for all columns, one for hidden columns, and one
+         * for sortable columns.
+         */
+        $this->_column_headers = array( $columns, $hidden, $sortable);
+        
+        /**
+         * Optional. You can handle your bulk actions however you see fit. In this
+         * case, we'll handle them within our package just to keep things clean.
+         */
+        $this->process_bulk_action();
+      
+        /**
+         * REQUIRED for pagination. Let's figure out what page the user is currently 
+         * looking at. We'll need this later, so you should always include it in 
+         * your own package classes.
+         */
+        $current_page = $this->get_pagenum();
+        
+        /**
+         * REQUIRED for pagination. Let's check how many items are in our data array. 
+         * In real-world use, this would be the total number of items in your database, 
+         * without filtering. We'll need this later, so you should always include it 
+         * in your own package classes.
+         */
+        $total_items = count( $data);
+
+        /**
+         * The WP_List_Table class does not handle pagination for us, so we need
+         * to ensure that the data is trimmed to only the current page. We can use
+         * array_slice() to 
+         */
+        $data = array_slice( $data,(( $current_page-1)*$per_page), $per_page);
+ 
+        /**
+         * REQUIRED. Now we can add our *sorted* data to the items property, where 
+         * it can be used by the rest of the class.
+         */
+        $this->items = $data;
+  
+        /**
+         * REQUIRED. We also have to register our pagination options & calculations.
+         */
+        $this->set_pagination_args( array(
+            'total_items' => $total_items,                  //WE have to calculate the total number of items
+            'per_page'    => $per_page,                     //WE have to determine how many items to show on a page
+            'total_pages' => ceil( $total_items/$per_page)   //WE have to calculate the total number of pages
+        ) );
+    }
+}
+
+class C2P_Projects_Table extends WP_List_Table {
+
+    function __construct() {
+        global $status, $page;
+             
+        //Set parent defaults
+        parent::__construct( array(
+            'singular'  => 'movie',     //singular name of the listed records
+            'plural'    => 'movies',    //plural name of the listed records
+            'ajax'      => false        //does this table support ajax?
+        ) );
+        
+    }
+
+    function column_default( $item, $column_name){
+             
+        $attributes = "class=\"$column_name column-$column_name\"";
+                
+        switch( $column_name){
+            case 'projectid':
+                return $item['projectid'];    
+                break;
+            case 'projectname':
+                return $item['projectname'];    
+                break;
+            case 'timestamp':
+                return $item['timestamp'];    
+                break;                                                        
+            case 'source1':
+                return $item['source1'];    
+                break;                                                        
+            case 'source2':
+                return $item['source2'];    
+                break;                                                        
+            case 'source3':
+                return $item['source3'];    
+                break;                                                        
+            default:
+                return 'No column function or default setup in switch statement';
+        }
+    }
+
+    /*
+    function column_title( $item){
+
+    } */
+
+    function get_columns() {
+        $columns = array(
+            'projectid' => 'Project ID',
+            'projectname' => 'Project Name',
+            'timestamp' => 'Timestamp',
+            'source1' => 'Source 1',
+            'source2' => 'Source 2',
+            'source3' => 'Source 3'
+        );
+
+        return $columns;
+    }
+
+    function get_sortable_columns() {
+        $sortable_columns = array(
+            //'post_title'     => array( 'post_title', false ),     //true means it's already sorted
+        );
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions() {
+        $actions = array(
+
+        );
+        return $actions;
+    }
+
+    function process_bulk_action() {
+        
+        //Detect when a bulk action is being triggered...
+        if( 'delete'===$this->current_action() ) {
+            wp_die( 'Items deleted (or they would be if we had items to delete)!' );
+        }
+        
+    }
+
+    function prepare_items_further( $data, $per_page = 5) {
+        global $wpdb; //This is used only if making any database queries        
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array( $columns, $hidden, $sortable);
+
+        $this->process_bulk_action();
+
+        $current_page = $this->get_pagenum();
+
+        $total_items = count( $data);
+
+        $data = array_slice( $data,(( $current_page-1)*$per_page), $per_page);
+
+        $this->items = $data;
+
+        $this->set_pagination_args( array(
+            'total_items' => $total_items,                  //WE have to calculate the total number of items
+            'per_page'    => $per_page,                     //WE have to determine how many items to show on a page
+            'total_pages' => ceil( $total_items/$per_page)   //WE have to calculate the total number of pages
+        ) );
+    }
+}
+
+class C2P_ProjectDataSources_Table extends WP_List_Table {
+
+    function __construct() {
+        global $status, $page;
+             
+        //Set parent defaults
+        parent::__construct( array(
+            'singular'  => 'movie',     //singular name of the listed records
+            'plural'    => 'movies',    //plural name of the listed records
+            'ajax'      => false        //does this table support ajax?
+        ) );
+        
+    }
+
+    function column_default( $item, $column_name){
+             
+        $attributes = "class=\"$column_name column-$column_name\"";
+                
+        switch( $column_name){
+            case 'sourceid':
+                return $item['sourceid'];    
+                break;            
+            case 'projectid':
+                if( $item['projectid'] == 0){return 'Unknown';}
+                return $item['projectid'];    
+                break;
+            case 'sourcetype':
+                return $item['sourcetype'];    
+                break;
+            case 'path':
+                return $item['path'];    
+                break;            
+            case 'timestamp':
+                return $item['timestamp'];    
+                break;                                                        
+            default:
+                return 'No column function or default setup in switch statement';
+        }
+    }
+
+    /*
+    function column_title( $item){
+
+    } */
+
+    function get_columns() {
+        $columns = array(
+            'sourceid' => 'Source ID',
+            'projectid' => 'projectid',
+            'sourcetype' => 'Type',
+            'path' => 'Path',
+            'timestamp' => 'Timestamp'
+        );
+
+        return $columns;
+    }
+
+    function get_sortable_columns() {
+        $sortable_columns = array(
+            //'post_title'     => array( 'post_title', false ),     //true means it's already sorted
+        );
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions() {
+        $actions = array(
+
+        );
+        return $actions;
+    }
+
+    function process_bulk_action() {
+        
+        //Detect when a bulk action is being triggered...
+        if( 'delete'===$this->current_action() ) {
+            wp_die( 'Items deleted (or they would be if we had items to delete)!' );
+        }
+        
+    }
+
+    function prepare_items_further( $data, $per_page = 5) {
+        global $wpdb; //This is used only if making any database queries        
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array( $columns, $hidden, $sortable);
+
+        $this->process_bulk_action();
+
+        $current_page = $this->get_pagenum();
+
+        $total_items = count( $data);
+
+        $data = array_slice( $data,(( $current_page-1)*$per_page), $per_page);
+
+        $this->items = $data;
+
+        $this->set_pagination_args( array(
+            'total_items' => $total_items,                  //WE have to calculate the total number of items
+            'per_page'    => $per_page,                     //WE have to determine how many items to show on a page
+            'total_pages' => ceil( $total_items/$per_page)   //WE have to calculate the total number of pages
+        ) );
+    }
+}
+
+class C2P_CategoryProjection_Table extends WP_List_Table {
+
+    function __construct() {
+        global $status, $page;
+             
+        //Set parent defaults
+        parent::__construct( array(
+            'singular'  => 'movie',     //singular name of the listed records
+            'plural'    => 'movies',    //plural name of the listed records
+            'ajax'      => false        //does this table support ajax?
+        ) );
+        
+    }
+
+    function column_default( $item, $column_name ){
+        foreach( $item as $table_name => $column_array ){
+
+            foreach( $column_array as $category_column => $projection_array ){
+                
+                foreach( $projection_array as $catterm => $item_array ){
+                    if( $column_name == 'term' ){
+                        return $catterm;    
+                    }    
+                 
+                }
+
+                return $item_array[ $column_name ];
+            }
+        }
+        
+        return 'Nothing';
+    }
+
+    /*
+    function column_title( $item){
+
+    } */
+
+    function get_columns() {
+        return array(
+                'term' => 'Term',
+                'mapped' => 'Mapped ID',
+                'catslug' => 'Slug',
+                'level' => 'Level',
+                'parentterm' => 'Parent Term',
+                'parentid' => 'Parent ID'
+             ); 
+    }
+
+    function get_sortable_columns() {
+        $sortable_columns = array(
+            //'post_title'     => array( 'post_title', false ),     //true means it's already sorted
+        );
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions() {
+        $actions = array(
+
+        );
+        return $actions;
+    }
+
+    function process_bulk_action() {
+        
+        //Detect when a bulk action is being triggered...
+        if( 'delete'===$this->current_action() ) {
+            wp_die( 'Items deleted (or they would be if we had items to delete)!' );
+        }
+        
+    }
+
+    function prepare_items_further( $data, $per_page = 5) {
+        global $wpdb; //This is used only if making any database queries        
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array( $columns, $hidden, $sortable);
+
+        $this->process_bulk_action();
+
+        $current_page = $this->get_pagenum();
+
+        $total_items = count( $data);
+
+        $data = array_slice( $data,(( $current_page-1)*$per_page), $per_page);
+
+        $this->items = $data;
+
+        $this->set_pagination_args( array(
+            'total_items' => $total_items,                  //WE have to calculate the total number of items
+            'per_page'    => $per_page,                     //WE have to determine how many items to show on a page
+            'total_pages' => ceil( $total_items/$per_page)   //WE have to calculate the total number of pages
+        ) );
+    }
+}
+
+class C2P_ReplaceValueRules_Table extends WP_List_Table {
+
+    function __construct() {
+        global $status, $page;
+             
+        //Set parent defaults
+        parent::__construct( array(
+            'singular'  => 'movie',     //singular name of the listed records
+            'plural'    => 'movies',    //plural name of the listed records
+            'ajax'      => false        //does this table support ajax?
+        ) );
+    }
+
+    /**
+    * use to apply a default value to any column
+    * 
+    * @param mixed $item
+    * @param mixed $column_name
+    */
+    function column_default( $item, $column_name){
+        switch( $column_name){
+            case 'delete':
+                return self::linkaction( $_GET['page'], 'deletereplacevaluerule', __( 'Delete this replacement value rule' ), 'Delete', '&cfid='.$item['id'] );    
+                break;                                                                   
+            default:
+                return $item[$column_name];
+        }        
+    }
+
+    /*
+    function column_title( $item){
+
+    } */
+
+    function get_columns() {
+        return array(
+                'table' => 'Data Table',
+                'column' => 'Data Column',
+                'vrvdatavalue' => 'Value',
+                'vrvreplacementvalue' => 'Replacement',
+                'delete' => 'Delete'
+             ); 
+    }
+
+    function get_sortable_columns() {
+        $sortable_columns = array(
+            //'post_title'     => array( 'post_title', false ),     //true means it's already sorted
+        );
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions() {
+        $actions = array(
+
+        );
+        return $actions;
+    }
+
+    function process_bulk_action() {
+        
+        //Detect when a bulk action is being triggered...
+        if( 'delete'===$this->current_action() ) {
+            wp_die( 'Items deleted (or they would be if we had items to delete)!' );
+        }
+    }
+
+    function prepare_items_further( $data, $per_page = 5) {
+        global $wpdb; //This is used only if making any database queries        
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array( $columns, $hidden, $sortable);
+
+        $this->process_bulk_action();
+
+        $current_page = $this->get_pagenum();
+
+        $total_items = count( $data);
+
+        $data = array_slice( $data,(( $current_page-1)*$per_page), $per_page);
+
+        $this->items = $data;
+
+        $this->set_pagination_args( array(
+            'total_items' => $total_items,                  //WE have to calculate the total number of items
+            'per_page'    => $per_page,                     //WE have to determine how many items to show on a page
+            'total_pages' => ceil( $total_items/$per_page)   //WE have to calculate the total number of pages
+        ) );
+    }
+}
+
+/**
+* Uses WP_List_Table to display a list of posts created by CSV 2 POST
+* that are in the default category
+* 
+* @author Ryan Bayne
+* @package CSV 2 POST
+* @since 8.1.3
+* @version 1.1
+* @uses WP_List_Table() in WP 3.9.1
+*/
+class CSV2POST_UncatPosts_Table extends WP_List_Table {
+
+    function __construct() {
+        global $status, $page;
+             
+        //Set parent defaults
+        parent::__construct( array(
+            'singular'  => 'movie',     //singular name of the listed records
+            'plural'    => 'movies',    //plural name of the listed records
+            'ajax'      => false        //does this table support ajax?
+        ) );
+        
+        $this->CSV2POST = CSV2POST::load_class( 'CSV2POST', 'class-csv2post.php', 'classes' ); 
+        $this->UI = CSV2POST::load_class( 'CSV2POST_UI', 'class-ui.php', 'classes' );
+    }      
+    
+    /**
+    * sets the value on a per row, per columb basis
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 8.1.3
+    * @version 1.1     
+    */     
+    function column_default( $item, $column_name){
+             
+        $attributes = "class=\"$column_name column-$column_name\"";
+
+        // get the current posts record
+        $record = $this->CSV2POST->get_posts_record( $item['c2p_project'], $item['ID'] );
+                
+        switch( $column_name){
+            case 'ID':
+                return $item['ID'];    
+                break;            
+            case 'post_title':
+                return $item['post_title'];    
+                break;            
+            case 'level_one':
+
+                if( $record ){
+                    $cat_col = $this->CSV2POST->get_category_column( $item['c2p_project'], 0 );     
+                          
+                    if( $cat_col ){
+                        return $record[0][ $cat_col ];
+                    }else{
+                        return '';
+                    }         
+                }
+
+                break;            
+            case 'level_two':
+            
+                if( $record ){
+                    $cat_col = $this->CSV2POST->get_category_column( $item['c2p_project'], 1 );     
+                          
+                    if( $cat_col ){
+                        return $record[0][ $cat_col ];
+                    }else{
+                        return '';
+                    }         
+                }
+                   
+                break;            
+            case 'level_three':
+            
+                if( $record ){
+                    $cat_col = $this->CSV2POST->get_category_column( $item['c2p_project'], 2 );     
+                          
+                    if( $cat_col ){
+                        return $record[0][ $cat_col ];
+                    }else{
+                        return '';
+                    }         
+                }
+                    
+                break;            
+            case 'level_four':
+            
+                if( $record ){
+                    $cat_col = $this->CSV2POST->get_category_column( $item['c2p_project'], 3 );     
+                          
+                    if( $cat_col ){
+                        return $record[0][ $cat_col ];
+                    }else{
+                        return '';
+                    }         
+                }
+                    
+                break;            
+            case 'level_five':
+            
+                if( $record ){
+                    $cat_col = $this->CSV2POST->get_category_column( $item['c2p_project'], 4 );     
+                          
+                    if( $cat_col ){
+                        return $record[0][ $cat_col ];
+                    }else{
+                        return '';
+                    }         
+                }
+                    
+                break;                                             
+            default:
+                return 'No column function or default setup in switch statement';
+        }
+    }
+
+    /**
+     * Render a cell in the "post_title" column
+     *
+     * @since 8.1.3
+     *
+     * @param array $item Data item for the current row
+     * @return string HTML content of the cell
+     */
+    protected function column_post_title( array $item ) {
+
+        // ensure user has permission to use individual actions else do not display them
+        $user_can_edit_posts = current_user_can( 'edit_posts' );
+               
+        // build the nonced URL
+        $edit_url = $this->UI->action_url( $file = 'post.php', false, 'edit', 'post=' . $item['ID'] );
+             
+        // build row of actions
+        $row_actions = array();
+        
+        if ( $user_can_edit_posts ) {
+            $row_text = '<strong><a title="' . esc_attr( sprintf( __( 'Edit &#8220;%s&#8221;', 'csv2post' ), esc_attr( $item['post_title'] ) ) ) . '" class="row-title" href="' . $edit_url . '">' . esc_html( $item['post_title'] ) . '</a></strong>';
+        } else {
+            $row_text = '<strong>' . esc_html( $item['name'] ) . '</strong>';
+        }
+         
+        // add action that takes user to Edit Posts screen
+        if ( $user_can_edit_posts ) {
+            $row_actions['edit'] = sprintf( '<a href="%1$s" title="%2$s">%3$s</a>', $edit_url, esc_attr( sprintf( __( 'Edit &#8220;%s&#8221;', 'csv2post' ), $item['post_title'] ) ), __( 'Edit', 'csv2post' ) );
+        }
+          
+        return $row_text . $this->row_actions( $row_actions );
+    }
+
+    function get_columns() {
+        $columns = array(
+            'ID' => __( 'Post ID', 'csv2post' ),
+            'post_title' => __( 'Post Title', 'csv2post' ),
+            'level_one' => __( 'Level One', 'csv2post' ),
+            'level_two' => __( 'Level Two', 'csv2post' ),
+            'level_three' => __( 'Level Three', 'csv2post' ),
+            'level_four' => __( 'Level Four', 'csv2post' ),
+            'level_five' => __( 'Level Five', 'csv2post' )
+        );
+
+        return $columns;
+    }
+
+    function get_sortable_columns() {
+        $sortable_columns = array(
+            //'post_title'     => array( 'post_title', false ),     //true means it's already sorted
+        );
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions() {
+        $actions = array(
+
+        );
+        return $actions;
+    }
+
+    function process_bulk_action() {
+        
+        //Detect when a bulk action is being triggered...
+        if( 'delete'===$this->current_action() ) {
+            wp_die( 'Items deleted (or they would be if we had items to delete)!' );
+        }
+        
+    }
+    
+    function prepare_items_further( $data, $per_page = 5) {
+        global $wpdb; //This is used only if making any database queries        
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array( $columns, $hidden, $sortable);
+
+        $this->process_bulk_action();
+
+        $current_page = $this->get_pagenum();
+
+        $total_items = count( $data);
+
+        $data = array_slice( $data,(( $current_page-1)*$per_page), $per_page);
+
+        $this->items = $data;
+
+        $this->set_pagination_args( array(
+            'total_items' => $total_items,                  //WE have to calculate the total number of items
+            'per_page'    => $per_page,                     //WE have to determine how many items to show on a page
+            'total_pages' => ceil( $total_items/$per_page)   //WE have to calculate the total number of pages
+        ) );
+    } 
 }
 ?>

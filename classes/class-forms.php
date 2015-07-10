@@ -234,7 +234,7 @@ class CSV2POST_Forms extends CSV2POST_UI {
         $user_ID = get_current_user_id();
         if( isset( $this->form_val_arr[ $user_ID ][ $form_id ] ) ) {
             unset( $this->form_val_arr[ $user_ID ][ $form_id ] );    
-        }
+        }   
         update_option( 'csv2post_formvalidation', $this->form_val_arr );
     }
     

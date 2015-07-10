@@ -65,7 +65,10 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
         $this->Class_Categories = CSV2POST::load_class( 'C2P_Categories', 'class-categories.php', 'classes' );
         $this->PHP = CSV2POST::load_class( 'CSV2POST_PHP', 'class-phplibrary.php', 'classes' );
         $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
-                        
+
+        // add view introduction
+        $this->add_text_box( 'viewintroduction', array( $this, 'viewintroduction' ), 'normal' );
+                                
         // load the current project row and settings from that row
         if( isset( $csv2post_settings['currentproject'] ) && $csv2post_settings['currentproject'] !== false ) {
             
@@ -131,7 +134,24 @@ class CSV2POST_Categorycreation_View extends CSV2POST_View {
     function parent( $data, $box ) {
         eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
     }
-     
+
+    /**
+    * This views dismissable introduction.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
+    */
+    public function viewintroduction() {
+        $main_title = __( 'Category Creation Introduction', 'csv2post' );
+        $intro = __( 'Create and make use of existing categories. The ability to set a custom category description was added. I recommend manual category creation although the plugin will create or use existing categories (where they match data) during post creation. Creating straight away will reduce the number if tasks required during post creation events which are demanding', 'csv2post' );
+        $title = false;//__( 'More Information', 'csv2post' );
+        $info = false;//__( '<ol><li>Tutorials Coming Soon</li></ol>', 'csv2post' );
+        $foot = false;//__( 'Get your tutorial link added to this list. Video, blog, forum and PDF documents accepted.', 'csv2post' );
+        $this->UI->intro_box_dismissible( 'categorycreation-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
+    }
+         
     /**
     * post box function for category creation
     * 

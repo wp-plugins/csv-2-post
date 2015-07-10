@@ -48,7 +48,7 @@ class CSV2POST_Main_View extends CSV2POST_View {
         // array of meta boxes + used to register dashboard widgets (id, title, callback, context, priority, callback arguments (array), dashboard widget (boolean) )   
         $this->meta_boxes_array = array(
             // array( id, title, callback (usually parent, approach created by Ryan Bayne), context (position), priority, call back arguments array, add to dashboard (boolean), required capability
-            array( $this->view_name . '-welcome', __( 'Start Here', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'welcome' ), true, 'activate_plugins' ),
+            array( $this->view_name . '-welcome', __( 'Easy Start', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'easystart' ), true, 'activate_plugins' ),
             array( $this->view_name . '-computersampledata', __( 'Computer Sample Data', 'csv2post' ), array( $this, 'parent' ), 'normal','default',array( 'formid' => 'computersampledata' ), true, 'activate_plugins' ),
             array( $this->view_name . '-twitterupdates', __( 'Twitter Updates', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'twitterupdates' ), true, 'activate_plugins' ),
             array( $this->view_name . '-facebook', __( 'Facebook', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'facebook' ), true, 'activate_plugins' ),       
@@ -63,11 +63,7 @@ class CSV2POST_Main_View extends CSV2POST_View {
                         
             // side boxes
             array( $this->view_name . '-support', __( 'Support', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'support' ), true, 'activate_plugins' ),            
-            array( $this->view_name . '-deletedatasource', __( 'Delete Data Source', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'deletedatasource' ), true, 'activate_plugins' ),
-            array( $this->view_name . '-changecsvfilepath', __( 'Change CSV File Path', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'changecsvfilepath' ), true, 'activate_plugins' ),
-            array( $this->view_name . '-urlimporttoexistingsource', __( 'URL Import To Existing Data Source', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'urlimporttoexistingsource' ), true, 'activate_plugins' ),
-            array( $this->view_name . '-uploadfiletodatasource', __( 'Upload File To Existing Data Source', 'csv2post' ), array( $this, 'parent' ), 'side','default',array( 'formid' => 'uploadfiletodatasource' ), true, 'activate_plugins' ),
-                                
+                 
         );
         
         // add meta boxes that have conditions i.e. a global switch
@@ -175,7 +171,7 @@ class CSV2POST_Main_View extends CSV2POST_View {
     * @since 8.1.3
     * @version 1.1
     */
-    public function postbox_main_welcome( $data, $box ) {    
+    public function postbox_main_easystart( $data, $box ) {    
         echo '<p>' . __( "Please begin by configuring this plugin dashboard view. The Screen Options tab
         top-right corner allows forms to be hidden. Let me make a couple of suggestions that will help you to get started.
         <ol>
@@ -240,7 +236,7 @@ class CSV2POST_Main_View extends CSV2POST_View {
         </ol>      
           
         <h3><?php _e( 'Try .csv URL on WebTechGlobal' );?></h3>
-        <p><?php _e( 'Use these URL to the plugins ability to import a .csv file from URL.' );?></p>
+        <p><?php _e( 'Use these URL with the plugins ability to import a .csv file from URL. Right click on the links and select Copy Link Address or similar depending on browser.' );?></p>
 
         <ol>
             <li><a href="http://www.webtechglobal.co.uk/wp-content/uploads/2015/01/Computers-1.csv" target="_blank">File 1: Main PC Details</a></li>
@@ -906,122 +902,6 @@ class CSV2POST_Main_View extends CSV2POST_View {
         $this->UI->postbox_content_footer();
     }    
 
-    /**
-    * post box function for testing
-    * 
-    * @author Ryan Bayne
-    * @package CSV 2 POST
-    * @since 8.1.3
-    * @version 1.1
-    */
-    public function postbox_main_changecsvfilepath( $data, $box ) {  
-        global $wpdb;
-        $query_results = $this->DB->selectwherearray( $wpdb->c2psources, 'sourceid = sourceid', 'sourceid', '*' );
-        if(!$query_results){
-            $intro = __( 'No sources were found.' );
-        }else{
-            $intro = __( 'The new .csv file must have identical configuration...' );
-        }
-          
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], $intro, false );        
-        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
-        ?>  
-
-        <?php if( $query_results){?>
-        
-            <table class="form-table">
-                <?php $this->UI->option_text_simple( __( 'New Path' ), 'newpath', '', true);?> 
-                <?php $this->UI->option_menu_datasources(); ?>
-            </table>
-        
-        <?php }?>
-        
-        <?php 
-        $this->UI->postbox_content_footer();
-    } 
-        
-    /**
-    * import a new file via URL to an existing data source directory
-    * 
-    * @author Ryan Bayne
-    * @package CSV 2 POST
-    * @since 8.1.3
-    * @version 1.1
-    */
-    public function postbox_main_urlimporttoexistingsource( $data, $box ) { 
-        $intro = __( 'Import a .csv file via URL to an existing data source directory to add newer data.', 'csv2post' );
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], $intro, false );        
-        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
-        ?>  
-
-            <table class="form-table">
-
-            <?php
-            $this->UI->option_text_simple( __( 'URL', 'csv2post' ), 'newdatasourcetheurl','', true, 'URL' );
-            $this->UI->option_menu_datasources( 'Data Source', 'newprojectdatasource', 'newprojectdatasource' );
-            ?>
-            
-            </table>
-
-        <?php 
-        $this->UI->postbox_content_footer();
-    }     
-    
-    /**
-    * upload a new file via form to an existing data source directory
-    * 
-    * @author Ryan Bayne
-    * @package CSV 2 POST
-    * @since 8.1.3
-    * @version 1.1
-    */
-    public function postbox_main_uploadfiletodatasource( $data, $box ) { 
-        $intro = __( 'Upload a .csv file to an existing data source directory for adding newer data.', 'csv2post' );
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], $intro, false, true );        
-        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
-        ?>  
-
-            <table class="form-table">
-
-            <?php
-            $this->UI->option_file( __( 'Select .csv File', 'csv2post' ), 'uploadsinglefile', 'uploadsinglefile' );
-            $this->UI->option_menu_datasources( 'Data Source', 'datasourcefornewfile', 'datasourcefornewfile' );
-            ?>
-            
-            </table>
-
-        <?php 
-        $this->UI->postbox_content_footer();
-    } 
-
-    /**
-    * Form for deleting a specific data source.
-    * 
-    * @author Ryan R. Bayne
-    * @package CSV 2 POST
-    * @since 8.1.33
-    * @version 1.1
-    */
-    public function postbox_main_deletedatasource( $data, $box ) {
-        $this->UI->postbox_content_header( $box['title'], $box['args']['formid'], '', false, true );        
-        $this->FORMS->form_start( $box['args']['formid'], $box['args']['formid'], $box['title'] );
-        ?>  
-
-            <table class="form-table">
-
-            <?php
-            $this->UI->option_menu_datasources( 'Data Source', 'datasourcefornewfile', 'datasourcefornewfile' );
-            // offer option to delete an existing table if the file matches one, user needs to enter random number
-            $this->UI->option_text( __( 'Copy Code', 'csv2post' ), 'confirmdeletedatasourcecode', 'confirmdeletedatasourcecode',rand(1000,9999), true);
-            $this->UI->option_text( __( 'Confirm Code', 'csv2post' ), 'confirmdeletedatasource', 'confirmdeletedatasource', '' );            
-            ?>
-            
-            </table>
-
-        <?php 
-        $this->UI->postbox_content_footer();    
-    }
-        
     /**
     * post box function
     * 

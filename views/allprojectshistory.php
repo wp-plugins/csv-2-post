@@ -72,7 +72,10 @@ class CSV2POST_Allprojectshistory_View extends CSV2POST_View {
                 $this->current_project_settings = maybe_unserialize( $this->project_object->projectsettings ); 
             }
         }
-        
+
+        // add view introduction
+        $this->add_text_box( 'viewintroduction', array( $this, 'viewintroduction' ), 'normal' );
+                
         parent::setup( $action, $data );
 
         // create a data table ( use "head" to position before any meta boxes and outside of meta box related divs)
@@ -128,6 +131,23 @@ class CSV2POST_Allprojectshistory_View extends CSV2POST_View {
         eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
     } 
 
+        /**
+    * This views dismissable introduction.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
+    */
+    public function viewintroduction() {
+        $main_title = __( 'All Projects History Introduction', 'csv2post' );
+        $intro = __( 'A lot of all projects for a quick overview of what CSV 2 POSt has been doing. Like other log views I have not setup a lot of points to make them busy. If a user creates a lot of automated projects it could generate a lot of log data and the logging action itself is extra work. Logging can be increased on demand.', 'csv2post' );
+        $title = false;//__( 'More Information', 'csv2post' );
+        $info = false;//__( '<ol><li>Tutorials Coming Soon</li></ol>', 'csv2post' );
+        $foot = false;//__( 'Get your tutorial link added to this list. Video, blog, forum and PDF documents accepted.', 'csv2post' );
+        $this->UI->intro_box_dismissible( 'allprojectshistory-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
+    }
+    
     /**
     * Displays one or more tables of data at the top of the page before post boxes
     * 

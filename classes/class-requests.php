@@ -1823,11 +1823,20 @@ class C2P_Requests {
     }
     
     /**
-    * creates posts manually from quick actions and uses pre-set parameters
-    */    
+    * Process quick action for creating posts.
+    * 
+    * @author Ryan Bayne
+    * @package CSV 2 POST
+    * @since 8.0.0
+    * @version 1.2
+    * 
+    * @todo create a setting for total number of posts (replace the 50)
+    */        
     public function createpostscurrentproject() {
         global $csv2post_settings;
 
+        $total = 50;
+        
         // log
         $atts = array(
             'outcome' => 1,
@@ -1837,14 +1846,14 @@ class C2P_Requests {
             'userid' => get_current_user_id(),          
             'type' => 'general',
             'category' => 'projectchange',
-            'action' => sprintf( __( 'User requested %s posts to be made.', 'csv2post' ), $total),
+            'action' => sprintf( __( 'User requested %s posts to be made.', 'csv2post' ), $total ),
             'priority' => 'normal',                        
             'triga' => 'manualrequest'
         );
         
         $this->CSV2POST->newlog( $atts );
                 
-        $this->CSV2POST->create_posts( $csv2post_settings['currentproject'],1);    
+        $this->CSV2POST->create_posts( $csv2post_settings['currentproject'], $total );    
     } 
     
     /**
@@ -2347,7 +2356,7 @@ class C2P_Requests {
         // get one of two ID's where post content is perfect match  
         /*                        
         $result = $wpdb->get_results( 'SELECT COUNT(*) as c, GROUP_CONCAT(ID) AS ids
-                                        FROM wp_posts
+                                        FROM $wpdb->posts
                                         GROUP BY post_content
                                         HAVING c > 1' );
                                         
@@ -3680,6 +3689,292 @@ class C2P_Requests {
 
         $this->UI->create_notice( __( "A total of ." ), 'info', 'Small', __( 'Publish Request Results', 'csv2post' ) );               
     }
-          
+    
+    /**
+    * Adoption Related Function
+    * 
+    * Stores settings for matching post name to existing posts.
+    * On finding a match the existing post is adopted.
+    * The tokens structure creates a standard title and that
+    * title is then cleaned to make a valid format post name/slug.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
+    */
+    public function postnamematch() {
+        global $csv2post_settings;
+
+        // get project using current active project ID
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
+        
+        // get project settings array
+        $projectsettings = maybe_unserialize( $project_array->projectsettings ); 
+        
+        // add post title structure which will convert to a post name during adoption processing
+        $projectsettings['adoption']['postnamematch']['structure'] = $_POST['postnamestructure'];
+        
+        // update project
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $projectsettings ) ), true );
+
+        // confirm outcome
+        $this->UI->create_notice( __( "Your tokens structure has been stored. This method will be used in the adoption procedure along with any other methods you setup. To remove this method just empty the text area then submit the form again." ), 'info', 'Small', __( 'Post Name Match Activated', 'csv2post' ) );               
+    }
+    
+    /**
+    * Meta pairing.
+    * 
+    * Pair meta keys and compare their values. All pairs need to be an exact match for an adoption to happen.
+    * 
+    * If multiple posts have close/similar meta but not exact. It will make the process longer which could be
+    * problematic in large blogs.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
+    */
+    public function pairmeta() {
+        global $csv2post_settings;
+
+        // get project using current active project ID
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
+        
+        // get project settings array
+        $projectsettings = maybe_unserialize( $project_array->projectsettings ); 
+        
+        // loop through projects custom fields, same loop used on form so the order should match
+        $i = 0;
+        foreach( $projectsettings['customfields']['cflist'] as $cfrule ) {
+            
+            // the plan is to use these settings to get the would be custom field value for the custom field rule
+            // then compare that value to the meta values with the OLD meta key (different from new key or not)                                                                                                   
+            $projectsettings['adoption']['pairmeta'][ $cfrule['name'] ] = $_POST['pairproject' . $i];
+            
+            ++$i;
+        }
+    
+        // update project
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $projectsettings ) ), true );
+
+        // confirm outcome
+        $this->UI->create_notice( __( "Settings for pairing specific meta keys saved. The values in each key pair will be compared. All pairs will need to match for a post to be adopted. This process can be demanding if you have thousands of posts." ), 'info', 'Small', __( 'Meta Pairing Activated', 'csv2post' ) );               
+    }      
+    
+    /**
+    * Find value in the content of a post then adopt it. 
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
+    * 
+    * @todo provide option to avoid adopting a post if the value is found in two posts
+    */
+    public function valueincontent() {
+        global $csv2post_settings;
+
+        // get project using current active project ID
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
+        
+        // get project settings array
+        $projectsettings = maybe_unserialize( $project_array->projectsettings ); 
+        
+        // this is a column replacement tokens structure being stored - the values will be made on a per record basis
+        $projectsettings['adoption']['valueincontent'] = $_POST['valueincontentstructure'];
+        
+        // update project
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $projectsettings ) ), true );
+
+        // confirm outcome
+        $this->UI->create_notice( __( "Posts will be adopted when the generated value per record matches a value in any posts content. Again this is another demanding feature which will perform a search on your database of posts per record you have imported." ), 'info', 'Small', __( 'Find Value In Content Activated', 'csv2post' ) );               
+    }
+    
+    /**
+    * Adopt a post by matching a value with ANY meta.
+    * 
+    * This will not be accurate if multiple posts share the same meta value.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
+    */
+    public function valueinanymeta () {
+        global $csv2post_settings;
+
+        // get project using current active project ID
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
+        
+        // get project settings array
+        $projectsettings = maybe_unserialize( $project_array->projectsettings ); 
+        
+        // this is a column replacement tokens structure being stored - the values will be made on a per record basis
+        $projectsettings['adoption']['valueinanymeta'] = $_POST['anypostmetastructure'];
+
+        // update project
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $projectsettings ) ), true );
+
+        // confirm outcome
+        $this->UI->create_notice( __( "Your adoption attempt will include matching your structured value on a per record basis with ANY post meta value. This will not be accurate if some posts have the same meta as other posts." ), 'info', 'Small', __( 'Any Post Meta Activated', 'csv2post' ) );               
+    }  
+
+    /**
+    * Description
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
+    */
+    public function adoptionsettings() {
+        global $csv2post_settings;
+
+        // get project using current active project ID
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
+        
+        // get project settings array
+        $projectsettings = maybe_unserialize( $project_array->projectsettings ); 
+                                                                                                  
+        $projectsettings['adoption']['settings']['forceadoption'] = $_POST['forceadoption'];
+        $projectsettings['adoption']['settings']['logadoption'] = $_POST['logadoption'];
+        $projectsettings['adoption']['settings']['rebuildcontent'] = $_POST['rebuildcontent'];
+        $projectsettings['adoption']['settings']['rebuildtitle'] = $_POST['rebuildtitle'];
+        
+        // update project
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $projectsettings ) ), true );
+
+        // confirm outcome
+        $this->UI->create_notice( __( "These settings only apply to the current project. If you switch projects and then run adoption the outcome would be based on that projects adoption settings." ), 'info', 'Small', __( 'Adoption Settings Saved', 'csv2post' ) );               
+    }
+
+    /**
+    * Adopt a post if a specific meta exists and has matching value
+    * to that in the structure.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
+    */
+    public function valueinspecificmeta() {
+        global $csv2post_settings;
+
+        // get project using current active project ID
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
+        
+        // get project settings array
+        $projectsettings = maybe_unserialize( $project_array->projectsettings ); 
+        
+        $projectsettings['adoption']['valueinspecificmeta']['structure'] = $_POST['specificmetavaluestructure'];
+        $projectsettings['adoption']['valueinspecificmeta']['key'] = $_POST['specificmetakey'];
+        
+        // update project
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $projectsettings ) ), true );
+
+        // confirm outcome
+        $this->UI->create_notice( __( "If a pos has the submitted meta-key and the meta value matches any record then that record will be paired to the post - CSV 2 POST adopts the post for future management." ), 'info', 'Small', __( 'Specific Meta Method Activated', 'csv2post' ) );               
+    }
+ 
+    /**
+    * Match post title and adopt.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
+    */
+    public function posttitlematch() {
+        global $csv2post_settings;
+
+        // get project using current active project ID
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
+        
+        // get project settings array
+        $projectsettings = maybe_unserialize( $project_array->projectsettings ); 
+        
+        $projectsettings['adoption']['posttitlematch']['structure'] = $_POST['posttittlestructure'];
+   
+        // update project
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $projectsettings ) ), true );
+
+        // confirm outcome
+        $this->UI->create_notice( __( "Post title match has been activated. This method works best if your blog has no duplicate titles. This method ignores post-names and is not as accurate. However where post-names may not reflect the structure or words used in post titles this method may have use." ), 'info', 'Small', __( 'Title Match Activated', 'csv2post' ) );               
+    }
+
+    /**
+    * Starts the adoption process.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
+    */
+    public function initiateadoption() {
+        global $csv2post_settings;
+
+        // get project using current active project ID
+        $project_array = $this->CSV2POST->get_project( $csv2post_settings['currentproject'] );      
+        
+        // get project settings array
+        $projectsettings = maybe_unserialize( $project_array->projectsettings ); 
+        
+        // load adoption class
+        $this->Adoption = $this->CSV2POST->load_class( 'CSV2POST_PostAdoption', 'class-postadoption.php', 'classes' );
+  
+        // add force adoption setting
+        if( isset( $this->pro_set['adoption']['settings']['forceadoption'] ) ) {
+            $this->Adoption->force_adoption = $this->pro_set['adoption']['settings']['forceadoption'];    
+        }
+
+        // add rebuild content setting
+        if( isset( $this->pro_set['adoption']['settings']['rebuildcontent'] ) ) {
+            $this->Adoption->force_adoption = $this->pro_set['adoption']['settings']['rebuildcontent'];    
+        }        
+        
+        // add rebuild title setting
+        if( isset( $this->pro_set['adoption']['settings']['rebuildtitle'] ) ) {
+            $this->Adoption->force_adoption = $this->pro_set['adoption']['settings']['rebuildtitle'];    
+        }
+        
+        // fire adoption
+        $this->Adoption->StartAdoptPosts();
+      
+        // update project
+        $this->CSV2POST->update_project( $csv2post_settings['currentproject'], array( 'projectsettings' => maybe_serialize( $projectsettings ) ), true );
+
+        // confirm outcome
+        $this->UI->create_notice( __( "This notice marks the end of the adoption process." ), 'info', 'Small', __( 'Adoption Procedure Complete', 'csv2post' ) );               
+    }
+    
+    /**
+    * Description
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
+    */
+    public function columnreplacementtokens() {
+        global $csv2post_settings;
+
+        $projectcolumns = $this->CSV2POST->get_project_columns_from_db( $csv2post_settings['currentproject'], true );
+        
+        unset( $projectcolumns['arrayinfo'] ); 
+        
+        $tokens = '';
+        
+        foreach( $projectcolumns as $table_name => $columnfromdb ){
+            foreach( $columnfromdb as $key => $acol){
+                $tokens .= "#$acol#&#13;&#10;";
+            }  
+        }     
+        
+        $full_html = '<textarea rows="35" cols="70">' . $tokens . ' </textarea>';
+
+        $this->UI->create_notice( $full_html, 'info', 'Small', __( 'Column Replacement Tokens', 'csv2post' ) );               
+    }
+                           
 }// C2P_Requests       
 ?>

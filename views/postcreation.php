@@ -82,6 +82,9 @@ class CSV2POST_Postcreation_View extends CSV2POST_View {
         $this->PHP = CSV2POST::load_class( 'CSV2POST_PHP', 'class-phplibrary.php', 'classes' );
         $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
 
+        // add view introduction
+        $this->add_text_box( 'viewintroduction', array( $this, 'viewintroduction' ), 'normal' );
+        
         // load the current project row and settings from that row
         if( isset( $csv2post_settings['currentproject'] ) && $csv2post_settings['currentproject'] !== false ) {
               
@@ -150,7 +153,24 @@ class CSV2POST_Postcreation_View extends CSV2POST_View {
     function parent( $data, $box ) {
         eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
     }
-     
+
+    /**
+    * This views dismissable introduction.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
+    */
+    public function viewintroduction() {
+        $main_title = __( 'Post Creation Introduction', 'csv2post' );
+        $intro = __( 'Come to this view when you are sure that your project is fully configured. Create and update hundreds or even thousands of posts. I have designed my plugin to consider endless scenarios especially the ones where things have gone wrong and the user wants to fix the problem quickly. The tools on this page allow you to take small steps towards the publication of huge amounts of posts i.e. create 100 at a time, publish 100 at a time and even deal with posts on an individual basis should the occasional record fail to generate he right result. The mass creation of posts is a serious thing and yet many plugins of this nature offer very little to help reset or fix misakes. I have added tools to reduce stress, save hours or even days of time and get the job done the way a client/boss wants it. Working with data should never be treated as a simple, quick and easy task (users should take it seriously) but we can hope that plugins make it so. I offer a range of forms to help you handle various situations that may arise and will happily add more post creation or correction tools to this view', 'csv2post' );
+        $title = __( 'More Information', 'csv2post' );
+        $info = __( '<ol><li>Tutorials Coming Soon</li></ol>', 'csv2post' );
+        $foot = __( 'Get your tutorial link added to this list. Video, blog, forum and PDF documents accepted.', 'csv2post' );
+        $this->UI->intro_box_dismissible( 'postcreation-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
+    }
+         
     /**
     * post box function
     * 
@@ -365,6 +385,7 @@ class CSV2POST_Postcreation_View extends CSV2POST_View {
     
     /**
     * Locates imported rows that are meant to have a post but the post cannot be found.
+    * 
     * 1. Re-creating the posts is optional
     * 2. Total missing posts is confirmed after subsmission
     * 
@@ -391,6 +412,7 @@ class CSV2POST_Postcreation_View extends CSV2POST_View {
     
     /**
     * Mass publish posts.
+    * 
     * 1. Select all posts for current project.
     * 2. Select all posts for CSV 2 POST.
     * 3. Select all posts even those not created by CSV 2 POST.

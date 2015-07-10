@@ -6,7 +6,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: CSV 2 POST,csv2post,dataimport,importer,.csv,data,autoblogger,autoblogging,wpcsvimporter, spintax, text spinner, post updating,
 Requires at least: 3.8.0
 Tested up to: 4.2.2
-Stable tag: 8.2.0
+Stable tag: trunk
 
 WordPress data import and autoblogger plugin. Unlimited creation and post updating. Tools include spintax, dynamic template
 selection and lots more.  
@@ -19,7 +19,7 @@ getting far quicker responses and new features added on demand for your generosi
 with a donation. All requests are added to the projects workflow so do not delay - contact me today. 
 
 = Main Links = 
-*   <a href="http://www.webtechglobal.co.uk/csv-2-post/" title="CSV 2 POST Website">Plugins Portal</a>
+*   <a href="http://www.webtechglobal.co.uk/csv2post/" title="CSV 2 POST Website">Plugins Portal</a>
 *   <a href="http://forum.webtechglobal.co.uk/viewforum.php?f=8" title="CSV 2 POST Forum">Plugins Forum</a>
 *   <a href="http://www.webtechglobal.co.uk/category/wordpress/csv-2-post/" title="CSV 2 POST Blog Category">Plugins Blog</a>
 *   <a href="https://www.facebook.com/csv2post" title="CSV 2 POST Facebook Page">Plugins Facebook</a>
@@ -28,12 +28,13 @@ with a donation. All requests are added to the projects workflow so do not delay
 
 = Why CSV 2 POST? = 
 
-CSV 2 POST offers more for free than any other importer. If you donate to this project you will not only encourage further
+CSV 2 POST offers more for free than any other importer that I know about. If you donate to this project you will not only encourage further
 updates of this project - but you'll be supporting the creation of more WordPress autoblogging and data import plugins. I'm
 confident you will be impressed at the hundreds of hours I've put into this plugin for you. If you cannot afford to donate - 
 a Facebook like, a review, a short video on YouTube or a Tweet will help just as much. Thank you for your support.                                     
             
-1. No autoblogging limits at all
+1. Premium features now free
+1. Less limits than other plugins of this nature
 1. Create posts, pages and custom post types
 1. Systematic post updating or do it all at once
 1. Text-spinning (spintax)
@@ -58,11 +59,7 @@ a Facebook like, a review, a short video on YouTube or a Tweet will help just as
 1. Sandbox design for easy upgrading
 1. No advertising
 1. Help text for every feature              
-1. Log system to trace staff or even clients steps great if something goes wrong
-1. More updates planned
-1. Free support
-1. More updates coming 
-1. Services available    
+1. Log system to trace staff or even clients steps great if something goes wrong 
  
 == Installation ==
 
@@ -119,6 +116,20 @@ Please update this plugin using your WordPress Installed Plugins screen. Click o
 This method is safer than using any other source for the files.
 
 == Changelog == 
+= 8.2.1 =
+* Feature Changes
+    * New Adoption view offers advanced settings to convert existing posts to CSV 2 POST controlled posts - this is a delicate operation that requires backup.
+    * New Current Project view
+    * New button on Quick Actions (only shows on Current Project view) displays a list of column replacement tokens
+    * Dismissable view introductions added - little training in them but those introduction areas will be used to suggest tutorials
+* Technical Notes
+    * No longer an error when using quick action for Create Posts - related to a variable required for the notice.  
+    * Moved some classes from class-csv2post.php into class-ui.php as they are only used when on admin side.
+    * Bug regarding $package_version_cleaned fixed (related to update system which is still a work in progress)
+* Known Issues
+    * Data Table view is not suitable as tables are too wide, column titles cannot be read
+    * Some forms are not suitable for being in the narrow sidebar by default, probably use that bar for quick tools and small information.
+
 = 8.2.0 =
 * Feature Changes
     * New Directory Sources screen lists directories intended for providing multiple .csv files.

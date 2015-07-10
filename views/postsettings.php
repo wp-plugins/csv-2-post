@@ -65,7 +65,10 @@ class CSV2POST_Postsettings_View extends CSV2POST_View {
         $this->DB = CSV2POST::load_class( 'CSV2POST_DB', 'class-wpdb.php', 'classes' );
         $this->PHP = CSV2POST::load_class( 'CSV2POST_PHP', 'class-phplibrary.php', 'classes' );
         $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
-                        
+
+        // add view introduction
+        $this->add_text_box( 'viewintroduction', array( $this, 'viewintroduction' ), 'normal' );
+                                
         // load the current project row and settings from that row
         if( isset( $csv2post_settings['currentproject'] ) && $csv2post_settings['currentproject'] !== false ) {
             
@@ -131,7 +134,24 @@ class CSV2POST_Postsettings_View extends CSV2POST_View {
     function parent( $data, $box ) {
         eval( 'self::postbox_' . $this->view_name . '_' . $box['args']['formid'] . '( $data, $box );' );
     }
-     
+
+    /**
+    * This views dismissable introduction.
+    * 
+    * @author Ryan R. Bayne
+    * @package CSV 2 POST
+    * @since 0.0.1
+    * @version 1.0
+    */
+    public function viewintroduction() {
+        $main_title = __( 'Post Settings Introduction', 'csv2post' );
+        $intro = __( 'All the most common and familiar options are on this view. The important thing to remember is that selections here will not change your WordPress core settings. Selections here will only apply to posts created by CSV 2 POST', 'csv2post' );
+        $title = __( 'More Information', 'csv2post' );
+        $info = __( '<ol><li>Tutorials Coming Soon</li></ol>', 'csv2post' );
+        $foot = __( 'Get your tutorial link added to this list. Video, blog, forum and PDF documents accepted.', 'csv2post' );
+        $this->UI->intro_box_dismissible( 'postsettings-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
+    }
+         
     /**
     * post box function for testing
     * 
