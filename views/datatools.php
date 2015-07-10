@@ -76,7 +76,7 @@ class CSV2POST_Datatools_View extends CSV2POST_View {
         $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
 
         // add view introduction
-        $this->add_text_box( 'viewintroduction-datatools', array( $this, 'viewintroduction' ), 'normal' );
+        $this->add_text_box( 'viewintroduction', array( $this, 'viewintroduction' ), 'normal' );
         
         parent::setup( $action, $data );
   
@@ -141,7 +141,7 @@ class CSV2POST_Datatools_View extends CSV2POST_View {
     public function viewintroduction() {
         $main_title = __( 'Data Tools Introduction', 'csv2post' );
         $intro = __( 'Setup a longterm datasource and maintain existing ones. Most users will only need one or two of the forms in this view. Create a data source and possibly delete an old one while testing or once the source is exhausted. Everything else is considered advanced i.e. modified a datasource. Many users wonder about the need for so many advanced features and it all comes down to professional management of data. CSV 2 POST monitors a datasource and does its best to handle changes automatically. If it fails to do that I will simply improve it until it does. I can save you and your business hundreds of hours', 'csv2post' );
-        $title = __( 'Further Training', 'csv2post' );
+        $title = __( 'More Information', 'csv2post' );
         $info = __( '<ol><li>Tutorials Coming Soon</li></ol>', 'csv2post' );
         $foot = __( 'Get your tutorial link added to this list. Video, blog, forum and PDF documents accepted.', 'csv2post' );
         $this->UI->intro_box_dismissible( 'data-tools-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               

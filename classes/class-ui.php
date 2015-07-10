@@ -248,7 +248,7 @@ class CSV2POST_UI extends CSV2POST {
                     ' . $footer_text . '
  
                 </div>
-
+                
             </div> 
         </div>';  
     }
@@ -272,15 +272,7 @@ class CSV2POST_UI extends CSV2POST {
         if ( isset($_GET[ $dismissable_id ]) && 'dismiss' == $_GET[ $dismissable_id ] ) {
             
             add_user_meta($current_user->ID, $dismissable_id, 'true', true);
-            
-            /* Gets where the user came from after they click Hide Notice */
-            if ( wp_get_referer() ) {
-                /* Redirects user to where they were before */
-                wp_safe_redirect( wp_get_referer() );
-            } else {
-                /* This will never happen, I can almost gurantee it, but we should still have it just in case*/
-                wp_safe_redirect( home_url() );
-            }
+
         }
 
         // return before displaying anything if user already dismissed the intro
@@ -296,7 +288,7 @@ class CSV2POST_UI extends CSV2POST {
         }
         
         // footer text within the larger box, smaller text, good for contact info or a link
-        $footer_text = '';
+        $footer_text = '<br /><br />';
         if( $footer ) {
             $footer_text = '<p>' . $footer . '</p>';    
         }

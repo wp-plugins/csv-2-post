@@ -28,12 +28,13 @@ with a donation. All requests are added to the projects workflow so do not delay
 
 = Why CSV 2 POST? = 
 
-CSV 2 POST offers more for free than any other importer. If you donate to this project you will not only encourage further
+CSV 2 POST offers more for free than any other importer that I know about. If you donate to this project you will not only encourage further
 updates of this project - but you'll be supporting the creation of more WordPress autoblogging and data import plugins. I'm
 confident you will be impressed at the hundreds of hours I've put into this plugin for you. If you cannot afford to donate - 
 a Facebook like, a review, a short video on YouTube or a Tweet will help just as much. Thank you for your support.                                     
             
-1. No autoblogging limits at all
+1. Premium features now free
+1. Less limits than other plugins of this nature
 1. Create posts, pages and custom post types
 1. Systematic post updating or do it all at once
 1. Text-spinning (spintax)
@@ -58,11 +59,7 @@ a Facebook like, a review, a short video on YouTube or a Tweet will help just as
 1. Sandbox design for easy upgrading
 1. No advertising
 1. Help text for every feature              
-1. Log system to trace staff or even clients steps great if something goes wrong
-1. More updates planned
-1. Free support
-1. More updates coming 
-1. Services available    
+1. Log system to trace staff or even clients steps great if something goes wrong 
  
 == Installation ==
 
@@ -124,7 +121,7 @@ This method is safer than using any other source for the files.
     * New Adoption view offers advanced settings to convert existing posts to CSV 2 POST controlled posts - this is a delicate operation that requires backup.
     * New Current Project view
     * New button on Quick Actions (only shows on Current Project view) displays a list of column replacement tokens
-    * Dismissable view introductions added
+    * Dismissable view introductions added - little training in them but those introduction areas will be used to suggest tutorials
 * Technical Notes
     * No longer an error when using quick action for Create Posts - related to a variable required for the notice.  
     * Moved some classes from class-csv2post.php into class-ui.php as they are only used when on admin side.

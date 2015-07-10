@@ -74,7 +74,7 @@ class CSV2POST_Projectstable_View extends CSV2POST_View {
         }
 
         // add view introduction
-        $this->add_text_box( 'viewintroduction-datatools', array( $this, 'viewintroduction' ), 'normal' );
+        $this->add_text_box( 'viewintroduction', array( $this, 'viewintroduction' ), 'normal' );
                 
         parent::setup( $action, $data );
 
@@ -142,12 +142,12 @@ class CSV2POST_Projectstable_View extends CSV2POST_View {
     * @version 1.0
     */
     public function viewintroduction() {
-        $main_title = __( 'PAGEHERE Introduction', 'csv2post' );
-        $intro = __( 'INTRODUCTIONHERE', 'csv2post' );
-        $title = __( 'Further Training', 'csv2post' );
-        $info = __( '<ol><li>Tutorials Coming Soon</li></ol>', 'csv2post' );
-        $foot = __( 'Get your tutorial link added to this list. Video, blog, forum and PDF documents accepted.', 'csv2post' );
-        $this->UI->intro_box_dismissible( 'PAGEHERE-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
+        $main_title = __( 'Projectts Table Introduction', 'csv2post' );
+        $intro = __( 'Right now a very basic table of all projects. If multiple project users see a need for this to a improve I would happily make the table more interactive, I can think of a lot of things we can do here', 'csv2post' );
+        $title = false;//__( 'More Information', 'csv2post' );
+        $info = false;//__( '<ol><li>Tutorials Coming Soon</li></ol>', 'csv2post' );
+        $foot = false;//__( 'Get your tutorial link added to this list. Video, blog, forum and PDF documents accepted.', 'csv2post' );
+        $this->UI->intro_box_dismissible( 'projectstable-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
     }
         
     public function intro( $data, $box ) {

@@ -82,7 +82,7 @@ class CSV2POST_Defaultglobalpostsettings_View extends CSV2POST_View {
         }
         
         // add view introduction
-        $this->add_text_box( 'viewintroduction-datatools', array( $this, 'viewintroduction' ), 'normal' );
+        $this->add_text_box( 'viewintroduction', array( $this, 'viewintroduction' ), 'normal' );
                 
         parent::setup( $action, $data );
         
@@ -147,7 +147,7 @@ class CSV2POST_Defaultglobalpostsettings_View extends CSV2POST_View {
     public function viewintroduction() {
         $main_title = __( 'PAGEHERE Introduction', 'csv2post' );
         $intro = __( 'INTRODUCTIONHERE', 'csv2post' );
-        $title = __( 'Further Training', 'csv2post' );
+        $title = __( 'More Information', 'csv2post' );
         $info = __( '<ol><li>Tutorials Coming Soon</li></ol>', 'csv2post' );
         $foot = __( 'Get your tutorial link added to this list. Video, blog, forum and PDF documents accepted.', 'csv2post' );
         $this->UI->intro_box_dismissible( 'PAGEHERE-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               

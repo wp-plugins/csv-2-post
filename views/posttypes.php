@@ -64,7 +64,7 @@ class CSV2POST_Posttypes_View extends CSV2POST_View {
         $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
 
         // add view introduction
-        $this->add_text_box( 'viewintroduction-datatools', array( $this, 'viewintroduction' ), 'normal' );
+        $this->add_text_box( 'viewintroduction', array( $this, 'viewintroduction' ), 'normal' );
                                 
         // load the current project row and settings from that row
         if( isset( $csv2post_settings['currentproject'] ) && $csv2post_settings['currentproject'] !== false ) {
@@ -141,12 +141,12 @@ class CSV2POST_Posttypes_View extends CSV2POST_View {
     * @version 1.0
     */
     public function viewintroduction() {
-        $main_title = __( 'PAGEHERE Introduction', 'csv2post' );
-        $intro = __( 'INTRODUCTIONHERE', 'csv2post' );
-        $title = __( 'Further Training', 'csv2post' );
-        $info = __( '<ol><li>Tutorials Coming Soon</li></ol>', 'csv2post' );
-        $foot = __( 'Get your tutorial link added to this list. Video, blog, forum and PDF documents accepted.', 'csv2post' );
-        $this->UI->intro_box_dismissible( 'PAGEHERE-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
+        $main_title = __( 'Post Types Introduction', 'csv2post' );
+        $intro = __( 'A default (for a single post type within a project) can be selected on the Post Settings view. This view offers the more advanced ability of using more than one post type within a projects range of posts. It is rarely used because most data will be grouped as post-types. However there has existed the scenario where there are multiple formats within the post table and a business wants each format to become a different post type. The decision of post type happens using rules you can setup and the decision is made at the point of post creation. However like a lot of features in this plugin I would be more than happy to add a feature to determine a records likely post type prior to post creation', 'csv2post' );
+        $title = false;//__( 'More Information', 'csv2post' );
+        $info = false;//__( '<ol><li>Tutorials Coming Soon</li></ol>', 'csv2post' );
+        $foot = false;//__( 'Get your tutorial link added to this list. Video, blog, forum and PDF documents accepted.', 'csv2post' );
+        $this->UI->intro_box_dismissible( 'posttypes-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
     }
          
     /**

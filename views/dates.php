@@ -72,7 +72,7 @@ class CSV2POST_Dates_View extends CSV2POST_View {
         $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
 
         // add view introduction
-        $this->add_text_box( 'viewintroduction-datatools', array( $this, 'viewintroduction' ), 'normal' );
+        $this->add_text_box( 'viewintroduction', array( $this, 'viewintroduction' ), 'normal' );
                                 
         // load the current project row and settings from that row
         if( isset( $csv2post_settings['currentproject'] ) && $csv2post_settings['currentproject'] !== false ) {
@@ -149,12 +149,12 @@ class CSV2POST_Dates_View extends CSV2POST_View {
     * @version 1.0
     */
     public function viewintroduction() {
-        $main_title = __( 'PAGEHERE Introduction', 'csv2post' );
-        $intro = __( 'INTRODUCTIONHERE', 'csv2post' );
-        $title = __( 'Further Training', 'csv2post' );
+        $main_title = __( 'Dates Introduction', 'csv2post' );
+        $intro = __( 'If you have publish dates in data then all you need is the Pre-Made Dates menu. If you want to use the exact time a post is created by CSV 2 POST then select WordPress as the Date Method and nothing else. Any other requirement needs the use of more fields and you may need to watch a video tutorial to know what to enter', 'csv2post' );
+        $title = __( 'More Information', 'csv2post' );
         $info = __( '<ol><li>Tutorials Coming Soon</li></ol>', 'csv2post' );
         $foot = __( 'Get your tutorial link added to this list. Video, blog, forum and PDF documents accepted.', 'csv2post' );
-        $this->UI->intro_box_dismissible( 'PAGEHERE-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
+        $this->UI->intro_box_dismissible( 'dates-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
     }
          
     /**

@@ -80,7 +80,7 @@ class CSV2POST_Adoption_View extends CSV2POST_View {
         $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
 
         // add view introduction
-        $this->add_text_box( 'viewintroduction-datatools', array( $this, 'viewintroduction' ), 'normal' );
+        $this->add_text_box( 'viewintroduction', array( $this, 'viewintroduction' ), 'normal' );
         
         // load the current project row and settings from that row
         if( isset( $csv2post_settings['currentproject'] ) && $csv2post_settings['currentproject'] !== false ) {
@@ -160,12 +160,12 @@ class CSV2POST_Adoption_View extends CSV2POST_View {
     * @version 1.0
     */
     public function viewintroduction() {
-        $main_title = __( 'PAGEHERE Introduction', 'csv2post' );
-        $intro = __( 'INTRODUCTIONHERE', 'csv2post' );
-        $title = __( 'Further Training', 'csv2post' );
+        $main_title = __( 'Adoption Introduction', 'csv2post' );
+        $intro = __( 'My plugin can take control of posts it did not create. It can be a very delicate procedure or it can be very simple. This is an advanced offering, something usually only sold. I have provided it for free to act as a migration tool between my own range of CSV plugins. CSV 2 POST will allow the posts of any other autoblogger to be adopted', 'csv2post' );
+        $title = __( 'More Information', 'csv2post' );
         $info = __( '<ol><li>Tutorials Coming Soon</li></ol>', 'csv2post' );
         $foot = __( 'Get your tutorial link added to this list. Video, blog, forum and PDF documents accepted.', 'csv2post' );
-        $this->UI->intro_box_dismissible( 'PAGEHERE-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
+        $this->UI->intro_box_dismissible( 'adoption-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
     }
          
     /**

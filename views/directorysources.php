@@ -75,7 +75,7 @@ class CSV2POST_Directorysources_View extends CSV2POST_View {
         }
 
         // add view introduction
-        $this->add_text_box( 'viewintroduction-datatools', array( $this, 'viewintroduction' ), 'normal' );
+        $this->add_text_box( 'viewintroduction', array( $this, 'viewintroduction' ), 'normal' );
                 
         parent::setup( $action, $data );
 
@@ -143,12 +143,12 @@ class CSV2POST_Directorysources_View extends CSV2POST_View {
     * @version 1.0
     */
     public function viewintroduction() {
-        $main_title = __( 'PAGEHERE Introduction', 'csv2post' );
-        $intro = __( 'INTRODUCTIONHERE', 'csv2post' );
-        $title = __( 'Further Training', 'csv2post' );
-        $info = __( '<ol><li>Tutorials Coming Soon</li></ol>', 'csv2post' );
-        $foot = __( 'Get your tutorial link added to this list. Video, blog, forum and PDF documents accepted.', 'csv2post' );
-        $this->UI->intro_box_dismissible( 'PAGEHERE-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
+        $main_title = __( 'Directory Sources Introduction', 'csv2post' );
+        $intro = __( 'This plugin can monitor a directory and offer more automation. CSV 2 POST can setup newly detected .csv files as individual datasources OR treat a new file as the latest version of an existing data source. My plugin will import data from the newer file, update existing data, that triggers post updating and it will ignore the old files. Few individual users have required this but many business have hired me to get this running for them.', 'csv2post' );
+        $title = false;//__( 'More Information', 'csv2post' );
+        $info = false;//__( '<ol><li>Tutorials Coming Soon</li></ol>', 'csv2post' );
+        $foot = false;//__( 'Get your tutorial link added to this list. Video, blog, forum and PDF documents accepted.', 'csv2post' );
+        $this->UI->intro_box_dismissible( 'directorysources-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
     }
        
     public function intro( $data, $box ) {

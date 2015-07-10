@@ -66,7 +66,7 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
         $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
 
         // add view introduction
-        $this->add_text_box( 'viewintroduction-datatools', array( $this, 'viewintroduction' ), 'normal' );
+        $this->add_text_box( 'viewintroduction', array( $this, 'viewintroduction' ), 'normal' );
                                 
         // load the current project row and settings from that row
         if( isset( $csv2post_settings['currentproject'] ) && $csv2post_settings['currentproject'] !== false ) {
@@ -143,12 +143,12 @@ class CSV2POST_Customfields_View extends CSV2POST_View {
     * @version 1.0
     */
     public function viewintroduction() {
-        $main_title = __( 'PAGEHERE Introduction', 'csv2post' );
-        $intro = __( 'INTRODUCTIONHERE', 'csv2post' );
-        $title = __( 'Further Training', 'csv2post' );
+        $main_title = __( 'Custom Fields Introduction', 'csv2post' );
+        $intro = __( 'Custom fields for posts allow us to add post meta. They are extra fields for extra values that can be used by plugins or themes in endless ways. My plugin allows you to create as many meta values per post as your theme or plugins require. You have the advanced choice of using column replacement tokens to build a template to generate unique values. I understand this may be the first time you have come across the term "column replacement tokens". It is a term I made because we use tokens within the WYSIWYG editor which represent a specific column of data from your .csv file and in the temporary data table your data is imported into. You can also update or prevent the update of individual meta values - handy for e-commerce price or sale discount changes', 'csv2post' );
+        $title = __( 'More Information', 'csv2post' );
         $info = __( '<ol><li>Tutorials Coming Soon</li></ol>', 'csv2post' );
         $foot = __( 'Get your tutorial link added to this list. Video, blog, forum and PDF documents accepted.', 'csv2post' );
-        $this->UI->intro_box_dismissible( 'PAGEHERE-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
+        $this->UI->intro_box_dismissible( 'customfields-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
     }
          
     /**

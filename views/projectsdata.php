@@ -75,7 +75,7 @@ class CSV2POST_Projectsdata_View extends CSV2POST_View {
             }
 
             // add view introduction
-            $this->add_text_box( 'viewintroduction-datatools', array( $this, 'viewintroduction' ), 'normal' );
+            $this->add_text_box( 'viewintroduction', array( $this, 'viewintroduction' ), 'normal' );
                 
             parent::setup( $action, $data );
 
@@ -145,12 +145,12 @@ class CSV2POST_Projectsdata_View extends CSV2POST_View {
     * @version 1.0
     */
     public function viewintroduction() {
-        $main_title = __( 'PAGEHERE Introduction', 'csv2post' );
-        $intro = __( 'INTRODUCTIONHERE', 'csv2post' );
-        $title = __( 'Further Training', 'csv2post' );
-        $info = __( '<ol><li>Tutorials Coming Soon</li></ol>', 'csv2post' );
-        $foot = __( 'Get your tutorial link added to this list. Video, blog, forum and PDF documents accepted.', 'csv2post' );
-        $this->UI->intro_box_dismissible( 'PAGEHERE-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
+        $main_title = __( 'Project Data Introduction', 'csv2post' );
+        $intro = __( 'The table below is a small window into the temporary database table where your data is imported into. This table is a small example of how we can take the import of data into your database more seriously. The table will help you to confirm importing is happening if automated. You can confirm updating is happening if you have that automated. Something that is missing is help to confirm that a record is 100% complete when importing from two or more .csv files. Combining data requires a record to be complete before using it to create posts and CSV 2 POST manages this - another feature not normally provided free.', 'csv2post' );
+        $title = false;//__( 'More Information', 'csv2post' );
+        $info = false;//__( '<ol><li>Tutorials Coming Soon</li></ol>', 'csv2post' );
+        $foot = false;//__( 'Get your tutorial link added to this list. Video, blog, forum and PDF documents accepted.', 'csv2post' );
+        $this->UI->intro_box_dismissible( 'datatable-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
     }
          
     /**

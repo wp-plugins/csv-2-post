@@ -72,7 +72,7 @@ class CSV2POST_Taxonomies_View extends CSV2POST_View {
         $this->FORMS = CSV2POST::load_class( 'CSV2POST_FORMS', 'class-forms.php', 'classes' );
 
         // add view introduction
-        $this->add_text_box( 'viewintroduction-datatools', array( $this, 'viewintroduction' ), 'normal' );
+        $this->add_text_box( 'viewintroduction', array( $this, 'viewintroduction' ), 'normal' );
                                 
         // load the current project row and settings from that row
         if( isset( $csv2post_settings['currentproject'] ) && $csv2post_settings['currentproject'] !== false ) {
@@ -149,12 +149,12 @@ class CSV2POST_Taxonomies_View extends CSV2POST_View {
     * @version 1.0
     */
     public function viewintroduction() {
-        $main_title = __( 'PAGEHERE Introduction', 'csv2post' );
-        $intro = __( 'INTRODUCTIONHERE', 'csv2post' );
-        $title = __( 'Further Training', 'csv2post' );
-        $info = __( '<ol><li>Tutorials Coming Soon</li></ol>', 'csv2post' );
-        $foot = __( 'Get your tutorial link added to this list. Video, blog, forum and PDF documents accepted.', 'csv2post' );
-        $this->UI->intro_box_dismissible( 'PAGEHERE-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
+        $main_title = __( 'Taxonomies Introduction', 'csv2post' );
+        $intro = __( 'The taxonomy ability in CSV 2 POST rolled back a bit when the plugin was re-developed. So not a lot to say about this view. Only that it will get better especially if requests are posted on my forum and donations considered.', 'csv2post' );
+        $title = false;//__( 'More Information', 'csv2post' );
+        $info = false;//__( '<ol><li>Tutorials Coming Soon</li></ol>', 'csv2post' );
+        $foot = false;//__( 'Get your tutorial link added to this list. Video, blog, forum and PDF documents accepted.', 'csv2post' );
+        $this->UI->intro_box_dismissible( 'taxonomies-introduction', $main_title, $intro, $info_area = true, $title, $info, $foot );               
     }
          
     /**
